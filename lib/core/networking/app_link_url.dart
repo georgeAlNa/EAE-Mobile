@@ -26,4 +26,16 @@ class AppLinkUrl {
   static String roleUser(String roleId, String userId) =>
       "roles/$roleId/users/$userId";
   static const String securityPolicies = "security/policies";
+
+  // cohorts
+  static const String cohorts = "cohorts";
+  static String cohortDetails(String cohortId) => "cohorts/$cohortId";
+  static String cohortMembers(String cohortId) => "cohorts/$cohortId/members";
+  static String cohortMember(String cohortId, String userId) =>
+      "cohorts/$cohortId/members/$userId";
+
+  // live sessions and enrollment management
+  static String examEnrollments(String examId) => "exams/$examId/enrollments";
+  static String examEnrollmentDetails(String examId, String enrollmentId) =>
+      "exams/$examId/enrollments/$enrollmentId";
 }

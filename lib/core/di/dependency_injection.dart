@@ -11,6 +11,12 @@ import '../../features/tenant_admin/users_management/logic/users_management_cubi
 import '../../features/tenant_admin/roles_and_security/data/datasources/roles_and_security_remote_data_source.dart';
 import '../../features/tenant_admin/roles_and_security/data/repos/roles_and_security_repo.dart';
 import '../../features/tenant_admin/roles_and_security/logic/roles_and_security_cubit.dart';
+import '../../features/tenant_admin/cohorts/data/datasources/cohorts_remote_data_source.dart';
+import '../../features/tenant_admin/cohorts/data/repos/cohorts_repo.dart';
+import '../../features/tenant_admin/cohorts/logic/cohorts_cubit.dart';
+import '../../features/tenant_admin/live_sessions_and_enrollment_management/data/datasources/live_sessions_and_enrollment_management_remote_data_source.dart';
+import '../../features/tenant_admin/live_sessions_and_enrollment_management/data/repos/live_sessions_and_enrollment_management_repo.dart';
+import '../../features/tenant_admin/live_sessions_and_enrollment_management/logic/live_sessions_and_enrollment_management_cubit.dart';
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
 import '../../features/auth/data/repos/auth_repo.dart';
 import '../../features/auth/logic/forgot_password/forgot_password_cubit.dart';
@@ -112,6 +118,42 @@ Future<void> setupGetit() async {
   // cubit
   getIt.registerFactory<RolesAndSecurityCubit>(
     () => RolesAndSecurityCubit(rolesAndSecurityRepo: getIt()),
+  );
+
+  // //! feature - cohorts
+  // datasource
+  getIt.registerLazySingleton<CohortsRemoteDataSource>(
+    () => CohortsRemoteDataSourceImpl(apiServicesImpl: getIt()),
+  );
+  // repo
+  getIt.registerLazySingleton<CohortsRepo>(
+    () => CohortsRepo(cohortsRemoteDataSource: getIt(), networkInfo: getIt()),
+  );
+  // cubit
+  getIt.registerFactory<CohortsCubit>(() => CohortsCubit(cohortsRepo: getIt()));
+
+  // //! feature - live sessions and enrollment management
+  // datasource
+  getIt
+      .registerLazySingleton<
+        LiveSessionsAndEnrollmentManagementRemoteDataSource
+      >(
+        () => LiveSessionsAndEnrollmentManagementRemoteDataSourceImpl(
+          apiServicesImpl: getIt(),
+        ),
+      );
+  // repo
+  getIt.registerLazySingleton<LiveSessionsAndEnrollmentManagementRepo>(
+    () => LiveSessionsAndEnrollmentManagementRepo(
+      liveSessionsAndEnrollmentManagementRemoteDataSource: getIt(),
+      networkInfo: getIt(),
+    ),
+  );
+  // cubit
+  getIt.registerFactory<LiveSessionsAndEnrollmentManagementCubit>(
+    () => LiveSessionsAndEnrollmentManagementCubit(
+      liveSessionsAndEnrollmentManagementRepo: getIt(),
+    ),
   );
 
   // //! feature - analytics

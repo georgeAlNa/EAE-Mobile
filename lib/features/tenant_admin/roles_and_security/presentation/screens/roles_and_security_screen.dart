@@ -94,9 +94,7 @@ class _RolesAndSecurityScreenState extends State<RolesAndSecurityScreen> {
                             _sectionIndex = index;
                           });
                         },
-                        onCreateRole: () => _showCreateRoleSheet(
-                          screenContext,
-                        ),
+                        onCreateRole: () => _showCreateRoleSheet(screenContext),
                         onUpdatePolicy: () => _showSecurityPolicySheet(
                           context: screenContext,
                           policy: loaded.securityPolicyResponse.data,
@@ -164,10 +162,8 @@ class _RolesAndSecurityScreenState extends State<RolesAndSecurityScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: AppColors.neutralColor,
-      builder: (_) => BlocProvider.value(
-        value: cubit,
-        child: const RoleFormSheet(),
-      ),
+      builder: (_) =>
+          BlocProvider.value(value: cubit, child: const RoleFormSheet()),
     );
   }
 

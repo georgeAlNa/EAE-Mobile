@@ -1,7 +1,7 @@
 import 'package:eae_mobile/core/constants/colors.dart';
 import 'package:eae_mobile/features/analytics/presentation/screens/analytics_screen.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/presentation/screens/assessment_inventory_screen.dart';
-import 'package:eae_mobile/features/bottom_nav/presentation/widgets/bottom_nav_bar.dart';
+import 'package:eae_mobile/features/candidate/bottom_nav/presentation/widgets/bottom_nav_bar.dart';
 import 'package:eae_mobile/features/settings/presentation/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 

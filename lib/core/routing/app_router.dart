@@ -22,7 +22,7 @@ import 'package:eae_mobile/features/candidate/assessment_session/logic/assessmen
 import 'package:eae_mobile/features/candidate/assessment_session/presentation/screens/assessment_session_screen.dart';
 import 'package:eae_mobile/features/candidate/forensics_checkpoint/logic/forensics_checkpoint_cubit.dart';
 import 'package:eae_mobile/features/candidate/forensics_checkpoint/presentation/screens/forensics_checkpoint_screen.dart';
-import 'package:eae_mobile/features/bottom_nav/presentation/screens/main_navigation_shell.dart';
+import 'package:eae_mobile/features/candidate/bottom_nav/presentation/screens/main_navigation_shell.dart';
 import 'package:eae_mobile/features/settings/logic/settings_cubit.dart';
 import 'package:eae_mobile/features/splash/logic/splash_cubit.dart';
 import 'package:flutter/material.dart';
