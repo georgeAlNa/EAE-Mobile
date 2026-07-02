@@ -5,6 +5,9 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 import '../../features/candidate/assessment_inventory/data/datasources/assessment_inventory_remote_data_source.dart';
 import '../../features/candidate/assessment_inventory/data/repos/assessment_inventory_repo.dart';
+import '../../features/evaluator/question_bank_and_categories/data/datasources/question_bank_and_categories_remote_data_source.dart';
+import '../../features/evaluator/question_bank_and_categories/data/repos/question_bank_and_categories_repo.dart';
+import '../../features/evaluator/question_bank_and_categories/logic/question_bank_and_categories_cubit.dart';
 import '../../features/tenant_admin/users_management/data/datasources/users_management_remote_data_source.dart';
 import '../../features/tenant_admin/users_management/data/repos/users_management_repo.dart';
 import '../../features/tenant_admin/users_management/logic/users_management_cubit.dart';
@@ -134,14 +137,13 @@ Future<void> setupGetit() async {
 
   // //! feature - live sessions and enrollment management
   // datasource
-  getIt
-      .registerLazySingleton<
-        LiveSessionsAndEnrollmentManagementRemoteDataSource
-      >(
-        () => LiveSessionsAndEnrollmentManagementRemoteDataSourceImpl(
-          apiServicesImpl: getIt(),
-        ),
-      );
+  getIt.registerLazySingleton<
+    LiveSessionsAndEnrollmentManagementRemoteDataSource
+  >(
+    () => LiveSessionsAndEnrollmentManagementRemoteDataSourceImpl(
+      apiServicesImpl: getIt(),
+    ),
+  );
   // repo
   getIt.registerLazySingleton<LiveSessionsAndEnrollmentManagementRepo>(
     () => LiveSessionsAndEnrollmentManagementRepo(
@@ -154,6 +156,25 @@ Future<void> setupGetit() async {
     () => LiveSessionsAndEnrollmentManagementCubit(
       liveSessionsAndEnrollmentManagementRepo: getIt(),
     ),
+  );
+
+  // //! feature - question bank and categories
+  // datasource
+  getIt.registerLazySingleton<QuestionBankAndCategoriesRemoteDataSource>(
+    () =>
+        QuestionBankAndCategoriesRemoteDataSourceImpl(apiServicesImpl: getIt()),
+  );
+  // repo
+  getIt.registerLazySingleton<QuestionBankAndCategoriesRepo>(
+    () => QuestionBankAndCategoriesRepo(
+      questionBankAndCategoriesRemoteDataSource: getIt(),
+      networkInfo: getIt(),
+    ),
+  );
+  // cubit
+  getIt.registerFactory<QuestionBankAndCategoriesCubit>(
+    () =>
+        QuestionBankAndCategoriesCubit(questionBankAndCategoriesRepo: getIt()),
   );
 
   // //! feature - analytics

@@ -64,6 +64,6 @@ String _homeRouteForRole(UserRole role) {
     case UserRole.tenantAdmin:
       return Routes.tenantAdminNavigationShell;
     case UserRole.evaluator:
-      return Routes.evaluatorHomeScreen;
+      return Routes.evaluatorNavigationShell;
   }
 }

@@ -64,7 +64,7 @@ class TextFieldWidget extends StatelessWidget {
       width: width?.w,
       child: TextFormField(
         readOnly: readOnly ?? false,
-        style: TextStyle(color: inputColor ?? AppColors.tertiaryColor5),
+        style: TextStyle(color: inputColor ?? AppColors.primaryColor10),
         keyboardType: keyboardType ?? TextInputType.text,
         cursorColor: AppColors.primaryColor,
         onChanged: onChanged,
@@ -108,12 +108,12 @@ class TextFieldWidget extends StatelessWidget {
           hintText: hintText,
           hintStyle: TextStyle(
             fontSize: 12.sp,
-            color: AppColors.tertiaryColor5,
+            color: AppColors.primaryColor10,
           ),
           labelText: labelText,
           labelStyle: TextStyle(
             fontSize: 14.sp,
-            color: AppColors.tertiaryColor5,
+            color: AppColors.primaryColor10,
             fontWeight: AppFontWeightHelper.medium,
           ),
           border: const OutlineInputBorder(

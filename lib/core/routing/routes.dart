@@ -11,6 +11,7 @@ class Routes {
   static const String tenantAdminHomeScreen = '/tenant-admin-home';
   static const String usersManagementScreen = '/users-management';
   static const String evaluatorHomeScreen = '/evaluator-home';
+  static const String evaluatorNavigationShell = '/evaluator';
   static const String assessmentInventoryDetailsScreen =
       '/assessment-inventory-details';
   static const String analyticsScreen = '/analytics';

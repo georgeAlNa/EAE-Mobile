@@ -38,4 +38,13 @@ class AppLinkUrl {
   static String examEnrollments(String examId) => "exams/$examId/enrollments";
   static String examEnrollmentDetails(String examId, String enrollmentId) =>
       "exams/$examId/enrollments/$enrollmentId";
+
+  // question bank and categories
+  static const String categoriesTree = "categories/tree";
+  static const String categories = "categories";
+  static String categoryDetails(String categoryId) => "categories/$categoryId";
+  static String moveCategory(String categoryId) =>
+      "categories/$categoryId/move";
+  static const String questions = "questions";
+  static String questionDetails(String questionId) => "questions/$questionId";
 }
