@@ -4,26 +4,32 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
+import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
 import '../../data/models/live_sessions_and_enrollment_management_response.dart';
 
 class EnrollmentsListSection extends StatelessWidget {
   final List<EnrollmentItem> enrollments;
+  final String query;
   final ValueChanged<EnrollmentItem> onDelete;
 
   const EnrollmentsListSection({
     super.key,
     required this.enrollments,
+    required this.query,
     required this.onDelete,
   });
 
   @override
   Widget build(BuildContext context) {
     if (enrollments.isEmpty) {
-      return Text(
-        'No enrollments available',
-        style: AppTextStyles.font14DarkGreyRegular.copyWith(
-          color: AppColors.tertiaryColor6,
-        ),
+      return TenantAdminEmptyState(
+        icon: Icons.fact_check_outlined,
+        title: query.isEmpty
+            ? 'No enrollments available'
+            : 'No matching enrollments',
+        message: query.isEmpty
+            ? 'Create the first enrollment for this exam.'
+            : 'Try another candidate, cohort, or status.',
       );
     }
 
@@ -47,10 +53,7 @@ class _EnrollmentCard extends StatelessWidget {
   final EnrollmentItem enrollment;
   final VoidCallback onDelete;
 
-  const _EnrollmentCard({
-    required this.enrollment,
-    required this.onDelete,
-  });
+  const _EnrollmentCard({required this.enrollment, required this.onDelete});
 
   @override
   Widget build(BuildContext context) {

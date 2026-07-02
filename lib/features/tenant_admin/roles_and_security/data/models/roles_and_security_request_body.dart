@@ -123,9 +123,8 @@ class UpdateSecurityPolicyRequestBody {
     required this.allowedIpRanges,
   });
 
-  factory UpdateSecurityPolicyRequestBody.fromJson(
-    Map<String, dynamic> json,
-  ) => _$UpdateSecurityPolicyRequestBodyFromJson(json);
+  factory UpdateSecurityPolicyRequestBody.fromJson(Map<String, dynamic> json) =>
+      _$UpdateSecurityPolicyRequestBodyFromJson(json);
 
   Map<String, dynamic> toJson() =>
       _$UpdateSecurityPolicyRequestBodyToJson(this);

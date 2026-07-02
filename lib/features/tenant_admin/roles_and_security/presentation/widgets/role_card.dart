@@ -57,6 +57,8 @@ class RoleCard extends StatelessWidget {
                   children: [
                     Text(
                       role.roleName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: AppTextStyles.font14DarkGreySemiBold.copyWith(
                         color: AppColors.primaryColor9,
                       ),
@@ -64,6 +66,8 @@ class RoleCard extends StatelessWidget {
                     verticalSpace(4),
                     Text(
                       role.roleCategory,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: AppTextStyles.font12DarkGreySemiBold.copyWith(
                         color: AppColors.tertiaryColor6,
                       ),
@@ -77,42 +81,66 @@ class RoleCard extends StatelessWidget {
                     ? AppColors.primaryColor9
                     : AppColors.secondaryColor7,
               ),
+              PopupMenuButton<_RoleAction>(
+                tooltip: 'Role actions',
+                onSelected: (action) {
+                  switch (action) {
+                    case _RoleAction.edit:
+                      onEdit();
+                    case _RoleAction.assign:
+                      onAssignUser();
+                    case _RoleAction.remove:
+                      onRemoveUser();
+                    case _RoleAction.delete:
+                      onDelete?.call();
+                  }
+                },
+                itemBuilder: (_) => [
+                  const PopupMenuItem(
+                    value: _RoleAction.edit,
+                    child: Text('Edit'),
+                  ),
+                  const PopupMenuItem(
+                    value: _RoleAction.assign,
+                    child: Text('Assign user'),
+                  ),
+                  const PopupMenuItem(
+                    value: _RoleAction.remove,
+                    child: Text('Remove user'),
+                  ),
+                  PopupMenuItem(
+                    value: _RoleAction.delete,
+                    enabled: onDelete != null,
+                    child: const Text('Delete'),
+                  ),
+                ],
+              ),
             ],
           ),
           verticalSpace(10),
           Text(
             role.description,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
             style: AppTextStyles.font12DarkGreyRegular.copyWith(
               color: AppColors.tertiaryColor6,
               height: 1.45,
             ),
           ),
           verticalSpace(12),
-          Row(
+          Wrap(
+            spacing: 8.w,
+            runSpacing: 8.h,
             children: [
-              _RoleActionButton(
-                tooltip: 'Edit role',
-                icon: Icons.edit_outlined,
-                onPressed: onEdit,
+              _RoleChip(
+                label: role.roleCategory,
+                color: AppColors.tertiaryColor7,
               ),
-              horizontalSpace(8),
-              _RoleActionButton(
-                tooltip: 'Assign user',
-                icon: Icons.person_add_alt_1_outlined,
-                onPressed: onAssignUser,
-              ),
-              horizontalSpace(8),
-              _RoleActionButton(
-                tooltip: 'Remove user',
-                icon: Icons.person_remove_outlined,
-                onPressed: onRemoveUser,
-              ),
-              horizontalSpace(8),
-              _RoleActionButton(
-                tooltip: 'Delete role',
-                icon: Icons.delete_outline,
-                onPressed: onDelete,
-                isDestructive: true,
+              _RoleChip(
+                label: role.isCustomRole ? 'editable' : 'protected',
+                color: role.isCustomRole
+                    ? AppColors.secondaryColor7
+                    : AppColors.tertiaryColor6,
               ),
             ],
           ),
@@ -144,34 +172,4 @@ class _RoleChip extends StatelessWidget {
   }
 }
 
-class _RoleActionButton extends StatelessWidget {
-  final String tooltip;
-  final IconData icon;
-  final VoidCallback? onPressed;
-  final bool isDestructive;
-
-  const _RoleActionButton({
-    required this.tooltip,
-    required this.icon,
-    required this.onPressed,
-    this.isDestructive = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final color = isDestructive ? AppColors.redWarring : AppColors.primaryColor9;
-
-    return Expanded(
-      child: IconButton.outlined(
-        tooltip: tooltip,
-        onPressed: onPressed,
-        icon: Icon(icon),
-        style: IconButton.styleFrom(
-          foregroundColor: onPressed == null ? AppColors.tertiaryColor5 : color,
-          side: BorderSide(color: AppColors.tertiaryColor2),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
-        ),
-      ),
-    );
-  }
-}
+enum _RoleAction { edit, assign, remove, delete }

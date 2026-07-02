@@ -129,19 +129,17 @@ class _CreateEnrollmentSheetState extends State<CreateEnrollmentSheet> {
       return;
     }
 
-    context
-        .read<LiveSessionsAndEnrollmentManagementCubit>()
-        .createEnrollment(
-          widget.examId,
-          CreateEnrollmentRequestBody(
-            candidateUserId: _candidateUserIdController.text.trim(),
-            cohortId: _cohortIdController.text.trim(),
-            startWindowDate: _startWindowDateController.text.trim(),
-            endWindowDate: _endWindowDateController.text.trim(),
-            maxAttemptsAllowed: maxAttemptsAllowed,
-            enrollmentNotes: _enrollmentNotesController.text.trim(),
-          ),
-        );
+    context.read<LiveSessionsAndEnrollmentManagementCubit>().createEnrollment(
+      widget.examId,
+      CreateEnrollmentRequestBody(
+        candidateUserId: _candidateUserIdController.text.trim(),
+        cohortId: _cohortIdController.text.trim(),
+        startWindowDate: _startWindowDateController.text.trim(),
+        endWindowDate: _endWindowDateController.text.trim(),
+        maxAttemptsAllowed: maxAttemptsAllowed,
+        enrollmentNotes: _enrollmentNotesController.text.trim(),
+      ),
+    );
     Navigator.pop(context);
   }
 }

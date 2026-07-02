@@ -6,6 +6,7 @@ import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../../../core/public_widgets/button_widget.dart';
+import '../../../../../core/public_widgets/custom_dropdown.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
 import '../../../../../core/public_widgets/text_field_widget.dart';
 import '../../../users_management/presentation/widgets/users_management_sheet_scaffold.dart';
@@ -35,7 +36,7 @@ class _SecurityPolicySheetState extends State<SecurityPolicySheet> {
   late bool _enforceTls13Minimum;
   late bool _disableWeakCiphers;
 
-  late final TextEditingController _mfaMethodController;
+  String? _mfaMethod;
   late final TextEditingController _passwordMinLengthController;
   late final TextEditingController _passwordExpiryDaysController;
   late final TextEditingController _passwordHistoryCountController;
@@ -59,7 +60,7 @@ class _SecurityPolicySheetState extends State<SecurityPolicySheet> {
     _enforceTls13Minimum = policy.enforceTls13Minimum;
     _disableWeakCiphers = policy.disableWeakCiphers;
 
-    _mfaMethodController = TextEditingController(text: policy.mfaMethod ?? '');
+    _mfaMethod = policy.mfaMethod;
     _passwordMinLengthController = TextEditingController(
       text: policy.passwordMinLength.toString(),
     );
@@ -82,7 +83,6 @@ class _SecurityPolicySheetState extends State<SecurityPolicySheet> {
 
   @override
   void dispose() {
-    _mfaMethodController.dispose();
     _passwordMinLengthController.dispose();
     _passwordExpiryDaysController.dispose();
     _passwordHistoryCountController.dispose();
@@ -106,11 +106,13 @@ class _SecurityPolicySheetState extends State<SecurityPolicySheet> {
               value: _mfaEnabled,
               onChanged: (value) => setState(() => _mfaEnabled = value),
             ),
-            TextFieldWidget(
-              controller: _mfaMethodController,
-              hintText: 'b',
-              labelText: 'MFA method',
-              obscureText: false,
+            CustomDropdown(
+              items: _dropdownItems(_mfaMethod, _mfaMethodOptions),
+              value: _mfaMethod,
+              hintText: 'MFA method',
+              onChanged: _mfaEnabled
+                  ? (value) => setState(() => _mfaMethod = value)
+                  : (_) {},
             ),
             verticalSpace(12),
             TextFieldWidget(
@@ -188,9 +190,8 @@ class _SecurityPolicySheetState extends State<SecurityPolicySheet> {
             _PolicySwitch(
               title: 'Force reauth on privilege change',
               value: _sessionForceReauthOnPrivilegeChange,
-              onChanged: (value) => setState(
-                () => _sessionForceReauthOnPrivilegeChange = value,
-              ),
+              onChanged: (value) =>
+                  setState(() => _sessionForceReauthOnPrivilegeChange = value),
             ),
             _PolicySwitch(
               title: 'IP whitelisting',
@@ -213,8 +214,7 @@ class _SecurityPolicySheetState extends State<SecurityPolicySheet> {
             _PolicySwitch(
               title: 'Disable weak ciphers',
               value: _disableWeakCiphers,
-              onChanged: (value) =>
-                  setState(() => _disableWeakCiphers = value),
+              onChanged: (value) => setState(() => _disableWeakCiphers = value),
             ),
             verticalSpace(20),
             ButtonWidget(
@@ -266,9 +266,7 @@ class _SecurityPolicySheetState extends State<SecurityPolicySheet> {
     context.read<RolesAndSecurityCubit>().updateSecurityPolicy(
       UpdateSecurityPolicyRequestBody(
         mfaEnabled: _mfaEnabled,
-        mfaMethod: _mfaMethodController.text.trim().isEmpty
-            ? null
-            : _mfaMethodController.text.trim(),
+        mfaMethod: _mfaEnabled ? _mfaMethod : null,
         passwordMinLength: passwordMinLength,
         passwordRequireUppercase: _passwordRequireUppercase,
         passwordRequireLowercase: _passwordRequireLowercase,
@@ -296,6 +294,18 @@ class _SecurityPolicySheetState extends State<SecurityPolicySheet> {
     if (trimmed.isEmpty) return null;
     return int.tryParse(trimmed);
   }
+}
+
+const List<String> _mfaMethodOptions = [
+  'email',
+  'sms',
+  'totp',
+  'authenticator',
+];
+
+List<String> _dropdownItems(String? value, List<String> options) {
+  if (value == null || value.isEmpty || options.contains(value)) return options;
+  return [value, ...options];
 }
 
 class _PolicySwitch extends StatelessWidget {

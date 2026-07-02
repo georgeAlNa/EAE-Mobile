@@ -56,7 +56,7 @@ class CustomDropdown extends StatelessWidget {
                 value: type,
                 child: Text(
                   type,
-                  style: TextStyle(color: AppColors.tertiaryColor5),
+                  style: TextStyle(color: AppColors.primaryColor10),
                 ),
               ),
             )

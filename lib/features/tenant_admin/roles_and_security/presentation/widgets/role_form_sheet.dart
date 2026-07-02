@@ -6,6 +6,7 @@ import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../../../core/public_widgets/button_widget.dart';
+import '../../../../../core/public_widgets/custom_dropdown.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
 import '../../../../../core/public_widgets/text_field_widget.dart';
 import '../../../users_management/presentation/widgets/users_management_sheet_scaffold.dart';
@@ -36,7 +37,7 @@ class _RoleFormSheetState extends State<RoleFormSheet> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _roleNameController;
   late final TextEditingController _descriptionController;
-  late final TextEditingController _roleCategoryController;
+  String? _roleCategory;
   bool _isCustom = false;
 
   @override
@@ -48,16 +49,13 @@ class _RoleFormSheetState extends State<RoleFormSheet> {
     _descriptionController = TextEditingController(
       text: widget.initialDescription ?? '',
     );
-    _roleCategoryController = TextEditingController(
-      text: widget.initialRoleCategory ?? '',
-    );
+    _roleCategory = widget.initialRoleCategory ?? 'supervisory';
   }
 
   @override
   void dispose() {
     _roleNameController.dispose();
     _descriptionController.dispose();
-    _roleCategoryController.dispose();
     super.dispose();
   }
 
@@ -87,11 +85,13 @@ class _RoleFormSheetState extends State<RoleFormSheet> {
               maxLines: 3,
             ),
             verticalSpace(12),
-            TextFieldWidget(
-              controller: _roleCategoryController,
-              hintText: 'supervisory',
-              labelText: 'Role category',
-              obscureText: false,
+            CustomDropdown(
+              items: _dropdownItems(_roleCategory, _roleCategoryOptions),
+              value: _roleCategory,
+              hintText: 'Role category',
+              onChanged: (value) => setState(() => _roleCategory = value),
+              validator: (value) =>
+                  value == null || value.isEmpty ? 'Required' : null,
             ),
             if (!widget.isEditing) ...[
               verticalSpace(12),
@@ -133,7 +133,7 @@ class _RoleFormSheetState extends State<RoleFormSheet> {
 
     if (_roleNameController.text.trim().isEmpty ||
         _descriptionController.text.trim().isEmpty ||
-        _roleCategoryController.text.trim().isEmpty) {
+        (_roleCategory ?? '').isEmpty) {
       showAppSnackBar(context, 'Please fill all required fields');
       return;
     }
@@ -146,7 +146,7 @@ class _RoleFormSheetState extends State<RoleFormSheet> {
         UpdateRoleRequestBody(
           roleName: _roleNameController.text.trim(),
           description: _descriptionController.text.trim(),
-          roleCategory: _roleCategoryController.text.trim(),
+          roleCategory: _roleCategory!,
         ),
       );
     } else {
@@ -154,7 +154,7 @@ class _RoleFormSheetState extends State<RoleFormSheet> {
         CreateRoleRequestBody(
           roleName: _roleNameController.text.trim(),
           description: _descriptionController.text.trim(),
-          roleCategory: _roleCategoryController.text.trim(),
+          roleCategory: _roleCategory!,
           isCustom: _isCustom,
         ),
       );
@@ -162,4 +162,17 @@ class _RoleFormSheetState extends State<RoleFormSheet> {
 
     Navigator.pop(context);
   }
+}
+
+const List<String> _roleCategoryOptions = [
+  'administrative',
+  'supervisory',
+  'evaluation',
+  'security',
+  'operations',
+];
+
+List<String> _dropdownItems(String? value, List<String> options) {
+  if (value == null || value.isEmpty || options.contains(value)) return options;
+  return [value, ...options];
 }

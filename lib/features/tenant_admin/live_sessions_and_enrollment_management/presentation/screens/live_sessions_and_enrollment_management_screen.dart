@@ -3,10 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../core/constants/colors.dart';
-import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../../../core/public_widgets/loading_widget.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
+import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
+import '../../data/models/live_sessions_and_enrollment_management_response.dart';
 import '../../logic/live_sessions_and_enrollment_management_cubit.dart';
 import '../widgets/create_enrollment_sheet.dart';
 import '../widgets/enrollments_list_section.dart';
@@ -23,11 +24,24 @@ class LiveSessionsAndEnrollmentManagementScreen extends StatefulWidget {
 class _LiveSessionsAndEnrollmentManagementScreenState
     extends State<LiveSessionsAndEnrollmentManagementScreen> {
   final _examIdController = TextEditingController();
+  final _searchController = TextEditingController();
   String? _currentExamId;
+  String _query = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(() {
+      setState(() {
+        _query = _searchController.text.trim().toLowerCase();
+      });
+    });
+  }
 
   @override
   void dispose() {
     _examIdController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -68,6 +82,9 @@ class _LiveSessionsAndEnrollmentManagementScreenState
                   loading: () => true,
                   orElse: () => false,
                 );
+                final visibleEnrollments = enrollments == null
+                    ? null
+                    : _filterEnrollments(enrollments);
 
                 return Stack(
                   children: [
@@ -87,6 +104,8 @@ class _LiveSessionsAndEnrollmentManagementScreenState
                         children: [
                           LiveSessionsEnrollmentHeader(
                             examIdController: _examIdController,
+                            searchController: _searchController,
+                            enrollmentsCount: enrollments?.length,
                             onLoadEnrollments: () =>
                                 _loadEnrollments(screenContext),
                             onCreateEnrollment:
@@ -100,15 +119,25 @@ class _LiveSessionsAndEnrollmentManagementScreenState
                           ),
                           verticalSpace(18),
                           if (enrollments == null)
-                            _EmptyEnrollmentState(hasExamId: _currentExamId != null)
+                            TenantAdminEmptyState(
+                              icon: Icons.search_outlined,
+                              title: _currentExamId == null
+                                  ? 'Load an exam first'
+                                  : 'No enrollments loaded',
+                              message: _currentExamId == null
+                                  ? 'Enter an exam ID to load enrollments.'
+                                  : 'No enrollment records were returned for this exam.',
+                            )
                           else
                             EnrollmentsListSection(
-                              enrollments: enrollments,
-                              onDelete: (enrollment) => _confirmDeleteEnrollment(
-                                context: screenContext,
-                                examId: enrollment.examId,
-                                enrollmentId: enrollment.id,
-                              ),
+                              enrollments: visibleEnrollments!,
+                              query: _query,
+                              onDelete: (enrollment) =>
+                                  _confirmDeleteEnrollment(
+                                    context: screenContext,
+                                    examId: enrollment.examId,
+                                    enrollmentId: enrollment.id,
+                                  ),
                             ),
                         ],
                       ),
@@ -137,10 +166,22 @@ class _LiveSessionsAndEnrollmentManagementScreenState
 
     setState(() {
       _currentExamId = examId;
+      _query = '';
+      _searchController.clear();
     });
-    context
-        .read<LiveSessionsAndEnrollmentManagementCubit>()
-        .getEnrollments(examId);
+    context.read<LiveSessionsAndEnrollmentManagementCubit>().getEnrollments(
+      examId,
+    );
+  }
+
+  List<EnrollmentItem> _filterEnrollments(List<EnrollmentItem> enrollments) {
+    if (_query.isEmpty) return enrollments;
+
+    return enrollments.where((enrollment) {
+      return enrollment.candidateUserId.toLowerCase().contains(_query) ||
+          enrollment.cohortId.toLowerCase().contains(_query) ||
+          enrollment.enrollmentStatus.toLowerCase().contains(_query);
+    }).toList();
   }
 
   Future<void> _showCreateEnrollmentSheet(
@@ -184,31 +225,10 @@ class _LiveSessionsAndEnrollmentManagementScreenState
     );
 
     if ((confirmed ?? false) && context.mounted) {
-      context
-          .read<LiveSessionsAndEnrollmentManagementCubit>()
-          .deleteEnrollment(examId, enrollmentId);
+      context.read<LiveSessionsAndEnrollmentManagementCubit>().deleteEnrollment(
+        examId,
+        enrollmentId,
+      );
     }
-  }
-}
-
-class _EmptyEnrollmentState extends StatelessWidget {
-  final bool hasExamId;
-
-  const _EmptyEnrollmentState({required this.hasExamId});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: 40.h),
-      child: Text(
-        hasExamId
-            ? 'No enrollments loaded'
-            : 'Enter an exam ID to load enrollments.',
-        textAlign: TextAlign.center,
-        style: AppTextStyles.font14DarkGreyRegular.copyWith(
-          color: AppColors.tertiaryColor6,
-        ),
-      ),
-    );
   }
 }

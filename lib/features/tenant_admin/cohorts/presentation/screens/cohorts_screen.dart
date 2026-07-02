@@ -3,10 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../core/constants/colors.dart';
-import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../../../core/public_widgets/loading_widget.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
+import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
+import '../../data/models/cohorts_response.dart';
 import '../../logic/cohorts_cubit.dart';
 import '../widgets/cohort_details_sheet.dart';
 import '../widgets/cohort_form_sheet.dart';
@@ -22,6 +23,25 @@ class CohortsScreen extends StatefulWidget {
 }
 
 class _CohortsScreenState extends State<CohortsScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  String _query = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(() {
+      setState(() {
+        _query = _searchController.text.trim().toLowerCase();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,10 +81,14 @@ class _CohortsScreenState extends State<CohortsScreen> {
             }
 
             if (cohorts == null) {
-              return _CohortsErrorView(
+              return TenantAdminErrorView(
+                title: 'Unable to load cohorts',
+                message: 'Check the connection and try again.',
                 onRetry: screenContext.read<CohortsCubit>().getCohorts,
               );
             }
+
+            final visibleCohorts = _filterCohorts(cohorts);
 
             return Stack(
               children: [
@@ -77,13 +101,18 @@ class _CohortsScreenState extends State<CohortsScreen> {
                     ),
                     children: [
                       CohortsHeader(
-                        onCreateCohort: () => _showCreateCohortSheet(
-                          screenContext,
-                        ),
+                        totalCohorts: cohorts.length,
+                        activeCohorts: cohorts
+                            .where((cohort) => cohort.isActive)
+                            .length,
+                        searchController: _searchController,
+                        onCreateCohort: () =>
+                            _showCreateCohortSheet(screenContext),
                       ),
                       verticalSpace(18),
                       CohortsListSection(
-                        cohorts: cohorts,
+                        cohorts: visibleCohorts,
+                        query: _query,
                         onDetails: (cohort) => _showCohortDetailsSheet(
                           context: screenContext,
                           cohortId: cohort.id,
@@ -126,6 +155,17 @@ class _CohortsScreenState extends State<CohortsScreen> {
     );
   }
 
+  List<CohortItem> _filterCohorts(List<CohortItem> cohorts) {
+    if (_query.isEmpty) return cohorts;
+
+    return cohorts.where((cohort) {
+      return cohort.cohortName.toLowerCase().contains(_query) ||
+          cohort.cohortCode.toLowerCase().contains(_query) ||
+          cohort.cohortType.toLowerCase().contains(_query) ||
+          cohort.cohortDescription.toLowerCase().contains(_query);
+    }).toList();
+  }
+
   Future<void> _showCreateCohortSheet(BuildContext context) async {
     final cubit = context.read<CohortsCubit>();
 
@@ -133,10 +173,8 @@ class _CohortsScreenState extends State<CohortsScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: AppColors.neutralColor,
-      builder: (_) => BlocProvider.value(
-        value: cubit,
-        child: const CohortFormSheet(),
-      ),
+      builder: (_) =>
+          BlocProvider.value(value: cubit, child: const CohortFormSheet()),
     );
   }
 
@@ -234,42 +272,5 @@ class _CohortsScreenState extends State<CohortsScreen> {
     if ((confirmed ?? false) && context.mounted) {
       context.read<CohortsCubit>().deleteCohort(cohortId);
     }
-  }
-}
-
-class _CohortsErrorView extends StatelessWidget {
-  final VoidCallback onRetry;
-
-  const _CohortsErrorView({required this.onRetry});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.all(24.r),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Unable to load cohorts',
-              textAlign: TextAlign.center,
-              style: AppTextStyles.font14DarkGreyRegular.copyWith(
-                color: AppColors.tertiaryColor7,
-              ),
-            ),
-            verticalSpace(16),
-            TextButton(
-              onPressed: onRetry,
-              child: Text(
-                'Retry',
-                style: AppTextStyles.font14DarkGreySemiBold.copyWith(
-                  color: AppColors.secondaryColor7,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

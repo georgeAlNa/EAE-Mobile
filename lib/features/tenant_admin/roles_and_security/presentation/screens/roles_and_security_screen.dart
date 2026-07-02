@@ -3,10 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../core/constants/colors.dart';
-import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../../../core/public_widgets/loading_widget.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
+import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
 import '../../logic/roles_and_security_cubit.dart';
 import '../../data/models/roles_and_security_response.dart';
 import '../widgets/role_form_sheet.dart';
@@ -25,6 +25,24 @@ class RolesAndSecurityScreen extends StatefulWidget {
 
 class _RolesAndSecurityScreenState extends State<RolesAndSecurityScreen> {
   int _sectionIndex = 0;
+  final TextEditingController _searchController = TextEditingController();
+  String _query = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(() {
+      setState(() {
+        _query = _searchController.text.trim().toLowerCase();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,12 +86,17 @@ class _RolesAndSecurityScreenState extends State<RolesAndSecurityScreen> {
             }
 
             if (loaded == null) {
-              return _RolesAndSecurityErrorView(
+              return TenantAdminErrorView(
+                title: 'Unable to load roles and security',
+                message: 'Check the connection and try again.',
                 onRetry: screenContext
                     .read<RolesAndSecurityCubit>()
                     .getRolesAndSecurity,
               );
             }
+
+            final roles = loaded.rolesResponse.data;
+            final visibleRoles = _filterRoles(roles);
 
             return Stack(
               children: [
@@ -89,6 +112,11 @@ class _RolesAndSecurityScreenState extends State<RolesAndSecurityScreen> {
                     children: [
                       RolesSecurityHeader(
                         selectedIndex: _sectionIndex,
+                        totalRoles: roles.length,
+                        customRoles: roles
+                            .where((role) => role.isCustomRole)
+                            .length,
+                        searchController: _searchController,
                         onSectionChanged: (index) {
                           setState(() {
                             _sectionIndex = index;
@@ -104,6 +132,8 @@ class _RolesAndSecurityScreenState extends State<RolesAndSecurityScreen> {
                       if (_sectionIndex == 0)
                         RolesListSection(
                           rolesResponse: loaded.rolesResponse,
+                          roles: visibleRoles,
+                          query: _query,
                           onEditRole: (role) => _showUpdateRoleSheet(
                             context: screenContext,
                             roleId: role.roleId,
@@ -153,6 +183,16 @@ class _RolesAndSecurityScreenState extends State<RolesAndSecurityScreen> {
         ),
       ),
     );
+  }
+
+  List<RoleItem> _filterRoles(List<RoleItem> roles) {
+    if (_query.isEmpty) return roles;
+
+    return roles.where((role) {
+      return role.roleName.toLowerCase().contains(_query) ||
+          role.roleCategory.toLowerCase().contains(_query) ||
+          role.description.toLowerCase().contains(_query);
+    }).toList();
   }
 
   Future<void> _showCreateRoleSheet(BuildContext context) async {
@@ -258,42 +298,5 @@ class _RolesAndSecurityScreenState extends State<RolesAndSecurityScreen> {
     if ((confirmed ?? false) && context.mounted) {
       context.read<RolesAndSecurityCubit>().deleteRole(roleId);
     }
-  }
-}
-
-class _RolesAndSecurityErrorView extends StatelessWidget {
-  final VoidCallback onRetry;
-
-  const _RolesAndSecurityErrorView({required this.onRetry});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.all(24.r),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Unable to load roles and security',
-              textAlign: TextAlign.center,
-              style: AppTextStyles.font14DarkGreyRegular.copyWith(
-                color: AppColors.tertiaryColor7,
-              ),
-            ),
-            verticalSpace(16),
-            TextButton(
-              onPressed: onRetry,
-              child: Text(
-                'Retry',
-                style: AppTextStyles.font14DarkGreySemiBold.copyWith(
-                  color: AppColors.secondaryColor7,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

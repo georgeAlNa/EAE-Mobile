@@ -30,13 +30,16 @@ class UserManagementCard extends StatelessWidget {
         border: Border.all(color: AppColors.tertiaryColor2),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               CircleAvatar(
                 backgroundColor: AppColors.secondaryColor2,
                 child: Text(
-                  user.firstName.isEmpty ? '?' : user.firstName[0].toUpperCase(),
+                  user.firstName.isEmpty
+                      ? '?'
+                      : user.firstName[0].toUpperCase(),
                   style: AppTextStyles.font14DarkGreySemiBold.copyWith(
                     color: AppColors.secondaryColor7,
                   ),
@@ -49,6 +52,8 @@ class UserManagementCard extends StatelessWidget {
                   children: [
                     Text(
                       '${user.firstName} ${user.lastName}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: AppTextStyles.font14DarkGreySemiBold.copyWith(
                         color: AppColors.primaryColor9,
                       ),
@@ -56,44 +61,55 @@ class UserManagementCard extends StatelessWidget {
                     verticalSpace(4),
                     Text(
                       user.email,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: AppTextStyles.font12DarkGreyRegular.copyWith(
                         color: AppColors.tertiaryColor6,
-                      ),
-                    ),
-                    verticalSpace(4),
-                    Text(
-                      user.userType,
-                      style: AppTextStyles.font12DarkGreySemiBold.copyWith(
-                        color: AppColors.tertiaryColor7,
                       ),
                     ),
                   ],
                 ),
               ),
               _StatusChip(status: user.status, isActive: user.isActive),
+              PopupMenuButton<_UserAction>(
+                tooltip: 'User actions',
+                onSelected: (action) {
+                  switch (action) {
+                    case _UserAction.details:
+                      onDetails();
+                    case _UserAction.resetPassword:
+                      onResetPassword();
+                    case _UserAction.deactivate:
+                      onDeactivate?.call();
+                  }
+                },
+                itemBuilder: (_) => [
+                  const PopupMenuItem(
+                    value: _UserAction.details,
+                    child: Text('Details'),
+                  ),
+                  const PopupMenuItem(
+                    value: _UserAction.resetPassword,
+                    child: Text('Reset password'),
+                  ),
+                  PopupMenuItem(
+                    value: _UserAction.deactivate,
+                    enabled: onDeactivate != null,
+                    child: const Text('Deactivate'),
+                  ),
+                ],
+              ),
             ],
           ),
           verticalSpace(12),
-          Row(
+          Wrap(
+            spacing: 8.w,
+            runSpacing: 8.h,
             children: [
-              _CardActionButton(
-                tooltip: 'User details',
-                icon: Icons.visibility_outlined,
-                onPressed: onDetails,
-              ),
-              horizontalSpace(8),
-              _CardActionButton(
-                tooltip: 'Reset password',
-                icon: Icons.lock_reset_outlined,
-                onPressed: onResetPassword,
-              ),
-              horizontalSpace(8),
-              _CardActionButton(
-                tooltip: 'Deactivate user',
-                icon: Icons.block_outlined,
-                onPressed: onDeactivate,
-                isDestructive: true,
+              _InfoChip(label: user.userType, icon: Icons.badge_outlined),
+              _InfoChip(
+                label: user.lastLoginAt == null ? 'No login yet' : 'Has login',
+                icon: Icons.login_outlined,
               ),
             ],
           ),
@@ -111,7 +127,9 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isActive ? AppColors.secondaryColor7 : AppColors.tertiaryColor6;
+    final color = isActive
+        ? AppColors.secondaryColor7
+        : AppColors.tertiaryColor6;
 
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
@@ -127,34 +145,36 @@ class _StatusChip extends StatelessWidget {
   }
 }
 
-class _CardActionButton extends StatelessWidget {
-  final String tooltip;
+class _InfoChip extends StatelessWidget {
+  final String label;
   final IconData icon;
-  final VoidCallback? onPressed;
-  final bool isDestructive;
 
-  const _CardActionButton({
-    required this.tooltip,
-    required this.icon,
-    required this.onPressed,
-    this.isDestructive = false,
-  });
+  const _InfoChip({required this.label, required this.icon});
 
   @override
   Widget build(BuildContext context) {
-    final color = isDestructive ? AppColors.redWarring : AppColors.primaryColor9;
-
-    return Expanded(
-      child: IconButton.outlined(
-        tooltip: tooltip,
-        onPressed: onPressed,
-        icon: Icon(icon),
-        style: IconButton.styleFrom(
-          foregroundColor: onPressed == null ? AppColors.tertiaryColor5 : color,
-          side: BorderSide(color: AppColors.tertiaryColor2),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
-        ),
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+      decoration: BoxDecoration(
+        color: AppColors.secondaryColor2,
+        borderRadius: BorderRadius.circular(8.r),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: AppColors.secondaryColor7, size: 14.sp),
+          horizontalSpace(4),
+          Text(
+            label,
+            style: AppTextStyles.font10DarkGreyRegular.copyWith(
+              color: AppColors.primaryColor9,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
       ),
     );
   }
 }
+
+enum _UserAction { details, resetPassword, deactivate }

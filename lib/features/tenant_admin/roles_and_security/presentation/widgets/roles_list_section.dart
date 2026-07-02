@@ -4,11 +4,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
+import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
 import '../../data/models/roles_and_security_response.dart';
 import 'role_card.dart';
 
 class RolesListSection extends StatelessWidget {
   final RolesResponse rolesResponse;
+  final List<RoleItem> roles;
+  final String query;
   final ValueChanged<RoleItem> onEditRole;
   final ValueChanged<RoleItem> onDeleteRole;
   final ValueChanged<RoleItem> onAssignUser;
@@ -17,6 +20,8 @@ class RolesListSection extends StatelessWidget {
   const RolesListSection({
     super.key,
     required this.rolesResponse,
+    required this.roles,
+    required this.query,
     required this.onEditRole,
     required this.onDeleteRole,
     required this.onAssignUser,
@@ -25,12 +30,13 @@ class RolesListSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (rolesResponse.data.isEmpty) {
-      return Text(
-        'No roles available',
-        style: AppTextStyles.font14DarkGreyRegular.copyWith(
-          color: AppColors.tertiaryColor6,
-        ),
+    if (roles.isEmpty) {
+      return TenantAdminEmptyState(
+        icon: Icons.badge_outlined,
+        title: query.isEmpty ? 'No roles yet' : 'No matching roles',
+        message: query.isEmpty
+            ? 'Create custom roles to manage tenant access.'
+            : 'Try another role name, category, or description.',
       );
     }
 
@@ -38,13 +44,13 @@ class RolesListSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '${rolesResponse.meta.total} roles',
+          '${roles.length} of ${rolesResponse.meta.total} roles',
           style: AppTextStyles.font12DarkGreySemiBold.copyWith(
             color: AppColors.tertiaryColor6,
           ),
         ),
         verticalSpace(12),
-        ...rolesResponse.data.map(
+        ...roles.map(
           (role) => Padding(
             padding: EdgeInsets.only(bottom: 12.h),
             child: RoleCard(

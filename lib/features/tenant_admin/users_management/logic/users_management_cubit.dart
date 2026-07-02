@@ -25,9 +25,7 @@ class UsersManagementCubit extends Cubit<UsersManagementState> {
       emit(UsersManagementState.usersLoaded(response));
     } on NetworkExceptions catch (e) {
       emit(
-        UsersManagementState.error(
-          error: NetworkExceptions.getErrorMessage(e),
-        ),
+        UsersManagementState.error(error: NetworkExceptions.getErrorMessage(e)),
       );
     } catch (e) {
       emit(const UsersManagementState.error(error: 'Failed to load users'));
@@ -42,9 +40,7 @@ class UsersManagementCubit extends Cubit<UsersManagementState> {
       emit(UsersManagementState.userLoaded(response));
     } on NetworkExceptions catch (e) {
       emit(
-        UsersManagementState.error(
-          error: NetworkExceptions.getErrorMessage(e),
-        ),
+        UsersManagementState.error(error: NetworkExceptions.getErrorMessage(e)),
       );
     } catch (e) {
       emit(
@@ -61,9 +57,7 @@ class UsersManagementCubit extends Cubit<UsersManagementState> {
       emit(UsersManagementState.createSuccess(response));
     } on NetworkExceptions catch (e) {
       emit(
-        UsersManagementState.error(
-          error: NetworkExceptions.getErrorMessage(e),
-        ),
+        UsersManagementState.error(error: NetworkExceptions.getErrorMessage(e)),
       );
     } catch (e) {
       emit(const UsersManagementState.error(error: 'Failed to create user'));
@@ -78,9 +72,7 @@ class UsersManagementCubit extends Cubit<UsersManagementState> {
       emit(UsersManagementState.inviteSuccess(response));
     } on NetworkExceptions catch (e) {
       emit(
-        UsersManagementState.error(
-          error: NetworkExceptions.getErrorMessage(e),
-        ),
+        UsersManagementState.error(error: NetworkExceptions.getErrorMessage(e)),
       );
     } catch (e) {
       emit(const UsersManagementState.error(error: 'Failed to invite user'));
@@ -95,9 +87,7 @@ class UsersManagementCubit extends Cubit<UsersManagementState> {
       emit(UsersManagementState.actionSuccess(response));
     } on NetworkExceptions catch (e) {
       emit(
-        UsersManagementState.error(
-          error: NetworkExceptions.getErrorMessage(e),
-        ),
+        UsersManagementState.error(error: NetworkExceptions.getErrorMessage(e)),
       );
     } catch (e) {
       emit(
@@ -120,9 +110,7 @@ class UsersManagementCubit extends Cubit<UsersManagementState> {
       emit(UsersManagementState.actionSuccess(response));
     } on NetworkExceptions catch (e) {
       emit(
-        UsersManagementState.error(
-          error: NetworkExceptions.getErrorMessage(e),
-        ),
+        UsersManagementState.error(error: NetworkExceptions.getErrorMessage(e)),
       );
     } catch (e) {
       emit(

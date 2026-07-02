@@ -3,10 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../core/constants/colors.dart';
-import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../../../core/public_widgets/loading_widget.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
+import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
+import '../../data/models/users_management_response.dart';
 import '../../logic/users_management_cubit.dart';
 import '../widgets/create_user_sheet.dart';
 import '../widgets/invite_user_sheet.dart';
@@ -23,6 +24,25 @@ class UsersManagementScreen extends StatefulWidget {
 }
 
 class _UsersManagementScreenState extends State<UsersManagementScreen> {
+  final TextEditingController _searchController = TextEditingController();
+  String _query = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(() {
+      setState(() {
+        _query = _searchController.text.trim().toLowerCase();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,25 +82,38 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
             }
 
             if (users == null) {
-              return _UsersManagementErrorView(
+              return TenantAdminErrorView(
+                title: 'Unable to load users',
+                message: 'Check the connection and try again.',
                 onRetry: screenContext.read<UsersManagementCubit>().getUsers,
               );
             }
 
+            final visibleUsers = _filterUsers(users);
+
             return Stack(
               children: [
                 RefreshIndicator(
-                  onRefresh: screenContext.read<UsersManagementCubit>().getUsers,
+                  onRefresh: screenContext
+                      .read<UsersManagementCubit>()
+                      .getUsers,
                   child: ListView.separated(
                     padding: EdgeInsets.symmetric(
                       horizontal: 24.w,
                       vertical: 18.h,
                     ),
-                    itemCount: users.length + 1,
+                    itemCount: visibleUsers.isEmpty
+                        ? 2
+                        : visibleUsers.length + 1,
                     separatorBuilder: (_, _) => verticalSpace(12),
                     itemBuilder: (_, index) {
                       if (index == 0) {
                         return UsersManagementHeader(
+                          totalUsers: users.length,
+                          activeUsers: users
+                              .where((user) => user.isActive)
+                              .length,
+                          searchController: _searchController,
                           onCreateUser: () =>
                               _showCreateUserSheet(screenContext),
                           onInviteUser: () =>
@@ -88,7 +121,19 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
                         );
                       }
 
-                      final user = users[index - 1];
+                      if (visibleUsers.isEmpty) {
+                        return TenantAdminEmptyState(
+                          icon: Icons.manage_accounts_outlined,
+                          title: _query.isEmpty
+                              ? 'No users yet'
+                              : 'No matching users',
+                          message: _query.isEmpty
+                              ? 'Create or invite users to manage tenant access.'
+                              : 'Try another name, email, status, or user type.',
+                        );
+                      }
+
+                      final user = visibleUsers[index - 1];
                       return UserManagementCard(
                         user: user,
                         onDetails: () => _showUserDetailsSheet(
@@ -126,6 +171,18 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
     );
   }
 
+  List<UserManagementUser> _filterUsers(List<UserManagementUser> users) {
+    if (_query.isEmpty) return users;
+
+    return users.where((user) {
+      final fullName = '${user.firstName} ${user.lastName}'.toLowerCase();
+      return fullName.contains(_query) ||
+          user.email.toLowerCase().contains(_query) ||
+          user.userType.toLowerCase().contains(_query) ||
+          user.status.toLowerCase().contains(_query);
+    }).toList();
+  }
+
   Future<void> _showCreateUserSheet(BuildContext context) async {
     final cubit = context.read<UsersManagementCubit>();
 
@@ -133,10 +190,8 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: AppColors.neutralColor,
-      builder: (_) => BlocProvider.value(
-        value: cubit,
-        child: const CreateUserSheet(),
-      ),
+      builder: (_) =>
+          BlocProvider.value(value: cubit, child: const CreateUserSheet()),
     );
   }
 
@@ -147,10 +202,8 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: AppColors.neutralColor,
-      builder: (_) => BlocProvider.value(
-        value: cubit,
-        child: const InviteUserSheet(),
-      ),
+      builder: (_) =>
+          BlocProvider.value(value: cubit, child: const InviteUserSheet()),
     );
   }
 
@@ -220,42 +273,5 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
       final cubit = context.read<UsersManagementCubit>();
       cubit.deactivateUser(userId);
     }
-  }
-}
-
-class _UsersManagementErrorView extends StatelessWidget {
-  final VoidCallback onRetry;
-
-  const _UsersManagementErrorView({required this.onRetry});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.all(24.r),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'Unable to load users',
-              textAlign: TextAlign.center,
-              style: AppTextStyles.font14DarkGreyRegular.copyWith(
-                color: AppColors.tertiaryColor7,
-              ),
-            ),
-            verticalSpace(16),
-            TextButton(
-              onPressed: onRetry,
-              child: Text(
-                'Retry',
-                style: AppTextStyles.font14DarkGreySemiBold.copyWith(
-                  color: AppColors.secondaryColor7,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }

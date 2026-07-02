@@ -5,15 +5,20 @@ import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../../../core/public_widgets/text_field_widget.dart';
+import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
 
 class LiveSessionsEnrollmentHeader extends StatelessWidget {
   final TextEditingController examIdController;
+  final TextEditingController searchController;
+  final int? enrollmentsCount;
   final VoidCallback onLoadEnrollments;
   final VoidCallback? onCreateEnrollment;
 
   const LiveSessionsEnrollmentHeader({
     super.key,
     required this.examIdController,
+    required this.searchController,
+    required this.enrollmentsCount,
     required this.onLoadEnrollments,
     required this.onCreateEnrollment,
   });
@@ -80,6 +85,19 @@ class LiveSessionsEnrollmentHeader extends StatelessWidget {
             ),
           ),
         ),
+        if (enrollmentsCount != null) ...[
+          verticalSpace(14),
+          TenantAdminMetricTile(
+            icon: Icons.fact_check_outlined,
+            value: enrollmentsCount.toString(),
+            label: 'Loaded enrollments',
+          ),
+          verticalSpace(14),
+          TenantAdminSearchField(
+            controller: searchController,
+            hintText: 'Search by candidate, cohort, or status',
+          ),
+        ],
       ],
     );
   }

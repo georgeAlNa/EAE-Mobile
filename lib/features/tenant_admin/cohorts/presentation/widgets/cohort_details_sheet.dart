@@ -63,7 +63,10 @@ class _CohortDetailsContent extends StatelessWidget {
         _DetailRow(label: 'Type', value: cohort.cohortType),
         _DetailRow(label: 'Description', value: cohort.cohortDescription),
         _DetailRow(label: 'Hierarchy level', value: '${cohort.hierarchyLevel}'),
-        _DetailRow(label: 'Parent cohort ID', value: cohort.parentCohortId ?? '-'),
+        _DetailRow(
+          label: 'Parent cohort ID',
+          value: cohort.parentCohortId ?? '-',
+        ),
         _DetailRow(label: 'Active', value: cohort.isActive ? 'Yes' : 'No'),
         _DetailRow(label: 'Created at', value: cohort.createdAt),
         _DetailRow(label: 'Updated at', value: cohort.updatedAt),

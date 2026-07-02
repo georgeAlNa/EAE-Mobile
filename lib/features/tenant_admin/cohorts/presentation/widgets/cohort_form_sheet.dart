@@ -6,6 +6,7 @@ import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../../../core/public_widgets/button_widget.dart';
+import '../../../../../core/public_widgets/custom_dropdown.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
 import '../../../../../core/public_widgets/text_field_widget.dart';
 import '../../../users_management/presentation/widgets/users_management_sheet_scaffold.dart';
@@ -40,17 +41,21 @@ class _CohortFormSheetState extends State<CohortFormSheet> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   late final TextEditingController _codeController;
-  late final TextEditingController _typeController;
   late final TextEditingController _descriptionController;
   late final TextEditingController _parentCohortIdController;
+  String? _cohortType;
   late bool _isActive;
 
   @override
   void initState() {
     super.initState();
-    _nameController = TextEditingController(text: widget.initialCohortName ?? '');
-    _codeController = TextEditingController(text: widget.initialCohortCode ?? '');
-    _typeController = TextEditingController(text: widget.initialCohortType ?? '');
+    _nameController = TextEditingController(
+      text: widget.initialCohortName ?? '',
+    );
+    _codeController = TextEditingController(
+      text: widget.initialCohortCode ?? '',
+    );
+    _cohortType = widget.initialCohortType ?? 'training';
     _descriptionController = TextEditingController(
       text: widget.initialCohortDescription ?? '',
     );
@@ -62,7 +67,6 @@ class _CohortFormSheetState extends State<CohortFormSheet> {
   void dispose() {
     _nameController.dispose();
     _codeController.dispose();
-    _typeController.dispose();
     _descriptionController.dispose();
     _parentCohortIdController.dispose();
     super.dispose();
@@ -93,11 +97,13 @@ class _CohortFormSheetState extends State<CohortFormSheet> {
               obscureText: false,
             ),
             verticalSpace(12),
-            TextFieldWidget(
-              controller: _typeController,
-              hintText: 'training',
-              labelText: 'Cohort type',
-              obscureText: false,
+            CustomDropdown(
+              items: _dropdownItems(_cohortType, _cohortTypeOptions),
+              value: _cohortType,
+              hintText: 'Cohort type',
+              onChanged: (value) => setState(() => _cohortType = value),
+              validator: (value) =>
+                  value == null || value.isEmpty ? 'Required' : null,
             ),
             verticalSpace(12),
             TextFieldWidget(
@@ -156,7 +162,7 @@ class _CohortFormSheetState extends State<CohortFormSheet> {
 
     if (_nameController.text.trim().isEmpty ||
         _codeController.text.trim().isEmpty ||
-        _typeController.text.trim().isEmpty ||
+        (_cohortType ?? '').isEmpty ||
         _descriptionController.text.trim().isEmpty) {
       showAppSnackBar(context, 'Please fill all required fields');
       return;
@@ -169,7 +175,7 @@ class _CohortFormSheetState extends State<CohortFormSheet> {
         UpdateCohortRequestBody(
           cohortName: _nameController.text.trim(),
           cohortCode: _codeController.text.trim(),
-          cohortType: _typeController.text.trim(),
+          cohortType: _cohortType!,
           cohortDescription: _descriptionController.text.trim(),
           isActive: _isActive,
         ),
@@ -180,7 +186,7 @@ class _CohortFormSheetState extends State<CohortFormSheet> {
         CreateCohortRequestBody(
           cohortName: _nameController.text.trim(),
           cohortCode: _codeController.text.trim(),
-          cohortType: _typeController.text.trim(),
+          cohortType: _cohortType!,
           cohortDescription: _descriptionController.text.trim(),
           parentCohortId: parentCohortId.isEmpty ? null : parentCohortId,
         ),
@@ -189,4 +195,17 @@ class _CohortFormSheetState extends State<CohortFormSheet> {
 
     Navigator.pop(context);
   }
+}
+
+const List<String> _cohortTypeOptions = [
+  'training',
+  'assessment',
+  'department',
+  'batch',
+  'program',
+];
+
+List<String> _dropdownItems(String? value, List<String> options) {
+  if (value == null || value.isEmpty || options.contains(value)) return options;
+  return [value, ...options];
 }

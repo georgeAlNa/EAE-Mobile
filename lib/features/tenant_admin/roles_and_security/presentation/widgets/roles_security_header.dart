@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
+import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
 
 class RolesSecurityHeader extends StatelessWidget {
   final int selectedIndex;
+  final int totalRoles;
+  final int customRoles;
+  final TextEditingController searchController;
   final ValueChanged<int> onSectionChanged;
   final VoidCallback onCreateRole;
   final VoidCallback onUpdatePolicy;
@@ -13,6 +17,9 @@ class RolesSecurityHeader extends StatelessWidget {
   const RolesSecurityHeader({
     super.key,
     required this.selectedIndex,
+    required this.totalRoles,
+    required this.customRoles,
+    required this.searchController,
     required this.onSectionChanged,
     required this.onCreateRole,
     required this.onUpdatePolicy,
@@ -81,6 +88,33 @@ class RolesSecurityHeader extends StatelessWidget {
             ),
           ),
         ),
+        if (selectedIndex == 0) ...[
+          verticalSpace(16),
+          Row(
+            children: [
+              Expanded(
+                child: TenantAdminMetricTile(
+                  icon: Icons.badge_outlined,
+                  value: totalRoles.toString(),
+                  label: 'Total roles',
+                ),
+              ),
+              horizontalSpace(10),
+              Expanded(
+                child: TenantAdminMetricTile(
+                  icon: Icons.tune_outlined,
+                  value: customRoles.toString(),
+                  label: 'Custom roles',
+                ),
+              ),
+            ],
+          ),
+          verticalSpace(14),
+          TenantAdminSearchField(
+            controller: searchController,
+            hintText: 'Search roles by name, category, or description',
+          ),
+        ],
       ],
     );
   }

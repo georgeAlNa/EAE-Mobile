@@ -3,13 +3,20 @@ import 'package:flutter/material.dart';
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
+import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
 
 class UsersManagementHeader extends StatelessWidget {
+  final int totalUsers;
+  final int activeUsers;
+  final TextEditingController searchController;
   final VoidCallback onCreateUser;
   final VoidCallback onInviteUser;
 
   const UsersManagementHeader({
     super.key,
+    required this.totalUsers,
+    required this.activeUsers,
+    required this.searchController,
     required this.onCreateUser,
     required this.onInviteUser,
   });
@@ -59,6 +66,31 @@ class UsersManagementHeader extends StatelessWidget {
             color: AppColors.tertiaryColor6,
             height: 1.5,
           ),
+        ),
+        verticalSpace(16),
+        Row(
+          children: [
+            Expanded(
+              child: TenantAdminMetricTile(
+                icon: Icons.people_outline,
+                value: totalUsers.toString(),
+                label: 'Total users',
+              ),
+            ),
+            horizontalSpace(10),
+            Expanded(
+              child: TenantAdminMetricTile(
+                icon: Icons.check_circle_outline,
+                value: activeUsers.toString(),
+                label: 'Active users',
+              ),
+            ),
+          ],
+        ),
+        verticalSpace(14),
+        TenantAdminSearchField(
+          controller: searchController,
+          hintText: 'Search users by name, email, or type',
         ),
       ],
     );

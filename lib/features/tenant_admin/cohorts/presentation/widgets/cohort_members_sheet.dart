@@ -6,6 +6,7 @@ import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../../../core/public_widgets/button_widget.dart';
+import '../../../../../core/public_widgets/custom_dropdown.dart';
 import '../../../../../core/public_widgets/loading_widget.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
 import '../../../../../core/public_widgets/text_field_widget.dart';
@@ -184,12 +185,11 @@ class AddCohortMemberSheet extends StatefulWidget {
 class _AddCohortMemberSheetState extends State<AddCohortMemberSheet> {
   final _formKey = GlobalKey<FormState>();
   final _userIdController = TextEditingController();
-  final _membershipRoleController = TextEditingController(text: 'member');
+  String? _membershipRole = 'member';
 
   @override
   void dispose() {
     _userIdController.dispose();
-    _membershipRoleController.dispose();
     super.dispose();
   }
 
@@ -209,11 +209,13 @@ class _AddCohortMemberSheetState extends State<AddCohortMemberSheet> {
               obscureText: false,
             ),
             verticalSpace(12),
-            TextFieldWidget(
-              controller: _membershipRoleController,
-              hintText: 'member',
-              labelText: 'Membership role',
-              obscureText: false,
+            CustomDropdown(
+              items: const ['member', 'leader', 'manager', 'observer'],
+              value: _membershipRole,
+              hintText: 'Membership role',
+              onChanged: (value) => setState(() => _membershipRole = value),
+              validator: (value) =>
+                  value == null || value.isEmpty ? 'Required' : null,
             ),
             verticalSpace(20),
             ButtonWidget(
@@ -236,7 +238,7 @@ class _AddCohortMemberSheetState extends State<AddCohortMemberSheet> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
     if (_userIdController.text.trim().isEmpty ||
-        _membershipRoleController.text.trim().isEmpty) {
+        (_membershipRole ?? '').isEmpty) {
       showAppSnackBar(context, 'Please fill all required fields');
       return;
     }
@@ -245,7 +247,7 @@ class _AddCohortMemberSheetState extends State<AddCohortMemberSheet> {
       widget.cohortId,
       AddCohortMemberRequestBody(
         userId: _userIdController.text.trim(),
-        membershipRole: _membershipRoleController.text.trim(),
+        membershipRole: _membershipRole!,
       ),
     );
     Navigator.pop(context);

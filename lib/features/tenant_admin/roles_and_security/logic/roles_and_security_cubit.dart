@@ -118,9 +118,7 @@ class RolesAndSecurityCubit extends Cubit<RolesAndSecurityState> {
         ),
       );
     } catch (e) {
-      emit(
-        const RolesAndSecurityState.error(error: 'Failed to assign role'),
-      );
+      emit(const RolesAndSecurityState.error(error: 'Failed to assign role'));
     }
   }
 
@@ -140,9 +138,7 @@ class RolesAndSecurityCubit extends Cubit<RolesAndSecurityState> {
         ),
       );
     } catch (e) {
-      emit(
-        const RolesAndSecurityState.error(error: 'Failed to remove role'),
-      );
+      emit(const RolesAndSecurityState.error(error: 'Failed to remove role'));
     }
   }
 

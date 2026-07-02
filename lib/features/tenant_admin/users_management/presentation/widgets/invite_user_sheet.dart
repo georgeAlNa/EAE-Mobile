@@ -7,6 +7,7 @@ import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/input_validation_type.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../../../core/public_widgets/button_widget.dart';
+import '../../../../../core/public_widgets/custom_dropdown.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
 import '../../../../../core/public_widgets/text_field_widget.dart';
 import '../../data/models/users_management_request_body.dart';
@@ -25,15 +26,14 @@ class _InviteUserSheetState extends State<InviteUserSheet> {
   final _emailController = TextEditingController();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
-  final _userTypeController = TextEditingController(text: 'examinee');
   final _externalEmployeeIdController = TextEditingController();
+  String? _userType = 'examinee';
 
   @override
   void dispose() {
     _emailController.dispose();
     _firstNameController.dispose();
     _lastNameController.dispose();
-    _userTypeController.dispose();
     _externalEmployeeIdController.dispose();
     super.dispose();
   }
@@ -70,11 +70,13 @@ class _InviteUserSheetState extends State<InviteUserSheet> {
               obscureText: false,
             ),
             verticalSpace(12),
-            TextFieldWidget(
-              controller: _userTypeController,
-              hintText: 'examinee',
-              labelText: 'User type',
-              obscureText: false,
+            CustomDropdown(
+              items: const ['examinee', 'evaluator', 'tenant_admin', 'proctor'],
+              value: _userType,
+              hintText: 'User type',
+              onChanged: (value) => setState(() => _userType = value),
+              validator: (value) =>
+                  value == null || value.isEmpty ? 'Required' : null,
             ),
             verticalSpace(12),
             TextFieldWidget(
@@ -105,7 +107,7 @@ class _InviteUserSheetState extends State<InviteUserSheet> {
 
     if (_firstNameController.text.trim().isEmpty ||
         _lastNameController.text.trim().isEmpty ||
-        _userTypeController.text.trim().isEmpty) {
+        (_userType ?? '').isEmpty) {
       showAppSnackBar(context, 'Please fill all required fields');
       return;
     }
@@ -116,7 +118,7 @@ class _InviteUserSheetState extends State<InviteUserSheet> {
         email: _emailController.text.trim(),
         firstName: _firstNameController.text.trim(),
         lastName: _lastNameController.text.trim(),
-        userType: _userTypeController.text.trim(),
+        userType: _userType!,
         externalEmployeeId: externalEmployeeId.isEmpty
             ? null
             : externalEmployeeId,

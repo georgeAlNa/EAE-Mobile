@@ -43,7 +43,10 @@ class CohortCard extends StatelessWidget {
                   color: AppColors.secondaryColor2,
                   borderRadius: BorderRadius.circular(8.r),
                 ),
-                child: Icon(Icons.groups_outlined, color: AppColors.secondaryColor7),
+                child: Icon(
+                  Icons.groups_outlined,
+                  color: AppColors.secondaryColor7,
+                ),
               ),
               horizontalSpace(12),
               Expanded(
@@ -52,13 +55,16 @@ class CohortCard extends StatelessWidget {
                   children: [
                     Text(
                       cohort.cohortName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: AppTextStyles.font14DarkGreySemiBold.copyWith(
                         color: AppColors.primaryColor9,
                       ),
                     ),
                     verticalSpace(4),
                     Text(
-                      '${cohort.cohortCode} - ${cohort.cohortType}',
+                      cohort.cohortCode,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: AppTextStyles.font12DarkGreyRegular.copyWith(
                         color: AppColors.tertiaryColor6,
@@ -68,42 +74,60 @@ class CohortCard extends StatelessWidget {
                 ),
               ),
               _StatusChip(isActive: cohort.isActive),
+              PopupMenuButton<_CohortAction>(
+                tooltip: 'Cohort actions',
+                onSelected: (action) {
+                  switch (action) {
+                    case _CohortAction.details:
+                      onDetails();
+                    case _CohortAction.edit:
+                      onEdit();
+                    case _CohortAction.members:
+                      onMembers();
+                    case _CohortAction.delete:
+                      onDelete();
+                  }
+                },
+                itemBuilder: (_) => const [
+                  PopupMenuItem(
+                    value: _CohortAction.details,
+                    child: Text('Details'),
+                  ),
+                  PopupMenuItem(value: _CohortAction.edit, child: Text('Edit')),
+                  PopupMenuItem(
+                    value: _CohortAction.members,
+                    child: Text('Members'),
+                  ),
+                  PopupMenuItem(
+                    value: _CohortAction.delete,
+                    child: Text('Delete'),
+                  ),
+                ],
+              ),
             ],
           ),
           verticalSpace(10),
           Text(
             cohort.cohortDescription,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
             style: AppTextStyles.font12DarkGreyRegular.copyWith(
               color: AppColors.tertiaryColor6,
               height: 1.45,
             ),
           ),
           verticalSpace(12),
-          Row(
+          Wrap(
+            spacing: 8.w,
+            runSpacing: 8.h,
             children: [
-              _ActionButton(
-                tooltip: 'Details',
-                icon: Icons.visibility_outlined,
-                onPressed: onDetails,
+              _CohortChip(
+                label: cohort.cohortType,
+                icon: Icons.category_outlined,
               ),
-              horizontalSpace(8),
-              _ActionButton(
-                tooltip: 'Edit',
-                icon: Icons.edit_outlined,
-                onPressed: onEdit,
-              ),
-              horizontalSpace(8),
-              _ActionButton(
-                tooltip: 'Members',
-                icon: Icons.group_outlined,
-                onPressed: onMembers,
-              ),
-              horizontalSpace(8),
-              _ActionButton(
-                tooltip: 'Delete',
-                icon: Icons.delete_outline,
-                onPressed: onDelete,
-                isDestructive: true,
+              _CohortChip(
+                label: 'Level ${cohort.hierarchyLevel}',
+                icon: Icons.account_tree_outlined,
               ),
             ],
           ),
@@ -120,7 +144,9 @@ class _StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isActive ? AppColors.secondaryColor7 : AppColors.tertiaryColor6;
+    final color = isActive
+        ? AppColors.secondaryColor7
+        : AppColors.tertiaryColor6;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
       decoration: BoxDecoration(
@@ -135,33 +161,36 @@ class _StatusChip extends StatelessWidget {
   }
 }
 
-class _ActionButton extends StatelessWidget {
-  final String tooltip;
+class _CohortChip extends StatelessWidget {
+  final String label;
   final IconData icon;
-  final VoidCallback onPressed;
-  final bool isDestructive;
 
-  const _ActionButton({
-    required this.tooltip,
-    required this.icon,
-    required this.onPressed,
-    this.isDestructive = false,
-  });
+  const _CohortChip({required this.label, required this.icon});
 
   @override
   Widget build(BuildContext context) {
-    final color = isDestructive ? AppColors.redWarring : AppColors.primaryColor9;
-    return Expanded(
-      child: IconButton.outlined(
-        tooltip: tooltip,
-        onPressed: onPressed,
-        icon: Icon(icon),
-        style: IconButton.styleFrom(
-          foregroundColor: color,
-          side: BorderSide(color: AppColors.tertiaryColor2),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
-        ),
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
+      decoration: BoxDecoration(
+        color: AppColors.secondaryColor2,
+        borderRadius: BorderRadius.circular(8.r),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14.sp, color: AppColors.secondaryColor7),
+          horizontalSpace(4),
+          Text(
+            label,
+            style: AppTextStyles.font10DarkGreyRegular.copyWith(
+              color: AppColors.primaryColor9,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
       ),
     );
   }
 }
+
+enum _CohortAction { details, edit, members, delete }

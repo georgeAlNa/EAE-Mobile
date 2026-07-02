@@ -7,6 +7,7 @@ import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/input_validation_type.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../../../core/public_widgets/button_widget.dart';
+import '../../../../../core/public_widgets/custom_dropdown.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
 import '../../../../../core/public_widgets/text_field_widget.dart';
 import '../../data/models/users_management_request_body.dart';
@@ -27,7 +28,7 @@ class _CreateUserSheetState extends State<CreateUserSheet> {
   final _passwordConfirmationController = TextEditingController();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
-  final _userTypeController = TextEditingController(text: 'TestUser');
+  String? _userType = 'examinee';
 
   @override
   void dispose() {
@@ -36,7 +37,6 @@ class _CreateUserSheetState extends State<CreateUserSheet> {
     _passwordConfirmationController.dispose();
     _firstNameController.dispose();
     _lastNameController.dispose();
-    _userTypeController.dispose();
     super.dispose();
   }
 
@@ -72,11 +72,13 @@ class _CreateUserSheetState extends State<CreateUserSheet> {
               obscureText: false,
             ),
             verticalSpace(12),
-            TextFieldWidget(
-              controller: _userTypeController,
+            CustomDropdown(
+              items: const ['examinee', 'evaluator', 'tenant_admin', 'proctor'],
+              value: _userType,
               hintText: 'User type',
-              labelText: 'User type',
-              obscureText: false,
+              onChanged: (value) => setState(() => _userType = value),
+              validator: (value) =>
+                  value == null || value.isEmpty ? 'Required' : null,
             ),
             verticalSpace(12),
             TextFieldWidget(
@@ -114,7 +116,7 @@ class _CreateUserSheetState extends State<CreateUserSheet> {
 
     if (_firstNameController.text.trim().isEmpty ||
         _lastNameController.text.trim().isEmpty ||
-        _userTypeController.text.trim().isEmpty ||
+        (_userType ?? '').isEmpty ||
         _passwordController.text.trim().isEmpty ||
         _passwordConfirmationController.text.trim().isEmpty) {
       showAppSnackBar(context, 'Please fill all required fields');
@@ -134,7 +136,7 @@ class _CreateUserSheetState extends State<CreateUserSheet> {
         passwordConfirmation: _passwordConfirmationController.text.trim(),
         firstName: _firstNameController.text.trim(),
         lastName: _lastNameController.text.trim(),
-        userType: _userTypeController.text.trim(),
+        userType: _userType!,
       ),
     );
 
