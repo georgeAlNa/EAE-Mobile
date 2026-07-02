@@ -47,4 +47,12 @@ class AppLinkUrl {
       "categories/$categoryId/move";
   static const String questions = "questions";
   static String questionDetails(String questionId) => "questions/$questionId";
+
+  // competencies
+  static const String competenciesTree = "competencies/tree";
+  static const String competencies = "competencies";
+  static String competencyDetails(String competencyId) =>
+      "competencies/$competencyId";
+  static String moveCompetency(String competencyId) =>
+      "competencies/$competencyId/move";
 }

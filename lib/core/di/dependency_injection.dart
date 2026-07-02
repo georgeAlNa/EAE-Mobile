@@ -5,6 +5,9 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 import '../../features/candidate/assessment_inventory/data/datasources/assessment_inventory_remote_data_source.dart';
 import '../../features/candidate/assessment_inventory/data/repos/assessment_inventory_repo.dart';
+import '../../features/evaluator/competencies/data/datasources/competencies_remote_data_source.dart';
+import '../../features/evaluator/competencies/data/repos/competencies_repo.dart';
+import '../../features/evaluator/competencies/logic/competencies_cubit.dart';
 import '../../features/evaluator/question_bank_and_categories/data/datasources/question_bank_and_categories_remote_data_source.dart';
 import '../../features/evaluator/question_bank_and_categories/data/repos/question_bank_and_categories_repo.dart';
 import '../../features/evaluator/question_bank_and_categories/logic/question_bank_and_categories_cubit.dart';
@@ -175,6 +178,23 @@ Future<void> setupGetit() async {
   getIt.registerFactory<QuestionBankAndCategoriesCubit>(
     () =>
         QuestionBankAndCategoriesCubit(questionBankAndCategoriesRepo: getIt()),
+  );
+
+  // //! feature - competencies
+  // datasource
+  getIt.registerLazySingleton<CompetenciesRemoteDataSource>(
+    () => CompetenciesRemoteDataSourceImpl(apiServicesImpl: getIt()),
+  );
+  // repo
+  getIt.registerLazySingleton<CompetenciesRepo>(
+    () => CompetenciesRepo(
+      competenciesRemoteDataSource: getIt(),
+      networkInfo: getIt(),
+    ),
+  );
+  // cubit
+  getIt.registerFactory<CompetenciesCubit>(
+    () => CompetenciesCubit(competenciesRepo: getIt()),
   );
 
   // //! feature - analytics

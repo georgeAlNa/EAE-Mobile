@@ -5,6 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/di/dependency_injection.dart';
+import '../../../competencies/logic/competencies_cubit.dart';
+import '../../../competencies/presentation/screens/competencies_screen.dart';
 import '../../../question_bank_and_categories/logic/question_bank_and_categories_cubit.dart';
 import '../../../question_bank_and_categories/presentation/screens/question_bank_and_categories_screen.dart';
 import '../widgets/evaluator_bottom_nav_bar.dart';
@@ -45,8 +47,8 @@ class _EvaluatorNavigationShellState extends State<EvaluatorNavigationShell> {
         items: const [
           EvaluatorBottomNavItem(label: 'BANK', icon: Icons.quiz_outlined),
           EvaluatorBottomNavItem(
-            label: 'REVIEWS',
-            icon: Icons.rate_review_outlined,
+            label: 'SKILLS',
+            icon: Icons.psychology_alt_outlined,
           ),
           EvaluatorBottomNavItem(
             label: 'SETTINGS',
@@ -66,7 +68,11 @@ class _EvaluatorNavigationShellState extends State<EvaluatorNavigationShell> {
           child: const QuestionBankAndCategoriesScreen(),
         );
       case 1:
-        return const _EvaluatorPlaceholderScreen(title: 'Reviews');
+        return BlocProvider(
+          key: const ValueKey('evaluator-competencies'),
+          create: (_) => getIt<CompetenciesCubit>(),
+          child: const CompetenciesScreen(),
+        );
       case 2:
         return const _EvaluatorPlaceholderScreen(title: 'Settings');
       default:
