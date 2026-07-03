@@ -39,7 +39,8 @@ import '../../features/settings/logic/settings_cubit.dart';
 import '../../features/candidate/assessment_setup/logic/assessment_setup_cubit.dart';
 import '../../features/candidate/assessment_session/logic/assessment_session_cubit.dart';
 import '../../features/candidate/forensics_checkpoint/logic/forensics_checkpoint_cubit.dart';
-import '../../features/secure_access/logic/secure_access_cubit.dart';
+import '../../features/settings/data/datasources/settings_remote_data_source.dart';
+import '../../features/settings/data/repos/settings_repo.dart';
 import '../../features/splash/logic/splash_cubit.dart';
 import '../helpers/app_shared_preferences.dart';
 import '../networking/api_services_impl.dart';
@@ -51,10 +52,6 @@ Future<void> setupGetit() async {
   // //! feature - splash
   // cubit
   getIt.registerFactory<SplashCubit>(() => SplashCubit());
-
-  // //! feature - secure access
-  // cubit
-  getIt.registerFactory<SecureAccessCubit>(() => SecureAccessCubit());
 
   // //! feature - auth
   // datasource
@@ -222,8 +219,18 @@ Future<void> setupGetit() async {
   getIt.registerFactory<AnalyticsCubit>(() => AnalyticsCubit());
 
   // //! feature - settings
+  // datasource
+  getIt.registerLazySingleton<SettingsRemoteDataSource>(
+    () => SettingsRemoteDataSourceImpl(apiServicesImpl: getIt()),
+  );
+  // repo
+  getIt.registerLazySingleton<SettingsRepo>(
+    () => SettingsRepo(settingsRemoteDataSource: getIt(), networkInfo: getIt()),
+  );
   // cubit
-  getIt.registerFactory<SettingsCubit>(() => SettingsCubit());
+  getIt.registerFactory<SettingsCubit>(
+    () => SettingsCubit(settingsRepo: getIt(), authRepo: getIt()),
+  );
 
   // //! feature - forensics checkpoint
   // cubit

@@ -28,6 +28,7 @@ class ExamResponse {
 
 @JsonSerializable()
 class ExamActionResponse {
+  @JsonKey(defaultValue: '')
   final String message;
 
   ExamActionResponse({required this.message});

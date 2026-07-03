@@ -9,6 +9,10 @@ import '../models/forgot_password/forgot_password_request_body.dart';
 import '../models/forgot_password/forgot_password_response.dart';
 import '../models/login/login_request_body.dart';
 import '../models/login/login_response.dart';
+import '../models/logout/logout_request_body.dart';
+import '../models/logout/logout_response.dart';
+import '../models/refresh_token/refresh_token_request_body.dart';
+import '../models/refresh_token/refresh_token_response.dart';
 import '../models/register/register_request_body.dart';
 import '../models/register/register_response.dart';
 import '../models/reset_password/reset_password_request_body.dart';
@@ -23,12 +27,21 @@ abstract class AuthRemoteDataSource {
   Future<ResetPasswordResponse> resetPassword(
     ResetPasswordRequestBody resetPasswordRequestBody,
   );
+  Future<RefreshTokenResponse> refreshToken(
+    RefreshTokenRequestBody refreshTokenRequestBody,
+  );
+  Future<LogoutResponse> logout(LogoutRequestBody logoutRequestBody);
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final ApiServicesImpl apiServicesImpl;
 
   AuthRemoteDataSourceImpl({required this.apiServicesImpl});
+
+  String? get _token {
+    final sharedPref = AppSharedPreferences();
+    return sharedPref.getString(AppSharedPrefKeys.token);
+  }
 
   @override
   Future<LoginResponse> login(LoginRequestBody loginRequestBody) async {
@@ -43,6 +56,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final response = LoginResponse.fromJson(request);
       final sharedPref = AppSharedPreferences();
       await sharedPref.setString(AppSharedPrefKeys.token, response.data.token);
+      await sharedPref.setString(
+        AppSharedPrefKeys.sessionId,
+        response.data.sessionId,
+      );
 
       return response;
     } on DioException catch (e) {
@@ -102,6 +119,54 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
 
       return ResetPasswordResponse.fromJson(request);
+    } on DioException catch (e) {
+      throw NetworkExceptions.getException(e);
+    } catch (e) {
+      throw NetworkExceptions.getException(e);
+    }
+  }
+
+  @override
+  Future<RefreshTokenResponse> refreshToken(
+    RefreshTokenRequestBody refreshTokenRequestBody,
+  ) async {
+    try {
+      final request = await apiServicesImpl.post(
+        AppLinkUrl.refreshToken,
+        body: refreshTokenRequestBody.toJson(),
+        token: _token,
+      );
+
+      final response = RefreshTokenResponse.fromJson(request);
+      final sharedPref = AppSharedPreferences();
+      await sharedPref.setString(AppSharedPrefKeys.token, response.data.token);
+      await sharedPref.setString(
+        AppSharedPrefKeys.sessionId,
+        response.data.sessionId,
+      );
+
+      return response;
+    } on DioException catch (e) {
+      throw NetworkExceptions.getException(e);
+    } catch (e) {
+      throw NetworkExceptions.getException(e);
+    }
+  }
+
+  @override
+  Future<LogoutResponse> logout(LogoutRequestBody logoutRequestBody) async {
+    try {
+      final request = await apiServicesImpl.post(
+        AppLinkUrl.logout,
+        body: logoutRequestBody.toJson(),
+        token: _token,
+      );
+
+      final response = LogoutResponse.fromJson(request);
+      final sharedPref = AppSharedPreferences();
+      await sharedPref.clearSessionData();
+
+      return response;
     } on DioException catch (e) {
       throw NetworkExceptions.getException(e);
     } catch (e) {

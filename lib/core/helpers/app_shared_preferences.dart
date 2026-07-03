@@ -1,5 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../constants/shared_pref_keys.dart';
+
 class AppSharedPreferences {
   static final AppSharedPreferences _instance =
       AppSharedPreferences._internal();
@@ -46,6 +48,21 @@ class AppSharedPreferences {
 
   // Clear all data
   Future<bool> clear() async => await _prefsValue.clear();
+
+  Future<void> clearSessionData() async {
+    final language = getString(AppSharedPrefKeys.language);
+    final theme = getBool(AppSharedPrefKeys.theme);
+
+    await clear();
+
+    if (language != null) {
+      await setString(AppSharedPrefKeys.language, language);
+    }
+    if (theme != null) {
+      await setBool(AppSharedPrefKeys.theme, theme);
+    }
+  }
+
   // Clear specific key
   Future<bool> removeKey(String key) async => await _prefsValue.remove(key);
 }

@@ -1,204 +1,191 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../data/models/settings_models.dart';
+import '../../../core/constants/shared_pref_keys.dart';
+import '../../../core/helpers/app_shared_preferences.dart';
+import '../../../core/networking/error/error_handler/network_exceptions.dart';
+import '../../auth/data/models/logout/logout_request_body.dart';
+import '../../auth/data/repos/auth_repo.dart';
+import '../data/models/settings_request_body.dart';
+import '../data/models/settings_response.dart';
+import '../data/repos/settings_repo.dart';
 
 part 'settings_state.dart';
 part 'settings_cubit.freezed.dart';
 
 class SettingsCubit extends Cubit<SettingsState> {
-  late final SettingsState _initialState;
+  final SettingsRepo settingsRepo;
+  final AuthRepo authRepo;
 
-  SettingsCubit() : super(const SettingsState.loading()) {
-    _loadMockData();
+  SettingsCubit({required this.settingsRepo, required this.authRepo})
+    : super(const SettingsState.loading()) {
+    firstNameController = TextEditingController();
+    lastNameController = TextEditingController();
+    externalEmployeeIdController = TextEditingController();
+    loadAccount();
   }
 
-  void _loadMockData() {
-    final viewData = SettingsViewData(
-      pageTitle: 'Enterprise Assessment',
-      profile: const SettingsProfileData(
-        avatarInitials: 'MS',
-        name: 'Marcus Sterling',
-        role: 'Senior Risk Auditor • Financial Systems',
-        department: 'Internal Audit & Compliance',
-        corporateEmail: 'm.sterling@enterprise-corp.com',
-      ),
-      securityClearanceLabel: 'Security Clearance',
-      securityClearanceStatus: 'Secure',
-      lastLoginLabel: 'Last Login',
-      lastLoginValue: 'Today, 08:42 AM',
-      support: const SettingsSupportData(
-        title: 'Institutional Support',
-        description:
-            'Need technical assistance with the assessment engine? Connect with our enterprise ITSM desk.',
-        actionLabel: 'Contact Support',
-      ),
-      profileSettingsTitle: 'Profile Settings',
-      fullNameLabel: 'Full Name',
-      corporateEmailLabel: 'Corporate Email',
-      departmentLabel: 'Department',
-      preferredLanguageLabel: 'Preferred Language',
-      securityTitle: 'Security & Biometrics',
-      biometricTitle: 'Biometric Authentication',
-      biometricDescription: 'Use TouchID or FaceID for instant vault access.',
-      mfaTitle: 'Multi-Factor Authentication (MFA)',
-      mfaDescription: 'Required for high-level risk adjustments.',
-      mfaStatusLabel: 'Always Enabled',
-      sessionTimeoutTitle: 'Session Timeout',
-      sessionTimeoutDescription: 'Auto-lock after 15 minutes of inactivity.',
-      notificationsTitle: 'Push Notifications',
-      criticalAlertsTitle: 'Critical Assessment Alerts',
-      criticalAlertsDescription: '',
-      dailySummaryTitle: 'Daily Sync Summary',
-      dailySummaryDescription: '',
-      teamActivityTitle: 'Team Activity Notifications',
-      teamActivityDescription: '',
-      cancelLabel: 'Cancel Changes',
-      saveLabel: 'Save Preferences',
-      departments: const [
-        'Internal Audit & Compliance',
-        'Enterprise Risk',
-        'Financial Systems',
-        'Security Operations',
-      ],
-      languages: const [
-        'English (United States)',
-        'English (United Kingdom)',
-        'Arabic (Saudi Arabia)',
-      ],
-    );
+  late final TextEditingController firstNameController;
+  late final TextEditingController lastNameController;
+  late final TextEditingController externalEmployeeIdController;
 
-    _initialState = SettingsState.ready(
-      viewData: viewData,
-      selectedDepartment: viewData.profile.department,
-      selectedLanguage: 'English (United States)',
-      biometricEnabled: true,
-      sessionTimeoutEnabled: false,
-      criticalAlertsEnabled: true,
-      dailySummaryEnabled: false,
-      teamActivityEnabled: true,
-      hasUnsavedChanges: false,
-    );
+  SettingsProfileData? _profile;
+  SettingsPermissionsData? _permissions;
+  List<SettingsSessionData> _sessions = const [];
 
-    emit(_initialState);
+  String? get currentSessionId =>
+      AppSharedPreferences().getString(AppSharedPrefKeys.sessionId);
+
+  bool get hasProfileChanges {
+    final profile = _profile;
+    if (profile == null) return false;
+
+    return firstNameController.text.trim() != profile.firstName ||
+        lastNameController.text.trim() != profile.lastName ||
+        externalEmployeeIdController.text.trim() !=
+            (profile.externalEmployeeId ?? '');
   }
 
-  void selectDepartment(String department) {
-    _updateReady(selectedDepartment: department);
+  Future<void> loadAccount() async {
+    emit(const SettingsState.loading());
+
+    try {
+      final profileResponse = await settingsRepo.getProfile();
+      final permissionsResponse = await settingsRepo.getPermissions();
+      final sessionsResponse = await settingsRepo.getSessions();
+
+      _profile = profileResponse.data;
+      _permissions = permissionsResponse.data;
+      _sessions = sessionsResponse.data;
+      _syncProfileControllers(profileResponse.data);
+      _emitReady();
+    } on NetworkExceptions catch (e) {
+      emit(SettingsState.error(error: NetworkExceptions.getErrorMessage(e)));
+    } catch (e) {
+      emit(const SettingsState.error(error: 'Failed to load account'));
+    }
   }
 
-  void selectLanguage(String language) {
-    _updateReady(selectedLanguage: language);
+  Future<void> updateProfile() async {
+    final profile = _profile;
+    if (profile == null) return;
+
+    _emitReady(isSaving: true);
+
+    try {
+      final response = await settingsRepo.updateProfile(
+        SettingsProfileRequestBody(
+          firstName: firstNameController.text.trim(),
+          lastName: lastNameController.text.trim(),
+          externalEmployeeId: externalEmployeeIdController.text.trim(),
+        ),
+      );
+
+      _profile = response.data;
+      _syncProfileControllers(response.data);
+      _emitReady(message: 'Profile updated successfully');
+    } on NetworkExceptions catch (e) {
+      _emitReady(message: NetworkExceptions.getErrorMessage(e));
+    } catch (e) {
+      _emitReady(message: 'Failed to update profile');
+    }
   }
 
-  void toggleBiometricEnabled() {
-    _updateReady(biometricEnabled: !_snapshot.biometricEnabled);
+  Future<void> deleteSession(String sessionId) async {
+    _emitReady(isActionLoading: true);
+
+    try {
+      await settingsRepo.deleteSession(sessionId);
+      if (sessionId == currentSessionId) {
+        await AppSharedPreferences().clearSessionData();
+        emit(const SettingsState.loggedOut());
+        return;
+      }
+
+      final sessionsResponse = await settingsRepo.getSessions();
+      _sessions = sessionsResponse.data;
+      _emitReady(message: 'Session revoked');
+    } on NetworkExceptions catch (e) {
+      _emitReady(message: NetworkExceptions.getErrorMessage(e));
+    } catch (e) {
+      _emitReady(message: 'Failed to revoke session');
+    }
   }
 
-  void toggleSessionTimeoutEnabled() {
-    _updateReady(sessionTimeoutEnabled: !_snapshot.sessionTimeoutEnabled);
+  Future<void> deleteAllSessions() async {
+    _emitReady(isActionLoading: true);
+
+    try {
+      await settingsRepo.deleteAllSessions();
+      await AppSharedPreferences().clearSessionData();
+      emit(const SettingsState.loggedOut());
+    } on NetworkExceptions catch (e) {
+      _emitReady(message: NetworkExceptions.getErrorMessage(e));
+    } catch (e) {
+      _emitReady(message: 'Failed to revoke sessions');
+    }
   }
 
-  void toggleCriticalAlertsEnabled() {
-    _updateReady(criticalAlertsEnabled: !_snapshot.criticalAlertsEnabled);
+  Future<void> logout() async {
+    final sessionId = currentSessionId;
+    if (sessionId == null || sessionId.isEmpty) {
+      await AppSharedPreferences().clearSessionData();
+      emit(const SettingsState.loggedOut());
+      return;
+    }
+
+    _emitReady(isActionLoading: true);
+
+    try {
+      await authRepo.logout(LogoutRequestBody(sessionId: sessionId));
+      emit(const SettingsState.loggedOut());
+    } on NetworkExceptions catch (e) {
+      _emitReady(message: NetworkExceptions.getErrorMessage(e));
+    } catch (e) {
+      _emitReady(message: 'Failed to logout');
+    }
   }
 
-  void toggleDailySummaryEnabled() {
-    _updateReady(dailySummaryEnabled: !_snapshot.dailySummaryEnabled);
+  void resetProfileForm() {
+    final profile = _profile;
+    if (profile == null) return;
+    _syncProfileControllers(profile);
+    _emitReady(message: 'Changes discarded');
   }
 
-  void toggleTeamActivityEnabled() {
-    _updateReady(teamActivityEnabled: !_snapshot.teamActivityEnabled);
+  void _syncProfileControllers(SettingsProfileData profile) {
+    firstNameController.text = profile.firstName;
+    lastNameController.text = profile.lastName;
+    externalEmployeeIdController.text = profile.externalEmployeeId ?? '';
   }
 
-  void resetPreferences() {
-    emit(_initialState);
-  }
-
-  void savePreferences() {
-    _updateReady(hasUnsavedChanges: false);
-  }
-
-  SettingsSnapshot get _snapshot {
-    return state.maybeWhen(
-      ready:
-          (
-            viewData,
-            selectedDepartment,
-            selectedLanguage,
-            biometricEnabled,
-            sessionTimeoutEnabled,
-            criticalAlertsEnabled,
-            dailySummaryEnabled,
-            teamActivityEnabled,
-            hasUnsavedChanges,
-          ) {
-            return SettingsSnapshot(
-              viewData: viewData,
-              selectedDepartment: selectedDepartment,
-              selectedLanguage: selectedLanguage,
-              biometricEnabled: biometricEnabled,
-              sessionTimeoutEnabled: sessionTimeoutEnabled,
-              criticalAlertsEnabled: criticalAlertsEnabled,
-              dailySummaryEnabled: dailySummaryEnabled,
-              teamActivityEnabled: teamActivityEnabled,
-              hasUnsavedChanges: hasUnsavedChanges,
-            );
-          },
-      orElse: () => throw StateError('Settings state is not ready.'),
-    );
-  }
-
-  void _updateReady({
-    String? selectedDepartment,
-    String? selectedLanguage,
-    bool? biometricEnabled,
-    bool? sessionTimeoutEnabled,
-    bool? criticalAlertsEnabled,
-    bool? dailySummaryEnabled,
-    bool? teamActivityEnabled,
-    bool? hasUnsavedChanges,
+  void _emitReady({
+    bool isSaving = false,
+    bool isActionLoading = false,
+    String? message,
   }) {
-    final current = _snapshot;
+    final profile = _profile;
+    final permissions = _permissions;
+    if (profile == null || permissions == null) return;
 
     emit(
       SettingsState.ready(
-        viewData: current.viewData,
-        selectedDepartment: selectedDepartment ?? current.selectedDepartment,
-        selectedLanguage: selectedLanguage ?? current.selectedLanguage,
-        biometricEnabled: biometricEnabled ?? current.biometricEnabled,
-        sessionTimeoutEnabled:
-            sessionTimeoutEnabled ?? current.sessionTimeoutEnabled,
-        criticalAlertsEnabled:
-            criticalAlertsEnabled ?? current.criticalAlertsEnabled,
-        dailySummaryEnabled: dailySummaryEnabled ?? current.dailySummaryEnabled,
-        teamActivityEnabled: teamActivityEnabled ?? current.teamActivityEnabled,
-        hasUnsavedChanges: hasUnsavedChanges ?? true,
+        profile: profile,
+        permissions: permissions,
+        sessions: _sessions,
+        isSaving: isSaving,
+        isActionLoading: isActionLoading,
+        message: message,
       ),
     );
   }
-}
 
-class SettingsSnapshot {
-  final SettingsViewData viewData;
-  final String selectedDepartment;
-  final String selectedLanguage;
-  final bool biometricEnabled;
-  final bool sessionTimeoutEnabled;
-  final bool criticalAlertsEnabled;
-  final bool dailySummaryEnabled;
-  final bool teamActivityEnabled;
-  final bool hasUnsavedChanges;
-
-  const SettingsSnapshot({
-    required this.viewData,
-    required this.selectedDepartment,
-    required this.selectedLanguage,
-    required this.biometricEnabled,
-    required this.sessionTimeoutEnabled,
-    required this.criticalAlertsEnabled,
-    required this.dailySummaryEnabled,
-    required this.teamActivityEnabled,
-    required this.hasUnsavedChanges,
-  });
+  @override
+  Future<void> close() {
+    firstNameController.dispose();
+    lastNameController.dispose();
+    externalEmployeeIdController.dispose();
+    return super.close();
+  }
 }

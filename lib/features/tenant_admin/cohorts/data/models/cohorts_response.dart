@@ -156,6 +156,7 @@ class CohortMember {
 
 @JsonSerializable()
 class CohortActionResponse {
+  @JsonKey(defaultValue: '')
   final String message;
 
   CohortActionResponse({required this.message});

@@ -216,7 +216,7 @@ InputDecoration settingsFieldDecoration() {
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(8.r),
-      borderSide: BorderSide(color: AppColors.secondaryColor7),
+      borderSide: BorderSide(color: AppColors.secondaryColor7, width: 1.4.w),
     ),
   );
 }

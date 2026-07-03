@@ -53,6 +53,7 @@ class QuestionDetailsResponse {
 
 @JsonSerializable()
 class QuestionBankActionResponse {
+  @JsonKey(defaultValue: '')
   final String message;
 
   QuestionBankActionResponse({required this.message});

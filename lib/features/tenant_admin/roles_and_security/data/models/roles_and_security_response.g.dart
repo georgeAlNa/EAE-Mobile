@@ -82,7 +82,7 @@ Map<String, dynamic> _$CreatedRoleDataToJson(CreatedRoleData instance) =>
     };
 
 RoleActionResponse _$RoleActionResponseFromJson(Map<String, dynamic> json) =>
-    RoleActionResponse(message: json['message'] as String);
+    RoleActionResponse(message: json['message'] as String? ?? '');
 
 Map<String, dynamic> _$RoleActionResponseToJson(RoleActionResponse instance) =>
     <String, dynamic>{'message': instance.message};

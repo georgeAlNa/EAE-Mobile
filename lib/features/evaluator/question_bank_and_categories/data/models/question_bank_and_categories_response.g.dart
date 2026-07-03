@@ -53,7 +53,7 @@ Map<String, dynamic> _$QuestionDetailsResponseToJson(
 
 QuestionBankActionResponse _$QuestionBankActionResponseFromJson(
   Map<String, dynamic> json,
-) => QuestionBankActionResponse(message: json['message'] as String);
+) => QuestionBankActionResponse(message: json['message'] as String? ?? '');
 
 Map<String, dynamic> _$QuestionBankActionResponseToJson(
   QuestionBankActionResponse instance,

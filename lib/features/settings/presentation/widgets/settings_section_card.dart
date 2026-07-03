@@ -20,15 +20,8 @@ class SettingsSectionCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.neutralColor,
-        borderRadius: BorderRadius.circular(16.r),
+        borderRadius: BorderRadius.circular(8.r),
         border: Border.all(color: AppColors.tertiaryColor2),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.tertiaryColor2.withValues(alpha: 0.18),
-            blurRadius: 16.r,
-            offset: Offset(0, 8.h),
-          ),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,11 +35,11 @@ class SettingsSectionCard extends StatelessWidget {
                     title,
                     style: AppTextStyles.font15DarkGreyMedium.copyWith(
                       color: AppColors.primaryColor9,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
-                Icon(icon, size: 18.sp, color: AppColors.tertiaryColor6),
+                Icon(icon, size: 18.sp, color: AppColors.secondaryColor7),
               ],
             ),
           ),

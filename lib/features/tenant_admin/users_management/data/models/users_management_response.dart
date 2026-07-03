@@ -52,6 +52,7 @@ class InviteUserResponse {
 
 @JsonSerializable()
 class UserActionResponse {
+  @JsonKey(defaultValue: '')
   final String message;
 
   UserActionResponse({required this.message});

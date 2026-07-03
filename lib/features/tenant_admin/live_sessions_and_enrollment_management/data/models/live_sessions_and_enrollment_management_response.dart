@@ -110,6 +110,7 @@ class EnrollmentItem {
 
 @JsonSerializable()
 class EnrollmentActionResponse {
+  @JsonKey(defaultValue: '')
   final String message;
 
   EnrollmentActionResponse({required this.message});

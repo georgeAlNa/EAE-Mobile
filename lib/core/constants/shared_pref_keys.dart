@@ -1,5 +1,6 @@
 class AppSharedPrefKeys {
   static const token = 'token';
+  static const sessionId = 'session_id';
   static const email = 'email';
   static const name = 'name';
   static const language = 'language';

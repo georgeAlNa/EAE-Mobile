@@ -5,14 +5,15 @@ class SettingsState with _$SettingsState {
   const factory SettingsState.loading() = _Loading;
 
   const factory SettingsState.ready({
-    required SettingsViewData viewData,
-    required String selectedDepartment,
-    required String selectedLanguage,
-    required bool biometricEnabled,
-    required bool sessionTimeoutEnabled,
-    required bool criticalAlertsEnabled,
-    required bool dailySummaryEnabled,
-    required bool teamActivityEnabled,
-    required bool hasUnsavedChanges,
+    required SettingsProfileData profile,
+    required SettingsPermissionsData permissions,
+    required List<SettingsSessionData> sessions,
+    required bool isSaving,
+    required bool isActionLoading,
+    String? message,
   }) = _Ready;
+
+  const factory SettingsState.error({required String error}) = _Error;
+
+  const factory SettingsState.loggedOut() = _LoggedOut;
 }

@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/di/dependency_injection.dart';
+import '../../../../settings/logic/settings_cubit.dart';
+import '../../../../settings/presentation/screens/settings_screen.dart';
 import '../../../cohorts/logic/cohorts_cubit.dart';
 import '../../../cohorts/presentation/screens/cohorts_screen.dart';
 import '../../../live_sessions_and_enrollment_management/logic/live_sessions_and_enrollment_management_cubit.dart';
@@ -64,6 +66,10 @@ class _TenantAdminNavigationShellState
             label: 'LIVE',
             icon: Icons.video_camera_front_outlined,
           ),
+          TenantAdminBottomNavItem(
+            label: 'ACCOUNT',
+            icon: Icons.person_outline_rounded,
+          ),
         ],
       ),
     );
@@ -94,6 +100,12 @@ class _TenantAdminNavigationShellState
           key: const ValueKey('tenant-admin-live-enrollments'),
           create: (_) => getIt<LiveSessionsAndEnrollmentManagementCubit>(),
           child: const LiveSessionsAndEnrollmentManagementScreen(),
+        );
+      case 4:
+        return BlocProvider(
+          key: const ValueKey('tenant-admin-settings'),
+          create: (_) => getIt<SettingsCubit>(),
+          child: const SettingsScreen(),
         );
       default:
         return BlocProvider(

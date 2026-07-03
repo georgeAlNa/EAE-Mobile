@@ -44,7 +44,7 @@ Map<String, dynamic> _$InviteUserResponseToJson(InviteUserResponse instance) =>
     <String, dynamic>{'data': instance.data};
 
 UserActionResponse _$UserActionResponseFromJson(Map<String, dynamic> json) =>
-    UserActionResponse(message: json['message'] as String);
+    UserActionResponse(message: json['message'] as String? ?? '');
 
 Map<String, dynamic> _$UserActionResponseToJson(UserActionResponse instance) =>
     <String, dynamic>{'message': instance.message};

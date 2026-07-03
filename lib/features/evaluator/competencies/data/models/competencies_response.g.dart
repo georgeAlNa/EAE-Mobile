@@ -30,7 +30,7 @@ Map<String, dynamic> _$CompetencyMutationResponseToJson(
 
 CompetencyActionResponse _$CompetencyActionResponseFromJson(
   Map<String, dynamic> json,
-) => CompetencyActionResponse(message: json['message'] as String);
+) => CompetencyActionResponse(message: json['message'] as String? ?? '');
 
 Map<String, dynamic> _$CompetencyActionResponseToJson(
   CompetencyActionResponse instance,

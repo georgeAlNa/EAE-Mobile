@@ -1,12 +1,11 @@
+import 'package:eae_mobile/core/constants/colors.dart';
+import 'package:eae_mobile/core/constants/text_styles.dart';
 import 'package:eae_mobile/core/helpers/spacing.dart';
+import 'package:eae_mobile/core/routing/routes.dart';
+import 'package:eae_mobile/features/settings/data/models/settings_response.dart';
 import 'package:eae_mobile/features/settings/logic/settings_cubit.dart';
-import 'package:eae_mobile/features/settings/presentation/widgets/settings_action_buttons.dart';
-import 'package:eae_mobile/features/settings/presentation/widgets/settings_notifications_card.dart';
-import 'package:eae_mobile/features/settings/presentation/widgets/settings_profile_card.dart';
-import 'package:eae_mobile/features/settings/presentation/widgets/settings_profile_settings_card.dart';
-import 'package:eae_mobile/features/settings/presentation/widgets/settings_security_card.dart';
-import 'package:eae_mobile/features/settings/presentation/widgets/settings_support_card.dart';
-import 'package:eae_mobile/features/settings/presentation/widgets/settings_top_bar.dart';
+import 'package:eae_mobile/features/settings/presentation/widgets/settings_form_fields.dart';
+import 'package:eae_mobile/features/settings/presentation/widgets/settings_section_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -16,7 +15,36 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const _SettingsView();
+    return BlocListener<SettingsCubit, SettingsState>(
+      listenWhen: (previous, current) {
+        final hasMessage = current.maybeWhen(
+          ready: (_, _, _, _, _, message) => message != null,
+          orElse: () => false,
+        );
+        final isLoggedOut = current.maybeWhen(
+          loggedOut: () => true,
+          orElse: () => false,
+        );
+        return hasMessage || isLoggedOut;
+      },
+      listener: (context, state) {
+        state.whenOrNull(
+          ready: (_, _, _, _, _, message) {
+            if (message == null) return;
+            ScaffoldMessenger.of(context)
+              ..hideCurrentSnackBar()
+              ..showSnackBar(SnackBar(content: Text(message)));
+          },
+          loggedOut: () {
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              Routes.roleSelectionScreen,
+              (route) => false,
+            );
+          },
+        );
+      },
+      child: const _SettingsView(),
+    );
   }
 }
 
@@ -28,68 +56,639 @@ class _SettingsView extends StatelessWidget {
     return SafeArea(
       child: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, state) {
-          final snapshot = state.maybeWhen(
+          return state.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (error) => _SettingsErrorState(error: error),
+            loggedOut: () => const SizedBox.shrink(),
             ready:
                 (
-                  viewData,
-                  selectedDepartment,
-                  selectedLanguage,
-                  biometricEnabled,
-                  sessionTimeoutEnabled,
-                  criticalAlertsEnabled,
-                  dailySummaryEnabled,
-                  teamActivityEnabled,
-                  hasUnsavedChanges,
+                  profile,
+                  permissions,
+                  sessions,
+                  isSaving,
+                  isActionLoading,
+                  message,
                 ) {
-                  return SettingsSnapshot(
-                    viewData: viewData,
-                    selectedDepartment: selectedDepartment,
-                    selectedLanguage: selectedLanguage,
-                    biometricEnabled: biometricEnabled,
-                    sessionTimeoutEnabled: sessionTimeoutEnabled,
-                    criticalAlertsEnabled: criticalAlertsEnabled,
-                    dailySummaryEnabled: dailySummaryEnabled,
-                    teamActivityEnabled: teamActivityEnabled,
-                    hasUnsavedChanges: hasUnsavedChanges,
+                  return RefreshIndicator(
+                    onRefresh: () =>
+                        context.read<SettingsCubit>().loadAccount(),
+                    child: ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 24.w,
+                        vertical: 18.h,
+                      ),
+                      children: [
+                        const _AccountHeader(),
+                        verticalSpace(18),
+                        _ProfileSummaryCard(profile: profile),
+                        verticalSpace(18),
+                        _ProfileFormCard(profile: profile, isSaving: isSaving),
+                        verticalSpace(18),
+                        _AccessCard(permissions: permissions),
+                        verticalSpace(18),
+                        _SessionsCard(
+                          sessions: sessions,
+                          isActionLoading: isActionLoading,
+                        ),
+                        verticalSpace(18),
+                        _AccountActionsCard(isActionLoading: isActionLoading),
+                        verticalSpace(24),
+                      ],
+                    ),
                   );
                 },
-            orElse: () => null,
-          );
-
-          if (snapshot == null) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          return SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 24.h),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SettingsTopBar(title: snapshot.viewData.pageTitle),
-                verticalSpace(16),
-                SettingsProfileCard(viewData: snapshot.viewData),
-                verticalSpace(18),
-                SettingsSupportCard(support: snapshot.viewData.support),
-                verticalSpace(18),
-                SettingsProfileSettingsCard(snapshot: snapshot),
-                verticalSpace(18),
-                SettingsSecurityCard(snapshot: snapshot),
-                verticalSpace(18),
-                SettingsNotificationsCard(snapshot: snapshot),
-                verticalSpace(18),
-                SettingsActionButtons(
-                  cancelLabel: snapshot.viewData.cancelLabel,
-                  saveLabel: snapshot.viewData.saveLabel,
-                  onCancel: () =>
-                      context.read<SettingsCubit>().resetPreferences(),
-                  onSave: () => context.read<SettingsCubit>().savePreferences(),
-                ),
-                verticalSpace(24),
-              ],
-            ),
           );
         },
       ),
     );
   }
+}
+
+class _AccountHeader extends StatelessWidget {
+  const _AccountHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Account',
+                style: AppTextStyles.font32DarkGreyMedium.copyWith(
+                  color: AppColors.primaryColor9,
+                  fontWeight: FontWeight.w700,
+                  height: 1.05,
+                ),
+              ),
+            ),
+            IconButton.filled(
+              tooltip: 'Refresh account',
+              onPressed: () => context.read<SettingsCubit>().loadAccount(),
+              icon: const Icon(Icons.refresh_rounded),
+              style: IconButton.styleFrom(
+                backgroundColor: AppColors.secondaryColor7,
+                foregroundColor: AppColors.neutralColor,
+              ),
+            ),
+          ],
+        ),
+        verticalSpace(8),
+        Text(
+          'Manage your profile, access permissions, and active sessions.',
+          style: AppTextStyles.font14DarkGreyRegular.copyWith(
+            color: AppColors.tertiaryColor6,
+            height: 1.5,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ProfileSummaryCard extends StatelessWidget {
+  final SettingsProfileData profile;
+
+  const _ProfileSummaryCard({required this.profile});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(18.r),
+      decoration: BoxDecoration(
+        color: AppColors.neutralColor,
+        borderRadius: BorderRadius.circular(8.r),
+        border: Border.all(color: AppColors.tertiaryColor2),
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: 68.w,
+            height: 68.w,
+            decoration: BoxDecoration(
+              color: AppColors.secondaryColor2,
+              borderRadius: BorderRadius.circular(8.r),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              _initials(profile),
+              style: AppTextStyles.font20DarkGreyBold.copyWith(
+                color: AppColors.secondaryColor7,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+          verticalSpace(12),
+          Text(
+            profile.fullName.isEmpty ? profile.email : profile.fullName,
+            textAlign: TextAlign.center,
+            style: AppTextStyles.font17DarkGreySemiBold.copyWith(
+              color: AppColors.primaryColor9,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          verticalSpace(4),
+          Text(
+            profile.email,
+            textAlign: TextAlign.center,
+            style: AppTextStyles.font12DarkGreyRegular.copyWith(
+              color: AppColors.tertiaryColor6,
+              height: 1.45,
+            ),
+          ),
+          verticalSpace(16),
+          Row(
+            children: [
+              Expanded(
+                child: _DetailPill(
+                  label: 'Status',
+                  value: profile.status,
+                  icon: Icons.verified_user_outlined,
+                  valueColor: profile.isActive
+                      ? AppColors.secondaryColor7
+                      : AppColors.tertiaryColor6,
+                ),
+              ),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: _DetailPill(
+                  label: 'Last login',
+                  value: _formatDate(profile.lastLoginAt),
+                  icon: Icons.schedule_rounded,
+                  valueColor: AppColors.primaryColor9,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileFormCard extends StatelessWidget {
+  final SettingsProfileData profile;
+  final bool isSaving;
+
+  const _ProfileFormCard({required this.profile, required this.isSaving});
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<SettingsCubit>();
+
+    return SettingsSectionCard(
+      title: 'Profile',
+      icon: Icons.badge_outlined,
+      child: Column(
+        children: [
+          SettingsFieldGroup(
+            label: 'First Name',
+            child: TextFormField(
+              controller: cubit.firstNameController,
+              textInputAction: TextInputAction.next,
+              decoration: settingsFieldDecoration(),
+            ),
+          ),
+          verticalSpace(14),
+          SettingsFieldGroup(
+            label: 'Last Name',
+            child: TextFormField(
+              controller: cubit.lastNameController,
+              textInputAction: TextInputAction.next,
+              decoration: settingsFieldDecoration(),
+            ),
+          ),
+          verticalSpace(14),
+          SettingsFieldGroup(
+            label: 'External Employee ID',
+            child: TextFormField(
+              controller: cubit.externalEmployeeIdController,
+              textInputAction: TextInputAction.done,
+              decoration: settingsFieldDecoration(),
+            ),
+          ),
+          verticalSpace(14),
+          SettingsFieldGroup(
+            label: 'Corporate Email',
+            child: SettingsReadOnlyField(value: profile.email),
+          ),
+          verticalSpace(16),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: isSaving ? null : cubit.resetProfileForm,
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: AppColors.tertiaryColor2),
+                    foregroundColor: AppColors.primaryColor9,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                  ),
+                  child: const Text('Discard'),
+                ),
+              ),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: isSaving ? null : cubit.updateProfile,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.secondaryColor7,
+                    foregroundColor: AppColors.neutralColor,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                  ),
+                  child: isSaving
+                      ? SizedBox(
+                          width: 18.w,
+                          height: 18.w,
+                          child: const CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
+                        )
+                      : const Text('Save Profile'),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AccessCard extends StatelessWidget {
+  final SettingsPermissionsData permissions;
+
+  const _AccessCard({required this.permissions});
+
+  @override
+  Widget build(BuildContext context) {
+    return SettingsSectionCard(
+      title: 'Roles & Permissions',
+      icon: Icons.admin_panel_settings_outlined,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _ChipWrap(
+            title: 'Roles',
+            values: permissions.roles,
+            emptyLabel: 'No roles assigned',
+          ),
+          verticalSpace(16),
+          _ChipWrap(
+            title: 'Permissions',
+            values: permissions.permissions,
+            emptyLabel: 'No permissions available',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SessionsCard extends StatelessWidget {
+  final List<SettingsSessionData> sessions;
+  final bool isActionLoading;
+
+  const _SessionsCard({required this.sessions, required this.isActionLoading});
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<SettingsCubit>();
+    final currentSessionId = cubit.currentSessionId;
+
+    return SettingsSectionCard(
+      title: 'Active Sessions',
+      icon: Icons.devices_other_rounded,
+      child: Column(
+        children: [
+          if (sessions.isEmpty)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'No active sessions were returned.',
+                style: AppTextStyles.font12DarkGreyRegular.copyWith(
+                  color: AppColors.tertiaryColor6,
+                ),
+              ),
+            )
+          else
+            ...sessions.map(
+              (session) => Padding(
+                padding: EdgeInsets.only(bottom: 12.h),
+                child: _SessionTile(
+                  session: session,
+                  isCurrent: session.sessionId == currentSessionId,
+                  isActionLoading: isActionLoading,
+                ),
+              ),
+            ),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: isActionLoading ? null : cubit.deleteAllSessions,
+              icon: const Icon(Icons.logout_rounded),
+              label: const Text('Revoke All Sessions'),
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: AppColors.tertiaryColor2),
+                foregroundColor: AppColors.primaryColor9,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SessionTile extends StatelessWidget {
+  final SettingsSessionData session;
+  final bool isCurrent;
+  final bool isActionLoading;
+
+  const _SessionTile({
+    required this.session,
+    required this.isCurrent,
+    required this.isActionLoading,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(12.r),
+      decoration: BoxDecoration(
+        color: AppColors.neutralColor6,
+        borderRadius: BorderRadius.circular(8.r),
+        border: Border.all(color: AppColors.tertiaryColor2),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            Icons.laptop_mac_rounded,
+            size: 20.sp,
+            color: AppColors.primaryColor9,
+          ),
+          SizedBox(width: 10.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  isCurrent ? 'Current session' : session.sessionState,
+                  style: AppTextStyles.font12DarkGreySemiBold.copyWith(
+                    color: AppColors.primaryColor9,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                SizedBox(height: 4.h),
+                Text(
+                  '${session.ipAddress} - ${session.browserName ?? session.userAgent}',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.font10DarkGreyRegular.copyWith(
+                    color: AppColors.tertiaryColor6,
+                    height: 1.35,
+                  ),
+                ),
+                SizedBox(height: 4.h),
+                Text(
+                  'Last activity ${_formatDate(session.lastActivityAt)}',
+                  style: AppTextStyles.font10DarkGreyRegular.copyWith(
+                    color: AppColors.tertiaryColor6,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            tooltip: 'Revoke session',
+            onPressed: isActionLoading
+                ? null
+                : () => context.read<SettingsCubit>().deleteSession(
+                    session.sessionId,
+                  ),
+            icon: Icon(
+              Icons.close_rounded,
+              size: 18.sp,
+              color: AppColors.primaryColor9,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AccountActionsCard extends StatelessWidget {
+  final bool isActionLoading;
+
+  const _AccountActionsCard({required this.isActionLoading});
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<SettingsCubit>();
+
+    return SettingsSectionCard(
+      title: 'Session Actions',
+      icon: Icons.lock_clock_outlined,
+      child: Column(
+        children: [
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: isActionLoading ? null : cubit.logout,
+              icon: const Icon(Icons.exit_to_app_rounded),
+              label: const Text('Logout'),
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: AppColors.tertiaryColor2),
+                foregroundColor: AppColors.primaryColor9,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ChipWrap extends StatelessWidget {
+  final String title;
+  final List<String> values;
+  final String emptyLabel;
+
+  const _ChipWrap({
+    required this.title,
+    required this.values,
+    required this.emptyLabel,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title.toUpperCase(),
+          style: AppTextStyles.font10DarkGreyRegular.copyWith(
+            color: AppColors.primaryColor9,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.6,
+          ),
+        ),
+        verticalSpace(8),
+        if (values.isEmpty)
+          Text(
+            emptyLabel,
+            style: AppTextStyles.font12DarkGreyRegular.copyWith(
+              color: AppColors.tertiaryColor6,
+            ),
+          )
+        else
+          Wrap(
+            spacing: 8.w,
+            runSpacing: 8.h,
+            children: values
+                .map(
+                  (value) => Chip(
+                    label: Text(value),
+                    backgroundColor: AppColors.neutralColor6,
+                    side: BorderSide(color: AppColors.tertiaryColor2),
+                    labelStyle: AppTextStyles.font10DarkGreyRegular.copyWith(
+                      color: AppColors.primaryColor9,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+      ],
+    );
+  }
+}
+
+class _DetailPill extends StatelessWidget {
+  final String label;
+  final String value;
+  final IconData icon;
+  final Color valueColor;
+
+  const _DetailPill({
+    required this.label,
+    required this.value,
+    required this.icon,
+    required this.valueColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(14.r),
+      decoration: BoxDecoration(
+        color: AppColors.neutralColor6,
+        borderRadius: BorderRadius.circular(8.r),
+        border: Border.all(color: AppColors.tertiaryColor2),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 16.sp, color: valueColor),
+          SizedBox(width: 10.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: AppTextStyles.font10DarkGreyRegular.copyWith(
+                    color: AppColors.tertiaryColor6,
+                  ),
+                ),
+                SizedBox(height: 4.h),
+                Text(
+                  value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.font12DarkGreySemiBold.copyWith(
+                    color: valueColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SettingsErrorState extends StatelessWidget {
+  final String error;
+
+  const _SettingsErrorState({required this.error});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(24.r),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.error_outline_rounded,
+              size: 36.sp,
+              color: AppColors.primaryColor9,
+            ),
+            verticalSpace(12),
+            Text(
+              error,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.font14DarkGreyMedium.copyWith(
+                color: AppColors.primaryColor9,
+              ),
+            ),
+            verticalSpace(16),
+            ElevatedButton.icon(
+              onPressed: () => context.read<SettingsCubit>().loadAccount(),
+              icon: const Icon(Icons.refresh_rounded),
+              label: const Text('Try Again'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+String _initials(SettingsProfileData profile) {
+  final first = profile.firstName.isNotEmpty ? profile.firstName[0] : '';
+  final last = profile.lastName.isNotEmpty ? profile.lastName[0] : '';
+  final initials = '$first$last'.toUpperCase();
+  return initials.isEmpty ? 'EA' : initials;
+}
+
+String _formatDate(String? value) {
+  if (value == null || value.isEmpty) return '-';
+  final parsed = DateTime.tryParse(value);
+  if (parsed == null) return value;
+  final local = parsed.toLocal();
+  final date =
+      '${local.year.toString().padLeft(4, '0')}-${local.month.toString().padLeft(2, '0')}-${local.day.toString().padLeft(2, '0')}';
+  final time =
+      '${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
+  return '$date $time';
 }

@@ -26,8 +26,6 @@ import 'package:eae_mobile/features/settings/logic/settings_cubit.dart';
 import 'package:eae_mobile/features/splash/logic/splash_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../features/secure_access/logic/secure_access_cubit.dart';
-import '../../features/secure_access/presentation/screens/secure_access_screen.dart';
 import '../../features/splash/presentation/screens/splash_screen.dart';
 import 'routes.dart';
 
@@ -42,13 +40,7 @@ class AppRouter {
           ),
         );
 
-      case Routes.secureAccessScreen:
-        return MaterialPageRoute(
-          builder: (_) => BlocProvider(
-            create: (context) => getIt<SecureAccessCubit>(),
-            child: const SecureAccessScreen(),
-          ),
-        );
+      
 
       case Routes.roleSelectionScreen:
         return MaterialPageRoute(builder: (_) => const RoleSelectionScreen());

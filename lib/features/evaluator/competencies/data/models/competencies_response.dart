@@ -28,6 +28,7 @@ class CompetencyMutationResponse {
 
 @JsonSerializable()
 class CompetencyActionResponse {
+  @JsonKey(defaultValue: '')
   final String message;
 
   CompetencyActionResponse({required this.message});

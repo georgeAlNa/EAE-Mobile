@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/di/dependency_injection.dart';
+import '../../../../settings/logic/settings_cubit.dart';
+import '../../../../settings/presentation/screens/settings_screen.dart';
 import '../../../competencies/logic/competencies_cubit.dart';
 import '../../../competencies/presentation/screens/competencies_screen.dart';
 import '../../../exams_management/logic/exams_management_cubit.dart';
@@ -54,6 +56,10 @@ class _EvaluatorNavigationShellState extends State<EvaluatorNavigationShell> {
             label: 'EXAMS',
             icon: Icons.assignment_outlined,
           ),
+          EvaluatorBottomNavItem(
+            label: 'ACCOUNT',
+            icon: Icons.person_outline_rounded,
+          ),
         ],
       ),
     );
@@ -78,6 +84,12 @@ class _EvaluatorNavigationShellState extends State<EvaluatorNavigationShell> {
           key: const ValueKey('evaluator-exams-management'),
           create: (_) => getIt<ExamsManagementCubit>(),
           child: const ExamsManagementScreen(),
+        );
+      case 3:
+        return BlocProvider(
+          key: const ValueKey('evaluator-settings'),
+          create: (_) => getIt<SettingsCubit>(),
+          child: const SettingsScreen(),
         );
       default:
         return BlocProvider(

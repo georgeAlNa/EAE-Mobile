@@ -6,6 +6,16 @@ class AppLinkUrl {
   static const String register = "auth/accept-invite";
   static const String forgotPassword = "auth/password/forgot";
   static const String resetPassword = "auth/password/reset";
+  static const String refreshToken = "auth/refresh";
+  static const String logout = "auth/logout";
+
+  // public identity
+  static const String identityProfile = "identity/profile";
+  static const String identityPermissions = "identity/permissions";
+  static const String identitySessions = "identity/sessions";
+  static String identitySession(String sessionId) =>
+      "identity/sessions/$sessionId";
+  static const String identitySessionsAll = "identity/sessions/all";
 
   // assessment inventory
   static const String exams = "exams";

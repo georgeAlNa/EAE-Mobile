@@ -23,7 +23,7 @@ Map<String, dynamic> _$ExamResponseToJson(ExamResponse instance) =>
     <String, dynamic>{'data': instance.data};
 
 ExamActionResponse _$ExamActionResponseFromJson(Map<String, dynamic> json) =>
-    ExamActionResponse(message: json['message'] as String);
+    ExamActionResponse(message: json['message'] as String? ?? '');
 
 Map<String, dynamic> _$ExamActionResponseToJson(ExamActionResponse instance) =>
     <String, dynamic>{'message': instance.message};

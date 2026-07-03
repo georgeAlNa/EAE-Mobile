@@ -132,6 +132,7 @@ class CreatedRoleData {
 
 @JsonSerializable()
 class RoleActionResponse {
+  @JsonKey(defaultValue: '')
   final String message;
 
   RoleActionResponse({required this.message});

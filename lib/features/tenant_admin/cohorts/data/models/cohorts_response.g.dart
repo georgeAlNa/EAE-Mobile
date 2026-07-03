@@ -106,7 +106,7 @@ Map<String, dynamic> _$CohortMemberToJson(CohortMember instance) =>
 
 CohortActionResponse _$CohortActionResponseFromJson(
   Map<String, dynamic> json,
-) => CohortActionResponse(message: json['message'] as String);
+) => CohortActionResponse(message: json['message'] as String? ?? '');
 
 Map<String, dynamic> _$CohortActionResponseToJson(
   CohortActionResponse instance,

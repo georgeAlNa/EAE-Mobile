@@ -71,7 +71,7 @@ Map<String, dynamic> _$EnrollmentItemToJson(EnrollmentItem instance) =>
 
 EnrollmentActionResponse _$EnrollmentActionResponseFromJson(
   Map<String, dynamic> json,
-) => EnrollmentActionResponse(message: json['message'] as String);
+) => EnrollmentActionResponse(message: json['message'] as String? ?? '');
 
 Map<String, dynamic> _$EnrollmentActionResponseToJson(
   EnrollmentActionResponse instance,
