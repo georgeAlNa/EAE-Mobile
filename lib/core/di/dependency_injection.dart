@@ -8,6 +8,9 @@ import '../../features/candidate/assessment_inventory/data/repos/assessment_inve
 import '../../features/evaluator/competencies/data/datasources/competencies_remote_data_source.dart';
 import '../../features/evaluator/competencies/data/repos/competencies_repo.dart';
 import '../../features/evaluator/competencies/logic/competencies_cubit.dart';
+import '../../features/evaluator/exams_management/data/datasources/exams_management_remote_data_source.dart';
+import '../../features/evaluator/exams_management/data/repos/exams_management_repo.dart';
+import '../../features/evaluator/exams_management/logic/exams_management_cubit.dart';
 import '../../features/evaluator/question_bank_and_categories/data/datasources/question_bank_and_categories_remote_data_source.dart';
 import '../../features/evaluator/question_bank_and_categories/data/repos/question_bank_and_categories_repo.dart';
 import '../../features/evaluator/question_bank_and_categories/logic/question_bank_and_categories_cubit.dart';
@@ -195,6 +198,23 @@ Future<void> setupGetit() async {
   // cubit
   getIt.registerFactory<CompetenciesCubit>(
     () => CompetenciesCubit(competenciesRepo: getIt()),
+  );
+
+  // //! feature - exams management
+  // datasource
+  getIt.registerLazySingleton<ExamsManagementRemoteDataSource>(
+    () => ExamsManagementRemoteDataSourceImpl(apiServicesImpl: getIt()),
+  );
+  // repo
+  getIt.registerLazySingleton<ExamsManagementRepo>(
+    () => ExamsManagementRepo(
+      examsManagementRemoteDataSource: getIt(),
+      networkInfo: getIt(),
+    ),
+  );
+  // cubit
+  getIt.registerFactory<ExamsManagementCubit>(
+    () => ExamsManagementCubit(examsManagementRepo: getIt()),
   );
 
   // //! feature - analytics

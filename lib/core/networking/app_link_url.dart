@@ -10,6 +10,8 @@ class AppLinkUrl {
   // assessment inventory
   static const String exams = "exams";
   static String examDetails(String examId) => "exams/$examId";
+  static String publishExam(String examId) => "exams/$examId/publish";
+  static String archiveExam(String examId) => "exams/$examId/archive";
   static const String analyticsDashboard = "analytics/dashboard";
 
   // users management

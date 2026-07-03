@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../core/constants/colors.dart';
-import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/di/dependency_injection.dart';
 import '../../../competencies/logic/competencies_cubit.dart';
 import '../../../competencies/presentation/screens/competencies_screen.dart';
+import '../../../exams_management/logic/exams_management_cubit.dart';
+import '../../../exams_management/presentation/screens/exams_management_screen.dart';
 import '../../../question_bank_and_categories/logic/question_bank_and_categories_cubit.dart';
 import '../../../question_bank_and_categories/presentation/screens/question_bank_and_categories_screen.dart';
 import '../widgets/evaluator_bottom_nav_bar.dart';
@@ -51,8 +51,8 @@ class _EvaluatorNavigationShellState extends State<EvaluatorNavigationShell> {
             icon: Icons.psychology_alt_outlined,
           ),
           EvaluatorBottomNavItem(
-            label: 'SETTINGS',
-            icon: Icons.settings_outlined,
+            label: 'EXAMS',
+            icon: Icons.assignment_outlined,
           ),
         ],
       ),
@@ -74,7 +74,11 @@ class _EvaluatorNavigationShellState extends State<EvaluatorNavigationShell> {
           child: const CompetenciesScreen(),
         );
       case 2:
-        return const _EvaluatorPlaceholderScreen(title: 'Settings');
+        return BlocProvider(
+          key: const ValueKey('evaluator-exams-management'),
+          create: (_) => getIt<ExamsManagementCubit>(),
+          child: const ExamsManagementScreen(),
+        );
       default:
         return BlocProvider(
           key: const ValueKey('evaluator-question-bank-and-categories'),
@@ -82,38 +86,5 @@ class _EvaluatorNavigationShellState extends State<EvaluatorNavigationShell> {
           child: const QuestionBankAndCategoriesScreen(),
         );
     }
-  }
-}
-
-class _EvaluatorPlaceholderScreen extends StatelessWidget {
-  final String title;
-
-  const _EvaluatorPlaceholderScreen({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Padding(
-        padding: EdgeInsets.all(24.r),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: AppTextStyles.font20DarkGreyBold.copyWith(
-                color: AppColors.primaryColor9,
-              ),
-            ),
-            SizedBox(height: 12.h),
-            Text(
-              'This evaluator module will be connected next.',
-              style: AppTextStyles.font14DarkGreyRegular.copyWith(
-                color: AppColors.tertiaryColor6,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 }
