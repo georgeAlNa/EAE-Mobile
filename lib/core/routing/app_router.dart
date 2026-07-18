@@ -8,11 +8,13 @@ import 'package:eae_mobile/features/auth/logic/login/login_cubit.dart';
 import 'package:eae_mobile/features/auth/logic/register/register_cubit.dart';
 import 'package:eae_mobile/features/auth/logic/forgot_password/forgot_password_cubit.dart';
 import 'package:eae_mobile/features/auth/logic/reset_password/reset_password_cubit.dart';
+import 'package:eae_mobile/features/auth/logic/role_verification/role_verification_cubit.dart';
 import 'package:eae_mobile/features/auth/presentation/screens/forgot_password_screen.dart';
 import 'package:eae_mobile/features/auth/presentation/screens/login_screen.dart';
 import 'package:eae_mobile/features/auth/presentation/screens/register_screen.dart';
 import 'package:eae_mobile/features/auth/presentation/screens/reset_password_screen.dart';
 import 'package:eae_mobile/features/auth/presentation/screens/role_selection_screen.dart';
+import 'package:eae_mobile/features/auth/presentation/screens/role_verification_screen.dart';
 import 'package:eae_mobile/features/evaluator/bottom_nav/presentation/screens/evaluator_navigation_shell.dart';
 import 'package:eae_mobile/features/tenant_admin/bottom_nav/presentation/screens/tenant_admin_navigation_shell.dart';
 import 'package:eae_mobile/features/candidate/assessment_setup/logic/assessment_setup_cubit.dart';
@@ -40,8 +42,6 @@ class AppRouter {
           ),
         );
 
-      
-
       case Routes.roleSelectionScreen:
         return MaterialPageRoute(builder: (_) => const RoleSelectionScreen());
 
@@ -50,6 +50,14 @@ class AppRouter {
           builder: (_) => BlocProvider(
             create: (context) => getIt<LoginCubit>(),
             child: const LoginScreen(),
+          ),
+        );
+
+      case Routes.roleVerificationScreen:
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (context) => getIt<RoleVerificationCubit>()..verifyRole(),
+            child: const RoleVerificationScreen(),
           ),
         );
 

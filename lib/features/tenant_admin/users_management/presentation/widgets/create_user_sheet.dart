@@ -86,6 +86,7 @@ class _CreateUserSheetState extends State<CreateUserSheet> {
               hintText: 'Password',
               labelText: 'Password',
               obscureText: true,
+              validationType: InputValidationType.password,
             ),
             verticalSpace(12),
             TextFieldWidget(
@@ -93,6 +94,7 @@ class _CreateUserSheetState extends State<CreateUserSheet> {
               hintText: 'Confirm password',
               labelText: 'Confirm password',
               obscureText: true,
+              validationType: InputValidationType.password,
             ),
             verticalSpace(20),
             ButtonWidget(

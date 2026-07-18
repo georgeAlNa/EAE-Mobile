@@ -32,6 +32,7 @@ import '../../features/auth/logic/forgot_password/forgot_password_cubit.dart';
 import '../../features/auth/logic/login/login_cubit.dart';
 import '../../features/auth/logic/register/register_cubit.dart';
 import '../../features/auth/logic/reset_password/reset_password_cubit.dart';
+import '../../features/auth/logic/role_verification/role_verification_cubit.dart';
 import '../../features/candidate/assessment_inventory/logic/assessment_inventory_details/assessment_inventory_details_cubit.dart';
 import '../../features/candidate/assessment_inventory/logic/assessment_inventory/assessment_inventory_cubit.dart';
 import '../../features/analytics/logic/analytics_cubit.dart';
@@ -64,6 +65,9 @@ Future<void> setupGetit() async {
   );
   // cubit
   getIt.registerFactory<LoginCubit>(() => LoginCubit(authRepo: getIt()));
+  getIt.registerFactory<RoleVerificationCubit>(
+    () => RoleVerificationCubit(settingsRepo: getIt()),
+  );
   getIt.registerFactory<RegisterCubit>(() => RegisterCubit(authRepo: getIt()));
   getIt.registerFactory<ForgotPasswordCubit>(
     () => ForgotPasswordCubit(authRepo: getIt()),

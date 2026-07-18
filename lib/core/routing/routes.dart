@@ -1,6 +1,7 @@
 class Routes {
   static const String splashScreen = '/splash';
   static const String roleSelectionScreen = '/role-selection';
+  static const String roleVerificationScreen = '/role-verification';
   static const String loginScreen = '/login';
   static const String registerScreen = '/register';
   static const String forgotPasswordScreen = '/forgot-password';
