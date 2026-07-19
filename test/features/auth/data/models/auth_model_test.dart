@@ -2,6 +2,14 @@ import 'package:eae_mobile/features/auth/data/models/login/login_request_body.da
 import 'package:eae_mobile/features/auth/data/models/login/login_response.dart';
 import 'package:eae_mobile/features/auth/data/models/logout/logout_request_body.dart';
 import 'package:eae_mobile/features/auth/data/models/logout/logout_response.dart';
+import 'package:eae_mobile/features/auth/data/models/forgot_password/forgot_password_request_body.dart';
+import 'package:eae_mobile/features/auth/data/models/forgot_password/forgot_password_response.dart';
+import 'package:eae_mobile/features/auth/data/models/refresh_token/refresh_token_request_body.dart';
+import 'package:eae_mobile/features/auth/data/models/refresh_token/refresh_token_response.dart';
+import 'package:eae_mobile/features/auth/data/models/register/register_request_body.dart';
+import 'package:eae_mobile/features/auth/data/models/register/register_response.dart';
+import 'package:eae_mobile/features/auth/data/models/reset_password/reset_password_request_body.dart';
+import 'package:eae_mobile/features/auth/data/models/reset_password/reset_password_response.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -170,6 +178,170 @@ void main() {
       final response = LogoutResponse(message: 'Logged out');
 
       expect(response.toJson(), {'message': 'Logged out'});
+    });
+  });
+
+  group('RegisterRequestBody', () {
+    test('fromJson and toJson use backend field names', () {
+      final request = RegisterRequestBody.fromJson({
+        'email': 'new.user@tenant.com',
+        'token': 'invite-token',
+        'password': 'P@ssw0rd!',
+        'password_confirmation': 'P@ssw0rd!',
+      });
+
+      expect(request.email, 'new.user@tenant.com');
+      expect(request.token, 'invite-token');
+      expect(request.password, 'P@ssw0rd!');
+      expect(request.passwordConfirmation, 'P@ssw0rd!');
+      expect(request.toJson(), {
+        'email': 'new.user@tenant.com',
+        'token': 'invite-token',
+        'password': 'P@ssw0rd!',
+        'password_confirmation': 'P@ssw0rd!',
+      });
+    });
+
+    test('fromJson throws when password_confirmation is missing', () {
+      expect(
+        () => RegisterRequestBody.fromJson({
+          'email': 'new.user@tenant.com',
+          'token': 'invite-token',
+          'password': 'P@ssw0rd!',
+        }),
+        throwsA(isA<TypeError>()),
+      );
+    });
+  });
+
+  group('RegisterResponse', () {
+    test('fromJson parses registration data', () {
+      final response = RegisterResponse.fromJson({
+        'data': {
+          'user_id': 'usr_new',
+          'tenant_id': 'tenant_001',
+          'status': 'active',
+          'token': 'registration-token',
+        },
+      });
+
+      expect(response.data.userId, 'usr_new');
+      expect(response.data.tenantId, 'tenant_001');
+      expect(response.data.status, 'active');
+      expect(response.data.token, 'registration-token');
+    });
+
+    test(
+      'toJson keeps nested RegisterData object with current generator settings',
+      () {
+        final data = RegisterData(
+          userId: 'usr_new',
+          tenantId: 'tenant_001',
+          status: 'active',
+          token: 'registration-token',
+        );
+        final response = RegisterResponse(data: data);
+
+        expect(response.toJson(), {'data': same(data)});
+        expect(data.toJson(), {
+          'user_id': 'usr_new',
+          'tenant_id': 'tenant_001',
+          'status': 'active',
+          'token': 'registration-token',
+        });
+      },
+    );
+  });
+
+  group('ForgotPasswordRequestBody', () {
+    test('fromJson and toJson serialize email', () {
+      final request = ForgotPasswordRequestBody.fromJson({
+        'email': 'user@tenant.com',
+      });
+
+      expect(request.email, 'user@tenant.com');
+      expect(request.toJson(), {'email': 'user@tenant.com'});
+    });
+  });
+
+  group('ForgotPasswordResponse', () {
+    test('fromJson parses nested message', () {
+      final response = ForgotPasswordResponse.fromJson({
+        'data': {'message': 'Reset link sent'},
+      });
+
+      expect(response.data.message, 'Reset link sent');
+    });
+
+    test('toJson keeps nested ForgotPasswordData object', () {
+      final data = ForgotPasswordData(message: 'Reset link sent');
+      final response = ForgotPasswordResponse(data: data);
+
+      expect(response.toJson(), {'data': same(data)});
+      expect(data.toJson(), {'message': 'Reset link sent'});
+    });
+  });
+
+  group('ResetPasswordRequestBody', () {
+    test('fromJson and toJson use backend field names', () {
+      final request = ResetPasswordRequestBody.fromJson({
+        'email': 'user@tenant.com',
+        'token': 'reset-token',
+        'password': 'NewP@ssw0rd!',
+        'password_confirmation': 'NewP@ssw0rd!',
+      });
+
+      expect(request.email, 'user@tenant.com');
+      expect(request.token, 'reset-token');
+      expect(request.password, 'NewP@ssw0rd!');
+      expect(request.passwordConfirmation, 'NewP@ssw0rd!');
+      expect(request.toJson(), {
+        'email': 'user@tenant.com',
+        'token': 'reset-token',
+        'password': 'NewP@ssw0rd!',
+        'password_confirmation': 'NewP@ssw0rd!',
+      });
+    });
+  });
+
+  group('ResetPasswordResponse', () {
+    test('fromJson and toJson serialize message', () {
+      final response = ResetPasswordResponse.fromJson({
+        'message': 'Password reset successfully',
+      });
+
+      expect(response.message, 'Password reset successfully');
+      expect(response.toJson(), {'message': 'Password reset successfully'});
+    });
+  });
+
+  group('RefreshTokenRequestBody', () {
+    test('fromJson and toJson use session_id', () {
+      final request = RefreshTokenRequestBody.fromJson({
+        'session_id': 'sess_old',
+      });
+
+      expect(request.sessionId, 'sess_old');
+      expect(request.toJson(), {'session_id': 'sess_old'});
+    });
+  });
+
+  group('RefreshTokenResponse', () {
+    test('fromJson parses refreshed token data', () {
+      final response = RefreshTokenResponse.fromJson({
+        'data': {'token': 'new-token', 'session_id': 'sess_new'},
+      });
+
+      expect(response.data.token, 'new-token');
+      expect(response.data.sessionId, 'sess_new');
+    });
+
+    test('toJson keeps nested RefreshTokenData object', () {
+      final data = RefreshTokenData(token: 'new-token', sessionId: 'sess_new');
+      final response = RefreshTokenResponse(data: data);
+
+      expect(response.toJson(), {'data': same(data)});
+      expect(data.toJson(), {'token': 'new-token', 'session_id': 'sess_new'});
     });
   });
 }
