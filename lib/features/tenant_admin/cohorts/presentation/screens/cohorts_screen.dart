@@ -4,9 +4,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/helpers/spacing.dart';
-import '../../../../../core/public_widgets/loading_widget.dart';
+import '../../../../../core/public_widgets/app_state_widgets.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
-import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
 import '../../data/models/cohorts_response.dart';
 import '../../logic/cohorts_cubit.dart';
 import '../widgets/cohort_details_sheet.dart';
@@ -25,6 +24,7 @@ class CohortsScreen extends StatefulWidget {
 class _CohortsScreenState extends State<CohortsScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _query = '';
+  CohortsResponse? _cohortsResponse;
 
   @override
   void initState() {
@@ -50,39 +50,72 @@ class _CohortsScreenState extends State<CohortsScreen> {
         child: BlocConsumer<CohortsCubit, CohortsState>(
           listener: (context, state) {
             state.maybeWhen(
-              saveSuccess: (_) {
-                showAppSnackBar(context, 'Cohort saved successfully');
+              loaded: (response) {
+                _cohortsResponse = response;
+              },
+              createCohortSuccess: (_) {
+                showAppSnackBar(context, 'Cohort created successfully');
                 context.read<CohortsCubit>().getCohorts();
               },
-              memberSaveSuccess: (_) {
+              updateCohortSuccess: (_) {
+                showAppSnackBar(context, 'Cohort updated successfully');
+                context.read<CohortsCubit>().getCohorts();
+              },
+              deleteCohortSuccess: (_) {
+                showAppSnackBar(context, 'Cohort deleted successfully');
+                context.read<CohortsCubit>().getCohorts();
+              },
+              addCohortMemberSuccess: (_) {
                 showAppSnackBar(context, 'Member added successfully');
                 context.read<CohortsCubit>().getCohorts();
               },
-              actionSuccess: (_) {
-                showAppSnackBar(context, 'Action completed successfully');
+              removeCohortMemberSuccess: (_) {
+                showAppSnackBar(context, 'Member removed successfully');
                 context.read<CohortsCubit>().getCohorts();
               },
-              error: (error) => showAppSnackBar(context, error),
+              createCohortError: (error) => showAppSnackBar(context, error),
+              updateCohortError: (error) => showAppSnackBar(context, error),
+              deleteCohortError: (error) => showAppSnackBar(context, error),
+              addCohortMemberError: (error) => showAppSnackBar(context, error),
+              removeCohortMemberError: (error) =>
+                  showAppSnackBar(context, error),
               orElse: () {},
             );
           },
           builder: (screenContext, state) {
-            final cohorts = state.maybeWhen(
-              loaded: (response) => response.data,
-              orElse: () => null,
-            );
-            final isLoading = state.maybeWhen(
-              loading: () => true,
-              orElse: () => false,
+            final loadedResponse = state.whenOrNull(
+              loaded: (response) => response,
             );
 
-            if (cohorts == null && isLoading) {
-              return const LoadingWidget();
+            if (loadedResponse != null) {
+              _cohortsResponse = loadedResponse;
+            }
+
+            final cohorts = _cohortsResponse?.data;
+            final isCohortsLoading = state.maybeWhen(
+              loadingCohorts: () => true,
+              orElse: () => false,
+            );
+            final isActionLoading = state.maybeWhen(
+              createCohortLoading: () => true,
+              updateCohortLoading: () => true,
+              deleteCohortLoading: () => true,
+              addCohortMemberLoading: () => true,
+              removeCohortMemberLoading: () => true,
+              orElse: () => false,
+            );
+            final loadError = state.maybeWhen(
+              loadError: (error) => error,
+              orElse: () => null,
+            );
+
+            if (cohorts == null && isCohortsLoading) {
+              return const AppSkeletonListView(itemCount: 4);
             }
 
             if (cohorts == null) {
-              return TenantAdminErrorView(
-                title: 'Unable to load cohorts',
+              return AppRetryErrorView(
+                title: loadError ?? 'Unable to load cohorts',
                 message: 'Check the connection and try again.',
                 onRetry: screenContext.read<CohortsCubit>().getCohorts,
               );
@@ -94,58 +127,75 @@ class _CohortsScreenState extends State<CohortsScreen> {
               children: [
                 RefreshIndicator(
                   onRefresh: screenContext.read<CohortsCubit>().getCohorts,
-                  child: ListView(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 24.w,
-                      vertical: 18.h,
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 220),
+                    switchInCurve: Curves.easeOut,
+                    switchOutCurve: Curves.easeIn,
+                    child: ListView(
+                      key: ValueKey('${visibleCohorts.length}-$_query'),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 24.w,
+                        vertical: 18.h,
+                      ),
+                      children: [
+                        CohortsHeader(
+                          totalCohorts: cohorts.length,
+                          activeCohorts: cohorts
+                              .where((cohort) => cohort.isActive)
+                              .length,
+                          searchController: _searchController,
+                          onCreateCohort: () =>
+                              _showCreateCohortSheet(screenContext),
+                        ),
+                        verticalSpace(18),
+                        CohortsListSection(
+                          cohorts: visibleCohorts,
+                          query: _query,
+                          onDetails: (cohort) => _showCohortDetailsSheet(
+                            context: screenContext,
+                            cohortId: cohort.id,
+                          ),
+                          onEdit: (cohort) => _showUpdateCohortSheet(
+                            context: screenContext,
+                            cohortId: cohort.id,
+                            cohortName: cohort.cohortName,
+                            cohortCode: cohort.cohortCode,
+                            cohortType: cohort.cohortType,
+                            cohortDescription: cohort.cohortDescription,
+                            isActive: cohort.isActive,
+                          ),
+                          onMembers: (cohort) => _showCohortMembersSheet(
+                            context: screenContext,
+                            cohortId: cohort.id,
+                            cohortName: cohort.cohortName,
+                          ),
+                          onDelete: (cohort) => _confirmDeleteCohort(
+                            context: screenContext,
+                            cohortId: cohort.id,
+                            cohortName: cohort.cohortName,
+                          ),
+                        ),
+                      ],
                     ),
-                    children: [
-                      CohortsHeader(
-                        totalCohorts: cohorts.length,
-                        activeCohorts: cohorts
-                            .where((cohort) => cohort.isActive)
-                            .length,
-                        searchController: _searchController,
-                        onCreateCohort: () =>
-                            _showCreateCohortSheet(screenContext),
-                      ),
-                      verticalSpace(18),
-                      CohortsListSection(
-                        cohorts: visibleCohorts,
-                        query: _query,
-                        onDetails: (cohort) => _showCohortDetailsSheet(
-                          context: screenContext,
-                          cohortId: cohort.id,
-                        ),
-                        onEdit: (cohort) => _showUpdateCohortSheet(
-                          context: screenContext,
-                          cohortId: cohort.id,
-                          cohortName: cohort.cohortName,
-                          cohortCode: cohort.cohortCode,
-                          cohortType: cohort.cohortType,
-                          cohortDescription: cohort.cohortDescription,
-                          isActive: cohort.isActive,
-                        ),
-                        onMembers: (cohort) => _showCohortMembersSheet(
-                          context: screenContext,
-                          cohortId: cohort.id,
-                          cohortName: cohort.cohortName,
-                        ),
-                        onDelete: (cohort) => _confirmDeleteCohort(
-                          context: screenContext,
-                          cohortId: cohort.id,
-                          cohortName: cohort.cohortName,
-                        ),
-                      ),
-                    ],
                   ),
                 ),
-                if (isLoading)
-                  Positioned.fill(
-                    child: ColoredBox(
-                      color: AppColors.neutralColor.withValues(alpha: 0.65),
-                      child: const LoadingWidget(),
+                if (isCohortsLoading && cohorts.isNotEmpty)
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: LinearProgressIndicator(
+                      minHeight: 2.h,
+                      color: AppColors.secondaryColor7,
+                      backgroundColor: AppColors.tertiaryColor2,
                     ),
+                  ),
+                if (isActionLoading)
+                  Positioned(
+                    left: 24.w,
+                    right: 24.w,
+                    bottom: 14.h,
+                    child: _CohortActionProgressBanner(state: state),
                   ),
               ],
             );
@@ -219,11 +269,9 @@ class _CohortsScreenState extends State<CohortsScreen> {
       backgroundColor: AppColors.neutralColor,
       builder: (_) => BlocProvider.value(
         value: cubit..getCohortDetails(cohortId),
-        child: const CohortDetailsSheet(),
+        child: CohortDetailsSheet(cohortId: cohortId),
       ),
     );
-
-    cubit.getCohorts();
   }
 
   Future<void> _showCohortMembersSheet({
@@ -242,8 +290,6 @@ class _CohortsScreenState extends State<CohortsScreen> {
         child: CohortMembersSheet(cohortId: cohortId, cohortName: cohortName),
       ),
     );
-
-    cubit.getCohorts();
   }
 
   Future<void> _confirmDeleteCohort({
@@ -272,5 +318,63 @@ class _CohortsScreenState extends State<CohortsScreen> {
     if ((confirmed ?? false) && context.mounted) {
       context.read<CohortsCubit>().deleteCohort(cohortId);
     }
+  }
+}
+
+class _CohortActionProgressBanner extends StatelessWidget {
+  final CohortsState state;
+
+  const _CohortActionProgressBanner({required this.state});
+
+  @override
+  Widget build(BuildContext context) {
+    final message = state.maybeWhen(
+      createCohortLoading: () => 'Creating cohort...',
+      updateCohortLoading: () => 'Updating cohort...',
+      deleteCohortLoading: () => 'Deleting cohort...',
+      addCohortMemberLoading: () => 'Adding member...',
+      removeCohortMemberLoading: () => 'Removing member...',
+      orElse: () => 'Working...',
+    );
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: AppColors.primaryColor9,
+        borderRadius: BorderRadius.circular(8.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.12),
+            blurRadius: 18,
+            offset: Offset(0, 8.h),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 18.w,
+              height: 18.w,
+              child: CircularProgressIndicator(
+                strokeWidth: 2.2.w,
+                color: AppColors.neutralColor,
+              ),
+            ),
+            horizontalSpace(10),
+            Expanded(
+              child: Text(
+                message,
+                style: TextStyle(
+                  color: AppColors.neutralColor,
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

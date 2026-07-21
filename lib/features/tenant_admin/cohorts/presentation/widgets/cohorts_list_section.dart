@@ -37,19 +37,54 @@ class CohortsListSection extends StatelessWidget {
 
     return Column(
       children: cohorts
+          .asMap()
+          .entries
           .map(
-            (cohort) => Padding(
+            (entry) => _AnimatedCohortListItem(
+              index: entry.key,
               padding: EdgeInsets.only(bottom: 12.h),
               child: CohortCard(
-                cohort: cohort,
-                onDetails: () => onDetails(cohort),
-                onEdit: () => onEdit(cohort),
-                onMembers: () => onMembers(cohort),
-                onDelete: () => onDelete(cohort),
+                cohort: entry.value,
+                onDetails: () => onDetails(entry.value),
+                onEdit: () => onEdit(entry.value),
+                onMembers: () => onMembers(entry.value),
+                onDelete: () => onDelete(entry.value),
               ),
             ),
           )
           .toList(),
+    );
+  }
+}
+
+class _AnimatedCohortListItem extends StatelessWidget {
+  final int index;
+  final EdgeInsetsGeometry padding;
+  final Widget child;
+
+  const _AnimatedCohortListItem({
+    required this.index,
+    required this.padding,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      key: ValueKey(index),
+      duration: Duration(milliseconds: 220 + (index * 35).clamp(0, 180)),
+      curve: Curves.easeOutCubic,
+      tween: Tween(begin: 0, end: 1),
+      builder: (context, value, child) {
+        return Opacity(
+          opacity: value,
+          child: Transform.translate(
+            offset: Offset(0, (1 - value) * 14.h),
+            child: child,
+          ),
+        );
+      },
+      child: Padding(padding: padding, child: child),
     );
   }
 }

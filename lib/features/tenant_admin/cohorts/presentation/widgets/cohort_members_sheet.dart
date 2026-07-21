@@ -5,9 +5,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
+import '../../../../../core/public_widgets/app_state_widgets.dart';
 import '../../../../../core/public_widgets/button_widget.dart';
 import '../../../../../core/public_widgets/custom_dropdown.dart';
-import '../../../../../core/public_widgets/loading_widget.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
 import '../../../../../core/public_widgets/text_field_widget.dart';
 import '../../../users_management/presentation/widgets/users_management_sheet_scaffold.dart';
@@ -15,7 +15,7 @@ import '../../data/models/cohorts_request_body.dart';
 import '../../data/models/cohorts_response.dart';
 import '../../logic/cohorts_cubit.dart';
 
-class CohortMembersSheet extends StatelessWidget {
+class CohortMembersSheet extends StatefulWidget {
   final String cohortId;
   final String cohortName;
 
@@ -26,35 +26,98 @@ class CohortMembersSheet extends StatelessWidget {
   });
 
   @override
+  State<CohortMembersSheet> createState() => _CohortMembersSheetState();
+}
+
+class _CohortMembersSheetState extends State<CohortMembersSheet> {
+  List<CohortMember>? _members;
+
+  @override
   Widget build(BuildContext context) {
     return UsersManagementSheetScaffold(
       title: 'Cohort members',
-      subtitle: cohortName,
-      child: BlocBuilder<CohortsCubit, CohortsState>(
-        builder: (context, state) {
-          final members = state.maybeWhen(
-            membersLoaded: (response) => response.data,
-            orElse: () => null,
+      subtitle: widget.cohortName,
+      child: BlocConsumer<CohortsCubit, CohortsState>(
+        listener: (context, state) {
+          state.maybeWhen(
+            cohortMembersLoaded: (response) {
+              _members = response.data;
+            },
+            addCohortMemberSuccess: (_) {
+              context.read<CohortsCubit>().getCohortMembers(widget.cohortId);
+            },
+            removeCohortMemberSuccess: (_) {
+              context.read<CohortsCubit>().getCohortMembers(widget.cohortId);
+            },
+            cohortMembersError: (error) => showAppSnackBar(context, error),
+            orElse: () {},
           );
-          final error = state.maybeWhen(
-            error: (error) => error,
+        },
+        builder: (context, state) {
+          final loaded = state.whenOrNull(
+            cohortMembersLoaded: (response) => response.data,
+          );
+          if (loaded != null) {
+            _members = loaded;
+          }
+
+          final members = _members;
+          final isMembersLoading = state.maybeWhen(
+            cohortMembersLoading: () => true,
+            orElse: () => false,
+          );
+          final isActionLoading = state.maybeWhen(
+            addCohortMemberLoading: () => true,
+            removeCohortMemberLoading: () => true,
+            orElse: () => false,
+          );
+          final loadError = state.maybeWhen(
+            cohortMembersError: (error) => error,
             orElse: () => null,
           );
 
-          if (error != null) {
-            return Text(
-              error,
-              style: AppTextStyles.font14DarkGreyRegular.copyWith(
-                color: AppColors.redWarring,
-              ),
+          if (members == null && isMembersLoading) {
+            return Column(
+              children: [
+                AppSkeletonBox(width: double.infinity, height: 44.h),
+                verticalSpace(14),
+                AppSkeletonBox(width: double.infinity, height: 62.h),
+                verticalSpace(10),
+                AppSkeletonBox(width: double.infinity, height: 62.h),
+              ],
             );
           }
 
           if (members == null) {
-            return SizedBox(height: 180.h, child: const LoadingWidget());
+            return SizedBox(
+              height: 220.h,
+              child: AppRetryErrorView(
+                title: loadError ?? 'Unable to load cohort members',
+                message: 'Check the connection and try again.',
+                onRetry: () => context.read<CohortsCubit>().getCohortMembers(
+                  widget.cohortId,
+                ),
+              ),
+            );
           }
 
-          return _MembersContent(cohortId: cohortId, members: members);
+          return Column(
+            children: [
+              if (isMembersLoading || isActionLoading) ...[
+                LinearProgressIndicator(
+                  minHeight: 2.h,
+                  color: AppColors.secondaryColor7,
+                  backgroundColor: AppColors.tertiaryColor2,
+                ),
+                verticalSpace(12),
+              ],
+              _MembersContent(
+                cohortId: widget.cohortId,
+                members: members,
+                isActionLoading: isActionLoading,
+              ),
+            ],
+          );
         },
       ),
     );
@@ -64,8 +127,13 @@ class CohortMembersSheet extends StatelessWidget {
 class _MembersContent extends StatelessWidget {
   final String cohortId;
   final List<CohortMember> members;
+  final bool isActionLoading;
 
-  const _MembersContent({required this.cohortId, required this.members});
+  const _MembersContent({
+    required this.cohortId,
+    required this.members,
+    required this.isActionLoading,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +147,7 @@ class _MembersContent extends StatelessWidget {
           textStyle: AppTextStyles.font14DarkGreySemiBold.copyWith(
             color: AppColors.neutralColor,
           ),
-          onTap: () => _showAddMemberSheet(context),
+          onTap: isActionLoading ? () {} : () => _showAddMemberSheet(context),
         ),
         verticalSpace(16),
         if (members.isEmpty)
@@ -90,10 +158,17 @@ class _MembersContent extends StatelessWidget {
             ),
           )
         else
-          ...members.map(
-            (member) => Padding(
-              padding: EdgeInsets.only(bottom: 10.h),
-              child: _MemberTile(cohortId: cohortId, member: member),
+          ...members.asMap().entries.map(
+            (entry) => _AnimatedMemberTile(
+              index: entry.key,
+              child: Padding(
+                padding: EdgeInsets.only(bottom: 10.h),
+                child: _MemberTile(
+                  cohortId: cohortId,
+                  member: entry.value,
+                  enabled: !isActionLoading,
+                ),
+              ),
             ),
           ),
       ],
@@ -112,16 +187,19 @@ class _MembersContent extends StatelessWidget {
         child: AddCohortMemberSheet(cohortId: cohortId),
       ),
     );
-
-    cubit.getCohortMembers(cohortId);
   }
 }
 
 class _MemberTile extends StatelessWidget {
   final String cohortId;
   final CohortMember member;
+  final bool enabled;
 
-  const _MemberTile({required this.cohortId, required this.member});
+  const _MemberTile({
+    required this.cohortId,
+    required this.member,
+    required this.enabled,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -157,18 +235,46 @@ class _MemberTile extends StatelessWidget {
           ),
           IconButton.outlined(
             tooltip: 'Remove member',
-            onPressed: () {
-              context.read<CohortsCubit>().removeCohortMember(
-                cohortId,
-                member.userId,
-              );
-              Navigator.pop(context);
-            },
+            onPressed: enabled
+                ? () {
+                    context.read<CohortsCubit>().removeCohortMember(
+                      cohortId,
+                      member.userId,
+                    );
+                  }
+                : null,
             icon: const Icon(Icons.person_remove_outlined),
             style: IconButton.styleFrom(foregroundColor: AppColors.redWarring),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _AnimatedMemberTile extends StatelessWidget {
+  final int index;
+  final Widget child;
+
+  const _AnimatedMemberTile({required this.index, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      key: ValueKey(index),
+      duration: Duration(milliseconds: 220 + (index * 35).clamp(0, 180)),
+      curve: Curves.easeOutCubic,
+      tween: Tween(begin: 0, end: 1),
+      builder: (context, value, child) {
+        return Opacity(
+          opacity: value,
+          child: Transform.translate(
+            offset: Offset(0, (1 - value) * 12.h),
+            child: child,
+          ),
+        );
+      },
+      child: child,
     );
   }
 }

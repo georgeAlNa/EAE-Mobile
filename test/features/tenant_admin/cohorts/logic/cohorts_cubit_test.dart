@@ -53,35 +53,71 @@ UpdateCohortRequestBody updateCohortRequest() => UpdateCohortRequestBody(
 AddCohortMemberRequestBody addMemberRequest() =>
     AddCohortMemberRequestBody(userId: 'user_001', membershipRole: 'candidate');
 
-bool isLoading(CohortsState state) =>
-    state.maybeWhen(loading: () => true, orElse: () => false);
+bool isLoadingCohorts(CohortsState state) =>
+    state.maybeWhen(loadingCohorts: () => true, orElse: () => false);
 
-String? stateError(CohortsState state) =>
-    state.whenOrNull(error: (error) => error);
+bool isDetailsLoading(CohortsState state) =>
+    state.maybeWhen(cohortDetailsLoading: () => true, orElse: () => false);
+
+bool isMembersLoading(CohortsState state) =>
+    state.maybeWhen(cohortMembersLoading: () => true, orElse: () => false);
+
+bool isCreateLoading(CohortsState state) =>
+    state.maybeWhen(createCohortLoading: () => true, orElse: () => false);
+
+bool isUpdateLoading(CohortsState state) =>
+    state.maybeWhen(updateCohortLoading: () => true, orElse: () => false);
+
+bool isDeleteLoading(CohortsState state) =>
+    state.maybeWhen(deleteCohortLoading: () => true, orElse: () => false);
+
+bool isAddMemberLoading(CohortsState state) =>
+    state.maybeWhen(addCohortMemberLoading: () => true, orElse: () => false);
+
+bool isRemoveMemberLoading(CohortsState state) =>
+    state.maybeWhen(removeCohortMemberLoading: () => true, orElse: () => false);
+
+String? stateError(CohortsState state) => state.maybeWhen(
+  loadError: (error) => error,
+  cohortDetailsError: (error) => error,
+  cohortMembersError: (error) => error,
+  createCohortError: (error) => error,
+  updateCohortError: (error) => error,
+  deleteCohortError: (error) => error,
+  addCohortMemberError: (error) => error,
+  removeCohortMemberError: (error) => error,
+  orElse: () => null,
+);
 
 CohortsResponse? loadedCohorts(CohortsState state) =>
     state.whenOrNull(loaded: (response) => response);
 
 CohortDetailsResponse? detailsLoaded(CohortsState state) =>
-    state.whenOrNull(detailsLoaded: (response) => response);
+    state.whenOrNull(cohortDetailsLoaded: (response) => response);
 
 CohortMembersResponse? membersLoaded(CohortsState state) =>
-    state.whenOrNull(membersLoaded: (response) => response);
+    state.whenOrNull(cohortMembersLoaded: (response) => response);
 
-CohortDetailsResponse? saveSuccess(CohortsState state) =>
-    state.whenOrNull(saveSuccess: (response) => response);
+CohortDetailsResponse? createSuccess(CohortsState state) =>
+    state.whenOrNull(createCohortSuccess: (response) => response);
 
-CohortMemberResponse? memberSaveSuccess(CohortsState state) =>
-    state.whenOrNull(memberSaveSuccess: (response) => response);
+CohortDetailsResponse? updateSuccess(CohortsState state) =>
+    state.whenOrNull(updateCohortSuccess: (response) => response);
 
-CohortActionResponse? actionSuccess(CohortsState state) =>
-    state.whenOrNull(actionSuccess: (response) => response);
+CohortMemberResponse? addMemberSuccess(CohortsState state) =>
+    state.whenOrNull(addCohortMemberSuccess: (response) => response);
+
+CohortActionResponse? deleteSuccess(CohortsState state) =>
+    state.whenOrNull(deleteCohortSuccess: (response) => response);
+
+CohortActionResponse? removeMemberSuccess(CohortsState state) =>
+    state.whenOrNull(removeCohortMemberSuccess: (response) => response);
 
 Future<CohortsState> waitForLoadTerminal(CohortsCubit cubit) {
   return cubit.stream.firstWhere(
     (state) => state.maybeWhen(
       loaded: (_) => true,
-      error: (_) => true,
+      loadError: (_) => true,
       orElse: () => false,
     ),
   );
@@ -149,7 +185,7 @@ void main() {
       final emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<CohortsState>(isLoading),
+          predicate<CohortsState>(isLoadingCohorts),
           predicate<CohortsState>(
             (state) => loadedCohorts(state)?.data.single.id == 'cohort_001',
           ),
@@ -160,7 +196,7 @@ void main() {
       await emission;
     });
 
-    test('getCohortDetails emits detailsLoaded', () async {
+    test('getCohortDetails emits cohortDetailsLoaded', () async {
       final cubit = await loadedCubit();
       when(
         () => repo.cohortDetails(any()),
@@ -169,7 +205,7 @@ void main() {
       final emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<CohortsState>(isLoading),
+          predicate<CohortsState>(isDetailsLoading),
           predicate<CohortsState>(
             (state) => detailsLoaded(state)?.data.id == 'cohort_001',
           ),
@@ -180,7 +216,7 @@ void main() {
       await emission;
     });
 
-    test('create and update cohort emit saveSuccess', () async {
+    test('create and update cohort emit specific success states', () async {
       final cubit = await loadedCubit();
       final response = CohortDetailsResponse(data: cohort(id: 'cohort_saved'));
       when(() => repo.createCohort(any())).thenAnswer((_) async => response);
@@ -191,9 +227,9 @@ void main() {
       var emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<CohortsState>(isLoading),
+          predicate<CohortsState>(isCreateLoading),
           predicate<CohortsState>(
-            (state) => saveSuccess(state)?.data.id == 'cohort_saved',
+            (state) => createSuccess(state)?.data.id == 'cohort_saved',
           ),
         ]),
       );
@@ -203,9 +239,9 @@ void main() {
       emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<CohortsState>(isLoading),
+          predicate<CohortsState>(isUpdateLoading),
           predicate<CohortsState>(
-            (state) => saveSuccess(state)?.data.id == 'cohort_saved',
+            (state) => updateSuccess(state)?.data.id == 'cohort_saved',
           ),
         ]),
       );
@@ -213,7 +249,7 @@ void main() {
       await emission;
     });
 
-    test('deleteCohort emits actionSuccess and handles error', () async {
+    test('deleteCohort emits deleteCohortSuccess and handles error', () async {
       final cubit = await loadedCubit();
       when(() => repo.deleteCohort(any())).thenAnswer(
         (_) async => CohortActionResponse(message: 'Cohort deleted'),
@@ -222,9 +258,9 @@ void main() {
       var emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<CohortsState>(isLoading),
+          predicate<CohortsState>(isDeleteLoading),
           predicate<CohortsState>(
-            (state) => actionSuccess(state)?.message == 'Cohort deleted',
+            (state) => deleteSuccess(state)?.message == 'Cohort deleted',
           ),
         ]),
       );
@@ -237,7 +273,7 @@ void main() {
       emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<CohortsState>(isLoading),
+          predicate<CohortsState>(isDeleteLoading),
           predicate<CohortsState>(
             (state) => stateError(state) == 'Cohort not found',
           ),
@@ -247,7 +283,7 @@ void main() {
       await emission;
     });
 
-    test('member methods emit membersLoaded and memberSaveSuccess', () async {
+    test('member methods emit specific member states', () async {
       final cubit = await loadedCubit();
       when(
         () => repo.cohortMembers(any()),
@@ -259,7 +295,7 @@ void main() {
       var emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<CohortsState>(isLoading),
+          predicate<CohortsState>(isMembersLoading),
           predicate<CohortsState>(
             (state) => membersLoaded(state)?.data.single.id == 'member_001',
           ),
@@ -271,9 +307,9 @@ void main() {
       emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<CohortsState>(isLoading),
+          predicate<CohortsState>(isAddMemberLoading),
           predicate<CohortsState>(
-            (state) => memberSaveSuccess(state)?.data.id == 'member_001',
+            (state) => addMemberSuccess(state)?.data.id == 'member_001',
           ),
         ]),
       );
@@ -281,7 +317,7 @@ void main() {
       await emission;
     });
 
-    test('removeCohortMember emits actionSuccess', () async {
+    test('removeCohortMember emits removeCohortMemberSuccess', () async {
       final cubit = await loadedCubit();
       when(() => repo.removeCohortMember(any(), any())).thenAnswer(
         (_) async => CohortActionResponse(message: 'Member removed'),
@@ -290,9 +326,9 @@ void main() {
       final emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<CohortsState>(isLoading),
+          predicate<CohortsState>(isRemoveMemberLoading),
           predicate<CohortsState>(
-            (state) => actionSuccess(state)?.message == 'Member removed',
+            (state) => removeMemberSuccess(state)?.message == 'Member removed',
           ),
         ]),
       );
@@ -308,7 +344,7 @@ void main() {
       final emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<CohortsState>(isLoading),
+          predicate<CohortsState>(isDetailsLoading),
           predicate<CohortsState>(
             (state) => stateError(state) == 'Failed to load cohort details',
           ),

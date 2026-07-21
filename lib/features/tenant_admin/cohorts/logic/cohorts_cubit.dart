@@ -18,41 +18,55 @@ class CohortsCubit extends Cubit<CohortsState> {
   }
 
   Future<void> getCohorts() async {
-    emit(const CohortsState.loading());
+    emit(const CohortsState.loadingCohorts());
 
     try {
       final response = await cohortsRepo.cohorts();
       emit(CohortsState.loaded(response));
     } on NetworkExceptions catch (e) {
-      emit(CohortsState.error(error: NetworkExceptions.getErrorMessage(e)));
+      emit(CohortsState.loadError(error: NetworkExceptions.getErrorMessage(e)));
     } catch (e) {
-      emit(const CohortsState.error(error: 'Failed to load cohorts'));
+      emit(const CohortsState.loadError(error: 'Failed to load cohorts'));
     }
   }
 
   Future<void> getCohortDetails(String cohortId) async {
-    emit(const CohortsState.loading());
+    emit(const CohortsState.cohortDetailsLoading());
 
     try {
       final response = await cohortsRepo.cohortDetails(cohortId);
-      emit(CohortsState.detailsLoaded(response));
+      emit(CohortsState.cohortDetailsLoaded(response));
     } on NetworkExceptions catch (e) {
-      emit(CohortsState.error(error: NetworkExceptions.getErrorMessage(e)));
+      emit(
+        CohortsState.cohortDetailsError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
     } catch (e) {
-      emit(const CohortsState.error(error: 'Failed to load cohort details'));
+      emit(
+        const CohortsState.cohortDetailsError(
+          error: 'Failed to load cohort details',
+        ),
+      );
     }
   }
 
   Future<void> createCohort(CreateCohortRequestBody requestBody) async {
-    emit(const CohortsState.loading());
+    emit(const CohortsState.createCohortLoading());
 
     try {
       final response = await cohortsRepo.createCohort(requestBody);
-      emit(CohortsState.saveSuccess(response));
+      emit(CohortsState.createCohortSuccess(response));
     } on NetworkExceptions catch (e) {
-      emit(CohortsState.error(error: NetworkExceptions.getErrorMessage(e)));
+      emit(
+        CohortsState.createCohortError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
     } catch (e) {
-      emit(const CohortsState.error(error: 'Failed to create cohort'));
+      emit(
+        const CohortsState.createCohortError(error: 'Failed to create cohort'),
+      );
     }
   }
 
@@ -60,41 +74,61 @@ class CohortsCubit extends Cubit<CohortsState> {
     String cohortId,
     UpdateCohortRequestBody requestBody,
   ) async {
-    emit(const CohortsState.loading());
+    emit(const CohortsState.updateCohortLoading());
 
     try {
       final response = await cohortsRepo.updateCohort(cohortId, requestBody);
-      emit(CohortsState.saveSuccess(response));
+      emit(CohortsState.updateCohortSuccess(response));
     } on NetworkExceptions catch (e) {
-      emit(CohortsState.error(error: NetworkExceptions.getErrorMessage(e)));
+      emit(
+        CohortsState.updateCohortError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
     } catch (e) {
-      emit(const CohortsState.error(error: 'Failed to update cohort'));
+      emit(
+        const CohortsState.updateCohortError(error: 'Failed to update cohort'),
+      );
     }
   }
 
   Future<void> deleteCohort(String cohortId) async {
-    emit(const CohortsState.loading());
+    emit(const CohortsState.deleteCohortLoading());
 
     try {
       final response = await cohortsRepo.deleteCohort(cohortId);
-      emit(CohortsState.actionSuccess(response));
+      emit(CohortsState.deleteCohortSuccess(response));
     } on NetworkExceptions catch (e) {
-      emit(CohortsState.error(error: NetworkExceptions.getErrorMessage(e)));
+      emit(
+        CohortsState.deleteCohortError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
     } catch (e) {
-      emit(const CohortsState.error(error: 'Failed to delete cohort'));
+      emit(
+        const CohortsState.deleteCohortError(error: 'Failed to delete cohort'),
+      );
     }
   }
 
   Future<void> getCohortMembers(String cohortId) async {
-    emit(const CohortsState.loading());
+    emit(const CohortsState.cohortMembersLoading());
 
     try {
       final response = await cohortsRepo.cohortMembers(cohortId);
-      emit(CohortsState.membersLoaded(response));
+      emit(CohortsState.cohortMembersLoaded(response));
     } on NetworkExceptions catch (e) {
-      emit(CohortsState.error(error: NetworkExceptions.getErrorMessage(e)));
+      emit(
+        CohortsState.cohortMembersError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
     } catch (e) {
-      emit(const CohortsState.error(error: 'Failed to load cohort members'));
+      emit(
+        const CohortsState.cohortMembersError(
+          error: 'Failed to load cohort members',
+        ),
+      );
     }
   }
 
@@ -102,28 +136,44 @@ class CohortsCubit extends Cubit<CohortsState> {
     String cohortId,
     AddCohortMemberRequestBody requestBody,
   ) async {
-    emit(const CohortsState.loading());
+    emit(const CohortsState.addCohortMemberLoading());
 
     try {
       final response = await cohortsRepo.addCohortMember(cohortId, requestBody);
-      emit(CohortsState.memberSaveSuccess(response));
+      emit(CohortsState.addCohortMemberSuccess(response));
     } on NetworkExceptions catch (e) {
-      emit(CohortsState.error(error: NetworkExceptions.getErrorMessage(e)));
+      emit(
+        CohortsState.addCohortMemberError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
     } catch (e) {
-      emit(const CohortsState.error(error: 'Failed to add cohort member'));
+      emit(
+        const CohortsState.addCohortMemberError(
+          error: 'Failed to add cohort member',
+        ),
+      );
     }
   }
 
   Future<void> removeCohortMember(String cohortId, String userId) async {
-    emit(const CohortsState.loading());
+    emit(const CohortsState.removeCohortMemberLoading());
 
     try {
       final response = await cohortsRepo.removeCohortMember(cohortId, userId);
-      emit(CohortsState.actionSuccess(response));
+      emit(CohortsState.removeCohortMemberSuccess(response));
     } on NetworkExceptions catch (e) {
-      emit(CohortsState.error(error: NetworkExceptions.getErrorMessage(e)));
+      emit(
+        CohortsState.removeCohortMemberError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
     } catch (e) {
-      emit(const CohortsState.error(error: 'Failed to remove cohort member'));
+      emit(
+        const CohortsState.removeCohortMemberError(
+          error: 'Failed to remove cohort member',
+        ),
+      );
     }
   }
 }

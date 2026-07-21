@@ -5,13 +5,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
-import '../../../../../core/public_widgets/loading_widget.dart';
+import '../../../../../core/public_widgets/app_state_widgets.dart';
 import '../../../users_management/presentation/widgets/users_management_sheet_scaffold.dart';
 import '../../data/models/cohorts_response.dart';
 import '../../logic/cohorts_cubit.dart';
 
 class CohortDetailsSheet extends StatelessWidget {
-  const CohortDetailsSheet({super.key});
+  final String cohortId;
+
+  const CohortDetailsSheet({super.key, required this.cohortId});
 
   @override
   Widget build(BuildContext context) {
@@ -21,25 +23,36 @@ class CohortDetailsSheet extends StatelessWidget {
       child: BlocBuilder<CohortsCubit, CohortsState>(
         builder: (context, state) {
           final cohort = state.maybeWhen(
-            detailsLoaded: (response) => response.data,
+            cohortDetailsLoaded: (response) => response.data,
             orElse: () => null,
           );
           final error = state.maybeWhen(
-            error: (error) => error,
+            cohortDetailsError: (error) => error,
             orElse: () => null,
           );
 
           if (error != null) {
-            return Text(
-              error,
-              style: AppTextStyles.font14DarkGreyRegular.copyWith(
-                color: AppColors.redWarring,
+            return SizedBox(
+              height: 220.h,
+              child: AppRetryErrorView(
+                title: error,
+                message: 'Unable to load cohort details.',
+                onRetry: () =>
+                    context.read<CohortsCubit>().getCohortDetails(cohortId),
               ),
             );
           }
 
           if (cohort == null) {
-            return SizedBox(height: 180.h, child: const LoadingWidget());
+            return Column(
+              children: [
+                AppSkeletonBox(width: double.infinity, height: 52.h),
+                verticalSpace(10),
+                AppSkeletonBox(width: double.infinity, height: 52.h),
+                verticalSpace(10),
+                AppSkeletonBox(width: double.infinity, height: 52.h),
+              ],
+            );
           }
 
           return _CohortDetailsContent(cohort: cohort);
