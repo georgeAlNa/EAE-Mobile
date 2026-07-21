@@ -81,11 +81,36 @@ UpdateSecurityPolicyRequestBody securityPolicyRequest() =>
       allowedIpRanges: const ['10.0.0.0/24'],
     );
 
-bool isLoading(RolesAndSecurityState state) =>
-    state.maybeWhen(loading: () => true, orElse: () => false);
+bool isDashboardLoading(RolesAndSecurityState state) =>
+    state.maybeWhen(loadingDashboard: () => true, orElse: () => false);
 
-String? stateError(RolesAndSecurityState state) =>
-    state.whenOrNull(error: (error) => error);
+bool isCreateRoleLoading(RolesAndSecurityState state) =>
+    state.maybeWhen(createRoleLoading: () => true, orElse: () => false);
+
+bool isUpdateRoleLoading(RolesAndSecurityState state) =>
+    state.maybeWhen(updateRoleLoading: () => true, orElse: () => false);
+
+bool isDeleteRoleLoading(RolesAndSecurityState state) =>
+    state.maybeWhen(deleteRoleLoading: () => true, orElse: () => false);
+
+bool isAssignRoleLoading(RolesAndSecurityState state) =>
+    state.maybeWhen(assignRoleLoading: () => true, orElse: () => false);
+
+bool isRemoveRoleLoading(RolesAndSecurityState state) =>
+    state.maybeWhen(removeRoleLoading: () => true, orElse: () => false);
+
+bool isSecurityPolicyUpdateLoading(RolesAndSecurityState state) => state
+    .maybeWhen(securityPolicyUpdateLoading: () => true, orElse: () => false);
+
+String? stateError(RolesAndSecurityState state) => state.whenOrNull(
+  loadError: (error) => error,
+  createRoleError: (error) => error,
+  updateRoleError: (error) => error,
+  deleteRoleError: (error) => error,
+  assignRoleError: (error) => error,
+  removeRoleError: (error) => error,
+  securityPolicyUpdateError: (error) => error,
+);
 
 RolesResponse? loadedRoles(RolesAndSecurityState state) =>
     state.whenOrNull(loaded: (rolesResponse, _) => rolesResponse);
@@ -101,7 +126,12 @@ CreateRoleResponse? createSuccess(RolesAndSecurityState state) =>
     state.whenOrNull(createRoleSuccess: (response) => response);
 
 RoleActionResponse? actionSuccess(RolesAndSecurityState state) =>
-    state.whenOrNull(actionSuccess: (response) => response);
+    state.whenOrNull(
+      updateRoleSuccess: (response) => response,
+      deleteRoleSuccess: (response) => response,
+      assignRoleSuccess: (response) => response,
+      removeRoleSuccess: (response) => response,
+    );
 
 SecurityPolicyResponse? policyUpdateSuccess(RolesAndSecurityState state) =>
     state.whenOrNull(securityPolicyUpdateSuccess: (response) => response);
@@ -110,7 +140,7 @@ Future<RolesAndSecurityState> waitForLoadTerminal(RolesAndSecurityCubit cubit) {
   return cubit.stream.firstWhere(
     (state) => state.maybeWhen(
       loaded: (_, _) => true,
-      error: (_) => true,
+      loadError: (_) => true,
       orElse: () => false,
     ),
   );
@@ -184,7 +214,7 @@ void main() {
       final emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<RolesAndSecurityState>(isLoading),
+          predicate<RolesAndSecurityState>(isDashboardLoading),
           predicate<RolesAndSecurityState>(
             (state) => loadedRoles(state)?.data.single.roleId == 'role_001',
           ),
@@ -210,7 +240,7 @@ void main() {
       var emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<RolesAndSecurityState>(isLoading),
+          predicate<RolesAndSecurityState>(isCreateRoleLoading),
           predicate<RolesAndSecurityState>(
             (state) => createSuccess(state)?.data.roleId == 'role_created',
           ),
@@ -225,7 +255,7 @@ void main() {
       emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<RolesAndSecurityState>(isLoading),
+          predicate<RolesAndSecurityState>(isCreateRoleLoading),
           predicate<RolesAndSecurityState>(
             (state) => stateError(state) == 'Invalid role',
           ),
@@ -253,7 +283,7 @@ void main() {
       var emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<RolesAndSecurityState>(isLoading),
+          predicate<RolesAndSecurityState>(isUpdateRoleLoading),
           predicate<RolesAndSecurityState>(
             (state) => actionSuccess(state)?.message == 'Role updated',
           ),
@@ -265,7 +295,7 @@ void main() {
       emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<RolesAndSecurityState>(isLoading),
+          predicate<RolesAndSecurityState>(isDeleteRoleLoading),
           predicate<RolesAndSecurityState>(
             (state) => actionSuccess(state)?.message == 'Role deleted',
           ),
@@ -277,7 +307,7 @@ void main() {
       emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<RolesAndSecurityState>(isLoading),
+          predicate<RolesAndSecurityState>(isAssignRoleLoading),
           predicate<RolesAndSecurityState>(
             (state) => actionSuccess(state)?.message == 'Role assigned',
           ),
@@ -289,7 +319,7 @@ void main() {
       emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<RolesAndSecurityState>(isLoading),
+          predicate<RolesAndSecurityState>(isRemoveRoleLoading),
           predicate<RolesAndSecurityState>(
             (state) => actionSuccess(state)?.message == 'Role removed',
           ),
@@ -309,7 +339,7 @@ void main() {
       final emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<RolesAndSecurityState>(isLoading),
+          predicate<RolesAndSecurityState>(isSecurityPolicyUpdateLoading),
           predicate<RolesAndSecurityState>(
             (state) =>
                 policyUpdateSuccess(state)?.data.policyId == 'policy_001',
@@ -328,7 +358,7 @@ void main() {
       final emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<RolesAndSecurityState>(isLoading),
+          predicate<RolesAndSecurityState>(isDeleteRoleLoading),
           predicate<RolesAndSecurityState>(
             (state) => stateError(state) == 'Failed to delete role',
           ),

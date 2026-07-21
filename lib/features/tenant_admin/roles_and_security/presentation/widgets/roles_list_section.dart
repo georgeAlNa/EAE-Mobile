@@ -50,19 +50,53 @@ class RolesListSection extends StatelessWidget {
           ),
         ),
         verticalSpace(12),
-        ...roles.map(
-          (role) => Padding(
+        ...roles.asMap().entries.map(
+          (entry) => _AnimatedRoleListItem(
+            index: entry.key,
             padding: EdgeInsets.only(bottom: 12.h),
             child: RoleCard(
-              role: role,
-              onEdit: () => onEditRole(role),
-              onDelete: role.isSystemRole ? null : () => onDeleteRole(role),
-              onAssignUser: () => onAssignUser(role),
-              onRemoveUser: () => onRemoveUser(role),
+              role: entry.value,
+              onEdit: () => onEditRole(entry.value),
+              onDelete: entry.value.isSystemRole
+                  ? null
+                  : () => onDeleteRole(entry.value),
+              onAssignUser: () => onAssignUser(entry.value),
+              onRemoveUser: () => onRemoveUser(entry.value),
             ),
           ),
         ),
       ],
+    );
+  }
+}
+
+class _AnimatedRoleListItem extends StatelessWidget {
+  final int index;
+  final EdgeInsetsGeometry padding;
+  final Widget child;
+
+  const _AnimatedRoleListItem({
+    required this.index,
+    required this.padding,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: Duration(milliseconds: 180 + (index.clamp(0, 6) * 35)),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, child) {
+        return Opacity(
+          opacity: value,
+          child: Transform.translate(
+            offset: Offset(0, (1 - value) * 10.h),
+            child: child,
+          ),
+        );
+      },
+      child: Padding(padding: padding, child: child),
     );
   }
 }

@@ -18,7 +18,7 @@ class RolesAndSecurityCubit extends Cubit<RolesAndSecurityState> {
   }
 
   Future<void> getRolesAndSecurity() async {
-    emit(const RolesAndSecurityState.loading());
+    emit(const RolesAndSecurityState.loadingDashboard());
 
     try {
       final rolesResponse = await rolesAndSecurityRepo.rolesAndSecurity();
@@ -32,13 +32,13 @@ class RolesAndSecurityCubit extends Cubit<RolesAndSecurityState> {
       );
     } on NetworkExceptions catch (e) {
       emit(
-        RolesAndSecurityState.error(
+        RolesAndSecurityState.loadError(
           error: NetworkExceptions.getErrorMessage(e),
         ),
       );
     } catch (e) {
       emit(
-        const RolesAndSecurityState.error(
+        const RolesAndSecurityState.loadError(
           error: 'Failed to load roles and security',
         ),
       );
@@ -46,19 +46,23 @@ class RolesAndSecurityCubit extends Cubit<RolesAndSecurityState> {
   }
 
   Future<void> createRole(CreateRoleRequestBody requestBody) async {
-    emit(const RolesAndSecurityState.loading());
+    emit(const RolesAndSecurityState.createRoleLoading());
 
     try {
       final response = await rolesAndSecurityRepo.createRole(requestBody);
       emit(RolesAndSecurityState.createRoleSuccess(response));
     } on NetworkExceptions catch (e) {
       emit(
-        RolesAndSecurityState.error(
+        RolesAndSecurityState.createRoleError(
           error: NetworkExceptions.getErrorMessage(e),
         ),
       );
     } catch (e) {
-      emit(const RolesAndSecurityState.error(error: 'Failed to create role'));
+      emit(
+        const RolesAndSecurityState.createRoleError(
+          error: 'Failed to create role',
+        ),
+      );
     }
   }
 
@@ -66,86 +70,102 @@ class RolesAndSecurityCubit extends Cubit<RolesAndSecurityState> {
     String roleId,
     UpdateRoleRequestBody requestBody,
   ) async {
-    emit(const RolesAndSecurityState.loading());
+    emit(const RolesAndSecurityState.updateRoleLoading());
 
     try {
       final response = await rolesAndSecurityRepo.updateRole(
         roleId,
         requestBody,
       );
-      emit(RolesAndSecurityState.actionSuccess(response));
+      emit(RolesAndSecurityState.updateRoleSuccess(response));
     } on NetworkExceptions catch (e) {
       emit(
-        RolesAndSecurityState.error(
+        RolesAndSecurityState.updateRoleError(
           error: NetworkExceptions.getErrorMessage(e),
         ),
       );
     } catch (e) {
-      emit(const RolesAndSecurityState.error(error: 'Failed to update role'));
+      emit(
+        const RolesAndSecurityState.updateRoleError(
+          error: 'Failed to update role',
+        ),
+      );
     }
   }
 
   Future<void> deleteRole(String roleId) async {
-    emit(const RolesAndSecurityState.loading());
+    emit(const RolesAndSecurityState.deleteRoleLoading());
 
     try {
       final response = await rolesAndSecurityRepo.deleteRole(roleId);
-      emit(RolesAndSecurityState.actionSuccess(response));
+      emit(RolesAndSecurityState.deleteRoleSuccess(response));
     } on NetworkExceptions catch (e) {
       emit(
-        RolesAndSecurityState.error(
+        RolesAndSecurityState.deleteRoleError(
           error: NetworkExceptions.getErrorMessage(e),
         ),
       );
     } catch (e) {
-      emit(const RolesAndSecurityState.error(error: 'Failed to delete role'));
+      emit(
+        const RolesAndSecurityState.deleteRoleError(
+          error: 'Failed to delete role',
+        ),
+      );
     }
   }
 
   Future<void> assignRoleToUser(String roleId, String userId) async {
-    emit(const RolesAndSecurityState.loading());
+    emit(const RolesAndSecurityState.assignRoleLoading());
 
     try {
       final response = await rolesAndSecurityRepo.assignRoleToUser(
         roleId,
         userId,
       );
-      emit(RolesAndSecurityState.actionSuccess(response));
+      emit(RolesAndSecurityState.assignRoleSuccess(response));
     } on NetworkExceptions catch (e) {
       emit(
-        RolesAndSecurityState.error(
+        RolesAndSecurityState.assignRoleError(
           error: NetworkExceptions.getErrorMessage(e),
         ),
       );
     } catch (e) {
-      emit(const RolesAndSecurityState.error(error: 'Failed to assign role'));
+      emit(
+        const RolesAndSecurityState.assignRoleError(
+          error: 'Failed to assign role',
+        ),
+      );
     }
   }
 
   Future<void> removeRoleFromUser(String roleId, String userId) async {
-    emit(const RolesAndSecurityState.loading());
+    emit(const RolesAndSecurityState.removeRoleLoading());
 
     try {
       final response = await rolesAndSecurityRepo.removeRoleFromUser(
         roleId,
         userId,
       );
-      emit(RolesAndSecurityState.actionSuccess(response));
+      emit(RolesAndSecurityState.removeRoleSuccess(response));
     } on NetworkExceptions catch (e) {
       emit(
-        RolesAndSecurityState.error(
+        RolesAndSecurityState.removeRoleError(
           error: NetworkExceptions.getErrorMessage(e),
         ),
       );
     } catch (e) {
-      emit(const RolesAndSecurityState.error(error: 'Failed to remove role'));
+      emit(
+        const RolesAndSecurityState.removeRoleError(
+          error: 'Failed to remove role',
+        ),
+      );
     }
   }
 
   Future<void> updateSecurityPolicy(
     UpdateSecurityPolicyRequestBody requestBody,
   ) async {
-    emit(const RolesAndSecurityState.loading());
+    emit(const RolesAndSecurityState.securityPolicyUpdateLoading());
 
     try {
       final response = await rolesAndSecurityRepo.updateSecurityPolicy(
@@ -154,13 +174,13 @@ class RolesAndSecurityCubit extends Cubit<RolesAndSecurityState> {
       emit(RolesAndSecurityState.securityPolicyUpdateSuccess(response));
     } on NetworkExceptions catch (e) {
       emit(
-        RolesAndSecurityState.error(
+        RolesAndSecurityState.securityPolicyUpdateError(
           error: NetworkExceptions.getErrorMessage(e),
         ),
       );
     } catch (e) {
       emit(
-        const RolesAndSecurityState.error(
+        const RolesAndSecurityState.securityPolicyUpdateError(
           error: 'Failed to update security policy',
         ),
       );
