@@ -5,13 +5,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
-import '../../../../../core/public_widgets/loading_widget.dart';
+import '../../../../../core/public_widgets/app_state_widgets.dart';
 import '../../data/models/users_management_response.dart';
 import '../../logic/users_management_cubit.dart';
 import 'users_management_sheet_scaffold.dart';
 
 class UserDetailsSheet extends StatelessWidget {
-  const UserDetailsSheet({super.key});
+  final String userId;
+
+  const UserDetailsSheet({super.key, required this.userId});
 
   @override
   Widget build(BuildContext context) {
@@ -25,25 +27,55 @@ class UserDetailsSheet extends StatelessWidget {
             orElse: () => null,
           );
           final error = state.maybeWhen(
-            error: (error) => error,
+            userDetailsError: (error) => error,
             orElse: () => null,
           );
 
           if (error != null) {
-            return Text(
-              error,
-              style: AppTextStyles.font14DarkGreyRegular.copyWith(
-                color: AppColors.redWarring,
+            return SizedBox(
+              height: 220.h,
+              child: AppRetryErrorView(
+                title: 'Unable to load user details',
+                message: error,
+                onRetry: () =>
+                    context.read<UsersManagementCubit>().getUserDetails(userId),
               ),
             );
           }
 
           if (user == null) {
-            return SizedBox(height: 180.h, child: const LoadingWidget());
+            return const _UserDetailsSkeleton();
           }
 
-          return _UserDetailsContent(user: user);
+          return AnimatedSwitcher(
+            duration: const Duration(milliseconds: 220),
+            child: _UserDetailsContent(key: ValueKey(user.id), user: user),
+          );
         },
+      ),
+    );
+  }
+}
+
+class _UserDetailsSkeleton extends StatelessWidget {
+  const _UserDetailsSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: List.generate(
+        6,
+        (index) => Padding(
+          padding: EdgeInsets.only(bottom: 12.h),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AppSkeletonBox(width: 90.w, height: 12.h),
+              verticalSpace(7),
+              AppSkeletonBox(width: double.infinity, height: 20.h),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -52,7 +84,7 @@ class UserDetailsSheet extends StatelessWidget {
 class _UserDetailsContent extends StatelessWidget {
   final UserManagementUser user;
 
-  const _UserDetailsContent({required this.user});
+  const _UserDetailsContent({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {

@@ -50,11 +50,32 @@ ResetUserPasswordRequestBody resetPasswordRequest() =>
       newPasswordConfirmation: 'NewPassword123!',
     );
 
-bool isLoading(UsersManagementState state) =>
-    state.maybeWhen(loading: () => true, orElse: () => false);
+bool isUsersLoading(UsersManagementState state) =>
+    state.maybeWhen(usersLoading: () => true, orElse: () => false);
 
-String? stateError(UsersManagementState state) =>
-    state.whenOrNull(error: (error) => error);
+bool isUserDetailsLoading(UsersManagementState state) =>
+    state.maybeWhen(userDetailsLoading: () => true, orElse: () => false);
+
+bool isCreateUserLoading(UsersManagementState state) =>
+    state.maybeWhen(createUserLoading: () => true, orElse: () => false);
+
+bool isInviteUserLoading(UsersManagementState state) =>
+    state.maybeWhen(inviteUserLoading: () => true, orElse: () => false);
+
+bool isDeactivateUserLoading(UsersManagementState state) =>
+    state.maybeWhen(deactivateUserLoading: () => true, orElse: () => false);
+
+bool isResetPasswordLoading(UsersManagementState state) =>
+    state.maybeWhen(resetPasswordLoading: () => true, orElse: () => false);
+
+String? stateError(UsersManagementState state) => state.whenOrNull(
+  usersLoadError: (error) => error,
+  userDetailsError: (error) => error,
+  createUserError: (error) => error,
+  inviteUserError: (error) => error,
+  deactivateUserError: (error) => error,
+  resetPasswordError: (error) => error,
+);
 
 UsersManagementResponse? usersLoaded(UsersManagementState state) =>
     state.whenOrNull(usersLoaded: (response) => response);
@@ -69,13 +90,16 @@ InviteUserResponse? inviteSuccess(UsersManagementState state) =>
     state.whenOrNull(inviteSuccess: (response) => response);
 
 UserActionResponse? actionSuccess(UsersManagementState state) =>
-    state.whenOrNull(actionSuccess: (response) => response);
+    state.whenOrNull(
+      deactivateSuccess: (response) => response,
+      resetPasswordSuccess: (response) => response,
+    );
 
 Future<UsersManagementState> waitForUsersTerminal(UsersManagementCubit cubit) {
   return cubit.stream.firstWhere(
     (state) => state.maybeWhen(
       usersLoaded: (_) => true,
-      error: (_) => true,
+      usersLoadError: (_) => true,
       orElse: () => false,
     ),
   );
@@ -143,7 +167,7 @@ void main() {
       final emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<UsersManagementState>(isLoading),
+          predicate<UsersManagementState>(isUsersLoading),
           predicate<UsersManagementState>(
             (state) => usersLoaded(state)?.data.single.id == 'user_001',
           ),
@@ -163,7 +187,7 @@ void main() {
       final emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<UsersManagementState>(isLoading),
+          predicate<UsersManagementState>(isUserDetailsLoading),
           predicate<UsersManagementState>(
             (state) => userLoaded(state)?.data.id == 'user_001',
           ),
@@ -184,7 +208,7 @@ void main() {
       var emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<UsersManagementState>(isLoading),
+          predicate<UsersManagementState>(isCreateUserLoading),
           predicate<UsersManagementState>(
             (state) => createSuccess(state)?.data.userId == 'user_created',
           ),
@@ -199,7 +223,7 @@ void main() {
       emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<UsersManagementState>(isLoading),
+          predicate<UsersManagementState>(isCreateUserLoading),
           predicate<UsersManagementState>(
             (state) => stateError(state) == 'Invalid user',
           ),
@@ -224,7 +248,7 @@ void main() {
       final emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<UsersManagementState>(isLoading),
+          predicate<UsersManagementState>(isInviteUserLoading),
           predicate<UsersManagementState>(
             (state) => inviteSuccess(state)?.data.status == 'invited',
           ),
@@ -247,7 +271,7 @@ void main() {
       var emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<UsersManagementState>(isLoading),
+          predicate<UsersManagementState>(isDeactivateUserLoading),
           predicate<UsersManagementState>(
             (state) => actionSuccess(state)?.message == 'User deactivated',
           ),
@@ -259,7 +283,7 @@ void main() {
       emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<UsersManagementState>(isLoading),
+          predicate<UsersManagementState>(isResetPasswordLoading),
           predicate<UsersManagementState>(
             (state) => actionSuccess(state)?.message == 'Password reset',
           ),
@@ -276,7 +300,7 @@ void main() {
       final emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<UsersManagementState>(isLoading),
+          predicate<UsersManagementState>(isUserDetailsLoading),
           predicate<UsersManagementState>(
             (state) => stateError(state) == 'Failed to load user details',
           ),

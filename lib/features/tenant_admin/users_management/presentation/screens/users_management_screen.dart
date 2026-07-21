@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/helpers/spacing.dart';
-import '../../../../../core/public_widgets/loading_widget.dart';
+import '../../../../../core/public_widgets/app_state_widgets.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
 import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
 import '../../data/models/users_management_response.dart';
@@ -26,6 +26,7 @@ class UsersManagementScreen extends StatefulWidget {
 class _UsersManagementScreenState extends State<UsersManagementScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _query = '';
+  List<UserManagementUser>? _users;
 
   @override
   void initState() {
@@ -51,6 +52,7 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
         child: BlocConsumer<UsersManagementCubit, UsersManagementState>(
           listener: (context, state) {
             state.maybeWhen(
+              usersLoaded: (response) => _users = response.data,
               createSuccess: (_) {
                 showAppSnackBar(context, 'User created successfully');
                 context.read<UsersManagementCubit>().getUsers();
@@ -59,31 +61,53 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
                 showAppSnackBar(context, 'Invitation sent successfully');
                 context.read<UsersManagementCubit>().getUsers();
               },
-              actionSuccess: (_) {
-                showAppSnackBar(context, 'Action completed successfully');
+              deactivateSuccess: (_) {
+                showAppSnackBar(context, 'User deactivated successfully');
                 context.read<UsersManagementCubit>().getUsers();
               },
-              error: (error) => showAppSnackBar(context, error),
+              resetPasswordSuccess: (_) {
+                showAppSnackBar(context, 'Password reset successfully');
+              },
+              createUserError: (error) => showAppSnackBar(context, error),
+              inviteUserError: (error) => showAppSnackBar(context, error),
+              deactivateUserError: (error) => showAppSnackBar(context, error),
+              resetPasswordError: (error) => showAppSnackBar(context, error),
               orElse: () {},
             );
           },
           builder: (screenContext, state) {
-            final users = state.maybeWhen(
+            final loadedUsers = state.maybeWhen(
               usersLoaded: (response) => response.data,
               orElse: () => null,
             );
-            final isLoading = state.maybeWhen(
-              loading: () => true,
+            if (loadedUsers != null) {
+              _users = loadedUsers;
+            }
+
+            final users = _users;
+            final isUsersLoading = state.maybeWhen(
+              usersLoading: () => true,
               orElse: () => false,
             );
+            final isActionLoading = state.maybeWhen(
+              createUserLoading: () => true,
+              inviteUserLoading: () => true,
+              deactivateUserLoading: () => true,
+              resetPasswordLoading: () => true,
+              orElse: () => false,
+            );
+            final loadError = state.maybeWhen(
+              usersLoadError: (error) => error,
+              orElse: () => null,
+            );
 
-            if (users == null && isLoading) {
-              return const LoadingWidget();
+            if (users == null && isUsersLoading) {
+              return const AppSkeletonListView();
             }
 
             if (users == null) {
-              return TenantAdminErrorView(
-                title: 'Unable to load users',
+              return AppRetryErrorView(
+                title: loadError ?? 'Unable to load users',
                 message: 'Check the connection and try again.',
                 onRetry: screenContext.read<UsersManagementCubit>().getUsers,
               );
@@ -97,71 +121,92 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
                   onRefresh: screenContext
                       .read<UsersManagementCubit>()
                       .getUsers,
-                  child: ListView.separated(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 24.w,
-                      vertical: 18.h,
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 220),
+                    switchInCurve: Curves.easeOut,
+                    switchOutCurve: Curves.easeIn,
+                    child: ListView.separated(
+                      key: ValueKey('${visibleUsers.length}-$_query'),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 24.w,
+                        vertical: 18.h,
+                      ),
+                      itemCount: visibleUsers.isEmpty
+                          ? 2
+                          : visibleUsers.length + 1,
+                      separatorBuilder: (_, _) => verticalSpace(12),
+                      itemBuilder: (_, index) {
+                        if (index == 0) {
+                          return UsersManagementHeader(
+                            totalUsers: users.length,
+                            activeUsers: users
+                                .where((user) => user.isActive)
+                                .length,
+                            searchController: _searchController,
+                            onCreateUser: () =>
+                                _showCreateUserSheet(screenContext),
+                            onInviteUser: () =>
+                                _showInviteUserSheet(screenContext),
+                          );
+                        }
+
+                        if (visibleUsers.isEmpty) {
+                          return TenantAdminEmptyState(
+                            icon: Icons.manage_accounts_outlined,
+                            title: _query.isEmpty
+                                ? 'No users yet'
+                                : 'No matching users',
+                            message: _query.isEmpty
+                                ? 'Create or invite users to manage tenant access.'
+                                : 'Try another name, email, status, or user type.',
+                          );
+                        }
+
+                        final user = visibleUsers[index - 1];
+                        return _AnimatedListItem(
+                          index: index,
+                          child: UserManagementCard(
+                            user: user,
+                            onDetails: () => _showUserDetailsSheet(
+                              context: screenContext,
+                              userId: user.id,
+                            ),
+                            onResetPassword: () => _showResetPasswordSheet(
+                              context: screenContext,
+                              userId: user.id,
+                              userName: '${user.firstName} ${user.lastName}',
+                            ),
+                            onDeactivate: user.isActive
+                                ? () => _confirmDeactivateUser(
+                                    context: screenContext,
+                                    userId: user.id,
+                                    userName:
+                                        '${user.firstName} ${user.lastName}',
+                                  )
+                                : null,
+                          ),
+                        );
+                      },
                     ),
-                    itemCount: visibleUsers.isEmpty
-                        ? 2
-                        : visibleUsers.length + 1,
-                    separatorBuilder: (_, _) => verticalSpace(12),
-                    itemBuilder: (_, index) {
-                      if (index == 0) {
-                        return UsersManagementHeader(
-                          totalUsers: users.length,
-                          activeUsers: users
-                              .where((user) => user.isActive)
-                              .length,
-                          searchController: _searchController,
-                          onCreateUser: () =>
-                              _showCreateUserSheet(screenContext),
-                          onInviteUser: () =>
-                              _showInviteUserSheet(screenContext),
-                        );
-                      }
-
-                      if (visibleUsers.isEmpty) {
-                        return TenantAdminEmptyState(
-                          icon: Icons.manage_accounts_outlined,
-                          title: _query.isEmpty
-                              ? 'No users yet'
-                              : 'No matching users',
-                          message: _query.isEmpty
-                              ? 'Create or invite users to manage tenant access.'
-                              : 'Try another name, email, status, or user type.',
-                        );
-                      }
-
-                      final user = visibleUsers[index - 1];
-                      return UserManagementCard(
-                        user: user,
-                        onDetails: () => _showUserDetailsSheet(
-                          context: screenContext,
-                          userId: user.id,
-                        ),
-                        onResetPassword: () => _showResetPasswordSheet(
-                          context: screenContext,
-                          userId: user.id,
-                          userName: '${user.firstName} ${user.lastName}',
-                        ),
-                        onDeactivate: user.isActive
-                            ? () => _confirmDeactivateUser(
-                                context: screenContext,
-                                userId: user.id,
-                                userName: '${user.firstName} ${user.lastName}',
-                              )
-                            : null,
-                      );
-                    },
                   ),
                 ),
-                if (isLoading)
-                  Positioned.fill(
-                    child: ColoredBox(
-                      color: AppColors.neutralColor.withValues(alpha: 0.65),
-                      child: const LoadingWidget(),
+                if (isUsersLoading && users.isNotEmpty)
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: LinearProgressIndicator(
+                      minHeight: 2.h,
+                      color: AppColors.secondaryColor7,
+                      backgroundColor: AppColors.tertiaryColor2,
                     ),
+                  ),
+                if (isActionLoading)
+                  Positioned(
+                    left: 24.w,
+                    right: 24.w,
+                    bottom: 14.h,
+                    child: _ActionProgressBanner(state: state),
                   ),
               ],
             );
@@ -219,13 +264,9 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
       backgroundColor: AppColors.neutralColor,
       builder: (_) => BlocProvider.value(
         value: cubit..getUserDetails(userId),
-        child: const UserDetailsSheet(),
+        child: UserDetailsSheet(userId: userId),
       ),
     );
-
-    if (context.mounted) {
-      cubit.getUsers();
-    }
   }
 
   Future<void> _showResetPasswordSheet({
@@ -273,5 +314,92 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
       final cubit = context.read<UsersManagementCubit>();
       cubit.deactivateUser(userId);
     }
+  }
+}
+
+class _AnimatedListItem extends StatelessWidget {
+  final int index;
+  final Widget child;
+
+  const _AnimatedListItem({required this.index, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: Duration(milliseconds: 180 + (index.clamp(0, 6) * 35)),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, child) {
+        return Opacity(
+          opacity: value,
+          child: Transform.translate(
+            offset: Offset(0, (1 - value) * 10.h),
+            child: child,
+          ),
+        );
+      },
+      child: child,
+    );
+  }
+}
+
+class _ActionProgressBanner extends StatelessWidget {
+  final UsersManagementState state;
+
+  const _ActionProgressBanner({required this.state});
+
+  @override
+  Widget build(BuildContext context) {
+    final message = state.maybeWhen(
+      createUserLoading: () => 'Creating user...',
+      inviteUserLoading: () => 'Sending invitation...',
+      deactivateUserLoading: () => 'Deactivating user...',
+      resetPasswordLoading: () => 'Resetting password...',
+      orElse: () => 'Working...',
+    );
+
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 180),
+      child: DecoratedBox(
+        key: ValueKey(message),
+        decoration: BoxDecoration(
+          color: AppColors.primaryColor9,
+          borderRadius: BorderRadius.circular(8.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.12),
+              blurRadius: 18,
+              offset: Offset(0, 8.h),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+          child: Row(
+            children: [
+              SizedBox(
+                width: 18.w,
+                height: 18.w,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.2.w,
+                  color: AppColors.neutralColor,
+                ),
+              ),
+              horizontalSpace(10),
+              Expanded(
+                child: Text(
+                  message,
+                  style: TextStyle(
+                    color: AppColors.neutralColor,
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

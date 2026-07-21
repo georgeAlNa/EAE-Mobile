@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
+import '../../../../../core/public_widgets/app_state_widgets.dart';
 
 class TenantAdminSearchField extends StatelessWidget {
   final TextEditingController controller;
@@ -170,43 +171,7 @@ class TenantAdminErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.all(24.r),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.cloud_off_outlined,
-              color: AppColors.tertiaryColor6,
-              size: 38.sp,
-            ),
-            verticalSpace(12),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.font14DarkGreySemiBold.copyWith(
-                color: AppColors.primaryColor9,
-              ),
-            ),
-            verticalSpace(6),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.font12DarkGreyRegular.copyWith(
-                color: AppColors.tertiaryColor6,
-              ),
-            ),
-            verticalSpace(16),
-            FilledButton.icon(
-              onPressed: onRetry,
-              icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
-            ),
-          ],
-        ),
-      ),
-    );
+    return AppRetryErrorView(title: title, message: message, onRetry: onRetry);
   }
 }
 
