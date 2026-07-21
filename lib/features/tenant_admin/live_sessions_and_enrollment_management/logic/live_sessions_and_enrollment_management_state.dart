@@ -4,17 +4,28 @@ part of 'live_sessions_and_enrollment_management_cubit.dart';
 class LiveSessionsAndEnrollmentManagementState
     with _$LiveSessionsAndEnrollmentManagementState {
   const factory LiveSessionsAndEnrollmentManagementState.initial() = _Initial;
-  const factory LiveSessionsAndEnrollmentManagementState.loading() = _Loading;
+  const factory LiveSessionsAndEnrollmentManagementState.enrollmentsLoading() =
+      _EnrollmentsLoading;
   const factory LiveSessionsAndEnrollmentManagementState.loaded(
     EnrollmentsResponse response,
   ) = _Loaded;
+  const factory LiveSessionsAndEnrollmentManagementState.loadError({
+    required String error,
+  }) = _LoadError;
+  const factory LiveSessionsAndEnrollmentManagementState.createLoading() =
+      _CreateLoading;
   const factory LiveSessionsAndEnrollmentManagementState.createSuccess(
     EnrollmentResponse response,
   ) = _CreateSuccess;
-  const factory LiveSessionsAndEnrollmentManagementState.actionSuccess(
-    EnrollmentActionResponse response,
-  ) = _ActionSuccess;
-  const factory LiveSessionsAndEnrollmentManagementState.error({
+  const factory LiveSessionsAndEnrollmentManagementState.createError({
     required String error,
-  }) = _Error;
+  }) = _CreateError;
+  const factory LiveSessionsAndEnrollmentManagementState.deleteLoading() =
+      _DeleteLoading;
+  const factory LiveSessionsAndEnrollmentManagementState.deleteSuccess(
+    EnrollmentActionResponse response,
+  ) = _DeleteSuccess;
+  const factory LiveSessionsAndEnrollmentManagementState.deleteError({
+    required String error,
+  }) = _DeleteError;
 }

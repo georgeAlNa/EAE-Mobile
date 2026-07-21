@@ -55,16 +55,20 @@ extension LiveSessionsAndEnrollmentManagementStatePatterns on LiveSessionsAndEnr
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Loading value)?  loading,TResult Function( _Loaded value)?  loaded,TResult Function( _CreateSuccess value)?  createSuccess,TResult Function( _ActionSuccess value)?  actionSuccess,TResult Function( _Error value)?  error,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _EnrollmentsLoading value)?  enrollmentsLoading,TResult Function( _Loaded value)?  loaded,TResult Function( _LoadError value)?  loadError,TResult Function( _CreateLoading value)?  createLoading,TResult Function( _CreateSuccess value)?  createSuccess,TResult Function( _CreateError value)?  createError,TResult Function( _DeleteLoading value)?  deleteLoading,TResult Function( _DeleteSuccess value)?  deleteSuccess,TResult Function( _DeleteError value)?  deleteError,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
-return initial(_that);case _Loading() when loading != null:
-return loading(_that);case _Loaded() when loaded != null:
-return loaded(_that);case _CreateSuccess() when createSuccess != null:
-return createSuccess(_that);case _ActionSuccess() when actionSuccess != null:
-return actionSuccess(_that);case _Error() when error != null:
-return error(_that);case _:
+return initial(_that);case _EnrollmentsLoading() when enrollmentsLoading != null:
+return enrollmentsLoading(_that);case _Loaded() when loaded != null:
+return loaded(_that);case _LoadError() when loadError != null:
+return loadError(_that);case _CreateLoading() when createLoading != null:
+return createLoading(_that);case _CreateSuccess() when createSuccess != null:
+return createSuccess(_that);case _CreateError() when createError != null:
+return createError(_that);case _DeleteLoading() when deleteLoading != null:
+return deleteLoading(_that);case _DeleteSuccess() when deleteSuccess != null:
+return deleteSuccess(_that);case _DeleteError() when deleteError != null:
+return deleteError(_that);case _:
   return orElse();
 
 }
@@ -82,16 +86,20 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Loading value)  loading,required TResult Function( _Loaded value)  loaded,required TResult Function( _CreateSuccess value)  createSuccess,required TResult Function( _ActionSuccess value)  actionSuccess,required TResult Function( _Error value)  error,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _EnrollmentsLoading value)  enrollmentsLoading,required TResult Function( _Loaded value)  loaded,required TResult Function( _LoadError value)  loadError,required TResult Function( _CreateLoading value)  createLoading,required TResult Function( _CreateSuccess value)  createSuccess,required TResult Function( _CreateError value)  createError,required TResult Function( _DeleteLoading value)  deleteLoading,required TResult Function( _DeleteSuccess value)  deleteSuccess,required TResult Function( _DeleteError value)  deleteError,}){
 final _that = this;
 switch (_that) {
 case _Initial():
-return initial(_that);case _Loading():
-return loading(_that);case _Loaded():
-return loaded(_that);case _CreateSuccess():
-return createSuccess(_that);case _ActionSuccess():
-return actionSuccess(_that);case _Error():
-return error(_that);case _:
+return initial(_that);case _EnrollmentsLoading():
+return enrollmentsLoading(_that);case _Loaded():
+return loaded(_that);case _LoadError():
+return loadError(_that);case _CreateLoading():
+return createLoading(_that);case _CreateSuccess():
+return createSuccess(_that);case _CreateError():
+return createError(_that);case _DeleteLoading():
+return deleteLoading(_that);case _DeleteSuccess():
+return deleteSuccess(_that);case _DeleteError():
+return deleteError(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -108,16 +116,20 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Loading value)?  loading,TResult? Function( _Loaded value)?  loaded,TResult? Function( _CreateSuccess value)?  createSuccess,TResult? Function( _ActionSuccess value)?  actionSuccess,TResult? Function( _Error value)?  error,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _EnrollmentsLoading value)?  enrollmentsLoading,TResult? Function( _Loaded value)?  loaded,TResult? Function( _LoadError value)?  loadError,TResult? Function( _CreateLoading value)?  createLoading,TResult? Function( _CreateSuccess value)?  createSuccess,TResult? Function( _CreateError value)?  createError,TResult? Function( _DeleteLoading value)?  deleteLoading,TResult? Function( _DeleteSuccess value)?  deleteSuccess,TResult? Function( _DeleteError value)?  deleteError,}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
-return initial(_that);case _Loading() when loading != null:
-return loading(_that);case _Loaded() when loaded != null:
-return loaded(_that);case _CreateSuccess() when createSuccess != null:
-return createSuccess(_that);case _ActionSuccess() when actionSuccess != null:
-return actionSuccess(_that);case _Error() when error != null:
-return error(_that);case _:
+return initial(_that);case _EnrollmentsLoading() when enrollmentsLoading != null:
+return enrollmentsLoading(_that);case _Loaded() when loaded != null:
+return loaded(_that);case _LoadError() when loadError != null:
+return loadError(_that);case _CreateLoading() when createLoading != null:
+return createLoading(_that);case _CreateSuccess() when createSuccess != null:
+return createSuccess(_that);case _CreateError() when createError != null:
+return createError(_that);case _DeleteLoading() when deleteLoading != null:
+return deleteLoading(_that);case _DeleteSuccess() when deleteSuccess != null:
+return deleteSuccess(_that);case _DeleteError() when deleteError != null:
+return deleteError(_that);case _:
   return null;
 
 }
@@ -134,15 +146,19 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( EnrollmentsResponse response)?  loaded,TResult Function( EnrollmentResponse response)?  createSuccess,TResult Function( EnrollmentActionResponse response)?  actionSuccess,TResult Function( String error)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  enrollmentsLoading,TResult Function( EnrollmentsResponse response)?  loaded,TResult Function( String error)?  loadError,TResult Function()?  createLoading,TResult Function( EnrollmentResponse response)?  createSuccess,TResult Function( String error)?  createError,TResult Function()?  deleteLoading,TResult Function( EnrollmentActionResponse response)?  deleteSuccess,TResult Function( String error)?  deleteError,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
-return initial();case _Loading() when loading != null:
-return loading();case _Loaded() when loaded != null:
-return loaded(_that.response);case _CreateSuccess() when createSuccess != null:
-return createSuccess(_that.response);case _ActionSuccess() when actionSuccess != null:
-return actionSuccess(_that.response);case _Error() when error != null:
-return error(_that.error);case _:
+return initial();case _EnrollmentsLoading() when enrollmentsLoading != null:
+return enrollmentsLoading();case _Loaded() when loaded != null:
+return loaded(_that.response);case _LoadError() when loadError != null:
+return loadError(_that.error);case _CreateLoading() when createLoading != null:
+return createLoading();case _CreateSuccess() when createSuccess != null:
+return createSuccess(_that.response);case _CreateError() when createError != null:
+return createError(_that.error);case _DeleteLoading() when deleteLoading != null:
+return deleteLoading();case _DeleteSuccess() when deleteSuccess != null:
+return deleteSuccess(_that.response);case _DeleteError() when deleteError != null:
+return deleteError(_that.error);case _:
   return orElse();
 
 }
@@ -160,15 +176,19 @@ return error(_that.error);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( EnrollmentsResponse response)  loaded,required TResult Function( EnrollmentResponse response)  createSuccess,required TResult Function( EnrollmentActionResponse response)  actionSuccess,required TResult Function( String error)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  enrollmentsLoading,required TResult Function( EnrollmentsResponse response)  loaded,required TResult Function( String error)  loadError,required TResult Function()  createLoading,required TResult Function( EnrollmentResponse response)  createSuccess,required TResult Function( String error)  createError,required TResult Function()  deleteLoading,required TResult Function( EnrollmentActionResponse response)  deleteSuccess,required TResult Function( String error)  deleteError,}) {final _that = this;
 switch (_that) {
 case _Initial():
-return initial();case _Loading():
-return loading();case _Loaded():
-return loaded(_that.response);case _CreateSuccess():
-return createSuccess(_that.response);case _ActionSuccess():
-return actionSuccess(_that.response);case _Error():
-return error(_that.error);case _:
+return initial();case _EnrollmentsLoading():
+return enrollmentsLoading();case _Loaded():
+return loaded(_that.response);case _LoadError():
+return loadError(_that.error);case _CreateLoading():
+return createLoading();case _CreateSuccess():
+return createSuccess(_that.response);case _CreateError():
+return createError(_that.error);case _DeleteLoading():
+return deleteLoading();case _DeleteSuccess():
+return deleteSuccess(_that.response);case _DeleteError():
+return deleteError(_that.error);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -185,15 +205,19 @@ return error(_that.error);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( EnrollmentsResponse response)?  loaded,TResult? Function( EnrollmentResponse response)?  createSuccess,TResult? Function( EnrollmentActionResponse response)?  actionSuccess,TResult? Function( String error)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  enrollmentsLoading,TResult? Function( EnrollmentsResponse response)?  loaded,TResult? Function( String error)?  loadError,TResult? Function()?  createLoading,TResult? Function( EnrollmentResponse response)?  createSuccess,TResult? Function( String error)?  createError,TResult? Function()?  deleteLoading,TResult? Function( EnrollmentActionResponse response)?  deleteSuccess,TResult? Function( String error)?  deleteError,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
-return initial();case _Loading() when loading != null:
-return loading();case _Loaded() when loaded != null:
-return loaded(_that.response);case _CreateSuccess() when createSuccess != null:
-return createSuccess(_that.response);case _ActionSuccess() when actionSuccess != null:
-return actionSuccess(_that.response);case _Error() when error != null:
-return error(_that.error);case _:
+return initial();case _EnrollmentsLoading() when enrollmentsLoading != null:
+return enrollmentsLoading();case _Loaded() when loaded != null:
+return loaded(_that.response);case _LoadError() when loadError != null:
+return loadError(_that.error);case _CreateLoading() when createLoading != null:
+return createLoading();case _CreateSuccess() when createSuccess != null:
+return createSuccess(_that.response);case _CreateError() when createError != null:
+return createError(_that.error);case _DeleteLoading() when deleteLoading != null:
+return deleteLoading();case _DeleteSuccess() when deleteSuccess != null:
+return deleteSuccess(_that.response);case _DeleteError() when deleteError != null:
+return deleteError(_that.error);case _:
   return null;
 
 }
@@ -236,8 +260,8 @@ String toString() {
 /// @nodoc
 
 
-class _Loading implements LiveSessionsAndEnrollmentManagementState {
-  const _Loading();
+class _EnrollmentsLoading implements LiveSessionsAndEnrollmentManagementState {
+  const _EnrollmentsLoading();
   
 
 
@@ -247,7 +271,7 @@ class _Loading implements LiveSessionsAndEnrollmentManagementState {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loading);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EnrollmentsLoading);
 }
 
 
@@ -256,7 +280,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'LiveSessionsAndEnrollmentManagementState.loading()';
+  return 'LiveSessionsAndEnrollmentManagementState.enrollmentsLoading()';
 }
 
 
@@ -334,6 +358,104 @@ as EnrollmentsResponse,
 /// @nodoc
 
 
+class _LoadError implements LiveSessionsAndEnrollmentManagementState {
+  const _LoadError({required this.error});
+  
+
+ final  String error;
+
+/// Create a copy of LiveSessionsAndEnrollmentManagementState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$LoadErrorCopyWith<_LoadError> get copyWith => __$LoadErrorCopyWithImpl<_LoadError>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LoadError&&(identical(other.error, error) || other.error == error));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,error);
+
+@override
+String toString() {
+  return 'LiveSessionsAndEnrollmentManagementState.loadError(error: $error)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$LoadErrorCopyWith<$Res> implements $LiveSessionsAndEnrollmentManagementStateCopyWith<$Res> {
+  factory _$LoadErrorCopyWith(_LoadError value, $Res Function(_LoadError) _then) = __$LoadErrorCopyWithImpl;
+@useResult
+$Res call({
+ String error
+});
+
+
+
+
+}
+/// @nodoc
+class __$LoadErrorCopyWithImpl<$Res>
+    implements _$LoadErrorCopyWith<$Res> {
+  __$LoadErrorCopyWithImpl(this._self, this._then);
+
+  final _LoadError _self;
+  final $Res Function(_LoadError) _then;
+
+/// Create a copy of LiveSessionsAndEnrollmentManagementState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? error = null,}) {
+  return _then(_LoadError(
+error: null == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _CreateLoading implements LiveSessionsAndEnrollmentManagementState {
+  const _CreateLoading();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CreateLoading);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'LiveSessionsAndEnrollmentManagementState.createLoading()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
 class _CreateSuccess implements LiveSessionsAndEnrollmentManagementState {
   const _CreateSuccess(this.response);
   
@@ -400,8 +522,106 @@ as EnrollmentResponse,
 /// @nodoc
 
 
-class _ActionSuccess implements LiveSessionsAndEnrollmentManagementState {
-  const _ActionSuccess(this.response);
+class _CreateError implements LiveSessionsAndEnrollmentManagementState {
+  const _CreateError({required this.error});
+  
+
+ final  String error;
+
+/// Create a copy of LiveSessionsAndEnrollmentManagementState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$CreateErrorCopyWith<_CreateError> get copyWith => __$CreateErrorCopyWithImpl<_CreateError>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CreateError&&(identical(other.error, error) || other.error == error));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,error);
+
+@override
+String toString() {
+  return 'LiveSessionsAndEnrollmentManagementState.createError(error: $error)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$CreateErrorCopyWith<$Res> implements $LiveSessionsAndEnrollmentManagementStateCopyWith<$Res> {
+  factory _$CreateErrorCopyWith(_CreateError value, $Res Function(_CreateError) _then) = __$CreateErrorCopyWithImpl;
+@useResult
+$Res call({
+ String error
+});
+
+
+
+
+}
+/// @nodoc
+class __$CreateErrorCopyWithImpl<$Res>
+    implements _$CreateErrorCopyWith<$Res> {
+  __$CreateErrorCopyWithImpl(this._self, this._then);
+
+  final _CreateError _self;
+  final $Res Function(_CreateError) _then;
+
+/// Create a copy of LiveSessionsAndEnrollmentManagementState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? error = null,}) {
+  return _then(_CreateError(
+error: null == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _DeleteLoading implements LiveSessionsAndEnrollmentManagementState {
+  const _DeleteLoading();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeleteLoading);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'LiveSessionsAndEnrollmentManagementState.deleteLoading()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _DeleteSuccess implements LiveSessionsAndEnrollmentManagementState {
+  const _DeleteSuccess(this.response);
   
 
  final  EnrollmentActionResponse response;
@@ -410,13 +630,13 @@ class _ActionSuccess implements LiveSessionsAndEnrollmentManagementState {
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$ActionSuccessCopyWith<_ActionSuccess> get copyWith => __$ActionSuccessCopyWithImpl<_ActionSuccess>(this, _$identity);
+_$DeleteSuccessCopyWith<_DeleteSuccess> get copyWith => __$DeleteSuccessCopyWithImpl<_DeleteSuccess>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ActionSuccess&&(identical(other.response, response) || other.response == response));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeleteSuccess&&(identical(other.response, response) || other.response == response));
 }
 
 
@@ -425,15 +645,15 @@ int get hashCode => Object.hash(runtimeType,response);
 
 @override
 String toString() {
-  return 'LiveSessionsAndEnrollmentManagementState.actionSuccess(response: $response)';
+  return 'LiveSessionsAndEnrollmentManagementState.deleteSuccess(response: $response)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$ActionSuccessCopyWith<$Res> implements $LiveSessionsAndEnrollmentManagementStateCopyWith<$Res> {
-  factory _$ActionSuccessCopyWith(_ActionSuccess value, $Res Function(_ActionSuccess) _then) = __$ActionSuccessCopyWithImpl;
+abstract mixin class _$DeleteSuccessCopyWith<$Res> implements $LiveSessionsAndEnrollmentManagementStateCopyWith<$Res> {
+  factory _$DeleteSuccessCopyWith(_DeleteSuccess value, $Res Function(_DeleteSuccess) _then) = __$DeleteSuccessCopyWithImpl;
 @useResult
 $Res call({
  EnrollmentActionResponse response
@@ -444,17 +664,17 @@ $Res call({
 
 }
 /// @nodoc
-class __$ActionSuccessCopyWithImpl<$Res>
-    implements _$ActionSuccessCopyWith<$Res> {
-  __$ActionSuccessCopyWithImpl(this._self, this._then);
+class __$DeleteSuccessCopyWithImpl<$Res>
+    implements _$DeleteSuccessCopyWith<$Res> {
+  __$DeleteSuccessCopyWithImpl(this._self, this._then);
 
-  final _ActionSuccess _self;
-  final $Res Function(_ActionSuccess) _then;
+  final _DeleteSuccess _self;
+  final $Res Function(_DeleteSuccess) _then;
 
 /// Create a copy of LiveSessionsAndEnrollmentManagementState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') $Res call({Object? response = null,}) {
-  return _then(_ActionSuccess(
+  return _then(_DeleteSuccess(
 null == response ? _self.response : response // ignore: cast_nullable_to_non_nullable
 as EnrollmentActionResponse,
   ));
@@ -466,8 +686,8 @@ as EnrollmentActionResponse,
 /// @nodoc
 
 
-class _Error implements LiveSessionsAndEnrollmentManagementState {
-  const _Error({required this.error});
+class _DeleteError implements LiveSessionsAndEnrollmentManagementState {
+  const _DeleteError({required this.error});
   
 
  final  String error;
@@ -476,13 +696,13 @@ class _Error implements LiveSessionsAndEnrollmentManagementState {
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$ErrorCopyWith<_Error> get copyWith => __$ErrorCopyWithImpl<_Error>(this, _$identity);
+_$DeleteErrorCopyWith<_DeleteError> get copyWith => __$DeleteErrorCopyWithImpl<_DeleteError>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Error&&(identical(other.error, error) || other.error == error));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeleteError&&(identical(other.error, error) || other.error == error));
 }
 
 
@@ -491,15 +711,15 @@ int get hashCode => Object.hash(runtimeType,error);
 
 @override
 String toString() {
-  return 'LiveSessionsAndEnrollmentManagementState.error(error: $error)';
+  return 'LiveSessionsAndEnrollmentManagementState.deleteError(error: $error)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$ErrorCopyWith<$Res> implements $LiveSessionsAndEnrollmentManagementStateCopyWith<$Res> {
-  factory _$ErrorCopyWith(_Error value, $Res Function(_Error) _then) = __$ErrorCopyWithImpl;
+abstract mixin class _$DeleteErrorCopyWith<$Res> implements $LiveSessionsAndEnrollmentManagementStateCopyWith<$Res> {
+  factory _$DeleteErrorCopyWith(_DeleteError value, $Res Function(_DeleteError) _then) = __$DeleteErrorCopyWithImpl;
 @useResult
 $Res call({
  String error
@@ -510,17 +730,17 @@ $Res call({
 
 }
 /// @nodoc
-class __$ErrorCopyWithImpl<$Res>
-    implements _$ErrorCopyWith<$Res> {
-  __$ErrorCopyWithImpl(this._self, this._then);
+class __$DeleteErrorCopyWithImpl<$Res>
+    implements _$DeleteErrorCopyWith<$Res> {
+  __$DeleteErrorCopyWithImpl(this._self, this._then);
 
-  final _Error _self;
-  final $Res Function(_Error) _then;
+  final _DeleteError _self;
+  final $Res Function(_DeleteError) _then;
 
 /// Create a copy of LiveSessionsAndEnrollmentManagementState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') $Res call({Object? error = null,}) {
-  return _then(_Error(
+  return _then(_DeleteError(
 error: null == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
 as String,
   ));

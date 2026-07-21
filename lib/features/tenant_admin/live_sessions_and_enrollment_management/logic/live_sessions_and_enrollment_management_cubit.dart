@@ -22,7 +22,7 @@ class LiveSessionsAndEnrollmentManagementCubit
 
   Future<void> getEnrollments(String examId) async {
     _currentExamId = examId;
-    emit(const LiveSessionsAndEnrollmentManagementState.loading());
+    emit(const LiveSessionsAndEnrollmentManagementState.enrollmentsLoading());
 
     try {
       final response = await liveSessionsAndEnrollmentManagementRepo
@@ -30,13 +30,13 @@ class LiveSessionsAndEnrollmentManagementCubit
       emit(LiveSessionsAndEnrollmentManagementState.loaded(response));
     } on NetworkExceptions catch (e) {
       emit(
-        LiveSessionsAndEnrollmentManagementState.error(
+        LiveSessionsAndEnrollmentManagementState.loadError(
           error: NetworkExceptions.getErrorMessage(e),
         ),
       );
     } catch (e) {
       emit(
-        const LiveSessionsAndEnrollmentManagementState.error(
+        const LiveSessionsAndEnrollmentManagementState.loadError(
           error: 'Failed to load enrollments',
         ),
       );
@@ -54,7 +54,7 @@ class LiveSessionsAndEnrollmentManagementCubit
     CreateEnrollmentRequestBody requestBody,
   ) async {
     _currentExamId = examId;
-    emit(const LiveSessionsAndEnrollmentManagementState.loading());
+    emit(const LiveSessionsAndEnrollmentManagementState.createLoading());
 
     try {
       final response = await liveSessionsAndEnrollmentManagementRepo
@@ -62,13 +62,13 @@ class LiveSessionsAndEnrollmentManagementCubit
       emit(LiveSessionsAndEnrollmentManagementState.createSuccess(response));
     } on NetworkExceptions catch (e) {
       emit(
-        LiveSessionsAndEnrollmentManagementState.error(
+        LiveSessionsAndEnrollmentManagementState.createError(
           error: NetworkExceptions.getErrorMessage(e),
         ),
       );
     } catch (e) {
       emit(
-        const LiveSessionsAndEnrollmentManagementState.error(
+        const LiveSessionsAndEnrollmentManagementState.createError(
           error: 'Failed to create enrollment',
         ),
       );
@@ -77,21 +77,21 @@ class LiveSessionsAndEnrollmentManagementCubit
 
   Future<void> deleteEnrollment(String examId, String enrollmentId) async {
     _currentExamId = examId;
-    emit(const LiveSessionsAndEnrollmentManagementState.loading());
+    emit(const LiveSessionsAndEnrollmentManagementState.deleteLoading());
 
     try {
       final response = await liveSessionsAndEnrollmentManagementRepo
           .deleteEnrollment(examId, enrollmentId);
-      emit(LiveSessionsAndEnrollmentManagementState.actionSuccess(response));
+      emit(LiveSessionsAndEnrollmentManagementState.deleteSuccess(response));
     } on NetworkExceptions catch (e) {
       emit(
-        LiveSessionsAndEnrollmentManagementState.error(
+        LiveSessionsAndEnrollmentManagementState.deleteError(
           error: NetworkExceptions.getErrorMessage(e),
         ),
       );
     } catch (e) {
       emit(
-        const LiveSessionsAndEnrollmentManagementState.error(
+        const LiveSessionsAndEnrollmentManagementState.deleteError(
           error: 'Failed to delete enrollment',
         ),
       );

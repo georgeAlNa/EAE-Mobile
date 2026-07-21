@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/helpers/spacing.dart';
-import '../../../../../core/public_widgets/loading_widget.dart';
+import '../../../../../core/public_widgets/app_state_widgets.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
 import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
 import '../../data/models/live_sessions_and_enrollment_management_response.dart';
@@ -27,6 +27,7 @@ class _LiveSessionsAndEnrollmentManagementScreenState
   final _searchController = TextEditingController();
   String? _currentExamId;
   String _query = '';
+  EnrollmentsResponse? _enrollmentsResponse;
 
   @override
   void initState() {
@@ -57,30 +58,52 @@ class _LiveSessionsAndEnrollmentManagementScreenState
             >(
               listener: (context, state) {
                 state.maybeWhen(
+                  loaded: (response) {
+                    _enrollmentsResponse = response;
+                  },
                   createSuccess: (_) {
                     showAppSnackBar(context, 'Enrollment created successfully');
                     context
                         .read<LiveSessionsAndEnrollmentManagementCubit>()
                         .refreshCurrentExam();
                   },
-                  actionSuccess: (_) {
-                    showAppSnackBar(context, 'Action completed successfully');
+                  deleteSuccess: (_) {
+                    showAppSnackBar(context, 'Enrollment deleted successfully');
                     context
                         .read<LiveSessionsAndEnrollmentManagementCubit>()
                         .refreshCurrentExam();
                   },
-                  error: (error) => showAppSnackBar(context, error),
+                  createError: (error) => showAppSnackBar(context, error),
+                  deleteError: (error) => showAppSnackBar(context, error),
+                  loadError: (error) {
+                    if (_enrollmentsResponse != null) {
+                      showAppSnackBar(context, error);
+                    }
+                  },
                   orElse: () {},
                 );
               },
               builder: (screenContext, state) {
-                final enrollments = state.maybeWhen(
-                  loaded: (response) => response.data,
-                  orElse: () => null,
+                final loadedResponse = state.whenOrNull(
+                  loaded: (response) => response,
                 );
-                final isLoading = state.maybeWhen(
-                  loading: () => true,
+                if (loadedResponse != null) {
+                  _enrollmentsResponse = loadedResponse;
+                }
+
+                final enrollments = _enrollmentsResponse?.data;
+                final isEnrollmentsLoading = state.maybeWhen(
+                  enrollmentsLoading: () => true,
                   orElse: () => false,
+                );
+                final isActionLoading = state.maybeWhen(
+                  createLoading: () => true,
+                  deleteLoading: () => true,
+                  orElse: () => false,
+                );
+                final loadError = state.maybeWhen(
+                  loadError: (error) => error,
+                  orElse: () => null,
                 );
                 final visibleEnrollments = enrollments == null
                     ? null
@@ -118,20 +141,29 @@ class _LiveSessionsAndEnrollmentManagementScreenState
                                   ),
                           ),
                           verticalSpace(18),
-                          if (enrollments == null)
-                            TenantAdminEmptyState(
-                              icon: Icons.search_outlined,
-                              title: _currentExamId == null
-                                  ? 'Load an exam first'
-                                  : 'No enrollments loaded',
-                              message: _currentExamId == null
-                                  ? 'Enter an exam ID to load enrollments.'
-                                  : 'No enrollment records were returned for this exam.',
-                            )
-                          else
-                            EnrollmentsListSection(
-                              enrollments: visibleEnrollments!,
+                          AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 220),
+                            switchInCurve: Curves.easeOut,
+                            switchOutCurve: Curves.easeIn,
+                            child: _EnrollmentBody(
+                              key: ValueKey(
+                                '${visibleEnrollments?.length}-$_query-$loadError-$isEnrollmentsLoading',
+                              ),
+                              currentExamId: _currentExamId,
+                              enrollments: visibleEnrollments,
                               query: _query,
+                              isInitialLoading:
+                                  enrollments == null && isEnrollmentsLoading,
+                              loadError: enrollments == null ? loadError : null,
+                              onRetry: () {
+                                final examId = _currentExamId;
+                                if (examId == null || examId.isEmpty) return;
+                                screenContext
+                                    .read<
+                                      LiveSessionsAndEnrollmentManagementCubit
+                                    >()
+                                    .getEnrollments(examId);
+                              },
                               onDelete: (enrollment) =>
                                   _confirmDeleteEnrollment(
                                     context: screenContext,
@@ -139,15 +171,27 @@ class _LiveSessionsAndEnrollmentManagementScreenState
                                     enrollmentId: enrollment.id,
                                   ),
                             ),
+                          ),
                         ],
                       ),
                     ),
-                    if (isLoading)
-                      Positioned.fill(
-                        child: ColoredBox(
-                          color: AppColors.neutralColor.withValues(alpha: 0.65),
-                          child: const LoadingWidget(),
+                    if (isEnrollmentsLoading && enrollments != null)
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        child: LinearProgressIndicator(
+                          minHeight: 2.h,
+                          color: AppColors.secondaryColor7,
+                          backgroundColor: AppColors.tertiaryColor2,
                         ),
+                      ),
+                    if (isActionLoading)
+                      Positioned(
+                        left: 24.w,
+                        right: 24.w,
+                        bottom: 14.h,
+                        child: _EnrollmentActionProgressBanner(state: state),
                       ),
                   ],
                 );
@@ -166,6 +210,7 @@ class _LiveSessionsAndEnrollmentManagementScreenState
 
     setState(() {
       _currentExamId = examId;
+      _enrollmentsResponse = null;
       _query = '';
       _searchController.clear();
     });
@@ -230,5 +275,126 @@ class _LiveSessionsAndEnrollmentManagementScreenState
         enrollmentId,
       );
     }
+  }
+}
+
+class _EnrollmentBody extends StatelessWidget {
+  final String? currentExamId;
+  final List<EnrollmentItem>? enrollments;
+  final String query;
+  final bool isInitialLoading;
+  final String? loadError;
+  final VoidCallback onRetry;
+  final ValueChanged<EnrollmentItem> onDelete;
+
+  const _EnrollmentBody({
+    super.key,
+    required this.currentExamId,
+    required this.enrollments,
+    required this.query,
+    required this.isInitialLoading,
+    required this.loadError,
+    required this.onRetry,
+    required this.onDelete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (isInitialLoading) {
+      return Column(
+        children: [
+          AppSkeletonBox(width: double.infinity, height: 170.h),
+          verticalSpace(12),
+          AppSkeletonBox(width: double.infinity, height: 170.h),
+          verticalSpace(12),
+          AppSkeletonBox(width: double.infinity, height: 170.h),
+        ],
+      );
+    }
+
+    if (loadError != null) {
+      return SizedBox(
+        height: 260.h,
+        child: AppRetryErrorView(
+          title: loadError!,
+          message: 'Unable to load enrollments for this exam.',
+          onRetry: onRetry,
+        ),
+      );
+    }
+
+    final items = enrollments;
+    if (items == null) {
+      return TenantAdminEmptyState(
+        icon: Icons.search_outlined,
+        title: currentExamId == null
+            ? 'Load an exam first'
+            : 'No enrollments loaded',
+        message: currentExamId == null
+            ? 'Enter an exam ID to load enrollments.'
+            : 'No enrollment records were returned for this exam.',
+      );
+    }
+
+    return EnrollmentsListSection(
+      enrollments: items,
+      query: query,
+      onDelete: onDelete,
+    );
+  }
+}
+
+class _EnrollmentActionProgressBanner extends StatelessWidget {
+  final LiveSessionsAndEnrollmentManagementState state;
+
+  const _EnrollmentActionProgressBanner({required this.state});
+
+  @override
+  Widget build(BuildContext context) {
+    final message = state.maybeWhen(
+      createLoading: () => 'Creating enrollment...',
+      deleteLoading: () => 'Deleting enrollment...',
+      orElse: () => 'Working...',
+    );
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: AppColors.primaryColor9,
+        borderRadius: BorderRadius.circular(8.r),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.12),
+            blurRadius: 18,
+            offset: Offset(0, 8.h),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 18.w,
+              height: 18.w,
+              child: CircularProgressIndicator(
+                strokeWidth: 2.2.w,
+                color: AppColors.neutralColor,
+              ),
+            ),
+            horizontalSpace(10),
+            Expanded(
+              child: Text(
+                message,
+                style: TextStyle(
+                  color: AppColors.neutralColor,
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

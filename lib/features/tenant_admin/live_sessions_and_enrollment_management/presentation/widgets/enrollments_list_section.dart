@@ -35,16 +35,51 @@ class EnrollmentsListSection extends StatelessWidget {
 
     return Column(
       children: enrollments
+          .asMap()
+          .entries
           .map(
-            (enrollment) => Padding(
+            (entry) => _AnimatedEnrollmentListItem(
+              index: entry.key,
               padding: EdgeInsets.only(bottom: 12.h),
               child: _EnrollmentCard(
-                enrollment: enrollment,
-                onDelete: () => onDelete(enrollment),
+                enrollment: entry.value,
+                onDelete: () => onDelete(entry.value),
               ),
             ),
           )
           .toList(),
+    );
+  }
+}
+
+class _AnimatedEnrollmentListItem extends StatelessWidget {
+  final int index;
+  final EdgeInsetsGeometry padding;
+  final Widget child;
+
+  const _AnimatedEnrollmentListItem({
+    required this.index,
+    required this.padding,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      key: ValueKey(index),
+      duration: Duration(milliseconds: 220 + (index * 35).clamp(0, 180)),
+      curve: Curves.easeOutCubic,
+      tween: Tween(begin: 0, end: 1),
+      builder: (context, value, child) {
+        return Opacity(
+          opacity: value,
+          child: Transform.translate(
+            offset: Offset(0, (1 - value) * 14.h),
+            child: child,
+          ),
+        );
+      },
+      child: Padding(padding: padding, child: child),
     );
   }
 }

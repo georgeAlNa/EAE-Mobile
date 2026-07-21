@@ -40,11 +40,22 @@ CreateEnrollmentRequestBody createEnrollmentRequest() =>
       enrollmentNotes: 'Priority candidate',
     );
 
-bool isLoading(LiveSessionsAndEnrollmentManagementState state) =>
-    state.maybeWhen(loading: () => true, orElse: () => false);
+bool isEnrollmentsLoading(LiveSessionsAndEnrollmentManagementState state) =>
+    state.maybeWhen(enrollmentsLoading: () => true, orElse: () => false);
+
+bool isCreateLoading(LiveSessionsAndEnrollmentManagementState state) =>
+    state.maybeWhen(createLoading: () => true, orElse: () => false);
+
+bool isDeleteLoading(LiveSessionsAndEnrollmentManagementState state) =>
+    state.maybeWhen(deleteLoading: () => true, orElse: () => false);
 
 String? stateError(LiveSessionsAndEnrollmentManagementState state) =>
-    state.whenOrNull(error: (error) => error);
+    state.maybeWhen(
+      loadError: (error) => error,
+      createError: (error) => error,
+      deleteError: (error) => error,
+      orElse: () => null,
+    );
 
 EnrollmentsResponse? loadedEnrollments(
   LiveSessionsAndEnrollmentManagementState state,
@@ -54,9 +65,9 @@ EnrollmentResponse? createSuccess(
   LiveSessionsAndEnrollmentManagementState state,
 ) => state.whenOrNull(createSuccess: (response) => response);
 
-EnrollmentActionResponse? actionSuccess(
+EnrollmentActionResponse? deleteSuccess(
   LiveSessionsAndEnrollmentManagementState state,
-) => state.whenOrNull(actionSuccess: (response) => response);
+) => state.whenOrNull(deleteSuccess: (response) => response);
 
 void main() {
   late MockLiveSessionsAndEnrollmentManagementRepo repo;
@@ -94,7 +105,9 @@ void main() {
       final emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<LiveSessionsAndEnrollmentManagementState>(isLoading),
+          predicate<LiveSessionsAndEnrollmentManagementState>(
+            isEnrollmentsLoading,
+          ),
           predicate<LiveSessionsAndEnrollmentManagementState>(
             (state) =>
                 loadedEnrollments(state)?.data.single.id == 'enrollment_001',
@@ -116,7 +129,9 @@ void main() {
       final emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<LiveSessionsAndEnrollmentManagementState>(isLoading),
+          predicate<LiveSessionsAndEnrollmentManagementState>(
+            isEnrollmentsLoading,
+          ),
           predicate<LiveSessionsAndEnrollmentManagementState>(
             (state) => stateError(state) == 'Unauthorized',
           ),
@@ -139,7 +154,9 @@ void main() {
       final emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<LiveSessionsAndEnrollmentManagementState>(isLoading),
+          predicate<LiveSessionsAndEnrollmentManagementState>(
+            isEnrollmentsLoading,
+          ),
           predicate<LiveSessionsAndEnrollmentManagementState>(
             (state) =>
                 loadedEnrollments(state)?.data.single.id == 'enrollment_001',
@@ -163,7 +180,7 @@ void main() {
       var emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<LiveSessionsAndEnrollmentManagementState>(isLoading),
+          predicate<LiveSessionsAndEnrollmentManagementState>(isCreateLoading),
           predicate<LiveSessionsAndEnrollmentManagementState>(
             (state) => createSuccess(state)?.data.id == 'enrollment_created',
           ),
@@ -178,7 +195,7 @@ void main() {
       emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<LiveSessionsAndEnrollmentManagementState>(isLoading),
+          predicate<LiveSessionsAndEnrollmentManagementState>(isCreateLoading),
           predicate<LiveSessionsAndEnrollmentManagementState>(
             (state) => stateError(state) == 'Invalid enrollment',
           ),
@@ -188,7 +205,7 @@ void main() {
       await emission;
     });
 
-    test('deleteEnrollment emits actionSuccess', () async {
+    test('deleteEnrollment emits deleteSuccess', () async {
       when(() => repo.deleteEnrollment(any(), any())).thenAnswer(
         (_) async => EnrollmentActionResponse(message: 'Enrollment deleted'),
       );
@@ -196,9 +213,9 @@ void main() {
       final emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<LiveSessionsAndEnrollmentManagementState>(isLoading),
+          predicate<LiveSessionsAndEnrollmentManagementState>(isDeleteLoading),
           predicate<LiveSessionsAndEnrollmentManagementState>(
-            (state) => actionSuccess(state)?.message == 'Enrollment deleted',
+            (state) => deleteSuccess(state)?.message == 'Enrollment deleted',
           ),
         ]),
       );
@@ -215,7 +232,7 @@ void main() {
       final emission = expectLater(
         cubit.stream,
         emitsInOrder([
-          predicate<LiveSessionsAndEnrollmentManagementState>(isLoading),
+          predicate<LiveSessionsAndEnrollmentManagementState>(isDeleteLoading),
           predicate<LiveSessionsAndEnrollmentManagementState>(
             (state) => stateError(state) == 'Failed to delete enrollment',
           ),
