@@ -7,12 +7,12 @@ import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
 
 class RolesSecurityHeader extends StatelessWidget {
   final int selectedIndex;
-  final int totalRoles;
-  final int customRoles;
+  final int? totalRoles;
+  final int? customRoles;
   final TextEditingController searchController;
   final ValueChanged<int> onSectionChanged;
   final VoidCallback onCreateRole;
-  final VoidCallback onUpdatePolicy;
+  final VoidCallback? onUpdatePolicy;
 
   const RolesSecurityHeader({
     super.key,
@@ -95,7 +95,7 @@ class RolesSecurityHeader extends StatelessWidget {
               Expanded(
                 child: TenantAdminMetricTile(
                   icon: Icons.badge_outlined,
-                  value: totalRoles.toString(),
+                  value: totalRoles?.toString(),
                   label: 'Total roles',
                 ),
               ),
@@ -103,7 +103,7 @@ class RolesSecurityHeader extends StatelessWidget {
               Expanded(
                 child: TenantAdminMetricTile(
                   icon: Icons.tune_outlined,
-                  value: customRoles.toString(),
+                  value: customRoles?.toString(),
                   label: 'Custom roles',
                 ),
               ),

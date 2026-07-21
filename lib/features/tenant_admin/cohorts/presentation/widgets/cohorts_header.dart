@@ -6,8 +6,8 @@ import '../../../../../core/helpers/spacing.dart';
 import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
 
 class CohortsHeader extends StatelessWidget {
-  final int totalCohorts;
-  final int activeCohorts;
+  final int? totalCohorts;
+  final int? activeCohorts;
   final TextEditingController searchController;
   final VoidCallback onCreateCohort;
 
@@ -61,7 +61,7 @@ class CohortsHeader extends StatelessWidget {
             Expanded(
               child: TenantAdminMetricTile(
                 icon: Icons.groups_outlined,
-                value: totalCohorts.toString(),
+                value: totalCohorts?.toString(),
                 label: 'Total cohorts',
               ),
             ),
@@ -69,7 +69,7 @@ class CohortsHeader extends StatelessWidget {
             Expanded(
               child: TenantAdminMetricTile(
                 icon: Icons.check_circle_outline,
-                value: activeCohorts.toString(),
+                value: activeCohorts?.toString(),
                 label: 'Active cohorts',
               ),
             ),

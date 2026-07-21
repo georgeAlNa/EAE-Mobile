@@ -180,10 +180,10 @@ class _LiveSessionsAndEnrollmentManagementScreenState
                         top: 0,
                         left: 0,
                         right: 0,
-                        child: LinearProgressIndicator(
-                          minHeight: 2.h,
-                          color: AppColors.secondaryColor7,
-                          backgroundColor: AppColors.tertiaryColor2,
+                        child: AppSkeletonBox(
+                          width: double.infinity,
+                          height: 4.h,
+                          borderRadius: 0,
                         ),
                       ),
                     if (isActionLoading)
@@ -301,14 +301,12 @@ class _EnrollmentBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isInitialLoading) {
-      return Column(
-        children: [
-          AppSkeletonBox(width: double.infinity, height: 170.h),
-          verticalSpace(12),
-          AppSkeletonBox(width: double.infinity, height: 170.h),
-          verticalSpace(12),
-          AppSkeletonBox(width: double.infinity, height: 170.h),
-        ],
+      return const AppSkeletonDataList(
+        itemCount: 3,
+        showDescription: false,
+        chipCount: 0,
+        infoRowCount: 4,
+        showActionButton: true,
       );
     }
 
@@ -376,10 +374,7 @@ class _EnrollmentActionProgressBanner extends StatelessWidget {
             SizedBox(
               width: 18.w,
               height: 18.w,
-              child: CircularProgressIndicator(
-                strokeWidth: 2.2.w,
-                color: AppColors.neutralColor,
-              ),
+              child: AppSkeletonBox(height: 18.h, borderRadius: 9),
             ),
             horizontalSpace(10),
             Expanded(

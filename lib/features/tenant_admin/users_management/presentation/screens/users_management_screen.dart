@@ -101,19 +101,7 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
               orElse: () => null,
             );
 
-            if (users == null && isUsersLoading) {
-              return const AppSkeletonListView();
-            }
-
-            if (users == null) {
-              return AppRetryErrorView(
-                title: loadError ?? 'Unable to load users',
-                message: 'Check the connection and try again.',
-                onRetry: screenContext.read<UsersManagementCubit>().getUsers,
-              );
-            }
-
-            final visibleUsers = _filterUsers(users);
+            final visibleUsers = users == null ? null : _filterUsers(users);
 
             return Stack(
               children: [
@@ -126,21 +114,19 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
                     switchInCurve: Curves.easeOut,
                     switchOutCurve: Curves.easeIn,
                     child: ListView.separated(
-                      key: ValueKey('${visibleUsers.length}-$_query'),
+                      key: ValueKey('${visibleUsers?.length}-$_query'),
                       padding: EdgeInsets.symmetric(
                         horizontal: 24.w,
                         vertical: 18.h,
                       ),
-                      itemCount: visibleUsers.isEmpty
-                          ? 2
-                          : visibleUsers.length + 1,
+                      itemCount: 2,
                       separatorBuilder: (_, _) => verticalSpace(12),
                       itemBuilder: (_, index) {
                         if (index == 0) {
                           return UsersManagementHeader(
-                            totalUsers: users.length,
+                            totalUsers: users?.length,
                             activeUsers: users
-                                .where((user) => user.isActive)
+                                ?.where((user) => user.isActive)
                                 .length,
                             searchController: _searchController,
                             onCreateUser: () =>
@@ -150,55 +136,51 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
                           );
                         }
 
-                        if (visibleUsers.isEmpty) {
-                          return TenantAdminEmptyState(
-                            icon: Icons.manage_accounts_outlined,
-                            title: _query.isEmpty
-                                ? 'No users yet'
-                                : 'No matching users',
-                            message: _query.isEmpty
-                                ? 'Create or invite users to manage tenant access.'
-                                : 'Try another name, email, status, or user type.',
-                          );
-                        }
-
-                        final user = visibleUsers[index - 1];
-                        return _AnimatedListItem(
-                          index: index,
-                          child: UserManagementCard(
-                            user: user,
-                            onDetails: () => _showUserDetailsSheet(
-                              context: screenContext,
-                              userId: user.id,
+                        return _UsersDataSection(
+                          users: visibleUsers,
+                          query: _query,
+                          isLoading: users == null && isUsersLoading,
+                          loadError: users == null ? loadError : null,
+                          onRetry: screenContext
+                              .read<UsersManagementCubit>()
+                              .getUsers,
+                          itemBuilder: (user, index) => _AnimatedListItem(
+                            index: index,
+                            child: UserManagementCard(
+                              user: user,
+                              onDetails: () => _showUserDetailsSheet(
+                                context: screenContext,
+                                userId: user.id,
+                              ),
+                              onResetPassword: () => _showResetPasswordSheet(
+                                context: screenContext,
+                                userId: user.id,
+                                userName: '${user.firstName} ${user.lastName}',
+                              ),
+                              onDeactivate: user.isActive
+                                  ? () => _confirmDeactivateUser(
+                                      context: screenContext,
+                                      userId: user.id,
+                                      userName:
+                                          '${user.firstName} ${user.lastName}',
+                                    )
+                                  : null,
                             ),
-                            onResetPassword: () => _showResetPasswordSheet(
-                              context: screenContext,
-                              userId: user.id,
-                              userName: '${user.firstName} ${user.lastName}',
-                            ),
-                            onDeactivate: user.isActive
-                                ? () => _confirmDeactivateUser(
-                                    context: screenContext,
-                                    userId: user.id,
-                                    userName:
-                                        '${user.firstName} ${user.lastName}',
-                                  )
-                                : null,
                           ),
                         );
                       },
                     ),
                   ),
                 ),
-                if (isUsersLoading && users.isNotEmpty)
+                if (isUsersLoading && users != null && users.isNotEmpty)
                   Positioned(
                     top: 0,
                     left: 0,
                     right: 0,
-                    child: LinearProgressIndicator(
-                      minHeight: 2.h,
-                      color: AppColors.secondaryColor7,
-                      backgroundColor: AppColors.tertiaryColor2,
+                    child: AppSkeletonBox(
+                      width: double.infinity,
+                      height: 4.h,
+                      borderRadius: 0,
                     ),
                   ),
                 if (isActionLoading)
@@ -317,6 +299,82 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
   }
 }
 
+class _UsersDataSection extends StatelessWidget {
+  final List<UserManagementUser>? users;
+  final String query;
+  final bool isLoading;
+  final String? loadError;
+  final VoidCallback onRetry;
+  final Widget Function(UserManagementUser user, int index) itemBuilder;
+
+  const _UsersDataSection({
+    required this.users,
+    required this.query,
+    required this.isLoading,
+    required this.loadError,
+    required this.onRetry,
+    required this.itemBuilder,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (isLoading) {
+      return const _SectionSkeleton(itemCount: 5);
+    }
+
+    if (loadError != null) {
+      return SizedBox(
+        height: 260.h,
+        child: AppRetryErrorView(
+          title: loadError!,
+          message: 'Check the connection and try again.',
+          onRetry: onRetry,
+        ),
+      );
+    }
+
+    final items = users ?? const <UserManagementUser>[];
+    if (items.isEmpty) {
+      return TenantAdminEmptyState(
+        icon: Icons.manage_accounts_outlined,
+        title: query.isEmpty ? 'No users yet' : 'No matching users',
+        message: query.isEmpty
+            ? 'Create or invite users to manage tenant access.'
+            : 'Try another name, email, status, or user type.',
+      );
+    }
+
+    return Column(
+      children: items
+          .asMap()
+          .entries
+          .map(
+            (entry) => Padding(
+              padding: EdgeInsets.only(bottom: 12.h),
+              child: itemBuilder(entry.value, entry.key + 1),
+            ),
+          )
+          .toList(),
+    );
+  }
+}
+
+class _SectionSkeleton extends StatelessWidget {
+  final int itemCount;
+
+  const _SectionSkeleton({required this.itemCount});
+
+  @override
+  Widget build(BuildContext context) {
+    return AppSkeletonDataList(
+      itemCount: itemCount,
+      circularAvatar: true,
+      showDescription: false,
+      chipCount: 2,
+    );
+  }
+}
+
 class _AnimatedListItem extends StatelessWidget {
   final int index;
   final Widget child;
@@ -380,10 +438,7 @@ class _ActionProgressBanner extends StatelessWidget {
               SizedBox(
                 width: 18.w,
                 height: 18.w,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2.2.w,
-                  color: AppColors.neutralColor,
-                ),
+                child: AppSkeletonBox(height: 18.h, borderRadius: 9),
               ),
               horizontalSpace(10),
               Expanded(

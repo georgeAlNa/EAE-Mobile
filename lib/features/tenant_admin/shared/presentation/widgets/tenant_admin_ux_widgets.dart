@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../core/constants/colors.dart';
@@ -50,7 +51,7 @@ class TenantAdminSearchField extends StatelessWidget {
 
 class TenantAdminMetricTile extends StatelessWidget {
   final IconData icon;
-  final String value;
+  final String? value;
   final String label;
 
   const TenantAdminMetricTile({
@@ -85,12 +86,15 @@ class TenantAdminMetricTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  value,
-                  style: AppTextStyles.font17DarkGreySemiBold.copyWith(
-                    color: AppColors.primaryColor9,
+                if (value == null)
+                  AppSkeletonBox(width: 44.w, height: 20.h)
+                else
+                  Text(
+                    value!,
+                    style: AppTextStyles.font17DarkGreySemiBold.copyWith(
+                      color: AppColors.primaryColor9,
+                    ),
                   ),
-                ),
                 verticalSpace(2),
                 Text(
                   label,
@@ -149,6 +153,77 @@ class TenantAdminEmptyState extends StatelessWidget {
             style: AppTextStyles.font12DarkGreyRegular.copyWith(
               color: AppColors.tertiaryColor6,
               height: 1.4,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class TenantAdminCopyableValueRow extends StatelessWidget {
+  final String label;
+  final String value;
+  final String? copyValue;
+
+  const TenantAdminCopyableValueRow({
+    super.key,
+    required this.label,
+    required this.value,
+    this.copyValue,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final valueToCopy = copyValue ?? value;
+    final canCopy = valueToCopy.trim().isNotEmpty && valueToCopy != '-';
+
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(vertical: 10.h),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: AppColors.tertiaryColor2)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: AppTextStyles.font12DarkGreySemiBold.copyWith(
+                    color: AppColors.tertiaryColor6,
+                  ),
+                ),
+                verticalSpace(4),
+                SelectableText(
+                  value,
+                  style: AppTextStyles.font14DarkGreyRegular.copyWith(
+                    color: AppColors.primaryColor9,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          horizontalSpace(8),
+          IconButton(
+            tooltip: canCopy ? 'Copy $label' : 'Nothing to copy',
+            onPressed: canCopy
+                ? () async {
+                    await Clipboard.setData(ClipboardData(text: valueToCopy));
+                    if (!context.mounted) return;
+                    ScaffoldMessenger.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(SnackBar(content: Text('$label copied')));
+                  }
+                : null,
+            icon: const Icon(Icons.copy_outlined),
+            style: IconButton.styleFrom(
+              foregroundColor: AppColors.secondaryColor7,
+              disabledForegroundColor: AppColors.tertiaryColor4,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
           ),
         ],

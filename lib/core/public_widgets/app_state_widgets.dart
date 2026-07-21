@@ -121,6 +121,172 @@ class AppSkeletonListView extends StatelessWidget {
   }
 }
 
+class AppSkeletonDataList extends StatelessWidget {
+  final int itemCount;
+  final bool circularAvatar;
+  final bool showDescription;
+  final int chipCount;
+  final int infoRowCount;
+  final bool showActionButton;
+
+  const AppSkeletonDataList({
+    super.key,
+    required this.itemCount,
+    this.circularAvatar = false,
+    this.showDescription = true,
+    this.chipCount = 2,
+    this.infoRowCount = 0,
+    this.showActionButton = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: List.generate(
+        itemCount,
+        (index) => AppSkeletonDataCard(
+          margin: EdgeInsets.only(bottom: 12.h),
+          circularAvatar: circularAvatar,
+          showDescription: showDescription,
+          chipCount: chipCount,
+          infoRowCount: infoRowCount,
+          showActionButton: showActionButton,
+        ),
+      ),
+    );
+  }
+}
+
+class AppSkeletonDataCard extends StatelessWidget {
+  final EdgeInsetsGeometry? margin;
+  final bool circularAvatar;
+  final bool showDescription;
+  final int chipCount;
+  final int infoRowCount;
+  final bool showActionButton;
+
+  const AppSkeletonDataCard({
+    super.key,
+    this.margin,
+    this.circularAvatar = false,
+    this.showDescription = true,
+    this.chipCount = 2,
+    this.infoRowCount = 0,
+    this.showActionButton = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      margin: margin,
+      padding: EdgeInsets.all(14.r),
+      decoration: BoxDecoration(
+        color: AppColors.neutralColor,
+        borderRadius: BorderRadius.circular(8.r),
+        border: Border.all(color: AppColors.tertiaryColor2),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              AppSkeletonBox(
+                width: 42.w,
+                height: 42.w,
+                borderRadius: circularAvatar ? 21 : 8,
+              ),
+              horizontalSpace(12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppSkeletonBox(width: 150.w, height: 14.h),
+                    verticalSpace(6),
+                    AppSkeletonBox(width: double.infinity, height: 12.h),
+                  ],
+                ),
+              ),
+              horizontalSpace(10),
+              AppSkeletonBox(width: 64.w, height: 26.h),
+              horizontalSpace(8),
+              AppSkeletonBox(width: 28.w, height: 28.w, borderRadius: 14),
+            ],
+          ),
+          if (showDescription) ...[
+            verticalSpace(12),
+            AppSkeletonBox(width: double.infinity, height: 12.h),
+            verticalSpace(6),
+            AppSkeletonBox(width: 0.72.sw, height: 12.h),
+          ],
+          if (infoRowCount > 0) ...[
+            verticalSpace(12),
+            ...List.generate(
+              infoRowCount,
+              (index) => Padding(
+                padding: EdgeInsets.only(bottom: 8.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppSkeletonBox(width: 90.w, height: 10.h),
+                    verticalSpace(4),
+                    AppSkeletonBox(width: double.infinity, height: 12.h),
+                  ],
+                ),
+              ),
+            ),
+          ],
+          if (chipCount > 0) ...[
+            verticalSpace(12),
+            Wrap(
+              spacing: 8.w,
+              runSpacing: 8.h,
+              children: List.generate(
+                chipCount,
+                (index) => AppSkeletonBox(width: 86.w, height: 28.h),
+              ),
+            ),
+          ],
+          if (showActionButton) ...[
+            verticalSpace(12),
+            AppSkeletonBox(width: double.infinity, height: 42.h),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class AppSkeletonDetailRows extends StatelessWidget {
+  final int rowCount;
+
+  const AppSkeletonDetailRows({super.key, this.rowCount = 8});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: List.generate(
+        rowCount,
+        (index) => Container(
+          width: double.infinity,
+          padding: EdgeInsets.symmetric(vertical: 10.h),
+          decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: AppColors.tertiaryColor2)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AppSkeletonBox(width: 130.w, height: 11.h),
+              verticalSpace(6),
+              AppSkeletonBox(width: index.isEven ? 180.w : 110.w, height: 14.h),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class AppRetryErrorView extends StatelessWidget {
   final String title;
   final String message;

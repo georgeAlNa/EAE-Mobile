@@ -125,23 +125,8 @@ class _RolesAndSecurityScreenState extends State<RolesAndSecurityScreen> {
               orElse: () => null,
             );
 
-            if ((rolesResponse == null || securityPolicyResponse == null) &&
-                isDashboardLoading) {
-              return const AppSkeletonListView(itemCount: 4);
-            }
-
-            if (rolesResponse == null || securityPolicyResponse == null) {
-              return AppRetryErrorView(
-                title: loadError ?? 'Unable to load roles and security',
-                message: 'Check the connection and try again.',
-                onRetry: screenContext
-                    .read<RolesAndSecurityCubit>()
-                    .getRolesAndSecurity,
-              );
-            }
-
-            final roles = rolesResponse.data;
-            final visibleRoles = _filterRoles(roles);
+            final roles = rolesResponse?.data;
+            final visibleRoles = roles == null ? null : _filterRoles(roles);
 
             return Stack(
               children: [
@@ -154,7 +139,9 @@ class _RolesAndSecurityScreenState extends State<RolesAndSecurityScreen> {
                     switchInCurve: Curves.easeOut,
                     switchOutCurve: Curves.easeIn,
                     child: ListView(
-                      key: ValueKey('$_sectionIndex-${visibleRoles.length}'),
+                      key: ValueKey(
+                        '$_sectionIndex-${visibleRoles?.length}-$_query',
+                      ),
                       padding: EdgeInsets.symmetric(
                         horizontal: 24.w,
                         vertical: 18.h,
@@ -162,9 +149,9 @@ class _RolesAndSecurityScreenState extends State<RolesAndSecurityScreen> {
                       children: [
                         RolesSecurityHeader(
                           selectedIndex: _sectionIndex,
-                          totalRoles: roles.length,
+                          totalRoles: roles?.length,
                           customRoles: roles
-                              .where((role) => role.isCustomRole)
+                              ?.where((role) => role.isCustomRole)
                               .length,
                           searchController: _searchController,
                           onSectionChanged: (index) {
@@ -174,17 +161,25 @@ class _RolesAndSecurityScreenState extends State<RolesAndSecurityScreen> {
                           },
                           onCreateRole: () =>
                               _showCreateRoleSheet(screenContext),
-                          onUpdatePolicy: () => _showSecurityPolicySheet(
-                            context: screenContext,
-                            policy: securityPolicyResponse.data,
-                          ),
+                          onUpdatePolicy: securityPolicyResponse == null
+                              ? null
+                              : () => _showSecurityPolicySheet(
+                                  context: screenContext,
+                                  policy: securityPolicyResponse.data,
+                                ),
                         ),
                         verticalSpace(18),
                         if (_sectionIndex == 0)
-                          RolesListSection(
+                          _RolesDataSection(
                             rolesResponse: rolesResponse,
                             roles: visibleRoles,
                             query: _query,
+                            isLoading:
+                                rolesResponse == null && isDashboardLoading,
+                            loadError: rolesResponse == null ? loadError : null,
+                            onRetry: screenContext
+                                .read<RolesAndSecurityCubit>()
+                                .getRolesAndSecurity,
                             onEditRole: (role) => _showUpdateRoleSheet(
                               context: screenContext,
                               roleId: role.roleId,
@@ -211,26 +206,37 @@ class _RolesAndSecurityScreenState extends State<RolesAndSecurityScreen> {
                             ),
                           )
                         else
-                          SecurityPolicySection(
-                            policy: securityPolicyResponse.data,
-                            onUpdatePolicy: () => _showSecurityPolicySheet(
-                              context: screenContext,
-                              policy: securityPolicyResponse.data,
-                            ),
+                          _SecurityPolicyDataSection(
+                            policy: securityPolicyResponse?.data,
+                            isLoading:
+                                securityPolicyResponse == null &&
+                                isDashboardLoading,
+                            loadError: securityPolicyResponse == null
+                                ? loadError
+                                : null,
+                            onRetry: screenContext
+                                .read<RolesAndSecurityCubit>()
+                                .getRolesAndSecurity,
+                            onUpdatePolicy: securityPolicyResponse == null
+                                ? null
+                                : () => _showSecurityPolicySheet(
+                                    context: screenContext,
+                                    policy: securityPolicyResponse.data,
+                                  ),
                           ),
                       ],
                     ),
                   ),
                 ),
-                if (isDashboardLoading && roles.isNotEmpty)
+                if (isDashboardLoading && roles != null && roles.isNotEmpty)
                   Positioned(
                     top: 0,
                     left: 0,
                     right: 0,
-                    child: LinearProgressIndicator(
-                      minHeight: 2.h,
-                      color: AppColors.secondaryColor7,
-                      backgroundColor: AppColors.tertiaryColor2,
+                    child: AppSkeletonBox(
+                      width: double.infinity,
+                      height: 4.h,
+                      borderRadius: 0,
                     ),
                   ),
                 if (isActionLoading)
@@ -364,6 +370,139 @@ class _RolesAndSecurityScreenState extends State<RolesAndSecurityScreen> {
   }
 }
 
+class _RolesDataSection extends StatelessWidget {
+  final RolesResponse? rolesResponse;
+  final List<RoleItem>? roles;
+  final String query;
+  final bool isLoading;
+  final String? loadError;
+  final VoidCallback onRetry;
+  final ValueChanged<RoleItem> onEditRole;
+  final ValueChanged<RoleItem> onDeleteRole;
+  final ValueChanged<RoleItem> onAssignUser;
+  final ValueChanged<RoleItem> onRemoveUser;
+
+  const _RolesDataSection({
+    required this.rolesResponse,
+    required this.roles,
+    required this.query,
+    required this.isLoading,
+    required this.loadError,
+    required this.onRetry,
+    required this.onEditRole,
+    required this.onDeleteRole,
+    required this.onAssignUser,
+    required this.onRemoveUser,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (isLoading) {
+      return const _SectionSkeleton(itemCount: 4);
+    }
+
+    if (loadError != null) {
+      return SizedBox(
+        height: 260.h,
+        child: AppRetryErrorView(
+          title: loadError!,
+          message: 'Check the connection and try again.',
+          onRetry: onRetry,
+        ),
+      );
+    }
+
+    final response = rolesResponse;
+    if (response == null) {
+      return const _SectionSkeleton(itemCount: 4);
+    }
+
+    return RolesListSection(
+      rolesResponse: response,
+      roles: roles ?? const <RoleItem>[],
+      query: query,
+      onEditRole: onEditRole,
+      onDeleteRole: onDeleteRole,
+      onAssignUser: onAssignUser,
+      onRemoveUser: onRemoveUser,
+    );
+  }
+}
+
+class _SecurityPolicyDataSection extends StatelessWidget {
+  final SecurityPolicy? policy;
+  final bool isLoading;
+  final String? loadError;
+  final VoidCallback onRetry;
+  final VoidCallback? onUpdatePolicy;
+
+  const _SecurityPolicyDataSection({
+    required this.policy,
+    required this.isLoading,
+    required this.loadError,
+    required this.onRetry,
+    required this.onUpdatePolicy,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (isLoading) {
+      return const _PolicySectionSkeleton();
+    }
+
+    if (loadError != null) {
+      return SizedBox(
+        height: 260.h,
+        child: AppRetryErrorView(
+          title: loadError!,
+          message: 'Check the connection and try again.',
+          onRetry: onRetry,
+        ),
+      );
+    }
+
+    final securityPolicy = policy;
+    if (securityPolicy == null) {
+      return const _PolicySectionSkeleton();
+    }
+
+    return SecurityPolicySection(
+      policy: securityPolicy,
+      onUpdatePolicy: onUpdatePolicy ?? () {},
+    );
+  }
+}
+
+class _SectionSkeleton extends StatelessWidget {
+  final int itemCount;
+
+  const _SectionSkeleton({required this.itemCount});
+
+  @override
+  Widget build(BuildContext context) {
+    return AppSkeletonDataList(
+      itemCount: itemCount,
+      showDescription: true,
+      chipCount: 2,
+    );
+  }
+}
+
+class _PolicySectionSkeleton extends StatelessWidget {
+  const _PolicySectionSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const AppSkeletonDataCard(showDescription: false, chipCount: 0),
+        verticalSpace(12),
+        const AppSkeletonDetailRows(rowCount: 8),
+      ],
+    );
+  }
+}
+
 class _RoleActionProgressBanner extends StatelessWidget {
   final RolesAndSecurityState state;
 
@@ -400,10 +539,7 @@ class _RoleActionProgressBanner extends StatelessWidget {
             SizedBox(
               width: 18.w,
               height: 18.w,
-              child: CircularProgressIndicator(
-                strokeWidth: 2.2.w,
-                color: AppColors.neutralColor,
-              ),
+              child: AppSkeletonBox(height: 18.h, borderRadius: 9),
             ),
             horizontalSpace(10),
             Expanded(

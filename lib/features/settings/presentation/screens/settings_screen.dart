@@ -1,6 +1,7 @@
 import 'package:eae_mobile/core/constants/colors.dart';
 import 'package:eae_mobile/core/constants/text_styles.dart';
 import 'package:eae_mobile/core/helpers/spacing.dart';
+import 'package:eae_mobile/core/public_widgets/app_state_widgets.dart';
 import 'package:eae_mobile/core/routing/routes.dart';
 import 'package:eae_mobile/features/settings/data/models/settings_response.dart';
 import 'package:eae_mobile/features/settings/logic/settings_cubit.dart';
@@ -57,7 +58,7 @@ class _SettingsView extends StatelessWidget {
       child: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, state) {
           return state.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
+            loading: () => const _SettingsLoadingView(),
             error: (error) => _SettingsErrorState(error: error),
             loggedOut: () => const SizedBox.shrink(),
             ready:
@@ -105,6 +106,35 @@ class _SettingsView extends StatelessWidget {
   }
 }
 
+class _SettingsLoadingView extends StatelessWidget {
+  const _SettingsLoadingView();
+
+  @override
+  Widget build(BuildContext context) {
+    return RefreshIndicator(
+      onRefresh: () => context.read<SettingsCubit>().loadAccount(),
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 18.h),
+        children: [
+          const _AccountHeader(),
+          verticalSpace(18),
+          const _ProfileSummarySkeleton(),
+          verticalSpace(18),
+          const _ProfileFormSkeleton(),
+          verticalSpace(18),
+          const _AccessSkeleton(),
+          verticalSpace(18),
+          const _SessionsSkeleton(),
+          verticalSpace(18),
+          const _AccountActionsSkeleton(),
+          verticalSpace(24),
+        ],
+      ),
+    );
+  }
+}
+
 class _AccountHeader extends StatelessWidget {
   const _AccountHeader();
 
@@ -145,6 +175,40 @@ class _AccountHeader extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _ProfileSummarySkeleton extends StatelessWidget {
+  const _ProfileSummarySkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(18.r),
+      decoration: BoxDecoration(
+        color: AppColors.neutralColor,
+        borderRadius: BorderRadius.circular(8.r),
+        border: Border.all(color: AppColors.tertiaryColor2),
+      ),
+      child: Column(
+        children: [
+          AppSkeletonBox(width: 68.w, height: 68.w),
+          verticalSpace(12),
+          AppSkeletonBox(width: 170.w, height: 18.h),
+          verticalSpace(8),
+          AppSkeletonBox(width: 220.w, height: 12.h),
+          verticalSpace(16),
+          Row(
+            children: [
+              Expanded(child: AppSkeletonBox(height: 58.h)),
+              SizedBox(width: 12.w),
+              Expanded(child: AppSkeletonBox(height: 58.h)),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -222,6 +286,37 @@ class _ProfileSummaryCard extends StatelessWidget {
                   valueColor: AppColors.primaryColor9,
                 ),
               ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileFormSkeleton extends StatelessWidget {
+  const _ProfileFormSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return SettingsSectionCard(
+      title: 'Profile',
+      icon: Icons.badge_outlined,
+      child: Column(
+        children: [
+          const _SettingsFieldSkeleton(labelWidth: 78),
+          verticalSpace(14),
+          const _SettingsFieldSkeleton(labelWidth: 76),
+          verticalSpace(14),
+          const _SettingsFieldSkeleton(labelWidth: 142),
+          verticalSpace(14),
+          const _SettingsFieldSkeleton(labelWidth: 112),
+          verticalSpace(16),
+          Row(
+            children: [
+              Expanded(child: AppSkeletonBox(height: 42.h)),
+              SizedBox(width: 12.w),
+              Expanded(child: AppSkeletonBox(height: 42.h)),
             ],
           ),
         ],
@@ -308,14 +403,50 @@ class _ProfileFormCard extends StatelessWidget {
                       ? SizedBox(
                           width: 18.w,
                           height: 18.w,
-                          child: const CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
+                          child: AppSkeletonBox(height: 18.h, borderRadius: 9),
                         )
                       : const Text('Save Profile'),
                 ),
               ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _AccessSkeleton extends StatelessWidget {
+  const _AccessSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return SettingsSectionCard(
+      title: 'Roles & Permissions',
+      icon: Icons.admin_panel_settings_outlined,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          AppSkeletonBox(width: 52.w, height: 10.h),
+          verticalSpace(8),
+          Wrap(
+            spacing: 8.w,
+            runSpacing: 8.h,
+            children: [
+              AppSkeletonBox(width: 72.w, height: 30.h),
+              AppSkeletonBox(width: 96.w, height: 30.h),
+            ],
+          ),
+          verticalSpace(16),
+          AppSkeletonBox(width: 92.w, height: 10.h),
+          verticalSpace(8),
+          Wrap(
+            spacing: 8.w,
+            runSpacing: 8.h,
+            children: [
+              AppSkeletonBox(width: 110.w, height: 30.h),
+              AppSkeletonBox(width: 132.w, height: 30.h),
+              AppSkeletonBox(width: 92.w, height: 30.h),
             ],
           ),
         ],
@@ -348,6 +479,29 @@ class _AccessCard extends StatelessWidget {
             values: permissions.permissions,
             emptyLabel: 'No permissions available',
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SessionsSkeleton extends StatelessWidget {
+  const _SessionsSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return SettingsSectionCard(
+      title: 'Active Sessions',
+      icon: Icons.devices_other_rounded,
+      child: Column(
+        children: [
+          const AppSkeletonDataCard(
+            showDescription: false,
+            chipCount: 0,
+            infoRowCount: 2,
+          ),
+          verticalSpace(12),
+          AppSkeletonBox(width: double.infinity, height: 42.h),
         ],
       ),
     );
@@ -491,6 +645,19 @@ class _SessionTile extends StatelessWidget {
   }
 }
 
+class _AccountActionsSkeleton extends StatelessWidget {
+  const _AccountActionsSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return SettingsSectionCard(
+      title: 'Session Actions',
+      icon: Icons.lock_clock_outlined,
+      child: AppSkeletonBox(width: double.infinity, height: 42.h),
+    );
+  }
+}
+
 class _AccountActionsCard extends StatelessWidget {
   final bool isActionLoading;
 
@@ -522,6 +689,24 @@ class _AccountActionsCard extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _SettingsFieldSkeleton extends StatelessWidget {
+  final double labelWidth;
+
+  const _SettingsFieldSkeleton({required this.labelWidth});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        AppSkeletonBox(width: labelWidth.w, height: 10.h),
+        verticalSpace(8),
+        AppSkeletonBox(width: double.infinity, height: 48.h),
+      ],
     );
   }
 }
@@ -642,33 +827,23 @@ class _SettingsErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.all(24.r),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.error_outline_rounded,
-              size: 36.sp,
-              color: AppColors.primaryColor9,
+    return RefreshIndicator(
+      onRefresh: () => context.read<SettingsCubit>().loadAccount(),
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 18.h),
+        children: [
+          const _AccountHeader(),
+          verticalSpace(18),
+          SizedBox(
+            height: 320.h,
+            child: AppRetryErrorView(
+              title: error,
+              message: 'Unable to load account data.',
+              onRetry: () => context.read<SettingsCubit>().loadAccount(),
             ),
-            verticalSpace(12),
-            Text(
-              error,
-              textAlign: TextAlign.center,
-              style: AppTextStyles.font14DarkGreyMedium.copyWith(
-                color: AppColors.primaryColor9,
-              ),
-            ),
-            verticalSpace(16),
-            ElevatedButton.icon(
-              onPressed: () => context.read<SettingsCubit>().loadAccount(),
-              icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Try Again'),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -6,8 +6,8 @@ import '../../../../../core/helpers/spacing.dart';
 import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
 
 class UsersManagementHeader extends StatelessWidget {
-  final int totalUsers;
-  final int activeUsers;
+  final int? totalUsers;
+  final int? activeUsers;
   final TextEditingController searchController;
   final VoidCallback onCreateUser;
   final VoidCallback onInviteUser;
@@ -73,7 +73,7 @@ class UsersManagementHeader extends StatelessWidget {
             Expanded(
               child: TenantAdminMetricTile(
                 icon: Icons.people_outline,
-                value: totalUsers.toString(),
+                value: totalUsers?.toString(),
                 label: 'Total users',
               ),
             ),
@@ -81,7 +81,7 @@ class UsersManagementHeader extends StatelessWidget {
             Expanded(
               child: TenantAdminMetricTile(
                 icon: Icons.check_circle_outline,
-                value: activeUsers.toString(),
+                value: activeUsers?.toString(),
                 label: 'Active users',
               ),
             ),

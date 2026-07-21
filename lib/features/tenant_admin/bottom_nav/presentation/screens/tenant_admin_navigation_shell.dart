@@ -28,55 +28,75 @@ class TenantAdminNavigationShell extends StatefulWidget {
 class _TenantAdminNavigationShellState
     extends State<TenantAdminNavigationShell> {
   late int currentIndex;
+  late final List<Widget?> _pages;
+  final PageStorageBucket _pageStorageBucket = PageStorageBucket();
+
+  static const List<TenantAdminBottomNavItem> _navItems = [
+    TenantAdminBottomNavItem(
+      label: 'USERS',
+      icon: Icons.manage_accounts_outlined,
+    ),
+    TenantAdminBottomNavItem(
+      label: 'ROLES',
+      icon: Icons.admin_panel_settings_outlined,
+    ),
+    TenantAdminBottomNavItem(label: 'COHORTS', icon: Icons.groups_outlined),
+    TenantAdminBottomNavItem(
+      label: 'LIVE',
+      icon: Icons.video_camera_front_outlined,
+    ),
+    TenantAdminBottomNavItem(
+      label: 'ACCOUNT',
+      icon: Icons.person_outline_rounded,
+    ),
+  ];
 
   @override
   void initState() {
     super.initState();
-    currentIndex = widget.initialIndex;
+    currentIndex = widget.initialIndex.clamp(0, _navItems.length - 1);
+    _pages = List<Widget?>.filled(_navItems.length, null);
+    _ensurePage(currentIndex);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.neutralColor,
-      body: _buildCurrentPage(),
+      body: PageStorage(
+        bucket: _pageStorageBucket,
+        child: IndexedStack(
+          index: currentIndex,
+          children: List.generate(
+            _pages.length,
+            (index) => TickerMode(
+              enabled: index == currentIndex,
+              child: _pages[index] ?? const SizedBox.shrink(),
+            ),
+          ),
+        ),
+      ),
       bottomNavigationBar: TenantAdminBottomNavBar(
         currentIndex: currentIndex,
         onTap: (index) {
           if (index == currentIndex) return;
 
           setState(() {
+            _ensurePage(index);
             currentIndex = index;
           });
         },
-        items: const [
-          TenantAdminBottomNavItem(
-            label: 'USERS',
-            icon: Icons.manage_accounts_outlined,
-          ),
-          TenantAdminBottomNavItem(
-            label: 'ROLES',
-            icon: Icons.admin_panel_settings_outlined,
-          ),
-          TenantAdminBottomNavItem(
-            label: 'COHORTS',
-            icon: Icons.groups_outlined,
-          ),
-          TenantAdminBottomNavItem(
-            label: 'LIVE',
-            icon: Icons.video_camera_front_outlined,
-          ),
-          TenantAdminBottomNavItem(
-            label: 'ACCOUNT',
-            icon: Icons.person_outline_rounded,
-          ),
-        ],
+        items: _navItems,
       ),
     );
   }
 
-  Widget _buildCurrentPage() {
-    switch (currentIndex) {
+  void _ensurePage(int index) {
+    _pages[index] ??= _buildPage(index);
+  }
+
+  Widget _buildPage(int index) {
+    switch (index) {
       case 0:
         return BlocProvider(
           key: const ValueKey('tenant-admin-users'),

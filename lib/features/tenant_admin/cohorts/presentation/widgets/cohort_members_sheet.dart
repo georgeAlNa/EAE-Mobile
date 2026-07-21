@@ -10,6 +10,7 @@ import '../../../../../core/public_widgets/button_widget.dart';
 import '../../../../../core/public_widgets/custom_dropdown.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
 import '../../../../../core/public_widgets/text_field_widget.dart';
+import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
 import '../../../users_management/presentation/widgets/users_management_sheet_scaffold.dart';
 import '../../data/models/cohorts_request_body.dart';
 import '../../data/models/cohorts_response.dart';
@@ -104,10 +105,10 @@ class _CohortMembersSheetState extends State<CohortMembersSheet> {
           return Column(
             children: [
               if (isMembersLoading || isActionLoading) ...[
-                LinearProgressIndicator(
-                  minHeight: 2.h,
-                  color: AppColors.secondaryColor7,
-                  backgroundColor: AppColors.tertiaryColor2,
+                AppSkeletonBox(
+                  width: double.infinity,
+                  height: 4.h,
+                  borderRadius: 2,
                 ),
                 verticalSpace(12),
               ],
@@ -211,28 +212,24 @@ class _MemberTile extends StatelessWidget {
         border: Border.all(color: AppColors.tertiaryColor2),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  member.userId,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.font12DarkGreySemiBold.copyWith(
-                    color: AppColors.primaryColor9,
-                  ),
+                TenantAdminCopyableValueRow(
+                  label: 'User ID',
+                  value: member.userId,
                 ),
-                verticalSpace(4),
-                Text(
-                  member.membershipRole,
-                  style: AppTextStyles.font12DarkGreyRegular.copyWith(
-                    color: AppColors.tertiaryColor6,
-                  ),
+                TenantAdminCopyableValueRow(
+                  label: 'Membership role',
+                  value: member.membershipRole,
                 ),
               ],
             ),
           ),
+          horizontalSpace(8),
           IconButton.outlined(
             tooltip: 'Remove member',
             onPressed: enabled

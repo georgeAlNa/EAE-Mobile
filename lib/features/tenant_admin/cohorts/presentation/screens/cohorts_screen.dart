@@ -109,19 +109,9 @@ class _CohortsScreenState extends State<CohortsScreen> {
               orElse: () => null,
             );
 
-            if (cohorts == null && isCohortsLoading) {
-              return const AppSkeletonListView(itemCount: 4);
-            }
-
-            if (cohorts == null) {
-              return AppRetryErrorView(
-                title: loadError ?? 'Unable to load cohorts',
-                message: 'Check the connection and try again.',
-                onRetry: screenContext.read<CohortsCubit>().getCohorts,
-              );
-            }
-
-            final visibleCohorts = _filterCohorts(cohorts);
+            final visibleCohorts = cohorts == null
+                ? null
+                : _filterCohorts(cohorts);
 
             return Stack(
               children: [
@@ -132,25 +122,30 @@ class _CohortsScreenState extends State<CohortsScreen> {
                     switchInCurve: Curves.easeOut,
                     switchOutCurve: Curves.easeIn,
                     child: ListView(
-                      key: ValueKey('${visibleCohorts.length}-$_query'),
+                      key: ValueKey('${visibleCohorts?.length}-$_query'),
                       padding: EdgeInsets.symmetric(
                         horizontal: 24.w,
                         vertical: 18.h,
                       ),
                       children: [
                         CohortsHeader(
-                          totalCohorts: cohorts.length,
+                          totalCohorts: cohorts?.length,
                           activeCohorts: cohorts
-                              .where((cohort) => cohort.isActive)
+                              ?.where((cohort) => cohort.isActive)
                               .length,
                           searchController: _searchController,
                           onCreateCohort: () =>
                               _showCreateCohortSheet(screenContext),
                         ),
                         verticalSpace(18),
-                        CohortsListSection(
+                        _CohortsDataSection(
                           cohorts: visibleCohorts,
                           query: _query,
+                          isLoading: cohorts == null && isCohortsLoading,
+                          loadError: cohorts == null ? loadError : null,
+                          onRetry: screenContext
+                              .read<CohortsCubit>()
+                              .getCohorts,
                           onDetails: (cohort) => _showCohortDetailsSheet(
                             context: screenContext,
                             cohortId: cohort.id,
@@ -179,15 +174,15 @@ class _CohortsScreenState extends State<CohortsScreen> {
                     ),
                   ),
                 ),
-                if (isCohortsLoading && cohorts.isNotEmpty)
+                if (isCohortsLoading && cohorts != null && cohorts.isNotEmpty)
                   Positioned(
                     top: 0,
                     left: 0,
                     right: 0,
-                    child: LinearProgressIndicator(
-                      minHeight: 2.h,
-                      color: AppColors.secondaryColor7,
-                      backgroundColor: AppColors.tertiaryColor2,
+                    child: AppSkeletonBox(
+                      width: double.infinity,
+                      height: 4.h,
+                      borderRadius: 0,
                     ),
                   ),
                 if (isActionLoading)
@@ -321,6 +316,72 @@ class _CohortsScreenState extends State<CohortsScreen> {
   }
 }
 
+class _CohortsDataSection extends StatelessWidget {
+  final List<CohortItem>? cohorts;
+  final String query;
+  final bool isLoading;
+  final String? loadError;
+  final VoidCallback onRetry;
+  final ValueChanged<CohortItem> onDetails;
+  final ValueChanged<CohortItem> onEdit;
+  final ValueChanged<CohortItem> onMembers;
+  final ValueChanged<CohortItem> onDelete;
+
+  const _CohortsDataSection({
+    required this.cohorts,
+    required this.query,
+    required this.isLoading,
+    required this.loadError,
+    required this.onRetry,
+    required this.onDetails,
+    required this.onEdit,
+    required this.onMembers,
+    required this.onDelete,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (isLoading) {
+      return const _SectionSkeleton(itemCount: 4);
+    }
+
+    if (loadError != null) {
+      return SizedBox(
+        height: 260.h,
+        child: AppRetryErrorView(
+          title: loadError!,
+          message: 'Check the connection and try again.',
+          onRetry: onRetry,
+        ),
+      );
+    }
+
+    return CohortsListSection(
+      cohorts: cohorts ?? const <CohortItem>[],
+      query: query,
+      onDetails: onDetails,
+      onEdit: onEdit,
+      onMembers: onMembers,
+      onDelete: onDelete,
+    );
+  }
+}
+
+class _SectionSkeleton extends StatelessWidget {
+  final int itemCount;
+
+  const _SectionSkeleton({required this.itemCount});
+
+  @override
+  Widget build(BuildContext context) {
+    return AppSkeletonDataList(
+      itemCount: itemCount,
+      showDescription: true,
+      chipCount: 2,
+    );
+  }
+}
+
 class _CohortActionProgressBanner extends StatelessWidget {
   final CohortsState state;
 
@@ -356,10 +417,7 @@ class _CohortActionProgressBanner extends StatelessWidget {
             SizedBox(
               width: 18.w,
               height: 18.w,
-              child: CircularProgressIndicator(
-                strokeWidth: 2.2.w,
-                color: AppColors.neutralColor,
-              ),
+              child: AppSkeletonBox(height: 18.h, borderRadius: 9),
             ),
             horizontalSpace(10),
             Expanded(
