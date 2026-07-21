@@ -1,35 +1,45 @@
 # EAE Mobile
 
-EAE Mobile is a Flutter application for an assessment and analytics workflow. It includes secure access, authentication, assessment inventory, assessment setup, assessment sessions, forensic checkpoints, analytics, and settings screens.
+EAE Mobile is a Flutter application for an assessment platform with role-based workflows for candidates, evaluators, and tenant administrators. The app connects to backend APIs through a layered networking architecture and includes authentication, account settings, assessment inventory, exam/session flows, evaluator management tools, and tenant administration tools.
 
-The project follows a feature-based structure and uses Cubit/BLoC for state management, Dio for API requests, get_it for dependency injection, shared_preferences for local storage, and json_serializable/freezed for generated models and states.
+The codebase uses a feature-first structure. Each backend-connected feature follows the same flow: JSON models, remote data source, repository, Cubit state management, and presentation widgets/screens.
 
 ## Main Features
 
-- Splash and app initialization flow
-- Secure access screen
-- Login authentication connected through the networking layer
-- Assessment inventory and assessment selection
-- Assessment setup and pre-check flow
-- Assessment session screens for questions, uploads, navigation, and submission
-- Forensics checkpoint screen
-- Analytics dashboard
-- Settings screen with profile, security, notifications, and support sections
-- Light/dark mode and language direction handling
+- Authentication: login, registration, logout, password reset, and token refresh.
+- Settings: identity profile, permissions, sessions, profile update, and logout/session revocation.
+- Candidate workflows:
+  - Assessment inventory and dashboard.
+  - Assessment details and candidate assessment flow.
+  - Assessment setup, session screens, uploads, navigation, submission, and forensic checkpoints.
+- Evaluator workflows:
+  - Competencies management.
+  - Exams management.
+  - Question bank and categories management.
+- Tenant admin workflows:
+  - Users management.
+  - Roles and security policy management.
+  - Cohorts and cohort members management.
+  - Live sessions and enrollment management.
+  - Tenant admin navigation shell and shared UI widgets.
+- Core app behavior:
+  - Splash/startup flow.
+  - Light/dark theme persistence.
+  - Arabic/English language direction handling.
+  - Shared networking, dependency injection, routing, and reusable widgets.
 
 ## Tech Stack
 
 - Flutter
 - Dart SDK `^3.9.2`
-- flutter_bloc
-- get_it
-- dio
-- shared_preferences
-- internet_connection_checker
-- flutter_screenutil
-- freezed
-- json_serializable
-- build_runner
+- `flutter_bloc` for Cubit/BLoC state management
+- `dio` for API requests
+- `get_it` for dependency injection
+- `shared_preferences` for local persisted state
+- `internet_connection_checker` for network availability checks
+- `freezed` for generated union states
+- `json_serializable` for request/response models
+- `mocktail` and `flutter_test` for testing
 
 ## Project Structure
 
@@ -46,71 +56,108 @@ lib/
     theme/
   features/
     analytics/
-    assessment_inventory/
-    assessment_setup/
-    assessment_session/
     auth/
-    bottom_nav/
-    forensics_checkpoint/
-    secure_access/
+    candidate/
+      assessment_inventory/
+      assessment_setup/
+      assessment_session/
+      bottom_nav/
+      forensics_checkpoint/
+    evaluator/
+      competencies/
+      exams_management/
+      question_bank_and_categories/
+      bottom_nav/
     settings/
     splash/
+    tenant_admin/
+      cohorts/
+      live_sessions_and_enrollment_management/
+      roles_and_security/
+      users_management/
+      bottom_nav/
+      shared/
   eae_app.dart
   main.dart
 ```
 
-## Prerequisites
+Backend-connected features generally use this internal structure:
 
-Before running the project, install:
-
-- Flutter SDK
-- Dart SDK supported by the Flutter version
-- Android Studio or VS Code
-- Android SDK and an emulator, or a connected physical device
-- Xcode if running on iOS or macOS
-
-Check your local setup:
-
-```bash
-flutter doctor
+```text
+feature_name/
+  data/
+    datasources/
+    models/
+    repos/
+  logic/
+  presentation/
+    screens/
+    widgets/
 ```
 
-## Installation
+## Backend Integration Pattern
 
-1. Clone the repository:
+Backend integration should stay consistent with the existing auth and feature modules:
 
-```bash
-git clone <repository-url>
-cd eae_mobile
-```
+- Request and response models live in `data/models`.
+- Models use `json_serializable` and generated `.g.dart` files.
+- Remote data sources call `ApiServicesImpl` and use `AppLinkUrl` endpoints.
+- Repositories check `NetworkInfo` before calling the remote data source.
+- Cubits call repositories only; UI should not call API services directly.
+- Cubit states are modeled with `freezed`.
+- Dependency injection is registered through the existing `get_it` setup.
+- Access tokens are read from `AppSharedPreferences` where authenticated endpoints need them.
 
-2. Install dependencies:
-
-```bash
-flutter pub get
-```
-
-3. Generate required files:
+After editing generated model/state files, run:
 
 ```bash
 dart run build_runner build --delete-conflicting-outputs
 ```
 
-4. Run the app:
+## Testing
+
+The project includes unit tests for the core Cubits and the backend-connected feature layers. Current test coverage focuses on:
+
+- Model serialization/deserialization.
+- Remote data source endpoint, token, and request body behavior.
+- Repository online/offline/error paths.
+- Cubit loading/success/error state emissions.
+
+Tested feature areas include:
+
+- `auth`
+- `settings`
+- `candidate/assessment_inventory`
+- `evaluator/competencies`
+- `evaluator/exams_management`
+- `evaluator/question_bank_and_categories`
+- `tenant_admin/users_management`
+- `tenant_admin/roles_and_security`
+- `tenant_admin/live_sessions_and_enrollment_management`
+- `tenant_admin/cohorts`
+
+Run all tests:
 
 ```bash
-flutter run
+flutter test
+```
+
+Run a specific feature test group:
+
+```bash
+flutter test test/features/tenant_admin/cohorts
+flutter test test/features/evaluator/exams_management
 ```
 
 ## Development Commands
 
-Install packages:
+Install dependencies:
 
 ```bash
 flutter pub get
 ```
 
-Run code generation:
+Generate code:
 
 ```bash
 dart run build_runner build --delete-conflicting-outputs
@@ -122,33 +169,36 @@ Analyze the project:
 flutter analyze
 ```
 
-Run tests:
+Format code:
 
 ```bash
-flutter test
+dart format lib test
 ```
 
-Run on a selected device:
+Run the app:
+
+```bash
+flutter run
+```
+
+List devices and run on a selected device:
 
 ```bash
 flutter devices
 flutter run -d <device-id>
 ```
 
-## Backend Integration Pattern
+## Prerequisites
 
-Backend integrations should follow the structure:
+Before running the project, install:
 
-- Request and response models in `data/models`
-- Remote data source in `data/datasources`
-- Repository in `data/repos`
-- Cubit and state in `logic`
-- Dependency injection registration in `core/di/dependency_injection.dart`
-- UI calls the Cubit only, not the API layer directly
+- Flutter SDK compatible with Dart `^3.9.2`
+- Android Studio or VS Code
+- Android SDK and an emulator, or a connected physical Android device
+- Xcode if running on iOS or macOS
 
-After adding or editing `json_serializable` or `freezed` files, run:
+Check your local setup:
 
 ```bash
-dart run build_runner build --delete-conflicting-outputs
+flutter doctor
 ```
-
