@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
+import '../../../shared/presentation/widgets/evaluator_copy_widgets.dart';
 import '../../data/models/competencies_response.dart';
 
 class CompetencyCard extends StatelessWidget {
@@ -73,6 +74,10 @@ class CompetencyCard extends StatelessWidget {
                       ),
                     ],
                   ),
+                ),
+                EvaluatorCopyIconButton(
+                  label: 'Competency name',
+                  value: competency.name,
                 ),
                 PopupMenuButton<_CompetencyAction>(
                   tooltip: 'Competency actions',

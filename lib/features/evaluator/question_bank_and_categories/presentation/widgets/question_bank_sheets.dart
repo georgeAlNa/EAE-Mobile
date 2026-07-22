@@ -7,6 +7,7 @@ import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../../../core/public_widgets/button_widget.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
+import '../../../shared/presentation/widgets/evaluator_copy_widgets.dart';
 import '../../data/models/question_bank_and_categories_request_body.dart';
 import '../../data/models/question_bank_and_categories_response.dart';
 import '../../logic/question_bank_and_categories_cubit.dart';
@@ -516,9 +517,20 @@ class QuestionDetailsSheet extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _DetailsBlock(title: 'Question text', value: question.questionText),
+          EvaluatorCopyableValueRow(label: 'Question ID', value: question.id),
+          EvaluatorCopyableValueRow(label: 'Title', value: question.title),
+          EvaluatorCopyableValueRow(label: 'Category', value: categoryTitle),
+          EvaluatorCopyableValueRow(
+            label: 'Category ID',
+            value: question.categoryId,
+          ),
           verticalSpace(12),
-          _DetailsBlock(title: 'Stem', value: question.stem),
+          EvaluatorCopyableBlock(
+            title: 'Question text',
+            value: question.questionText,
+          ),
+          verticalSpace(12),
+          EvaluatorCopyableBlock(title: 'Stem', value: question.stem),
           verticalSpace(12),
           Wrap(
             spacing: 8.w,
@@ -531,9 +543,18 @@ class QuestionDetailsSheet extends StatelessWidget {
             ],
           ),
           verticalSpace(14),
-          _DetailsBlock(
+          EvaluatorCopyableBlock(
             title: 'Correct answer',
             value: correctAnswerText(question),
+          ),
+          verticalSpace(12),
+          EvaluatorCopyableValueRow(
+            label: 'Created at',
+            value: question.createdAt,
+          ),
+          EvaluatorCopyableValueRow(
+            label: 'Updated at',
+            value: question.updatedAt,
           ),
           if (question.choices.isNotEmpty) ...[
             verticalSpace(14),
@@ -560,12 +581,17 @@ class QuestionDetailsSheet extends StatelessWidget {
                     ),
                     horizontalSpace(8),
                     Expanded(
-                      child: Text(
+                      child: SelectableText(
                         choice.optionText,
                         style: AppTextStyles.font12DarkGreyRegular.copyWith(
                           color: AppColors.primaryColor9,
                         ),
                       ),
+                    ),
+                    horizontalSpace(8),
+                    EvaluatorCopyIconButton(
+                      label: 'Choice',
+                      value: choice.optionText,
                     ),
                   ],
                 ),
@@ -810,36 +836,6 @@ class _SheetTextField extends StatelessWidget {
         hintText: hintText,
         prefixText: prefixText,
       ),
-    );
-  }
-}
-
-class _DetailsBlock extends StatelessWidget {
-  final String title;
-  final String value;
-
-  const _DetailsBlock({required this.title, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: AppTextStyles.font12DarkGreySemiBold.copyWith(
-            color: AppColors.tertiaryColor6,
-          ),
-        ),
-        verticalSpace(6),
-        Text(
-          value,
-          style: AppTextStyles.font14DarkGreyRegular.copyWith(
-            color: AppColors.primaryColor9,
-            height: 1.45,
-          ),
-        ),
-      ],
     );
   }
 }

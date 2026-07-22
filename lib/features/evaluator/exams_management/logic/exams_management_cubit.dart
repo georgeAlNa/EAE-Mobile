@@ -21,7 +21,7 @@ class ExamsManagementCubit extends Cubit<ExamsManagementState> {
   ExamResponse? selectedExamResponse;
 
   Future<void> getExams() async {
-    emit(const ExamsManagementState.loading());
+    emit(const ExamsManagementState.examsLoading());
 
     try {
       final response = await examsManagementRepo.getExams();
@@ -29,30 +29,36 @@ class ExamsManagementCubit extends Cubit<ExamsManagementState> {
       emit(ExamsManagementState.loaded(response));
     } on NetworkExceptions catch (e) {
       emit(
-        ExamsManagementState.error(error: NetworkExceptions.getErrorMessage(e)),
+        ExamsManagementState.loadError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
       );
     } catch (e) {
-      emit(const ExamsManagementState.error(error: 'Failed to load exams'));
+      emit(const ExamsManagementState.loadError(error: 'Failed to load exams'));
     }
   }
 
   Future<void> createExam(ExamRequestBody requestBody) async {
-    emit(const ExamsManagementState.loading());
+    emit(const ExamsManagementState.saveLoading());
 
     try {
       final response = await examsManagementRepo.createExam(requestBody);
       emit(ExamsManagementState.saved(response));
     } on NetworkExceptions catch (e) {
       emit(
-        ExamsManagementState.error(error: NetworkExceptions.getErrorMessage(e)),
+        ExamsManagementState.saveError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
       );
     } catch (e) {
-      emit(const ExamsManagementState.error(error: 'Failed to create exam'));
+      emit(
+        const ExamsManagementState.saveError(error: 'Failed to create exam'),
+      );
     }
   }
 
   Future<void> getExamDetails(String examId) async {
-    emit(const ExamsManagementState.loading());
+    emit(const ExamsManagementState.detailsLoading());
 
     try {
       final response = await examsManagementRepo.getExamDetails(examId);
@@ -60,15 +66,19 @@ class ExamsManagementCubit extends Cubit<ExamsManagementState> {
       emit(ExamsManagementState.detailsLoaded(response));
     } on NetworkExceptions catch (e) {
       emit(
-        ExamsManagementState.error(error: NetworkExceptions.getErrorMessage(e)),
+        ExamsManagementState.detailsError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
       );
     } catch (e) {
-      emit(const ExamsManagementState.error(error: 'Failed to load exam'));
+      emit(
+        const ExamsManagementState.detailsError(error: 'Failed to load exam'),
+      );
     }
   }
 
   Future<void> updateExam(String examId, ExamRequestBody requestBody) async {
-    emit(const ExamsManagementState.loading());
+    emit(const ExamsManagementState.saveLoading());
 
     try {
       final response = await examsManagementRepo.updateExam(
@@ -78,55 +88,71 @@ class ExamsManagementCubit extends Cubit<ExamsManagementState> {
       emit(ExamsManagementState.saved(response));
     } on NetworkExceptions catch (e) {
       emit(
-        ExamsManagementState.error(error: NetworkExceptions.getErrorMessage(e)),
+        ExamsManagementState.saveError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
       );
     } catch (e) {
-      emit(const ExamsManagementState.error(error: 'Failed to update exam'));
+      emit(
+        const ExamsManagementState.saveError(error: 'Failed to update exam'),
+      );
     }
   }
 
   Future<void> deleteExam(String examId) async {
-    emit(const ExamsManagementState.loading());
+    emit(const ExamsManagementState.actionLoading());
 
     try {
       final response = await examsManagementRepo.deleteExam(examId);
       emit(ExamsManagementState.actionSuccess(response));
     } on NetworkExceptions catch (e) {
       emit(
-        ExamsManagementState.error(error: NetworkExceptions.getErrorMessage(e)),
+        ExamsManagementState.actionError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
       );
     } catch (e) {
-      emit(const ExamsManagementState.error(error: 'Failed to delete exam'));
+      emit(
+        const ExamsManagementState.actionError(error: 'Failed to delete exam'),
+      );
     }
   }
 
   Future<void> publishExam(String examId) async {
-    emit(const ExamsManagementState.loading());
+    emit(const ExamsManagementState.saveLoading());
 
     try {
       final response = await examsManagementRepo.publishExam(examId);
       emit(ExamsManagementState.saved(response));
     } on NetworkExceptions catch (e) {
       emit(
-        ExamsManagementState.error(error: NetworkExceptions.getErrorMessage(e)),
+        ExamsManagementState.saveError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
       );
     } catch (e) {
-      emit(const ExamsManagementState.error(error: 'Failed to publish exam'));
+      emit(
+        const ExamsManagementState.saveError(error: 'Failed to publish exam'),
+      );
     }
   }
 
   Future<void> archiveExam(String examId) async {
-    emit(const ExamsManagementState.loading());
+    emit(const ExamsManagementState.saveLoading());
 
     try {
       final response = await examsManagementRepo.archiveExam(examId);
       emit(ExamsManagementState.saved(response));
     } on NetworkExceptions catch (e) {
       emit(
-        ExamsManagementState.error(error: NetworkExceptions.getErrorMessage(e)),
+        ExamsManagementState.saveError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
       );
     } catch (e) {
-      emit(const ExamsManagementState.error(error: 'Failed to archive exam'));
+      emit(
+        const ExamsManagementState.saveError(error: 'Failed to archive exam'),
+      );
     }
   }
 }

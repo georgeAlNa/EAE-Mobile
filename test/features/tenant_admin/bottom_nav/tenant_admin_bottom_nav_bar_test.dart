@@ -1,4 +1,4 @@
-import 'package:eae_mobile/features/tenant_admin/bottom_nav/presentation/widgets/tenant_admin_bottom_nav_bar.dart';
+import 'package:eae_mobile/core/public_widgets/app_bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,19 +13,19 @@ Future<void> pumpBottomNav(
       designSize: const Size(375, 812),
       builder: (_, _) => MaterialApp(
         home: Scaffold(
-          bottomNavigationBar: TenantAdminBottomNavBar(
+          bottomNavigationBar: AppBottomNavBar(
             currentIndex: currentIndex,
             onTap: onTap,
             items: const [
-              TenantAdminBottomNavItem(
+              AppBottomNavItem(
                 label: 'USERS',
                 icon: Icons.manage_accounts_outlined,
               ),
-              TenantAdminBottomNavItem(
+              AppBottomNavItem(
                 label: 'ROLES',
                 icon: Icons.admin_panel_settings_outlined,
               ),
-              TenantAdminBottomNavItem(
+              AppBottomNavItem(
                 label: 'COHORTS',
                 icon: Icons.groups_outlined,
               ),
@@ -38,7 +38,7 @@ Future<void> pumpBottomNav(
 }
 
 void main() {
-  group('TenantAdminBottomNavBar', () {
+  group('AppBottomNavBar tenant admin items', () {
     testWidgets('renders configured tenant admin navigation items', (
       tester,
     ) async {

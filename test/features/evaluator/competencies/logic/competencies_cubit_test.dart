@@ -36,14 +36,19 @@ Future<CompetenciesState> waitForLoadTerminal(CompetenciesCubit cubit) {
   return cubit.stream.firstWhere(
     (state) => state.maybeWhen(
       loaded: (_) => true,
-      error: (_) => true,
+      loadError: (_) => true,
       orElse: () => false,
     ),
   );
 }
 
 String? stateError(CompetenciesState state) {
-  return state.whenOrNull(error: (error) => error);
+  return state.maybeWhen(
+    loadError: (error) => error,
+    saveError: (error) => error,
+    actionError: (error) => error,
+    orElse: () => null,
+  );
 }
 
 CompetenciesTreeResponse? loadedResponse(CompetenciesState state) {
@@ -59,7 +64,12 @@ CompetencyActionResponse? actionResponse(CompetenciesState state) {
 }
 
 bool isLoading(CompetenciesState state) {
-  return state.maybeWhen(loading: () => true, orElse: () => false);
+  return state.maybeWhen(
+    competenciesLoading: () => true,
+    saveLoading: () => true,
+    deleteLoading: () => true,
+    orElse: () => false,
+  );
 }
 
 void main() {

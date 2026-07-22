@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
+import '../../../shared/presentation/widgets/evaluator_copy_widgets.dart';
 import '../../data/models/exams_management_response.dart';
 
 class ExamCard extends StatelessWidget {
@@ -77,6 +78,10 @@ class ExamCard extends StatelessWidget {
                       ),
                     ],
                   ),
+                ),
+                EvaluatorCopyIconButton(
+                  label: 'Exam code',
+                  value: exam.examCode,
                 ),
                 PopupMenuButton<_ExamAction>(
                   tooltip: 'Exam actions',

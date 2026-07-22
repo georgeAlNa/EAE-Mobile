@@ -20,7 +20,7 @@ class CompetenciesCubit extends Cubit<CompetenciesState> {
   CompetenciesTreeResponse? competenciesTreeResponse;
 
   Future<void> getCompetenciesTree() async {
-    emit(const CompetenciesState.loading());
+    emit(const CompetenciesState.competenciesLoading());
 
     try {
       final response = await competenciesRepo.getCompetenciesTree();
@@ -28,25 +28,33 @@ class CompetenciesCubit extends Cubit<CompetenciesState> {
       emit(CompetenciesState.loaded(response));
     } on NetworkExceptions catch (e) {
       emit(
-        CompetenciesState.error(error: NetworkExceptions.getErrorMessage(e)),
+        CompetenciesState.loadError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
       );
     } catch (e) {
-      emit(const CompetenciesState.error(error: 'Failed to load competencies'));
+      emit(
+        const CompetenciesState.loadError(error: 'Failed to load competencies'),
+      );
     }
   }
 
   Future<void> createCompetency(CreateCompetencyRequestBody requestBody) async {
-    emit(const CompetenciesState.loading());
+    emit(const CompetenciesState.saveLoading());
 
     try {
       final response = await competenciesRepo.createCompetency(requestBody);
       emit(CompetenciesState.saved(response));
     } on NetworkExceptions catch (e) {
       emit(
-        CompetenciesState.error(error: NetworkExceptions.getErrorMessage(e)),
+        CompetenciesState.saveError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
       );
     } catch (e) {
-      emit(const CompetenciesState.error(error: 'Failed to create competency'));
+      emit(
+        const CompetenciesState.saveError(error: 'Failed to create competency'),
+      );
     }
   }
 
@@ -54,7 +62,7 @@ class CompetenciesCubit extends Cubit<CompetenciesState> {
     String competencyId,
     MoveCompetencyRequestBody requestBody,
   ) async {
-    emit(const CompetenciesState.loading());
+    emit(const CompetenciesState.saveLoading());
 
     try {
       final response = await competenciesRepo.moveCompetency(
@@ -64,25 +72,35 @@ class CompetenciesCubit extends Cubit<CompetenciesState> {
       emit(CompetenciesState.saved(response));
     } on NetworkExceptions catch (e) {
       emit(
-        CompetenciesState.error(error: NetworkExceptions.getErrorMessage(e)),
+        CompetenciesState.saveError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
       );
     } catch (e) {
-      emit(const CompetenciesState.error(error: 'Failed to move competency'));
+      emit(
+        const CompetenciesState.saveError(error: 'Failed to move competency'),
+      );
     }
   }
 
   Future<void> deleteCompetency(String competencyId) async {
-    emit(const CompetenciesState.loading());
+    emit(const CompetenciesState.deleteLoading());
 
     try {
       final response = await competenciesRepo.deleteCompetency(competencyId);
       emit(CompetenciesState.actionSuccess(response));
     } on NetworkExceptions catch (e) {
       emit(
-        CompetenciesState.error(error: NetworkExceptions.getErrorMessage(e)),
+        CompetenciesState.actionError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
       );
     } catch (e) {
-      emit(const CompetenciesState.error(error: 'Failed to delete competency'));
+      emit(
+        const CompetenciesState.actionError(
+          error: 'Failed to delete competency',
+        ),
+      );
     }
   }
 }

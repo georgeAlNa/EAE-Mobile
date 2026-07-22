@@ -77,11 +77,21 @@ UpdateQuestionRequestBody updateQuestionRequest() => UpdateQuestionRequestBody(
   correctAnswer: const {'choice_sequence': 1},
 );
 
-bool isLoading(QuestionBankAndCategoriesState state) =>
-    state.maybeWhen(loading: () => true, orElse: () => false);
+bool isLoading(QuestionBankAndCategoriesState state) => state.maybeWhen(
+  questionBankLoading: () => true,
+  categorySaveLoading: () => true,
+  questionSaveLoading: () => true,
+  actionLoading: () => true,
+  orElse: () => false,
+);
 
-String? stateError(QuestionBankAndCategoriesState state) =>
-    state.whenOrNull(error: (error) => error);
+String? stateError(QuestionBankAndCategoriesState state) => state.maybeWhen(
+  loadError: (error) => error,
+  categorySaveError: (error) => error,
+  questionSaveError: (error) => error,
+  actionError: (error) => error,
+  orElse: () => null,
+);
 
 CategoriesTreeResponse? loadedCategories(
   QuestionBankAndCategoriesState state,
@@ -103,7 +113,7 @@ Future<QuestionBankAndCategoriesState> waitForLoadTerminal(
   return cubit.stream.firstWhere(
     (state) => state.maybeWhen(
       loaded: (_, _) => true,
-      error: (_) => true,
+      loadError: (_) => true,
       orElse: () => false,
     ),
   );

@@ -55,16 +55,20 @@ extension CompetenciesStatePatterns on CompetenciesState {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Loading value)?  loading,TResult Function( _Loaded value)?  loaded,TResult Function( _Saved value)?  saved,TResult Function( _ActionSuccess value)?  actionSuccess,TResult Function( _Error value)?  error,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _CompetenciesLoading value)?  competenciesLoading,TResult Function( _Loaded value)?  loaded,TResult Function( _LoadError value)?  loadError,TResult Function( _SaveLoading value)?  saveLoading,TResult Function( _Saved value)?  saved,TResult Function( _SaveError value)?  saveError,TResult Function( _DeleteLoading value)?  deleteLoading,TResult Function( _ActionSuccess value)?  actionSuccess,TResult Function( _ActionError value)?  actionError,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
-return initial(_that);case _Loading() when loading != null:
-return loading(_that);case _Loaded() when loaded != null:
-return loaded(_that);case _Saved() when saved != null:
-return saved(_that);case _ActionSuccess() when actionSuccess != null:
-return actionSuccess(_that);case _Error() when error != null:
-return error(_that);case _:
+return initial(_that);case _CompetenciesLoading() when competenciesLoading != null:
+return competenciesLoading(_that);case _Loaded() when loaded != null:
+return loaded(_that);case _LoadError() when loadError != null:
+return loadError(_that);case _SaveLoading() when saveLoading != null:
+return saveLoading(_that);case _Saved() when saved != null:
+return saved(_that);case _SaveError() when saveError != null:
+return saveError(_that);case _DeleteLoading() when deleteLoading != null:
+return deleteLoading(_that);case _ActionSuccess() when actionSuccess != null:
+return actionSuccess(_that);case _ActionError() when actionError != null:
+return actionError(_that);case _:
   return orElse();
 
 }
@@ -82,16 +86,20 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Loading value)  loading,required TResult Function( _Loaded value)  loaded,required TResult Function( _Saved value)  saved,required TResult Function( _ActionSuccess value)  actionSuccess,required TResult Function( _Error value)  error,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _CompetenciesLoading value)  competenciesLoading,required TResult Function( _Loaded value)  loaded,required TResult Function( _LoadError value)  loadError,required TResult Function( _SaveLoading value)  saveLoading,required TResult Function( _Saved value)  saved,required TResult Function( _SaveError value)  saveError,required TResult Function( _DeleteLoading value)  deleteLoading,required TResult Function( _ActionSuccess value)  actionSuccess,required TResult Function( _ActionError value)  actionError,}){
 final _that = this;
 switch (_that) {
 case _Initial():
-return initial(_that);case _Loading():
-return loading(_that);case _Loaded():
-return loaded(_that);case _Saved():
-return saved(_that);case _ActionSuccess():
-return actionSuccess(_that);case _Error():
-return error(_that);case _:
+return initial(_that);case _CompetenciesLoading():
+return competenciesLoading(_that);case _Loaded():
+return loaded(_that);case _LoadError():
+return loadError(_that);case _SaveLoading():
+return saveLoading(_that);case _Saved():
+return saved(_that);case _SaveError():
+return saveError(_that);case _DeleteLoading():
+return deleteLoading(_that);case _ActionSuccess():
+return actionSuccess(_that);case _ActionError():
+return actionError(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -108,16 +116,20 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Loading value)?  loading,TResult? Function( _Loaded value)?  loaded,TResult? Function( _Saved value)?  saved,TResult? Function( _ActionSuccess value)?  actionSuccess,TResult? Function( _Error value)?  error,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _CompetenciesLoading value)?  competenciesLoading,TResult? Function( _Loaded value)?  loaded,TResult? Function( _LoadError value)?  loadError,TResult? Function( _SaveLoading value)?  saveLoading,TResult? Function( _Saved value)?  saved,TResult? Function( _SaveError value)?  saveError,TResult? Function( _DeleteLoading value)?  deleteLoading,TResult? Function( _ActionSuccess value)?  actionSuccess,TResult? Function( _ActionError value)?  actionError,}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
-return initial(_that);case _Loading() when loading != null:
-return loading(_that);case _Loaded() when loaded != null:
-return loaded(_that);case _Saved() when saved != null:
-return saved(_that);case _ActionSuccess() when actionSuccess != null:
-return actionSuccess(_that);case _Error() when error != null:
-return error(_that);case _:
+return initial(_that);case _CompetenciesLoading() when competenciesLoading != null:
+return competenciesLoading(_that);case _Loaded() when loaded != null:
+return loaded(_that);case _LoadError() when loadError != null:
+return loadError(_that);case _SaveLoading() when saveLoading != null:
+return saveLoading(_that);case _Saved() when saved != null:
+return saved(_that);case _SaveError() when saveError != null:
+return saveError(_that);case _DeleteLoading() when deleteLoading != null:
+return deleteLoading(_that);case _ActionSuccess() when actionSuccess != null:
+return actionSuccess(_that);case _ActionError() when actionError != null:
+return actionError(_that);case _:
   return null;
 
 }
@@ -134,15 +146,19 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( CompetenciesTreeResponse response)?  loaded,TResult Function( CompetencyMutationResponse response)?  saved,TResult Function( CompetencyActionResponse response)?  actionSuccess,TResult Function( String error)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  competenciesLoading,TResult Function( CompetenciesTreeResponse response)?  loaded,TResult Function( String error)?  loadError,TResult Function()?  saveLoading,TResult Function( CompetencyMutationResponse response)?  saved,TResult Function( String error)?  saveError,TResult Function()?  deleteLoading,TResult Function( CompetencyActionResponse response)?  actionSuccess,TResult Function( String error)?  actionError,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
-return initial();case _Loading() when loading != null:
-return loading();case _Loaded() when loaded != null:
-return loaded(_that.response);case _Saved() when saved != null:
-return saved(_that.response);case _ActionSuccess() when actionSuccess != null:
-return actionSuccess(_that.response);case _Error() when error != null:
-return error(_that.error);case _:
+return initial();case _CompetenciesLoading() when competenciesLoading != null:
+return competenciesLoading();case _Loaded() when loaded != null:
+return loaded(_that.response);case _LoadError() when loadError != null:
+return loadError(_that.error);case _SaveLoading() when saveLoading != null:
+return saveLoading();case _Saved() when saved != null:
+return saved(_that.response);case _SaveError() when saveError != null:
+return saveError(_that.error);case _DeleteLoading() when deleteLoading != null:
+return deleteLoading();case _ActionSuccess() when actionSuccess != null:
+return actionSuccess(_that.response);case _ActionError() when actionError != null:
+return actionError(_that.error);case _:
   return orElse();
 
 }
@@ -160,15 +176,19 @@ return error(_that.error);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( CompetenciesTreeResponse response)  loaded,required TResult Function( CompetencyMutationResponse response)  saved,required TResult Function( CompetencyActionResponse response)  actionSuccess,required TResult Function( String error)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  competenciesLoading,required TResult Function( CompetenciesTreeResponse response)  loaded,required TResult Function( String error)  loadError,required TResult Function()  saveLoading,required TResult Function( CompetencyMutationResponse response)  saved,required TResult Function( String error)  saveError,required TResult Function()  deleteLoading,required TResult Function( CompetencyActionResponse response)  actionSuccess,required TResult Function( String error)  actionError,}) {final _that = this;
 switch (_that) {
 case _Initial():
-return initial();case _Loading():
-return loading();case _Loaded():
-return loaded(_that.response);case _Saved():
-return saved(_that.response);case _ActionSuccess():
-return actionSuccess(_that.response);case _Error():
-return error(_that.error);case _:
+return initial();case _CompetenciesLoading():
+return competenciesLoading();case _Loaded():
+return loaded(_that.response);case _LoadError():
+return loadError(_that.error);case _SaveLoading():
+return saveLoading();case _Saved():
+return saved(_that.response);case _SaveError():
+return saveError(_that.error);case _DeleteLoading():
+return deleteLoading();case _ActionSuccess():
+return actionSuccess(_that.response);case _ActionError():
+return actionError(_that.error);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -185,15 +205,19 @@ return error(_that.error);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( CompetenciesTreeResponse response)?  loaded,TResult? Function( CompetencyMutationResponse response)?  saved,TResult? Function( CompetencyActionResponse response)?  actionSuccess,TResult? Function( String error)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  competenciesLoading,TResult? Function( CompetenciesTreeResponse response)?  loaded,TResult? Function( String error)?  loadError,TResult? Function()?  saveLoading,TResult? Function( CompetencyMutationResponse response)?  saved,TResult? Function( String error)?  saveError,TResult? Function()?  deleteLoading,TResult? Function( CompetencyActionResponse response)?  actionSuccess,TResult? Function( String error)?  actionError,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
-return initial();case _Loading() when loading != null:
-return loading();case _Loaded() when loaded != null:
-return loaded(_that.response);case _Saved() when saved != null:
-return saved(_that.response);case _ActionSuccess() when actionSuccess != null:
-return actionSuccess(_that.response);case _Error() when error != null:
-return error(_that.error);case _:
+return initial();case _CompetenciesLoading() when competenciesLoading != null:
+return competenciesLoading();case _Loaded() when loaded != null:
+return loaded(_that.response);case _LoadError() when loadError != null:
+return loadError(_that.error);case _SaveLoading() when saveLoading != null:
+return saveLoading();case _Saved() when saved != null:
+return saved(_that.response);case _SaveError() when saveError != null:
+return saveError(_that.error);case _DeleteLoading() when deleteLoading != null:
+return deleteLoading();case _ActionSuccess() when actionSuccess != null:
+return actionSuccess(_that.response);case _ActionError() when actionError != null:
+return actionError(_that.error);case _:
   return null;
 
 }
@@ -236,8 +260,8 @@ String toString() {
 /// @nodoc
 
 
-class _Loading implements CompetenciesState {
-  const _Loading();
+class _CompetenciesLoading implements CompetenciesState {
+  const _CompetenciesLoading();
   
 
 
@@ -247,7 +271,7 @@ class _Loading implements CompetenciesState {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loading);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CompetenciesLoading);
 }
 
 
@@ -256,7 +280,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'CompetenciesState.loading()';
+  return 'CompetenciesState.competenciesLoading()';
 }
 
 
@@ -334,6 +358,104 @@ as CompetenciesTreeResponse,
 /// @nodoc
 
 
+class _LoadError implements CompetenciesState {
+  const _LoadError({required this.error});
+  
+
+ final  String error;
+
+/// Create a copy of CompetenciesState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$LoadErrorCopyWith<_LoadError> get copyWith => __$LoadErrorCopyWithImpl<_LoadError>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LoadError&&(identical(other.error, error) || other.error == error));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,error);
+
+@override
+String toString() {
+  return 'CompetenciesState.loadError(error: $error)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$LoadErrorCopyWith<$Res> implements $CompetenciesStateCopyWith<$Res> {
+  factory _$LoadErrorCopyWith(_LoadError value, $Res Function(_LoadError) _then) = __$LoadErrorCopyWithImpl;
+@useResult
+$Res call({
+ String error
+});
+
+
+
+
+}
+/// @nodoc
+class __$LoadErrorCopyWithImpl<$Res>
+    implements _$LoadErrorCopyWith<$Res> {
+  __$LoadErrorCopyWithImpl(this._self, this._then);
+
+  final _LoadError _self;
+  final $Res Function(_LoadError) _then;
+
+/// Create a copy of CompetenciesState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? error = null,}) {
+  return _then(_LoadError(
+error: null == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _SaveLoading implements CompetenciesState {
+  const _SaveLoading();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SaveLoading);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'CompetenciesState.saveLoading()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
 class _Saved implements CompetenciesState {
   const _Saved(this.response);
   
@@ -396,6 +518,104 @@ as CompetencyMutationResponse,
 
 
 }
+
+/// @nodoc
+
+
+class _SaveError implements CompetenciesState {
+  const _SaveError({required this.error});
+  
+
+ final  String error;
+
+/// Create a copy of CompetenciesState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$SaveErrorCopyWith<_SaveError> get copyWith => __$SaveErrorCopyWithImpl<_SaveError>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SaveError&&(identical(other.error, error) || other.error == error));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,error);
+
+@override
+String toString() {
+  return 'CompetenciesState.saveError(error: $error)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$SaveErrorCopyWith<$Res> implements $CompetenciesStateCopyWith<$Res> {
+  factory _$SaveErrorCopyWith(_SaveError value, $Res Function(_SaveError) _then) = __$SaveErrorCopyWithImpl;
+@useResult
+$Res call({
+ String error
+});
+
+
+
+
+}
+/// @nodoc
+class __$SaveErrorCopyWithImpl<$Res>
+    implements _$SaveErrorCopyWith<$Res> {
+  __$SaveErrorCopyWithImpl(this._self, this._then);
+
+  final _SaveError _self;
+  final $Res Function(_SaveError) _then;
+
+/// Create a copy of CompetenciesState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? error = null,}) {
+  return _then(_SaveError(
+error: null == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _DeleteLoading implements CompetenciesState {
+  const _DeleteLoading();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DeleteLoading);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'CompetenciesState.deleteLoading()';
+}
+
+
+}
+
+
+
 
 /// @nodoc
 
@@ -466,8 +686,8 @@ as CompetencyActionResponse,
 /// @nodoc
 
 
-class _Error implements CompetenciesState {
-  const _Error({required this.error});
+class _ActionError implements CompetenciesState {
+  const _ActionError({required this.error});
   
 
  final  String error;
@@ -476,13 +696,13 @@ class _Error implements CompetenciesState {
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$ErrorCopyWith<_Error> get copyWith => __$ErrorCopyWithImpl<_Error>(this, _$identity);
+_$ActionErrorCopyWith<_ActionError> get copyWith => __$ActionErrorCopyWithImpl<_ActionError>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Error&&(identical(other.error, error) || other.error == error));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ActionError&&(identical(other.error, error) || other.error == error));
 }
 
 
@@ -491,15 +711,15 @@ int get hashCode => Object.hash(runtimeType,error);
 
 @override
 String toString() {
-  return 'CompetenciesState.error(error: $error)';
+  return 'CompetenciesState.actionError(error: $error)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$ErrorCopyWith<$Res> implements $CompetenciesStateCopyWith<$Res> {
-  factory _$ErrorCopyWith(_Error value, $Res Function(_Error) _then) = __$ErrorCopyWithImpl;
+abstract mixin class _$ActionErrorCopyWith<$Res> implements $CompetenciesStateCopyWith<$Res> {
+  factory _$ActionErrorCopyWith(_ActionError value, $Res Function(_ActionError) _then) = __$ActionErrorCopyWithImpl;
 @useResult
 $Res call({
  String error
@@ -510,17 +730,17 @@ $Res call({
 
 }
 /// @nodoc
-class __$ErrorCopyWithImpl<$Res>
-    implements _$ErrorCopyWith<$Res> {
-  __$ErrorCopyWithImpl(this._self, this._then);
+class __$ActionErrorCopyWithImpl<$Res>
+    implements _$ActionErrorCopyWith<$Res> {
+  __$ActionErrorCopyWithImpl(this._self, this._then);
 
-  final _Error _self;
-  final $Res Function(_Error) _then;
+  final _ActionError _self;
+  final $Res Function(_ActionError) _then;
 
 /// Create a copy of CompetenciesState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') $Res call({Object? error = null,}) {
-  return _then(_Error(
+  return _then(_ActionError(
 error: null == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
 as String,
   ));

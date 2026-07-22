@@ -6,6 +6,7 @@ import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../../../core/public_widgets/button_widget.dart';
+import '../../../shared/presentation/widgets/evaluator_copy_widgets.dart';
 import '../../data/models/exams_management_request_body.dart';
 import '../../data/models/exams_management_response.dart';
 import '../../logic/exams_management_cubit.dart';
@@ -360,40 +361,52 @@ class ExamDetailsSheet extends StatelessWidget {
       subtitle: '${exam.examCode} - ${exam.examStatus}',
       child: Column(
         children: [
-          _DetailRow(label: 'Type', value: exam.examType),
-          _DetailRow(label: 'Mode', value: exam.assessmentMode),
-          _DetailRow(label: 'Questions', value: exam.totalQuestions.toString()),
-          _DetailRow(
+          EvaluatorCopyableValueRow(label: 'Exam ID', value: exam.id),
+          EvaluatorCopyableValueRow(label: 'Exam name', value: exam.examName),
+          EvaluatorCopyableValueRow(label: 'Exam code', value: exam.examCode),
+          EvaluatorCopyableValueRow(label: 'Status', value: exam.examStatus),
+          EvaluatorCopyableValueRow(label: 'Type', value: exam.examType),
+          EvaluatorCopyableValueRow(label: 'Mode', value: exam.assessmentMode),
+          EvaluatorCopyableValueRow(
+            label: 'Questions',
+            value: exam.totalQuestions.toString(),
+          ),
+          EvaluatorCopyableValueRow(
             label: 'Duration',
             value: '${exam.totalDurationMinutes} minutes',
           ),
-          _DetailRow(label: 'Pass mark', value: '${exam.passMarkPercentage}%'),
-          _DetailRow(
+          EvaluatorCopyableValueRow(
+            label: 'Pass mark',
+            value: '${exam.passMarkPercentage}%',
+          ),
+          EvaluatorCopyableValueRow(
             label: 'Difficulty',
             value: exam.difficultyTierLevel.toString(),
           ),
-          _DetailRow(
+          EvaluatorCopyableValueRow(
             label: 'Published',
             value: exam.isPublished ? 'Yes' : 'No',
           ),
-          _DetailRow(
+          EvaluatorCopyableValueRow(
             label: 'Published at',
             value: formatExamDate(exam.publishedAt),
           ),
-          _DetailRow(
+          EvaluatorCopyableValueRow(
             label: 'Archived at',
             value: formatExamDate(exam.archivedAt),
           ),
+          EvaluatorCopyableValueRow(
+            label: 'Created at',
+            value: formatExamDate(exam.createdAt),
+          ),
+          EvaluatorCopyableValueRow(
+            label: 'Updated at',
+            value: formatExamDate(exam.updatedAt),
+          ),
           verticalSpace(8),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              exam.examDescription,
-              style: AppTextStyles.font12DarkGreyRegular.copyWith(
-                color: AppColors.tertiaryColor7,
-                height: 1.45,
-              ),
-            ),
+          EvaluatorCopyableBlock(
+            title: 'Description',
+            value: exam.examDescription,
           ),
         ],
       ),
@@ -425,42 +438,6 @@ class _SwitchTile extends StatelessWidget {
         ),
       ),
       activeThumbColor: AppColors.secondaryColor7,
-    );
-  }
-}
-
-class _DetailRow extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _DetailRow({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 10.h),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              label,
-              style: AppTextStyles.font12DarkGreyRegular.copyWith(
-                color: AppColors.tertiaryColor6,
-              ),
-            ),
-          ),
-          horizontalSpace(12),
-          Flexible(
-            child: Text(
-              value,
-              textAlign: TextAlign.end,
-              style: AppTextStyles.font12DarkGreySemiBold.copyWith(
-                color: AppColors.primaryColor9,
-              ),
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/di/dependency_injection.dart';
+import '../../../../../core/public_widgets/app_bottom_nav_bar.dart';
 import '../../../../settings/logic/settings_cubit.dart';
 import '../../../../settings/presentation/screens/settings_screen.dart';
 import '../../../competencies/logic/competencies_cubit.dart';
@@ -11,7 +12,6 @@ import '../../../exams_management/logic/exams_management_cubit.dart';
 import '../../../exams_management/presentation/screens/exams_management_screen.dart';
 import '../../../question_bank_and_categories/logic/question_bank_and_categories_cubit.dart';
 import '../../../question_bank_and_categories/presentation/screens/question_bank_and_categories_screen.dart';
-import '../widgets/evaluator_bottom_nav_bar.dart';
 
 class EvaluatorNavigationShell extends StatefulWidget {
   final int initialIndex;
@@ -37,7 +37,7 @@ class _EvaluatorNavigationShellState extends State<EvaluatorNavigationShell> {
     return Scaffold(
       backgroundColor: AppColors.neutralColor,
       body: _buildCurrentPage(),
-      bottomNavigationBar: EvaluatorBottomNavBar(
+      bottomNavigationBar: AppBottomNavBar(
         currentIndex: currentIndex,
         onTap: (index) {
           if (index == currentIndex) return;
@@ -47,16 +47,13 @@ class _EvaluatorNavigationShellState extends State<EvaluatorNavigationShell> {
           });
         },
         items: const [
-          EvaluatorBottomNavItem(label: 'BANK', icon: Icons.quiz_outlined),
-          EvaluatorBottomNavItem(
+          AppBottomNavItem(label: 'BANK', icon: Icons.quiz_outlined),
+          AppBottomNavItem(
             label: 'SKILLS',
             icon: Icons.psychology_alt_outlined,
           ),
-          EvaluatorBottomNavItem(
-            label: 'EXAMS',
-            icon: Icons.assignment_outlined,
-          ),
-          EvaluatorBottomNavItem(
+          AppBottomNavItem(label: 'EXAMS', icon: Icons.assignment_outlined),
+          AppBottomNavItem(
             label: 'ACCOUNT',
             icon: Icons.person_outline_rounded,
           ),

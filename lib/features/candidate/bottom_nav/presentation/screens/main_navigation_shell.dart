@@ -1,7 +1,7 @@
 import 'package:eae_mobile/core/constants/colors.dart';
+import 'package:eae_mobile/core/public_widgets/app_bottom_nav_bar.dart';
 import 'package:eae_mobile/features/analytics/presentation/screens/analytics_screen.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/presentation/screens/assessment_inventory_screen.dart';
-import 'package:eae_mobile/features/candidate/bottom_nav/presentation/widgets/bottom_nav_bar.dart';
 import 'package:eae_mobile/features/settings/presentation/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -35,7 +35,7 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
           SettingsScreen(),
         ],
       ),
-      bottomNavigationBar: EaeBottomNavBar(
+      bottomNavigationBar: AppBottomNavBar(
         currentIndex: currentIndex,
         onTap: (index) {
           if (index == currentIndex) {
@@ -47,9 +47,9 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
           });
         },
         items: const [
-          EaeBottomNavItem(label: 'DASHBOARD', icon: Icons.dashboard_outlined),
-          EaeBottomNavItem(label: 'ANALYTICS', icon: Icons.analytics_outlined),
-          EaeBottomNavItem(label: 'SETTINGS', icon: Icons.settings_outlined),
+          AppBottomNavItem(label: 'DASHBOARD', icon: Icons.dashboard_outlined),
+          AppBottomNavItem(label: 'ANALYTICS', icon: Icons.analytics_outlined),
+          AppBottomNavItem(label: 'SETTINGS', icon: Icons.settings_outlined),
         ],
       ),
     );

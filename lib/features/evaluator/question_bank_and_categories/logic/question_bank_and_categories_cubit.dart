@@ -22,7 +22,7 @@ class QuestionBankAndCategoriesCubit
   QuestionsResponse? questionsResponse;
 
   Future<void> loadQuestionBankAndCategories() async {
-    emit(const QuestionBankAndCategoriesState.loading());
+    emit(const QuestionBankAndCategoriesState.questionBankLoading());
 
     try {
       final categories = await questionBankAndCategoriesRepo
@@ -40,13 +40,13 @@ class QuestionBankAndCategoriesCubit
       );
     } on NetworkExceptions catch (e) {
       emit(
-        QuestionBankAndCategoriesState.error(
+        QuestionBankAndCategoriesState.loadError(
           error: NetworkExceptions.getErrorMessage(e),
         ),
       );
     } catch (e) {
       emit(
-        const QuestionBankAndCategoriesState.error(
+        const QuestionBankAndCategoriesState.loadError(
           error: 'Failed to load question bank',
         ),
       );
@@ -54,7 +54,7 @@ class QuestionBankAndCategoriesCubit
   }
 
   Future<void> createCategory(CreateCategoryRequestBody requestBody) async {
-    emit(const QuestionBankAndCategoriesState.loading());
+    emit(const QuestionBankAndCategoriesState.categorySaveLoading());
 
     try {
       final response = await questionBankAndCategoriesRepo.createCategory(
@@ -63,13 +63,13 @@ class QuestionBankAndCategoriesCubit
       emit(QuestionBankAndCategoriesState.categorySaved(response));
     } on NetworkExceptions catch (e) {
       emit(
-        QuestionBankAndCategoriesState.error(
+        QuestionBankAndCategoriesState.categorySaveError(
           error: NetworkExceptions.getErrorMessage(e),
         ),
       );
     } catch (e) {
       emit(
-        const QuestionBankAndCategoriesState.error(
+        const QuestionBankAndCategoriesState.categorySaveError(
           error: 'Failed to create category',
         ),
       );
@@ -80,7 +80,7 @@ class QuestionBankAndCategoriesCubit
     String categoryId,
     MoveCategoryRequestBody requestBody,
   ) async {
-    emit(const QuestionBankAndCategoriesState.loading());
+    emit(const QuestionBankAndCategoriesState.categorySaveLoading());
 
     try {
       final response = await questionBankAndCategoriesRepo.moveCategory(
@@ -90,13 +90,13 @@ class QuestionBankAndCategoriesCubit
       emit(QuestionBankAndCategoriesState.categorySaved(response));
     } on NetworkExceptions catch (e) {
       emit(
-        QuestionBankAndCategoriesState.error(
+        QuestionBankAndCategoriesState.categorySaveError(
           error: NetworkExceptions.getErrorMessage(e),
         ),
       );
     } catch (e) {
       emit(
-        const QuestionBankAndCategoriesState.error(
+        const QuestionBankAndCategoriesState.categorySaveError(
           error: 'Failed to update category',
         ),
       );
@@ -104,7 +104,7 @@ class QuestionBankAndCategoriesCubit
   }
 
   Future<void> deleteCategory(String categoryId) async {
-    emit(const QuestionBankAndCategoriesState.loading());
+    emit(const QuestionBankAndCategoriesState.actionLoading());
 
     try {
       final response = await questionBankAndCategoriesRepo.deleteCategory(
@@ -113,13 +113,13 @@ class QuestionBankAndCategoriesCubit
       emit(QuestionBankAndCategoriesState.actionSuccess(response));
     } on NetworkExceptions catch (e) {
       emit(
-        QuestionBankAndCategoriesState.error(
+        QuestionBankAndCategoriesState.actionError(
           error: NetworkExceptions.getErrorMessage(e),
         ),
       );
     } catch (e) {
       emit(
-        const QuestionBankAndCategoriesState.error(
+        const QuestionBankAndCategoriesState.actionError(
           error: 'Failed to delete category',
         ),
       );
@@ -127,7 +127,7 @@ class QuestionBankAndCategoriesCubit
   }
 
   Future<void> createQuestion(CreateQuestionRequestBody requestBody) async {
-    emit(const QuestionBankAndCategoriesState.loading());
+    emit(const QuestionBankAndCategoriesState.questionSaveLoading());
 
     try {
       final response = await questionBankAndCategoriesRepo.createQuestion(
@@ -136,13 +136,13 @@ class QuestionBankAndCategoriesCubit
       emit(QuestionBankAndCategoriesState.questionSaved(response));
     } on NetworkExceptions catch (e) {
       emit(
-        QuestionBankAndCategoriesState.error(
+        QuestionBankAndCategoriesState.questionSaveError(
           error: NetworkExceptions.getErrorMessage(e),
         ),
       );
     } catch (e) {
       emit(
-        const QuestionBankAndCategoriesState.error(
+        const QuestionBankAndCategoriesState.questionSaveError(
           error: 'Failed to create question',
         ),
       );
@@ -153,7 +153,7 @@ class QuestionBankAndCategoriesCubit
     String questionId,
     UpdateQuestionRequestBody requestBody,
   ) async {
-    emit(const QuestionBankAndCategoriesState.loading());
+    emit(const QuestionBankAndCategoriesState.questionSaveLoading());
 
     try {
       final response = await questionBankAndCategoriesRepo.updateQuestion(
@@ -163,13 +163,13 @@ class QuestionBankAndCategoriesCubit
       emit(QuestionBankAndCategoriesState.questionSaved(response));
     } on NetworkExceptions catch (e) {
       emit(
-        QuestionBankAndCategoriesState.error(
+        QuestionBankAndCategoriesState.questionSaveError(
           error: NetworkExceptions.getErrorMessage(e),
         ),
       );
     } catch (e) {
       emit(
-        const QuestionBankAndCategoriesState.error(
+        const QuestionBankAndCategoriesState.questionSaveError(
           error: 'Failed to update question',
         ),
       );
@@ -177,7 +177,7 @@ class QuestionBankAndCategoriesCubit
   }
 
   Future<void> deleteQuestion(String questionId) async {
-    emit(const QuestionBankAndCategoriesState.loading());
+    emit(const QuestionBankAndCategoriesState.actionLoading());
 
     try {
       final response = await questionBankAndCategoriesRepo.deleteQuestion(
@@ -186,13 +186,13 @@ class QuestionBankAndCategoriesCubit
       emit(QuestionBankAndCategoriesState.actionSuccess(response));
     } on NetworkExceptions catch (e) {
       emit(
-        QuestionBankAndCategoriesState.error(
+        QuestionBankAndCategoriesState.actionError(
           error: NetworkExceptions.getErrorMessage(e),
         ),
       );
     } catch (e) {
       emit(
-        const QuestionBankAndCategoriesState.error(
+        const QuestionBankAndCategoriesState.actionError(
           error: 'Failed to delete question',
         ),
       );

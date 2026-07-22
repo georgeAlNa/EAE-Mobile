@@ -65,18 +65,30 @@ Future<ExamsManagementState> waitForLoadTerminal(ExamsManagementCubit cubit) {
   return cubit.stream.firstWhere(
     (state) => state.maybeWhen(
       loaded: (_) => true,
-      error: (_) => true,
+      loadError: (_) => true,
       orElse: () => false,
     ),
   );
 }
 
 bool isLoading(ExamsManagementState state) {
-  return state.maybeWhen(loading: () => true, orElse: () => false);
+  return state.maybeWhen(
+    examsLoading: () => true,
+    detailsLoading: () => true,
+    saveLoading: () => true,
+    actionLoading: () => true,
+    orElse: () => false,
+  );
 }
 
 String? stateError(ExamsManagementState state) {
-  return state.whenOrNull(error: (error) => error);
+  return state.maybeWhen(
+    loadError: (error) => error,
+    detailsError: (error) => error,
+    saveError: (error) => error,
+    actionError: (error) => error,
+    orElse: () => null,
+  );
 }
 
 ExamsResponse? loadedResponse(ExamsManagementState state) {

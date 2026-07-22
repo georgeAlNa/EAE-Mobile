@@ -55,17 +55,23 @@ extension QuestionBankAndCategoriesStatePatterns on QuestionBankAndCategoriesSta
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _Loading value)?  loading,TResult Function( _Loaded value)?  loaded,TResult Function( _CategorySaved value)?  categorySaved,TResult Function( _QuestionSaved value)?  questionSaved,TResult Function( _ActionSuccess value)?  actionSuccess,TResult Function( _Error value)?  error,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _QuestionBankLoading value)?  questionBankLoading,TResult Function( _Loaded value)?  loaded,TResult Function( _LoadError value)?  loadError,TResult Function( _CategorySaveLoading value)?  categorySaveLoading,TResult Function( _CategorySaved value)?  categorySaved,TResult Function( _CategorySaveError value)?  categorySaveError,TResult Function( _QuestionSaveLoading value)?  questionSaveLoading,TResult Function( _QuestionSaved value)?  questionSaved,TResult Function( _QuestionSaveError value)?  questionSaveError,TResult Function( _ActionLoading value)?  actionLoading,TResult Function( _ActionSuccess value)?  actionSuccess,TResult Function( _ActionError value)?  actionError,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
-return initial(_that);case _Loading() when loading != null:
-return loading(_that);case _Loaded() when loaded != null:
-return loaded(_that);case _CategorySaved() when categorySaved != null:
-return categorySaved(_that);case _QuestionSaved() when questionSaved != null:
-return questionSaved(_that);case _ActionSuccess() when actionSuccess != null:
-return actionSuccess(_that);case _Error() when error != null:
-return error(_that);case _:
+return initial(_that);case _QuestionBankLoading() when questionBankLoading != null:
+return questionBankLoading(_that);case _Loaded() when loaded != null:
+return loaded(_that);case _LoadError() when loadError != null:
+return loadError(_that);case _CategorySaveLoading() when categorySaveLoading != null:
+return categorySaveLoading(_that);case _CategorySaved() when categorySaved != null:
+return categorySaved(_that);case _CategorySaveError() when categorySaveError != null:
+return categorySaveError(_that);case _QuestionSaveLoading() when questionSaveLoading != null:
+return questionSaveLoading(_that);case _QuestionSaved() when questionSaved != null:
+return questionSaved(_that);case _QuestionSaveError() when questionSaveError != null:
+return questionSaveError(_that);case _ActionLoading() when actionLoading != null:
+return actionLoading(_that);case _ActionSuccess() when actionSuccess != null:
+return actionSuccess(_that);case _ActionError() when actionError != null:
+return actionError(_that);case _:
   return orElse();
 
 }
@@ -83,17 +89,23 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _Loading value)  loading,required TResult Function( _Loaded value)  loaded,required TResult Function( _CategorySaved value)  categorySaved,required TResult Function( _QuestionSaved value)  questionSaved,required TResult Function( _ActionSuccess value)  actionSuccess,required TResult Function( _Error value)  error,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _QuestionBankLoading value)  questionBankLoading,required TResult Function( _Loaded value)  loaded,required TResult Function( _LoadError value)  loadError,required TResult Function( _CategorySaveLoading value)  categorySaveLoading,required TResult Function( _CategorySaved value)  categorySaved,required TResult Function( _CategorySaveError value)  categorySaveError,required TResult Function( _QuestionSaveLoading value)  questionSaveLoading,required TResult Function( _QuestionSaved value)  questionSaved,required TResult Function( _QuestionSaveError value)  questionSaveError,required TResult Function( _ActionLoading value)  actionLoading,required TResult Function( _ActionSuccess value)  actionSuccess,required TResult Function( _ActionError value)  actionError,}){
 final _that = this;
 switch (_that) {
 case _Initial():
-return initial(_that);case _Loading():
-return loading(_that);case _Loaded():
-return loaded(_that);case _CategorySaved():
-return categorySaved(_that);case _QuestionSaved():
-return questionSaved(_that);case _ActionSuccess():
-return actionSuccess(_that);case _Error():
-return error(_that);case _:
+return initial(_that);case _QuestionBankLoading():
+return questionBankLoading(_that);case _Loaded():
+return loaded(_that);case _LoadError():
+return loadError(_that);case _CategorySaveLoading():
+return categorySaveLoading(_that);case _CategorySaved():
+return categorySaved(_that);case _CategorySaveError():
+return categorySaveError(_that);case _QuestionSaveLoading():
+return questionSaveLoading(_that);case _QuestionSaved():
+return questionSaved(_that);case _QuestionSaveError():
+return questionSaveError(_that);case _ActionLoading():
+return actionLoading(_that);case _ActionSuccess():
+return actionSuccess(_that);case _ActionError():
+return actionError(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -110,17 +122,23 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _Loading value)?  loading,TResult? Function( _Loaded value)?  loaded,TResult? Function( _CategorySaved value)?  categorySaved,TResult? Function( _QuestionSaved value)?  questionSaved,TResult? Function( _ActionSuccess value)?  actionSuccess,TResult? Function( _Error value)?  error,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _QuestionBankLoading value)?  questionBankLoading,TResult? Function( _Loaded value)?  loaded,TResult? Function( _LoadError value)?  loadError,TResult? Function( _CategorySaveLoading value)?  categorySaveLoading,TResult? Function( _CategorySaved value)?  categorySaved,TResult? Function( _CategorySaveError value)?  categorySaveError,TResult? Function( _QuestionSaveLoading value)?  questionSaveLoading,TResult? Function( _QuestionSaved value)?  questionSaved,TResult? Function( _QuestionSaveError value)?  questionSaveError,TResult? Function( _ActionLoading value)?  actionLoading,TResult? Function( _ActionSuccess value)?  actionSuccess,TResult? Function( _ActionError value)?  actionError,}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
-return initial(_that);case _Loading() when loading != null:
-return loading(_that);case _Loaded() when loaded != null:
-return loaded(_that);case _CategorySaved() when categorySaved != null:
-return categorySaved(_that);case _QuestionSaved() when questionSaved != null:
-return questionSaved(_that);case _ActionSuccess() when actionSuccess != null:
-return actionSuccess(_that);case _Error() when error != null:
-return error(_that);case _:
+return initial(_that);case _QuestionBankLoading() when questionBankLoading != null:
+return questionBankLoading(_that);case _Loaded() when loaded != null:
+return loaded(_that);case _LoadError() when loadError != null:
+return loadError(_that);case _CategorySaveLoading() when categorySaveLoading != null:
+return categorySaveLoading(_that);case _CategorySaved() when categorySaved != null:
+return categorySaved(_that);case _CategorySaveError() when categorySaveError != null:
+return categorySaveError(_that);case _QuestionSaveLoading() when questionSaveLoading != null:
+return questionSaveLoading(_that);case _QuestionSaved() when questionSaved != null:
+return questionSaved(_that);case _QuestionSaveError() when questionSaveError != null:
+return questionSaveError(_that);case _ActionLoading() when actionLoading != null:
+return actionLoading(_that);case _ActionSuccess() when actionSuccess != null:
+return actionSuccess(_that);case _ActionError() when actionError != null:
+return actionError(_that);case _:
   return null;
 
 }
@@ -137,16 +155,22 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( CategoriesTreeResponse categoriesResponse,  QuestionsResponse questionsResponse)?  loaded,TResult Function( CategoryMutationResponse response)?  categorySaved,TResult Function( QuestionDetailsResponse response)?  questionSaved,TResult Function( QuestionBankActionResponse response)?  actionSuccess,TResult Function( String error)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  questionBankLoading,TResult Function( CategoriesTreeResponse categoriesResponse,  QuestionsResponse questionsResponse)?  loaded,TResult Function( String error)?  loadError,TResult Function()?  categorySaveLoading,TResult Function( CategoryMutationResponse response)?  categorySaved,TResult Function( String error)?  categorySaveError,TResult Function()?  questionSaveLoading,TResult Function( QuestionDetailsResponse response)?  questionSaved,TResult Function( String error)?  questionSaveError,TResult Function()?  actionLoading,TResult Function( QuestionBankActionResponse response)?  actionSuccess,TResult Function( String error)?  actionError,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
-return initial();case _Loading() when loading != null:
-return loading();case _Loaded() when loaded != null:
-return loaded(_that.categoriesResponse,_that.questionsResponse);case _CategorySaved() when categorySaved != null:
-return categorySaved(_that.response);case _QuestionSaved() when questionSaved != null:
-return questionSaved(_that.response);case _ActionSuccess() when actionSuccess != null:
-return actionSuccess(_that.response);case _Error() when error != null:
-return error(_that.error);case _:
+return initial();case _QuestionBankLoading() when questionBankLoading != null:
+return questionBankLoading();case _Loaded() when loaded != null:
+return loaded(_that.categoriesResponse,_that.questionsResponse);case _LoadError() when loadError != null:
+return loadError(_that.error);case _CategorySaveLoading() when categorySaveLoading != null:
+return categorySaveLoading();case _CategorySaved() when categorySaved != null:
+return categorySaved(_that.response);case _CategorySaveError() when categorySaveError != null:
+return categorySaveError(_that.error);case _QuestionSaveLoading() when questionSaveLoading != null:
+return questionSaveLoading();case _QuestionSaved() when questionSaved != null:
+return questionSaved(_that.response);case _QuestionSaveError() when questionSaveError != null:
+return questionSaveError(_that.error);case _ActionLoading() when actionLoading != null:
+return actionLoading();case _ActionSuccess() when actionSuccess != null:
+return actionSuccess(_that.response);case _ActionError() when actionError != null:
+return actionError(_that.error);case _:
   return orElse();
 
 }
@@ -164,16 +188,22 @@ return error(_that.error);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( CategoriesTreeResponse categoriesResponse,  QuestionsResponse questionsResponse)  loaded,required TResult Function( CategoryMutationResponse response)  categorySaved,required TResult Function( QuestionDetailsResponse response)  questionSaved,required TResult Function( QuestionBankActionResponse response)  actionSuccess,required TResult Function( String error)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  questionBankLoading,required TResult Function( CategoriesTreeResponse categoriesResponse,  QuestionsResponse questionsResponse)  loaded,required TResult Function( String error)  loadError,required TResult Function()  categorySaveLoading,required TResult Function( CategoryMutationResponse response)  categorySaved,required TResult Function( String error)  categorySaveError,required TResult Function()  questionSaveLoading,required TResult Function( QuestionDetailsResponse response)  questionSaved,required TResult Function( String error)  questionSaveError,required TResult Function()  actionLoading,required TResult Function( QuestionBankActionResponse response)  actionSuccess,required TResult Function( String error)  actionError,}) {final _that = this;
 switch (_that) {
 case _Initial():
-return initial();case _Loading():
-return loading();case _Loaded():
-return loaded(_that.categoriesResponse,_that.questionsResponse);case _CategorySaved():
-return categorySaved(_that.response);case _QuestionSaved():
-return questionSaved(_that.response);case _ActionSuccess():
-return actionSuccess(_that.response);case _Error():
-return error(_that.error);case _:
+return initial();case _QuestionBankLoading():
+return questionBankLoading();case _Loaded():
+return loaded(_that.categoriesResponse,_that.questionsResponse);case _LoadError():
+return loadError(_that.error);case _CategorySaveLoading():
+return categorySaveLoading();case _CategorySaved():
+return categorySaved(_that.response);case _CategorySaveError():
+return categorySaveError(_that.error);case _QuestionSaveLoading():
+return questionSaveLoading();case _QuestionSaved():
+return questionSaved(_that.response);case _QuestionSaveError():
+return questionSaveError(_that.error);case _ActionLoading():
+return actionLoading();case _ActionSuccess():
+return actionSuccess(_that.response);case _ActionError():
+return actionError(_that.error);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -190,16 +220,22 @@ return error(_that.error);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( CategoriesTreeResponse categoriesResponse,  QuestionsResponse questionsResponse)?  loaded,TResult? Function( CategoryMutationResponse response)?  categorySaved,TResult? Function( QuestionDetailsResponse response)?  questionSaved,TResult? Function( QuestionBankActionResponse response)?  actionSuccess,TResult? Function( String error)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  questionBankLoading,TResult? Function( CategoriesTreeResponse categoriesResponse,  QuestionsResponse questionsResponse)?  loaded,TResult? Function( String error)?  loadError,TResult? Function()?  categorySaveLoading,TResult? Function( CategoryMutationResponse response)?  categorySaved,TResult? Function( String error)?  categorySaveError,TResult? Function()?  questionSaveLoading,TResult? Function( QuestionDetailsResponse response)?  questionSaved,TResult? Function( String error)?  questionSaveError,TResult? Function()?  actionLoading,TResult? Function( QuestionBankActionResponse response)?  actionSuccess,TResult? Function( String error)?  actionError,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
-return initial();case _Loading() when loading != null:
-return loading();case _Loaded() when loaded != null:
-return loaded(_that.categoriesResponse,_that.questionsResponse);case _CategorySaved() when categorySaved != null:
-return categorySaved(_that.response);case _QuestionSaved() when questionSaved != null:
-return questionSaved(_that.response);case _ActionSuccess() when actionSuccess != null:
-return actionSuccess(_that.response);case _Error() when error != null:
-return error(_that.error);case _:
+return initial();case _QuestionBankLoading() when questionBankLoading != null:
+return questionBankLoading();case _Loaded() when loaded != null:
+return loaded(_that.categoriesResponse,_that.questionsResponse);case _LoadError() when loadError != null:
+return loadError(_that.error);case _CategorySaveLoading() when categorySaveLoading != null:
+return categorySaveLoading();case _CategorySaved() when categorySaved != null:
+return categorySaved(_that.response);case _CategorySaveError() when categorySaveError != null:
+return categorySaveError(_that.error);case _QuestionSaveLoading() when questionSaveLoading != null:
+return questionSaveLoading();case _QuestionSaved() when questionSaved != null:
+return questionSaved(_that.response);case _QuestionSaveError() when questionSaveError != null:
+return questionSaveError(_that.error);case _ActionLoading() when actionLoading != null:
+return actionLoading();case _ActionSuccess() when actionSuccess != null:
+return actionSuccess(_that.response);case _ActionError() when actionError != null:
+return actionError(_that.error);case _:
   return null;
 
 }
@@ -242,8 +278,8 @@ String toString() {
 /// @nodoc
 
 
-class _Loading implements QuestionBankAndCategoriesState {
-  const _Loading();
+class _QuestionBankLoading implements QuestionBankAndCategoriesState {
+  const _QuestionBankLoading();
   
 
 
@@ -253,7 +289,7 @@ class _Loading implements QuestionBankAndCategoriesState {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Loading);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _QuestionBankLoading);
 }
 
 
@@ -262,7 +298,7 @@ int get hashCode => runtimeType.hashCode;
 
 @override
 String toString() {
-  return 'QuestionBankAndCategoriesState.loading()';
+  return 'QuestionBankAndCategoriesState.questionBankLoading()';
 }
 
 
@@ -342,6 +378,104 @@ as QuestionsResponse,
 /// @nodoc
 
 
+class _LoadError implements QuestionBankAndCategoriesState {
+  const _LoadError({required this.error});
+  
+
+ final  String error;
+
+/// Create a copy of QuestionBankAndCategoriesState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$LoadErrorCopyWith<_LoadError> get copyWith => __$LoadErrorCopyWithImpl<_LoadError>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LoadError&&(identical(other.error, error) || other.error == error));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,error);
+
+@override
+String toString() {
+  return 'QuestionBankAndCategoriesState.loadError(error: $error)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$LoadErrorCopyWith<$Res> implements $QuestionBankAndCategoriesStateCopyWith<$Res> {
+  factory _$LoadErrorCopyWith(_LoadError value, $Res Function(_LoadError) _then) = __$LoadErrorCopyWithImpl;
+@useResult
+$Res call({
+ String error
+});
+
+
+
+
+}
+/// @nodoc
+class __$LoadErrorCopyWithImpl<$Res>
+    implements _$LoadErrorCopyWith<$Res> {
+  __$LoadErrorCopyWithImpl(this._self, this._then);
+
+  final _LoadError _self;
+  final $Res Function(_LoadError) _then;
+
+/// Create a copy of QuestionBankAndCategoriesState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? error = null,}) {
+  return _then(_LoadError(
+error: null == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _CategorySaveLoading implements QuestionBankAndCategoriesState {
+  const _CategorySaveLoading();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CategorySaveLoading);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'QuestionBankAndCategoriesState.categorySaveLoading()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
 class _CategorySaved implements QuestionBankAndCategoriesState {
   const _CategorySaved(this.response);
   
@@ -404,6 +538,104 @@ as CategoryMutationResponse,
 
 
 }
+
+/// @nodoc
+
+
+class _CategorySaveError implements QuestionBankAndCategoriesState {
+  const _CategorySaveError({required this.error});
+  
+
+ final  String error;
+
+/// Create a copy of QuestionBankAndCategoriesState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$CategorySaveErrorCopyWith<_CategorySaveError> get copyWith => __$CategorySaveErrorCopyWithImpl<_CategorySaveError>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CategorySaveError&&(identical(other.error, error) || other.error == error));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,error);
+
+@override
+String toString() {
+  return 'QuestionBankAndCategoriesState.categorySaveError(error: $error)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$CategorySaveErrorCopyWith<$Res> implements $QuestionBankAndCategoriesStateCopyWith<$Res> {
+  factory _$CategorySaveErrorCopyWith(_CategorySaveError value, $Res Function(_CategorySaveError) _then) = __$CategorySaveErrorCopyWithImpl;
+@useResult
+$Res call({
+ String error
+});
+
+
+
+
+}
+/// @nodoc
+class __$CategorySaveErrorCopyWithImpl<$Res>
+    implements _$CategorySaveErrorCopyWith<$Res> {
+  __$CategorySaveErrorCopyWithImpl(this._self, this._then);
+
+  final _CategorySaveError _self;
+  final $Res Function(_CategorySaveError) _then;
+
+/// Create a copy of QuestionBankAndCategoriesState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? error = null,}) {
+  return _then(_CategorySaveError(
+error: null == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _QuestionSaveLoading implements QuestionBankAndCategoriesState {
+  const _QuestionSaveLoading();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _QuestionSaveLoading);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'QuestionBankAndCategoriesState.questionSaveLoading()';
+}
+
+
+}
+
+
+
 
 /// @nodoc
 
@@ -474,6 +706,104 @@ as QuestionDetailsResponse,
 /// @nodoc
 
 
+class _QuestionSaveError implements QuestionBankAndCategoriesState {
+  const _QuestionSaveError({required this.error});
+  
+
+ final  String error;
+
+/// Create a copy of QuestionBankAndCategoriesState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$QuestionSaveErrorCopyWith<_QuestionSaveError> get copyWith => __$QuestionSaveErrorCopyWithImpl<_QuestionSaveError>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _QuestionSaveError&&(identical(other.error, error) || other.error == error));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,error);
+
+@override
+String toString() {
+  return 'QuestionBankAndCategoriesState.questionSaveError(error: $error)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$QuestionSaveErrorCopyWith<$Res> implements $QuestionBankAndCategoriesStateCopyWith<$Res> {
+  factory _$QuestionSaveErrorCopyWith(_QuestionSaveError value, $Res Function(_QuestionSaveError) _then) = __$QuestionSaveErrorCopyWithImpl;
+@useResult
+$Res call({
+ String error
+});
+
+
+
+
+}
+/// @nodoc
+class __$QuestionSaveErrorCopyWithImpl<$Res>
+    implements _$QuestionSaveErrorCopyWith<$Res> {
+  __$QuestionSaveErrorCopyWithImpl(this._self, this._then);
+
+  final _QuestionSaveError _self;
+  final $Res Function(_QuestionSaveError) _then;
+
+/// Create a copy of QuestionBankAndCategoriesState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? error = null,}) {
+  return _then(_QuestionSaveError(
+error: null == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _ActionLoading implements QuestionBankAndCategoriesState {
+  const _ActionLoading();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ActionLoading);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'QuestionBankAndCategoriesState.actionLoading()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
 class _ActionSuccess implements QuestionBankAndCategoriesState {
   const _ActionSuccess(this.response);
   
@@ -540,8 +870,8 @@ as QuestionBankActionResponse,
 /// @nodoc
 
 
-class _Error implements QuestionBankAndCategoriesState {
-  const _Error({required this.error});
+class _ActionError implements QuestionBankAndCategoriesState {
+  const _ActionError({required this.error});
   
 
  final  String error;
@@ -550,13 +880,13 @@ class _Error implements QuestionBankAndCategoriesState {
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$ErrorCopyWith<_Error> get copyWith => __$ErrorCopyWithImpl<_Error>(this, _$identity);
+_$ActionErrorCopyWith<_ActionError> get copyWith => __$ActionErrorCopyWithImpl<_ActionError>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Error&&(identical(other.error, error) || other.error == error));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ActionError&&(identical(other.error, error) || other.error == error));
 }
 
 
@@ -565,15 +895,15 @@ int get hashCode => Object.hash(runtimeType,error);
 
 @override
 String toString() {
-  return 'QuestionBankAndCategoriesState.error(error: $error)';
+  return 'QuestionBankAndCategoriesState.actionError(error: $error)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class _$ErrorCopyWith<$Res> implements $QuestionBankAndCategoriesStateCopyWith<$Res> {
-  factory _$ErrorCopyWith(_Error value, $Res Function(_Error) _then) = __$ErrorCopyWithImpl;
+abstract mixin class _$ActionErrorCopyWith<$Res> implements $QuestionBankAndCategoriesStateCopyWith<$Res> {
+  factory _$ActionErrorCopyWith(_ActionError value, $Res Function(_ActionError) _then) = __$ActionErrorCopyWithImpl;
 @useResult
 $Res call({
  String error
@@ -584,17 +914,17 @@ $Res call({
 
 }
 /// @nodoc
-class __$ErrorCopyWithImpl<$Res>
-    implements _$ErrorCopyWith<$Res> {
-  __$ErrorCopyWithImpl(this._self, this._then);
+class __$ActionErrorCopyWithImpl<$Res>
+    implements _$ActionErrorCopyWith<$Res> {
+  __$ActionErrorCopyWithImpl(this._self, this._then);
 
-  final _Error _self;
-  final $Res Function(_Error) _then;
+  final _ActionError _self;
+  final $Res Function(_ActionError) _then;
 
 /// Create a copy of QuestionBankAndCategoriesState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') $Res call({Object? error = null,}) {
-  return _then(_Error(
+  return _then(_ActionError(
 error: null == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
 as String,
   ));

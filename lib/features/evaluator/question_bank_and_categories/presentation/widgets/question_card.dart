@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
+import '../../../shared/presentation/widgets/evaluator_copy_widgets.dart';
 import '../../data/models/question_bank_and_categories_response.dart';
 import 'question_bank_helpers.dart';
 
@@ -53,6 +54,10 @@ class QuestionCard extends StatelessWidget {
                           color: AppColors.primaryColor9,
                         ),
                       ),
+                    ),
+                    EvaluatorCopyIconButton(
+                      label: 'Question title',
+                      value: question.title,
                     ),
                     PopupMenuButton<_QuestionAction>(
                       tooltip: 'Question actions',

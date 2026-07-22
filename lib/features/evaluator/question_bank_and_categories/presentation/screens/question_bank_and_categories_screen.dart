@@ -4,7 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/helpers/spacing.dart';
-import '../../../../../core/public_widgets/loading_widget.dart';
+import '../../../../../core/public_widgets/app_state_widgets.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
 import '../../data/models/question_bank_and_categories_response.dart';
 import '../../logic/question_bank_and_categories_cubit.dart';
@@ -28,6 +28,8 @@ class _QuestionBankAndCategoriesScreenState
   final TextEditingController _searchController = TextEditingController();
   QuestionBankViewMode _viewMode = QuestionBankViewMode.categories;
   String _query = '';
+  List<QuestionCategory>? _categories;
+  List<QuestionBankItem>? _questions;
 
   @override
   void initState() {
@@ -58,84 +60,122 @@ class _QuestionBankAndCategoriesScreenState
               listener: _listenToState,
               builder: (context, state) {
                 final cubit = context.read<QuestionBankAndCategoriesCubit>();
-                final categories = state.maybeWhen(
+                final loadedCategories = state.maybeWhen(
                   loaded: (categoriesResponse, _) => categoriesResponse.data,
-                  orElse: () => cubit.categoriesTreeResponse?.data,
+                  orElse: () => null,
                 );
-                final questions = state.maybeWhen(
+                final loadedQuestions = state.maybeWhen(
                   loaded: (_, questionsResponse) => questionsResponse.data,
-                  orElse: () => cubit.questionsResponse?.data,
+                  orElse: () => null,
                 );
-                final isLoading = state.maybeWhen(
-                  loading: () => true,
+                if (loadedCategories != null && loadedQuestions != null) {
+                  _categories = loadedCategories;
+                  _questions = loadedQuestions;
+                }
+
+                final categories =
+                    _categories ?? cubit.categoriesTreeResponse?.data;
+                final questions = _questions ?? cubit.questionsResponse?.data;
+                final isQuestionBankLoading = state.maybeWhen(
+                  questionBankLoading: () => true,
                   orElse: () => false,
                 );
+                final isActionLoading = state.maybeWhen(
+                  categorySaveLoading: () => true,
+                  questionSaveLoading: () => true,
+                  actionLoading: () => true,
+                  orElse: () => false,
+                );
+                final loadError = state.maybeWhen(
+                  loadError: (error) => error,
+                  orElse: () => null,
+                );
 
-                if ((categories == null || questions == null) && isLoading) {
-                  return const LoadingWidget();
-                }
-
-                if (categories == null || questions == null) {
-                  return QuestionBankErrorView(
-                    onRetry: cubit.loadQuestionBankAndCategories,
-                  );
-                }
-
-                final flattenedCategories = flattenCategories(categories);
-                final visibleCategories = filterCategories(categories, _query);
-                final visibleQuestions = filterQuestions(questions, _query);
+                final flattenedCategories = categories == null
+                    ? const <QuestionCategory>[]
+                    : flattenCategories(categories);
+                final visibleCategories = categories == null
+                    ? null
+                    : filterCategories(categories, _query);
+                final visibleQuestions = questions == null
+                    ? null
+                    : filterQuestions(questions, _query);
 
                 return Stack(
                   children: [
                     RefreshIndicator(
                       onRefresh: cubit.loadQuestionBankAndCategories,
-                      child: ListView(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 24.w,
-                          vertical: 18.h,
-                        ),
-                        children: [
-                          QuestionBankHeader(
-                            questionsCount: questions.length,
-                            categoriesCount: flattenedCategories.length,
-                            searchController: _searchController,
-                            viewMode: _viewMode,
-                            onViewModeChanged: (mode) {
-                              setState(() => _viewMode = mode);
-                            },
-                            onCreateCategory: () => showCategorySheet(
-                              context: context,
-                              categories: flattenedCategories,
-                            ),
-                            onCreateQuestion: flattenedCategories.isEmpty
-                                ? null
-                                : () => showQuestionSheet(
-                                    context: context,
-                                    categories: flattenedCategories,
-                                  ),
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 220),
+                        switchInCurve: Curves.easeOut,
+                        switchOutCurve: Curves.easeIn,
+                        child: ListView(
+                          key: ValueKey(
+                            '${visibleCategories?.length}-${visibleQuestions?.length}-$_viewMode-$_query',
                           ),
-                          verticalSpace(18),
-                          if (_viewMode == QuestionBankViewMode.categories)
-                            _CategoriesSection(
-                              categories: visibleCategories,
-                              allCategories: flattenedCategories,
-                              query: _query,
-                            )
-                          else
-                            _QuestionsSection(
-                              questions: visibleQuestions,
-                              categories: flattenedCategories,
-                              query: _query,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 24.w,
+                            vertical: 18.h,
+                          ),
+                          children: [
+                            QuestionBankHeader(
+                              questionsCount: questions?.length ?? 0,
+                              categoriesCount: flattenedCategories.length,
+                              searchController: _searchController,
+                              viewMode: _viewMode,
+                              onViewModeChanged: (mode) {
+                                setState(() => _viewMode = mode);
+                              },
+                              onCreateCategory: () => showCategorySheet(
+                                context: context,
+                                categories: flattenedCategories,
+                              ),
+                              onCreateQuestion: flattenedCategories.isEmpty
+                                  ? null
+                                  : () => showQuestionSheet(
+                                      context: context,
+                                      categories: flattenedCategories,
+                                    ),
                             ),
-                        ],
+                            verticalSpace(18),
+                            _QuestionBankDataSection(
+                              viewMode: _viewMode,
+                              categories: visibleCategories,
+                              questions: visibleQuestions,
+                              flattenedCategories: flattenedCategories,
+                              query: _query,
+                              isLoading:
+                                  (categories == null || questions == null) &&
+                                  isQuestionBankLoading,
+                              loadError:
+                                  (categories == null || questions == null)
+                                  ? loadError
+                                  : null,
+                              onRetry: cubit.loadQuestionBankAndCategories,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                    if (isLoading)
-                      Positioned.fill(
-                        child: ColoredBox(
-                          color: AppColors.neutralColor.withValues(alpha: 0.65),
-                          child: const LoadingWidget(),
+                    if (isQuestionBankLoading &&
+                        categories != null &&
+                        questions != null)
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        child: AppSkeletonBox(
+                          width: double.infinity,
+                          height: 4.h,
+                          borderRadius: 0,
                         ),
+                      ),
+                    if (isActionLoading)
+                      Positioned(
+                        left: 24.w,
+                        right: 24.w,
+                        bottom: 14.h,
+                        child: _QuestionBankActionBanner(state: state),
                       ),
                   ],
                 );
@@ -168,8 +208,68 @@ class _QuestionBankAndCategoriesScreenState
             .read<QuestionBankAndCategoriesCubit>()
             .loadQuestionBankAndCategories();
       },
-      error: (error) => showAppSnackBar(context, error),
+      categorySaveError: (error) => showAppSnackBar(context, error),
+      questionSaveError: (error) => showAppSnackBar(context, error),
+      actionError: (error) => showAppSnackBar(context, error),
       orElse: () {},
+    );
+  }
+}
+
+class _QuestionBankDataSection extends StatelessWidget {
+  final QuestionBankViewMode viewMode;
+  final List<QuestionCategory>? categories;
+  final List<QuestionBankItem>? questions;
+  final List<QuestionCategory> flattenedCategories;
+  final String query;
+  final bool isLoading;
+  final String? loadError;
+  final VoidCallback onRetry;
+
+  const _QuestionBankDataSection({
+    required this.viewMode,
+    required this.categories,
+    required this.questions,
+    required this.flattenedCategories,
+    required this.query,
+    required this.isLoading,
+    required this.loadError,
+    required this.onRetry,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (isLoading) {
+      return const AppSkeletonDataList(
+        itemCount: 5,
+        showDescription: true,
+        chipCount: 2,
+      );
+    }
+
+    if (loadError != null) {
+      return SizedBox(
+        height: 260.h,
+        child: AppRetryErrorView(
+          title: loadError!,
+          message: 'Check the connection and try again.',
+          onRetry: onRetry,
+        ),
+      );
+    }
+
+    if (viewMode == QuestionBankViewMode.categories) {
+      return _CategoriesSection(
+        categories: categories ?? const <QuestionCategory>[],
+        allCategories: flattenedCategories,
+        query: query,
+      );
+    }
+
+    return _QuestionsSection(
+      questions: questions ?? const <QuestionBankItem>[],
+      categories: flattenedCategories,
+      query: query,
     );
   }
 }
@@ -199,21 +299,26 @@ class _CategoriesSection extends StatelessWidget {
 
     return Column(
       children: categories
+          .asMap()
+          .entries
           .map(
-            (category) => QuestionCategoryCard(
-              category: category,
-              onEdit: () => showCategorySheet(
-                context: context,
-                categories: allCategories,
-                category: category,
-              ),
-              onDelete: () => confirmQuestionBankDelete(
-                context: context,
-                title: 'Delete category',
-                message: 'Delete ${category.title}?',
-                onConfirmed: () => context
-                    .read<QuestionBankAndCategoriesCubit>()
-                    .deleteCategory(category.id),
+            (entry) => _AnimatedListItem(
+              index: entry.key,
+              child: QuestionCategoryCard(
+                category: entry.value,
+                onEdit: () => showCategorySheet(
+                  context: context,
+                  categories: allCategories,
+                  category: entry.value,
+                ),
+                onDelete: () => confirmQuestionBankDelete(
+                  context: context,
+                  title: 'Delete category',
+                  message: 'Delete ${entry.value.title}?',
+                  onConfirmed: () => context
+                      .read<QuestionBankAndCategoriesCubit>()
+                      .deleteCategory(entry.value.id),
+                ),
               ),
             ),
           )
@@ -247,34 +352,125 @@ class _QuestionsSection extends StatelessWidget {
 
     return Column(
       children: questions
+          .asMap()
+          .entries
           .map(
-            (question) => QuestionCard(
-              question: question,
-              categoryTitle: categoryTitleFor(question.categoryId, categories),
-              onDetails: () => showQuestionDetailsSheet(
-                context: context,
-                question: question,
+            (entry) => _AnimatedListItem(
+              index: entry.key,
+              child: QuestionCard(
+                question: entry.value,
                 categoryTitle: categoryTitleFor(
-                  question.categoryId,
+                  entry.value.categoryId,
                   categories,
                 ),
-              ),
-              onEdit: () => showQuestionSheet(
-                context: context,
-                categories: categories,
-                question: question,
-              ),
-              onDelete: () => confirmQuestionBankDelete(
-                context: context,
-                title: 'Delete question',
-                message: 'Delete ${question.title}?',
-                onConfirmed: () => context
-                    .read<QuestionBankAndCategoriesCubit>()
-                    .deleteQuestion(question.id),
+                onDetails: () => showQuestionDetailsSheet(
+                  context: context,
+                  question: entry.value,
+                  categoryTitle: categoryTitleFor(
+                    entry.value.categoryId,
+                    categories,
+                  ),
+                ),
+                onEdit: () => showQuestionSheet(
+                  context: context,
+                  categories: categories,
+                  question: entry.value,
+                ),
+                onDelete: () => confirmQuestionBankDelete(
+                  context: context,
+                  title: 'Delete question',
+                  message: 'Delete ${entry.value.title}?',
+                  onConfirmed: () => context
+                      .read<QuestionBankAndCategoriesCubit>()
+                      .deleteQuestion(entry.value.id),
+                ),
               ),
             ),
           )
           .toList(),
+    );
+  }
+}
+
+class _AnimatedListItem extends StatelessWidget {
+  final int index;
+  final Widget child;
+
+  const _AnimatedListItem({required this.index, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: Duration(milliseconds: 180 + (index.clamp(0, 6) * 35)),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, child) {
+        return Opacity(
+          opacity: value,
+          child: Transform.translate(
+            offset: Offset(0, (1 - value) * 10.h),
+            child: child,
+          ),
+        );
+      },
+      child: child,
+    );
+  }
+}
+
+class _QuestionBankActionBanner extends StatelessWidget {
+  final QuestionBankAndCategoriesState state;
+
+  const _QuestionBankActionBanner({required this.state});
+
+  @override
+  Widget build(BuildContext context) {
+    final message = state.maybeWhen(
+      categorySaveLoading: () => 'Saving category...',
+      questionSaveLoading: () => 'Saving question...',
+      actionLoading: () => 'Updating question bank...',
+      orElse: () => 'Working...',
+    );
+
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 180),
+      child: DecoratedBox(
+        key: ValueKey(message),
+        decoration: BoxDecoration(
+          color: AppColors.primaryColor9,
+          borderRadius: BorderRadius.circular(8.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.12),
+              blurRadius: 18,
+              offset: Offset(0, 8.h),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 12.h),
+          child: Row(
+            children: [
+              SizedBox(
+                width: 18.w,
+                height: 18.w,
+                child: AppSkeletonBox(height: 18.h, borderRadius: 9),
+              ),
+              horizontalSpace(10),
+              Expanded(
+                child: Text(
+                  message,
+                  style: TextStyle(
+                    color: AppColors.neutralColor,
+                    fontSize: 12.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

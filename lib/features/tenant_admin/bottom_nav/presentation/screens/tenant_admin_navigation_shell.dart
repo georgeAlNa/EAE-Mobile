@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/di/dependency_injection.dart';
+import '../../../../../core/public_widgets/app_bottom_nav_bar.dart';
 import '../../../../settings/logic/settings_cubit.dart';
 import '../../../../settings/presentation/screens/settings_screen.dart';
 import '../../../cohorts/logic/cohorts_cubit.dart';
@@ -13,7 +14,6 @@ import '../../../roles_and_security/logic/roles_and_security_cubit.dart';
 import '../../../roles_and_security/presentation/screens/roles_and_security_screen.dart';
 import '../../../users_management/logic/users_management_cubit.dart';
 import '../../../users_management/presentation/screens/users_management_screen.dart';
-import '../widgets/tenant_admin_bottom_nav_bar.dart';
 
 class TenantAdminNavigationShell extends StatefulWidget {
   final int initialIndex;
@@ -31,24 +31,12 @@ class _TenantAdminNavigationShellState
   late final List<Widget?> _pages;
   final PageStorageBucket _pageStorageBucket = PageStorageBucket();
 
-  static const List<TenantAdminBottomNavItem> _navItems = [
-    TenantAdminBottomNavItem(
-      label: 'USERS',
-      icon: Icons.manage_accounts_outlined,
-    ),
-    TenantAdminBottomNavItem(
-      label: 'ROLES',
-      icon: Icons.admin_panel_settings_outlined,
-    ),
-    TenantAdminBottomNavItem(label: 'COHORTS', icon: Icons.groups_outlined),
-    TenantAdminBottomNavItem(
-      label: 'LIVE',
-      icon: Icons.video_camera_front_outlined,
-    ),
-    TenantAdminBottomNavItem(
-      label: 'ACCOUNT',
-      icon: Icons.person_outline_rounded,
-    ),
+  static const List<AppBottomNavItem> _navItems = [
+    AppBottomNavItem(label: 'USERS', icon: Icons.manage_accounts_outlined),
+    AppBottomNavItem(label: 'ROLES', icon: Icons.admin_panel_settings_outlined),
+    AppBottomNavItem(label: 'COHORTS', icon: Icons.groups_outlined),
+    AppBottomNavItem(label: 'LIVE', icon: Icons.video_camera_front_outlined),
+    AppBottomNavItem(label: 'ACCOUNT', icon: Icons.person_outline_rounded),
   ];
 
   @override
@@ -76,7 +64,7 @@ class _TenantAdminNavigationShellState
           ),
         ),
       ),
-      bottomNavigationBar: TenantAdminBottomNavBar(
+      bottomNavigationBar: AppBottomNavBar(
         currentIndex: currentIndex,
         onTap: (index) {
           if (index == currentIndex) return;

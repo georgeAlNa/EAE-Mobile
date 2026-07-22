@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
+import '../../../shared/presentation/widgets/evaluator_copy_widgets.dart';
 import '../../data/models/question_bank_and_categories_response.dart';
 
 class QuestionCategoryCard extends StatelessWidget {
@@ -71,6 +72,10 @@ class QuestionCategoryCard extends StatelessWidget {
                       ),
                     ],
                   ),
+                ),
+                EvaluatorCopyIconButton(
+                  label: 'Category code',
+                  value: category.categoryCode,
                 ),
                 PopupMenuButton<_CategoryAction>(
                   tooltip: 'Category actions',

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../../core/constants/colors.dart';
-import '../../../../../core/constants/text_styles.dart';
+import '../constants/colors.dart';
+import '../constants/text_styles.dart';
 
-class TenantAdminBottomNavBar extends StatelessWidget {
+class AppBottomNavBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
-  final List<TenantAdminBottomNavItem> items;
+  final List<AppBottomNavItem> items;
 
-  const TenantAdminBottomNavBar({
+  const AppBottomNavBar({
     super.key,
     required this.currentIndex,
     required this.onTap,
@@ -129,9 +129,9 @@ class TenantAdminBottomNavBar extends StatelessWidget {
   }
 }
 
-class TenantAdminBottomNavItem {
+class AppBottomNavItem {
   final String label;
   final IconData icon;
 
-  const TenantAdminBottomNavItem({required this.label, required this.icon});
+  const AppBottomNavItem({required this.label, required this.icon});
 }
