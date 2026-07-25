@@ -33,6 +33,19 @@ class AppLinkUrl {
   static String resetUserPassword(String userId) =>
       "users/$userId/reset-password";
 
+  // penalty rules
+  static const String penaltyRules = "penalty-rules";
+  static String penaltyRuleDetails(String ruleId) => "penalty-rules/$ruleId";
+  static String activatePenaltyRule(String ruleId) =>
+      "penalty-rules/$ruleId/activate";
+  static String deactivatePenaltyRule(String ruleId) =>
+      "penalty-rules/$ruleId/deactivate";
+
+  // eligibility chains
+  static const String eligibilityChains = "eligibility-chains";
+  static String eligibilityChainDetails(String chainId) =>
+      "eligibility-chains/$chainId";
+
   // roles and security
   static const String roles = "roles";
   static String roleDetails(String roleId) => "roles/$roleId";

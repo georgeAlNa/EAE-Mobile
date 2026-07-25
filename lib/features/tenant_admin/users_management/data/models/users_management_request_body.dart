@@ -82,3 +82,45 @@ class ResetUserPasswordRequestBody {
 
   Map<String, dynamic> toJson() => _$ResetUserPasswordRequestBodyToJson(this);
 }
+
+@JsonSerializable()
+class UpdateUserRequestBody {
+  @JsonKey(name: 'first_name')
+  final String firstName;
+
+  @JsonKey(name: 'last_name')
+  final String lastName;
+
+  @JsonKey(name: 'external_employee_id')
+  final String? externalEmployeeId;
+
+  @JsonKey(name: 'user_type')
+  final String userType;
+
+  @JsonKey(name: 'department_id')
+  final String? departmentId;
+
+  @JsonKey(name: 'user_attributes')
+  final Map<String, dynamic>? userAttributes;
+
+  final String status;
+
+  @JsonKey(name: 'is_active')
+  final bool isActive;
+
+  UpdateUserRequestBody({
+    required this.firstName,
+    required this.lastName,
+    this.externalEmployeeId,
+    required this.userType,
+    this.departmentId,
+    this.userAttributes,
+    required this.status,
+    required this.isActive,
+  });
+
+  factory UpdateUserRequestBody.fromJson(Map<String, dynamic> json) =>
+      _$UpdateUserRequestBodyFromJson(json);
+
+  Map<String, dynamic> toJson() => _$UpdateUserRequestBodyToJson(this);
+}

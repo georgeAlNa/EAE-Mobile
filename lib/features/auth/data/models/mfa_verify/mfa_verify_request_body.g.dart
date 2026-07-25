@@ -2,6 +2,10 @@
 
 part of 'mfa_verify_request_body.dart';
 
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
 MfaVerifyRequestBody _$MfaVerifyRequestBodyFromJson(
   Map<String, dynamic> json,
 ) => MfaVerifyRequestBody(

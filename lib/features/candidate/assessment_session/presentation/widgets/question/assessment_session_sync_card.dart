@@ -132,4 +132,3 @@ class AssessmentSessionSyncCard extends StatelessWidget {
     );
   }
 }
-

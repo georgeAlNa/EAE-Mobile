@@ -10,10 +10,7 @@ class MfaVerifyRequestBody {
   @JsonKey(name: 'one_time_code')
   final String oneTimeCode;
 
-  MfaVerifyRequestBody({
-    required this.sessionId,
-    required this.oneTimeCode,
-  });
+  MfaVerifyRequestBody({required this.sessionId, required this.oneTimeCode});
 
   factory MfaVerifyRequestBody.fromJson(Map<String, dynamic> json) =>
       _$MfaVerifyRequestBodyFromJson(json);

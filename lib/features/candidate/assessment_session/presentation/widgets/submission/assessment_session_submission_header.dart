@@ -58,4 +58,3 @@ class AssessmentSessionSubmissionHeader extends StatelessWidget {
     );
   }
 }
-

@@ -2,12 +2,18 @@
 
 part of 'manual_evaluation_response.dart';
 
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
 PendingEvaluationsResponse _$PendingEvaluationsResponseFromJson(
   Map<String, dynamic> json,
 ) => PendingEvaluationsResponse(
   data:
       (json['data'] as List<dynamic>?)
-          ?.map((e) => PendingEvaluationItem.fromJson(e as Map<String, dynamic>))
+          ?.map(
+            (e) => PendingEvaluationItem.fromJson(e as Map<String, dynamic>),
+          )
           .toList() ??
       [],
 );
@@ -39,9 +45,7 @@ Map<String, dynamic> _$ResultPublicationResponseToJson(
 ResultPublicationStatusResponse _$ResultPublicationStatusResponseFromJson(
   Map<String, dynamic> json,
 ) => ResultPublicationStatusResponse(
-  data: ResultPublicationStatus.fromJson(
-    json['data'] as Map<String, dynamic>,
-  ),
+  data: ResultPublicationStatus.fromJson(json['data'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$ResultPublicationStatusResponseToJson(
@@ -195,9 +199,7 @@ PublishedResultSummary _$PublishedResultSummaryFromJson(
   breakdown:
       (json['breakdown'] as List<dynamic>?)
           ?.map(
-            (e) => PublishedResultBreakdown.fromJson(
-              e as Map<String, dynamic>,
-            ),
+            (e) => PublishedResultBreakdown.fromJson(e as Map<String, dynamic>),
           )
           .toList() ??
       [],

@@ -45,9 +45,8 @@ class ResultPublicationStatusResponse {
 
   ResultPublicationStatusResponse({required this.data});
 
-  factory ResultPublicationStatusResponse.fromJson(
-    Map<String, dynamic> json,
-  ) => _$ResultPublicationStatusResponseFromJson(json);
+  factory ResultPublicationStatusResponse.fromJson(Map<String, dynamic> json) =>
+      _$ResultPublicationStatusResponseFromJson(json);
 
   Map<String, dynamic> toJson() =>
       _$ResultPublicationStatusResponseToJson(this);

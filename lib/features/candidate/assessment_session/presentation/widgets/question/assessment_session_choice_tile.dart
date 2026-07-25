@@ -116,4 +116,3 @@ class AssessmentSessionChoiceTile extends StatelessWidget {
     );
   }
 }
-

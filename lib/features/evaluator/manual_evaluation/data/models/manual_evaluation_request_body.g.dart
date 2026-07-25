@@ -2,6 +2,10 @@
 
 part of 'manual_evaluation_request_body.dart';
 
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
 ScoreEvaluationRequestBody _$ScoreEvaluationRequestBodyFromJson(
   Map<String, dynamic> json,
 ) => ScoreEvaluationRequestBody(

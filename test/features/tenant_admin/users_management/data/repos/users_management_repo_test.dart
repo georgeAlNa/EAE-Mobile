@@ -54,6 +54,17 @@ ResetUserPasswordRequestBody resetPasswordRequest() =>
       newPasswordConfirmation: 'NewPassword123!',
     );
 
+UpdateUserRequestBody updateUserRequest() => UpdateUserRequestBody(
+  firstName: 'Candidate5',
+  lastName: 'EngineerUpdated',
+  externalEmployeeId: 'EMP-000105',
+  userType: 'examinee',
+  departmentId: null,
+  userAttributes: null,
+  status: 'active',
+  isActive: true,
+);
+
 void main() {
   late MockUsersManagementRemoteDataSource remoteDataSource;
   late MockNetworkInfo networkInfo;
@@ -63,6 +74,7 @@ void main() {
     registerFallbackValue(createUserRequest());
     registerFallbackValue(inviteUserRequest());
     registerFallbackValue(resetPasswordRequest());
+    registerFallbackValue(updateUserRequest());
     registerFallbackValue('');
   });
 
@@ -165,6 +177,38 @@ void main() {
       );
     });
 
+    test('updateUser calls remote when connected', () async {
+      connected();
+      final response = UserDetailsResponse(
+        data: user(
+          id: 'user_updated',
+        ).copyWithNames(firstName: 'Candidate5', lastName: 'EngineerUpdated'),
+      );
+      when(
+        () => remoteDataSource.updateUser(any(), any()),
+      ).thenAnswer((_) async => response);
+
+      expect(
+        await repo.updateUser('user_001', updateUserRequest()),
+        same(response),
+      );
+      final captured = verify(
+        () => remoteDataSource.updateUser(captureAny(), captureAny()),
+      ).captured;
+      expect(captured[0], 'user_001');
+      expect((captured[1] as UpdateUserRequestBody).firstName, 'Candidate5');
+    });
+
+    test('updateUser throws noInternetConnection when offline', () {
+      offline();
+
+      expect(
+        () => repo.updateUser('user_001', updateUserRequest()),
+        throwsA(const NetworkExceptions.noInternetConnection()),
+      );
+      verifyNever(() => remoteDataSource.updateUser(any(), any()));
+    });
+
     test('all actions throw noInternetConnection when offline', () {
       offline();
 
@@ -188,6 +232,35 @@ void main() {
         () => repo.resetUserPassword('user_001', resetPasswordRequest()),
         throwsA(const NetworkExceptions.noInternetConnection()),
       );
+      expect(
+        () => repo.updateUser('user_001', updateUserRequest()),
+        throwsA(const NetworkExceptions.noInternetConnection()),
+      );
     });
   });
+}
+
+extension _UserCopy on UserManagementUser {
+  UserManagementUser copyWithNames({
+    required String firstName,
+    required String lastName,
+  }) => UserManagementUser(
+    id: id,
+    tenantId: tenantId,
+    externalEmployeeId: externalEmployeeId,
+    email: email,
+    firstName: firstName,
+    lastName: lastName,
+    userType: userType,
+    departmentId: departmentId,
+    status: status,
+    isActive: isActive,
+    activatedAt: activatedAt,
+    deactivatedAt: deactivatedAt,
+    userAttributes: userAttributes,
+    emailVerifiedAt: emailVerifiedAt,
+    createdAt: createdAt,
+    updatedAt: updatedAt,
+    lastLoginAt: lastLoginAt,
+  );
 }

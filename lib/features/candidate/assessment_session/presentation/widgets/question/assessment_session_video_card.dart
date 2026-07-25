@@ -154,4 +154,3 @@ class AssessmentSessionVideoCard extends StatelessWidget {
     );
   }
 }
-

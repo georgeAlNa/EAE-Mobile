@@ -50,6 +50,17 @@ ResetUserPasswordRequestBody resetPasswordRequest() =>
       newPasswordConfirmation: 'NewPassword123!',
     );
 
+UpdateUserRequestBody updateUserRequest() => UpdateUserRequestBody(
+  firstName: 'Candidate5',
+  lastName: 'EngineerUpdated',
+  externalEmployeeId: 'EMP-000105',
+  userType: 'examinee',
+  departmentId: null,
+  userAttributes: null,
+  status: 'active',
+  isActive: true,
+);
+
 bool isUsersLoading(UsersManagementState state) =>
     state.maybeWhen(usersLoading: () => true, orElse: () => false);
 
@@ -112,6 +123,7 @@ void main() {
     registerFallbackValue(createUserRequest());
     registerFallbackValue(inviteUserRequest());
     registerFallbackValue(resetPasswordRequest());
+    registerFallbackValue(updateUserRequest());
     registerFallbackValue('');
   });
 
@@ -195,6 +207,46 @@ void main() {
       );
 
       await cubit.getUserDetails('user_001');
+      await emission;
+    });
+
+    test('updateUser emits userLoaded and handles error', () async {
+      final cubit = await loadedCubit();
+      when(() => repo.updateUser(any(), any())).thenAnswer(
+        (_) async => UserDetailsResponse(data: user(id: 'user_001')),
+      );
+
+      var emission = expectLater(
+        cubit.stream,
+        emitsInOrder([
+          predicate<UsersManagementState>(isUserDetailsLoading),
+          predicate<UsersManagementState>(
+            (state) => userLoaded(state)?.data.id == 'user_001',
+          ),
+        ]),
+      );
+      await cubit.updateUser('user_001', updateUserRequest());
+      await emission;
+
+      final captured = verify(
+        () => repo.updateUser(captureAny(), captureAny()),
+      ).captured;
+      expect(captured[0], 'user_001');
+      expect((captured[1] as UpdateUserRequestBody).firstName, 'Candidate5');
+
+      when(
+        () => repo.updateUser(any(), any()),
+      ).thenThrow(const NetworkExceptions.unprocessableEntity('Invalid user'));
+      emission = expectLater(
+        cubit.stream,
+        emitsInOrder([
+          predicate<UsersManagementState>(isUserDetailsLoading),
+          predicate<UsersManagementState>(
+            (state) => stateError(state) == 'Invalid user',
+          ),
+        ]),
+      );
+      await cubit.updateUser('user_001', updateUserRequest());
       await emission;
     });
 

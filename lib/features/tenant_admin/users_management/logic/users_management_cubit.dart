@@ -148,4 +148,31 @@ class UsersManagementCubit extends Cubit<UsersManagementState> {
       );
     }
   }
+
+  Future<void> updateUser(
+    String userId,
+    UpdateUserRequestBody requestBody,
+  ) async {
+    emit(const UsersManagementState.userDetailsLoading());
+
+    try {
+      final response = await usersManagementRepo.updateUser(
+        userId,
+        requestBody,
+      );
+      emit(UsersManagementState.userLoaded(response));
+    } on NetworkExceptions catch (e) {
+      emit(
+        UsersManagementState.userDetailsError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
+    } catch (e) {
+      emit(
+        const UsersManagementState.userDetailsError(
+          error: 'Failed to update user',
+        ),
+      );
+    }
+  }
 }

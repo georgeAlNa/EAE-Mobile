@@ -94,4 +94,3 @@ class AssessmentSessionSubmissionFinalizingCard extends StatelessWidget {
     );
   }
 }
-

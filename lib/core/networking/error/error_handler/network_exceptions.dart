@@ -118,8 +118,9 @@ abstract class NetworkExceptions with _$NetworkExceptions implements Exception {
           final data = response?.data;
           int retryAfter = 950;
           try {
-            final Map<String, dynamic> body =
-                data is String ? jsonDecode(data) : (data as Map<String, dynamic>);
+            final Map<String, dynamic> body = data is String
+                ? jsonDecode(data)
+                : (data as Map<String, dynamic>);
             final errorNode = body['error'] as Map<String, dynamic>?;
             retryAfter =
                 (errorNode?['retry_after_seconds'] as num?)?.toInt() ?? 950;

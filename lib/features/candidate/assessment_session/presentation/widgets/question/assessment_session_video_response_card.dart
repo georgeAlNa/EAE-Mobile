@@ -111,4 +111,3 @@ class AssessmentSessionVideoResponseCard extends StatelessWidget {
     );
   }
 }
-

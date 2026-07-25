@@ -39,4 +39,3 @@ class AssessmentSessionBadge extends StatelessWidget {
     );
   }
 }
-

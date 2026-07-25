@@ -20,6 +20,12 @@ import '../../features/evaluator/question_bank_and_categories/logic/question_ban
 import '../../features/tenant_admin/users_management/data/datasources/users_management_remote_data_source.dart';
 import '../../features/tenant_admin/users_management/data/repos/users_management_repo.dart';
 import '../../features/tenant_admin/users_management/logic/users_management_cubit.dart';
+import '../../features/tenant_admin/assessment_governance/data/datasources/assessment_governance_remote_data_source.dart';
+import '../../features/tenant_admin/assessment_governance/data/repos/assessment_governance_repo.dart';
+import '../../features/tenant_admin/assessment_governance/logic/assessment_governance_cubit.dart';
+import '../../features/tenant_admin/result_publication/data/datasources/result_publication_remote_data_source.dart';
+import '../../features/tenant_admin/result_publication/data/repos/result_publication_repo.dart';
+import '../../features/tenant_admin/result_publication/logic/result_publication_cubit.dart';
 import '../../features/tenant_admin/roles_and_security/data/datasources/roles_and_security_remote_data_source.dart';
 import '../../features/tenant_admin/roles_and_security/data/repos/roles_and_security_repo.dart';
 import '../../features/tenant_admin/roles_and_security/logic/roles_and_security_cubit.dart';
@@ -118,6 +124,40 @@ Future<void> setupGetit() async {
   // cubit
   getIt.registerFactory<UsersManagementCubit>(
     () => UsersManagementCubit(usersManagementRepo: getIt()),
+  );
+
+  // //! feature - assessment governance
+  // datasource
+  getIt.registerLazySingleton<AssessmentGovernanceRemoteDataSource>(
+    () => AssessmentGovernanceRemoteDataSourceImpl(apiServicesImpl: getIt()),
+  );
+  // repo
+  getIt.registerLazySingleton<AssessmentGovernanceRepo>(
+    () => AssessmentGovernanceRepo(
+      assessmentGovernanceRemoteDataSource: getIt(),
+      networkInfo: getIt(),
+    ),
+  );
+  // cubit
+  getIt.registerFactory<AssessmentGovernanceCubit>(
+    () => AssessmentGovernanceCubit(assessmentGovernanceRepo: getIt()),
+  );
+
+  // //! feature - result publication
+  // datasource
+  getIt.registerLazySingleton<ResultPublicationRemoteDataSource>(
+    () => ResultPublicationRemoteDataSourceImpl(apiServicesImpl: getIt()),
+  );
+  // repo
+  getIt.registerLazySingleton<ResultPublicationRepo>(
+    () => ResultPublicationRepo(
+      resultPublicationRemoteDataSource: getIt(),
+      networkInfo: getIt(),
+    ),
+  );
+  // cubit
+  getIt.registerFactory<ResultPublicationCubit>(
+    () => ResultPublicationCubit(resultPublicationRepo: getIt()),
   );
 
   // //! feature - roles and security

@@ -128,4 +128,3 @@ class AssessmentSessionFileUploadCard extends StatelessWidget {
     );
   }
 }
-

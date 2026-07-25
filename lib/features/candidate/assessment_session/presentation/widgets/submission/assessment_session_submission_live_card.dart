@@ -368,4 +368,3 @@ class AssessmentSessionSubmissionStatusTile extends StatelessWidget {
     );
   }
 }
-

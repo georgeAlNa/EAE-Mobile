@@ -12,6 +12,7 @@ import '../../logic/users_management_cubit.dart';
 import '../widgets/create_user_sheet.dart';
 import '../widgets/invite_user_sheet.dart';
 import '../widgets/reset_user_password_sheet.dart';
+import '../widgets/update_user_sheet.dart';
 import '../widgets/user_details_sheet.dart';
 import '../widgets/user_management_card.dart';
 import '../widgets/users_management_header.dart';
@@ -152,6 +153,10 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
                                 context: screenContext,
                                 userId: user.id,
                               ),
+                              onEdit: () => _showUpdateUserSheet(
+                                context: screenContext,
+                                user: user,
+                              ),
                               onResetPassword: () => _showResetPasswordSheet(
                                 context: screenContext,
                                 userId: user.id,
@@ -265,6 +270,23 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
       builder: (_) => BlocProvider.value(
         value: cubit,
         child: ResetUserPasswordSheet(userId: userId, userName: userName),
+      ),
+    );
+  }
+
+  Future<void> _showUpdateUserSheet({
+    required BuildContext context,
+    required UserManagementUser user,
+  }) async {
+    final cubit = context.read<UsersManagementCubit>();
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.neutralColor,
+      builder: (_) => BlocProvider.value(
+        value: cubit,
+        child: UpdateUserSheet(user: user),
       ),
     );
   }

@@ -71,4 +71,3 @@ class _RuleRow extends StatelessWidget {
     );
   }
 }
-

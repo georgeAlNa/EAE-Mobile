@@ -55,10 +55,7 @@ class _EvaluatorNavigationShellState extends State<EvaluatorNavigationShell> {
             icon: Icons.psychology_alt_outlined,
           ),
           AppBottomNavItem(label: 'EXAMS', icon: Icons.assignment_outlined),
-          AppBottomNavItem(
-            label: 'REVIEW',
-            icon: Icons.fact_check_outlined,
-          ),
+          AppBottomNavItem(label: 'REVIEW', icon: Icons.fact_check_outlined),
           AppBottomNavItem(
             label: 'ACCOUNT',
             icon: Icons.person_outline_rounded,

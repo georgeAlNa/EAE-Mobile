@@ -2,6 +2,10 @@
 
 part of 'mfa_verify_response.dart';
 
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
 MfaVerifyResponse _$MfaVerifyResponseFromJson(Map<String, dynamic> json) =>
     MfaVerifyResponse(message: json['message'] as String? ?? '');
 

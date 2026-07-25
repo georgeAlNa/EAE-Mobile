@@ -98,4 +98,22 @@ class UsersManagementRepo {
       throw const NetworkExceptions.noInternetConnection();
     }
   }
+
+  Future<UserDetailsResponse> updateUser(
+    String userId,
+    UpdateUserRequestBody updateUserRequestBody,
+  ) async {
+    if (await networkInfo.isConnected) {
+      try {
+        return await usersManagementRemoteDataSource.updateUser(
+          userId,
+          updateUserRequestBody,
+        );
+      } catch (e) {
+        throw NetworkExceptions.getException(e);
+      }
+    } else {
+      throw const NetworkExceptions.noInternetConnection();
+    }
+  }
 }

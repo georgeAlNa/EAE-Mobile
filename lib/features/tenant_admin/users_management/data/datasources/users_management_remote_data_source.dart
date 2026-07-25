@@ -27,6 +27,11 @@ abstract class UsersManagementRemoteDataSource {
     String userId,
     ResetUserPasswordRequestBody resetUserPasswordRequestBody,
   );
+
+  Future<UserDetailsResponse> updateUser(
+    String userId,
+    UpdateUserRequestBody updateUserRequestBody,
+  );
 }
 
 class UsersManagementRemoteDataSourceImpl
@@ -139,6 +144,26 @@ class UsersManagementRemoteDataSourceImpl
       );
 
       return UserActionResponse.fromJson(request);
+    } on DioException catch (e) {
+      throw NetworkExceptions.getException(e);
+    } catch (e) {
+      throw NetworkExceptions.getException(e);
+    }
+  }
+
+  @override
+  Future<UserDetailsResponse> updateUser(
+    String userId,
+    UpdateUserRequestBody updateUserRequestBody,
+  ) async {
+    try {
+      final request = await apiServicesImpl.patch(
+        AppLinkUrl.userDetails(userId),
+        body: updateUserRequestBody.toJson(),
+        token: _token,
+      );
+
+      return UserDetailsResponse.fromJson(request);
     } on DioException catch (e) {
       throw NetworkExceptions.getException(e);
     } catch (e) {

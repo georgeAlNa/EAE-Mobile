@@ -9,6 +9,7 @@ import '../../data/models/users_management_response.dart';
 class UserManagementCard extends StatelessWidget {
   final UserManagementUser user;
   final VoidCallback onDetails;
+  final VoidCallback onEdit;
   final VoidCallback onResetPassword;
   final VoidCallback? onDeactivate;
 
@@ -16,6 +17,7 @@ class UserManagementCard extends StatelessWidget {
     super.key,
     required this.user,
     required this.onDetails,
+    required this.onEdit,
     required this.onResetPassword,
     required this.onDeactivate,
   });
@@ -77,6 +79,8 @@ class UserManagementCard extends StatelessWidget {
                   switch (action) {
                     case _UserAction.details:
                       onDetails();
+                    case _UserAction.edit:
+                      onEdit();
                     case _UserAction.resetPassword:
                       onResetPassword();
                     case _UserAction.deactivate:
@@ -87,6 +91,10 @@ class UserManagementCard extends StatelessWidget {
                   const PopupMenuItem(
                     value: _UserAction.details,
                     child: Text('Details'),
+                  ),
+                  const PopupMenuItem(
+                    value: _UserAction.edit,
+                    child: Text('Edit'),
                   ),
                   const PopupMenuItem(
                     value: _UserAction.resetPassword,
@@ -177,4 +185,4 @@ class _InfoChip extends StatelessWidget {
   }
 }
 
-enum _UserAction { details, resetPassword, deactivate }
+enum _UserAction { details, edit, resetPassword, deactivate }

@@ -65,6 +65,17 @@ ResetUserPasswordRequestBody resetPasswordRequest() =>
       newPasswordConfirmation: 'NewPassword123!',
     );
 
+UpdateUserRequestBody updateUserRequest() => UpdateUserRequestBody(
+  firstName: 'Candidate5',
+  lastName: 'EngineerUpdated',
+  externalEmployeeId: 'EMP-000105',
+  userType: 'examinee',
+  departmentId: null,
+  userAttributes: null,
+  status: 'active',
+  isActive: true,
+);
+
 void main() {
   late MockApiServicesImpl apiServicesImpl;
   late UsersManagementRemoteDataSourceImpl remoteDataSource;
@@ -137,6 +148,19 @@ void main() {
           token: any(named: 'token'),
         ),
       ).thenAnswer((_) async => {'message': 'Password reset'});
+      when(
+        () => apiServicesImpl.patch(
+          AppLinkUrl.userDetails('user_001'),
+          body: any(named: 'body'),
+          token: any(named: 'token'),
+        ),
+      ).thenAnswer(
+        (_) async => {
+          'data': userJson(id: 'user_001')
+            ..['first_name'] = 'Candidate5'
+            ..['last_name'] = 'EngineerUpdated',
+        },
+      );
 
       expect(
         (await remoteDataSource.usersManagement()).data.single.id,
@@ -164,6 +188,13 @@ void main() {
           resetPasswordRequest(),
         )).message,
         'Password reset',
+      );
+      expect(
+        (await remoteDataSource.updateUser(
+          'user_001',
+          updateUserRequest(),
+        )).data.firstName,
+        'Candidate5',
       );
 
       verify(
@@ -224,6 +255,24 @@ void main() {
         'new_password_confirmation': 'NewPassword123!',
       });
       expect(resetCapture[1], 'access-token');
+      final updateCapture = verify(
+        () => apiServicesImpl.patch(
+          AppLinkUrl.userDetails('user_001'),
+          body: captureAny(named: 'body'),
+          token: captureAny(named: 'token'),
+        ),
+      ).captured;
+      expect(updateCapture[0], {
+        'first_name': 'Candidate5',
+        'last_name': 'EngineerUpdated',
+        'external_employee_id': 'EMP-000105',
+        'user_type': 'examinee',
+        'department_id': null,
+        'user_attributes': null,
+        'status': 'active',
+        'is_active': true,
+      });
+      expect(updateCapture[1], 'access-token');
     });
 
     test('wraps unexpected API failures as NetworkExceptions', () {

@@ -21,9 +21,7 @@ class MfaVerificationCubit extends Cubit<MfaVerificationState> {
       emit(MfaVerificationState.success(response));
     } on NetworkExceptions catch (e) {
       emit(
-        MfaVerificationState.error(
-          error: NetworkExceptions.getErrorMessage(e),
-        ),
+        MfaVerificationState.error(error: NetworkExceptions.getErrorMessage(e)),
       );
     } catch (e) {
       emit(const MfaVerificationState.error(error: 'Failed to verify code'));

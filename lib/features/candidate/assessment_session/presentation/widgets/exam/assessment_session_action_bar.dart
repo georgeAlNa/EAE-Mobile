@@ -125,4 +125,3 @@ class _PrimaryAction extends StatelessWidget {
     );
   }
 }
-

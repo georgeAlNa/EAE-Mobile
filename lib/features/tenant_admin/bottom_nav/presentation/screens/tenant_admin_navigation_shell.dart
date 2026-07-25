@@ -6,10 +6,14 @@ import '../../../../../core/di/dependency_injection.dart';
 import '../../../../../core/public_widgets/app_bottom_nav_bar.dart';
 import '../../../../settings/logic/settings_cubit.dart';
 import '../../../../settings/presentation/screens/settings_screen.dart';
+import '../../../assessment_governance/logic/assessment_governance_cubit.dart';
+import '../../../assessment_governance/presentation/screens/assessment_governance_screen.dart';
 import '../../../cohorts/logic/cohorts_cubit.dart';
 import '../../../cohorts/presentation/screens/cohorts_screen.dart';
 import '../../../live_sessions_and_enrollment_management/logic/live_sessions_and_enrollment_management_cubit.dart';
 import '../../../live_sessions_and_enrollment_management/presentation/screens/live_sessions_and_enrollment_management_screen.dart';
+import '../../../result_publication/logic/result_publication_cubit.dart';
+import '../../../result_publication/presentation/screens/result_publication_screen.dart';
 import '../../../roles_and_security/logic/roles_and_security_cubit.dart';
 import '../../../roles_and_security/presentation/screens/roles_and_security_screen.dart';
 import '../../../users_management/logic/users_management_cubit.dart';
@@ -36,6 +40,8 @@ class _TenantAdminNavigationShellState
     AppBottomNavItem(label: 'ROLES', icon: Icons.admin_panel_settings_outlined),
     AppBottomNavItem(label: 'COHORTS', icon: Icons.groups_outlined),
     AppBottomNavItem(label: 'LIVE', icon: Icons.video_camera_front_outlined),
+    AppBottomNavItem(label: 'RULES', icon: Icons.rule_folder_outlined),
+    AppBottomNavItem(label: 'RESULTS', icon: Icons.publish_outlined),
     AppBottomNavItem(label: 'ACCOUNT', icon: Icons.person_outline_rounded),
   ];
 
@@ -110,6 +116,18 @@ class _TenantAdminNavigationShellState
           child: const LiveSessionsAndEnrollmentManagementScreen(),
         );
       case 4:
+        return BlocProvider(
+          key: const ValueKey('tenant-admin-assessment-governance'),
+          create: (_) => getIt<AssessmentGovernanceCubit>(),
+          child: const AssessmentGovernanceScreen(),
+        );
+      case 5:
+        return BlocProvider(
+          key: const ValueKey('tenant-admin-result-publication'),
+          create: (_) => getIt<ResultPublicationCubit>(),
+          child: const ResultPublicationScreen(),
+        );
+      case 6:
         return BlocProvider(
           key: const ValueKey('tenant-admin-settings'),
           create: (_) => getIt<SettingsCubit>(),

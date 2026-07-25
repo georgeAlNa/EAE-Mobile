@@ -23,8 +23,7 @@ class ManualEvaluationScreen extends StatefulWidget {
 
 class _ManualEvaluationScreenState extends State<ManualEvaluationScreen> {
   final TextEditingController _sessionIdController = TextEditingController();
-  final TextEditingController _evaluationIdController =
-      TextEditingController();
+  final TextEditingController _evaluationIdController = TextEditingController();
   final TextEditingController _scoreController = TextEditingController();
   final TextEditingController _maxScoreController = TextEditingController();
   final TextEditingController _commentsController = TextEditingController();
@@ -52,7 +51,8 @@ class _ManualEvaluationScreenState extends State<ManualEvaluationScreen> {
           listener: _listenToState,
           builder: (context, state) {
             final cubit = context.read<ManualEvaluationCubit>();
-            final pending = _pendingResponse ?? cubit.pendingEvaluationsResponse;
+            final pending =
+                _pendingResponse ?? cubit.pendingEvaluationsResponse;
             final status =
                 _statusResponse ?? cubit.resultPublicationStatusResponse;
             final published =

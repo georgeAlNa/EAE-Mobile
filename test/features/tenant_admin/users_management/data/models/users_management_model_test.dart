@@ -78,6 +78,33 @@ void main() {
         'new_password_confirmation': 'NewPassword123!',
       });
     });
+
+    test('UpdateUserRequestBody serializes backend fields', () {
+      final request = UpdateUserRequestBody.fromJson({
+        'first_name': 'Candidate5',
+        'last_name': 'EngineerUpdated',
+        'external_employee_id': 'EMP-000105',
+        'user_type': 'examinee',
+        'department_id': null,
+        'user_attributes': null,
+        'status': 'active',
+        'is_active': true,
+      });
+
+      expect(request.firstName, 'Candidate5');
+      expect(request.externalEmployeeId, 'EMP-000105');
+      expect(request.isActive, isTrue);
+      expect(request.toJson(), {
+        'first_name': 'Candidate5',
+        'last_name': 'EngineerUpdated',
+        'external_employee_id': 'EMP-000105',
+        'user_type': 'examinee',
+        'department_id': null,
+        'user_attributes': null,
+        'status': 'active',
+        'is_active': true,
+      });
+    });
   });
 
   group('response models', () {
