@@ -7,6 +7,8 @@ import 'package:eae_mobile/features/auth/data/models/login/login_request_body.da
 import 'package:eae_mobile/features/auth/data/models/login/login_response.dart';
 import 'package:eae_mobile/features/auth/data/models/logout/logout_request_body.dart';
 import 'package:eae_mobile/features/auth/data/models/logout/logout_response.dart';
+import 'package:eae_mobile/features/auth/data/models/mfa_verify/mfa_verify_request_body.dart';
+import 'package:eae_mobile/features/auth/data/models/mfa_verify/mfa_verify_response.dart';
 import 'package:eae_mobile/features/auth/data/models/refresh_token/refresh_token_request_body.dart';
 import 'package:eae_mobile/features/auth/data/models/refresh_token/refresh_token_response.dart';
 import 'package:eae_mobile/features/auth/data/models/register/register_request_body.dart';
@@ -63,6 +65,7 @@ void main() {
       ),
     );
     registerFallbackValue(RefreshTokenRequestBody(sessionId: ''));
+    registerFallbackValue(MfaVerifyRequestBody(sessionId: '', oneTimeCode: ''));
   });
 
   setUp(() {
@@ -330,6 +333,40 @@ void main() {
         throwsA(const NetworkExceptions.noInternetConnection()),
       );
       verifyNever(() => remoteDataSource.refreshToken(any()));
+    });
+  });
+
+  group('verifyMfa', () {
+    final request = MfaVerifyRequestBody(
+      sessionId: 'sess_001',
+      oneTimeCode: '123456',
+    );
+    final response = MfaVerifyResponse(message: 'MFA verified');
+
+    test('returns MfaVerifyResponse when connected and remote succeeds', () async {
+      when(() => networkInfo.isConnected).thenAnswer((_) async => true);
+      when(
+        () => remoteDataSource.verifyMfa(any()),
+      ).thenAnswer((_) async => response);
+
+      final result = await authRepo.verifyMfa(request);
+
+      expect(result, same(response));
+      final captured =
+          verify(() => remoteDataSource.verifyMfa(captureAny())).captured.single
+              as MfaVerifyRequestBody;
+      expect(captured.sessionId, 'sess_001');
+      expect(captured.oneTimeCode, '123456');
+    });
+
+    test('throws noInternetConnection when verifyMfa is offline', () {
+      when(() => networkInfo.isConnected).thenAnswer((_) async => false);
+
+      expect(
+        () => authRepo.verifyMfa(request),
+        throwsA(const NetworkExceptions.noInternetConnection()),
+      );
+      verifyNever(() => remoteDataSource.verifyMfa(any()));
     });
   });
 }

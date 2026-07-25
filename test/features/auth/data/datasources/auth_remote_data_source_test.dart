@@ -7,6 +7,7 @@ import 'package:eae_mobile/features/auth/data/datasources/auth_remote_data_sourc
 import 'package:eae_mobile/features/auth/data/models/forgot_password/forgot_password_request_body.dart';
 import 'package:eae_mobile/features/auth/data/models/login/login_request_body.dart';
 import 'package:eae_mobile/features/auth/data/models/logout/logout_request_body.dart';
+import 'package:eae_mobile/features/auth/data/models/mfa_verify/mfa_verify_request_body.dart';
 import 'package:eae_mobile/features/auth/data/models/refresh_token/refresh_token_request_body.dart';
 import 'package:eae_mobile/features/auth/data/models/register/register_request_body.dart';
 import 'package:eae_mobile/features/auth/data/models/reset_password/reset_password_request_body.dart';
@@ -269,6 +270,38 @@ void main() {
         );
       },
     );
+
+    test('verifyMfa posts code with stored token and parses message', () async {
+      await AppSharedPreferences().setString(
+        AppSharedPrefKeys.token,
+        'access-token',
+      );
+      when(
+        () => apiServicesImpl.post(
+          AppLinkUrl.mfaVerify,
+          body: any(named: 'body'),
+          token: any(named: 'token'),
+        ),
+      ).thenAnswer((_) async => {'message': 'MFA verified'});
+
+      final response = await remoteDataSource.verifyMfa(
+        MfaVerifyRequestBody(sessionId: 'sess_001', oneTimeCode: '123456'),
+      );
+
+      expect(response.message, 'MFA verified');
+      final captured = verify(
+        () => apiServicesImpl.post(
+          AppLinkUrl.mfaVerify,
+          body: captureAny(named: 'body'),
+          token: captureAny(named: 'token'),
+        ),
+      ).captured;
+      expect(captured[0], {
+        'session_id': 'sess_001',
+        'one_time_code': '123456',
+      });
+      expect(captured[1], 'access-token');
+    });
 
     test('wraps unexpected API failures as NetworkExceptions', () {
       when(
