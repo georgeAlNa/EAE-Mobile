@@ -7,6 +7,8 @@ import '../models/login/login_request_body.dart';
 import '../models/login/login_response.dart';
 import '../models/logout/logout_request_body.dart';
 import '../models/logout/logout_response.dart';
+import '../models/mfa_verify/mfa_verify_request_body.dart';
+import '../models/mfa_verify/mfa_verify_response.dart';
 import '../models/refresh_token/refresh_token_request_body.dart';
 import '../models/refresh_token/refresh_token_response.dart';
 import '../models/register/register_request_body.dart';
@@ -91,6 +93,18 @@ class AuthRepo {
     if (await networkInfo.isConnected) {
       try {
         return await authRemoteDataSource.logout(logout);
+      } catch (e) {
+        throw NetworkExceptions.getException(e);
+      }
+    } else {
+      throw const NetworkExceptions.noInternetConnection();
+    }
+  }
+
+  Future<MfaVerifyResponse> verifyMfa(MfaVerifyRequestBody mfaVerify) async {
+    if (await networkInfo.isConnected) {
+      try {
+        return await authRemoteDataSource.verifyMfa(mfaVerify);
       } catch (e) {
         throw NetworkExceptions.getException(e);
       }

@@ -11,6 +11,9 @@ import '../../features/evaluator/competencies/logic/competencies_cubit.dart';
 import '../../features/evaluator/exams_management/data/datasources/exams_management_remote_data_source.dart';
 import '../../features/evaluator/exams_management/data/repos/exams_management_repo.dart';
 import '../../features/evaluator/exams_management/logic/exams_management_cubit.dart';
+import '../../features/evaluator/manual_evaluation/data/datasources/manual_evaluation_remote_data_source.dart';
+import '../../features/evaluator/manual_evaluation/data/repos/manual_evaluation_repo.dart';
+import '../../features/evaluator/manual_evaluation/logic/manual_evaluation_cubit.dart';
 import '../../features/evaluator/question_bank_and_categories/data/datasources/question_bank_and_categories_remote_data_source.dart';
 import '../../features/evaluator/question_bank_and_categories/data/repos/question_bank_and_categories_repo.dart';
 import '../../features/evaluator/question_bank_and_categories/logic/question_bank_and_categories_cubit.dart';
@@ -30,6 +33,7 @@ import '../../features/auth/data/datasources/auth_remote_data_source.dart';
 import '../../features/auth/data/repos/auth_repo.dart';
 import '../../features/auth/logic/forgot_password/forgot_password_cubit.dart';
 import '../../features/auth/logic/login/login_cubit.dart';
+import '../../features/auth/logic/mfa_verification/mfa_verification_cubit.dart';
 import '../../features/auth/logic/register/register_cubit.dart';
 import '../../features/auth/logic/reset_password/reset_password_cubit.dart';
 import '../../features/auth/logic/role_verification/role_verification_cubit.dart';
@@ -65,6 +69,9 @@ Future<void> setupGetit() async {
   );
   // cubit
   getIt.registerFactory<LoginCubit>(() => LoginCubit(authRepo: getIt()));
+  getIt.registerFactory<MfaVerificationCubit>(
+    () => MfaVerificationCubit(authRepo: getIt()),
+  );
   getIt.registerFactory<RoleVerificationCubit>(
     () => RoleVerificationCubit(settingsRepo: getIt()),
   );
@@ -216,6 +223,23 @@ Future<void> setupGetit() async {
   // cubit
   getIt.registerFactory<ExamsManagementCubit>(
     () => ExamsManagementCubit(examsManagementRepo: getIt()),
+  );
+
+  // //! feature - manual evaluation
+  // datasource
+  getIt.registerLazySingleton<ManualEvaluationRemoteDataSource>(
+    () => ManualEvaluationRemoteDataSourceImpl(apiServicesImpl: getIt()),
+  );
+  // repo
+  getIt.registerLazySingleton<ManualEvaluationRepo>(
+    () => ManualEvaluationRepo(
+      manualEvaluationRemoteDataSource: getIt(),
+      networkInfo: getIt(),
+    ),
+  );
+  // cubit
+  getIt.registerFactory<ManualEvaluationCubit>(
+    () => ManualEvaluationCubit(manualEvaluationRepo: getIt()),
   );
 
   // //! feature - analytics

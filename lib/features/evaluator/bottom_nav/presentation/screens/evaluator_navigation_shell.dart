@@ -10,6 +10,8 @@ import '../../../competencies/logic/competencies_cubit.dart';
 import '../../../competencies/presentation/screens/competencies_screen.dart';
 import '../../../exams_management/logic/exams_management_cubit.dart';
 import '../../../exams_management/presentation/screens/exams_management_screen.dart';
+import '../../../manual_evaluation/logic/manual_evaluation_cubit.dart';
+import '../../../manual_evaluation/presentation/screens/manual_evaluation_screen.dart';
 import '../../../question_bank_and_categories/logic/question_bank_and_categories_cubit.dart';
 import '../../../question_bank_and_categories/presentation/screens/question_bank_and_categories_screen.dart';
 
@@ -54,6 +56,10 @@ class _EvaluatorNavigationShellState extends State<EvaluatorNavigationShell> {
           ),
           AppBottomNavItem(label: 'EXAMS', icon: Icons.assignment_outlined),
           AppBottomNavItem(
+            label: 'REVIEW',
+            icon: Icons.fact_check_outlined,
+          ),
+          AppBottomNavItem(
             label: 'ACCOUNT',
             icon: Icons.person_outline_rounded,
           ),
@@ -83,6 +89,12 @@ class _EvaluatorNavigationShellState extends State<EvaluatorNavigationShell> {
           child: const ExamsManagementScreen(),
         );
       case 3:
+        return BlocProvider(
+          key: const ValueKey('evaluator-manual-evaluation'),
+          create: (_) => getIt<ManualEvaluationCubit>(),
+          child: const ManualEvaluationScreen(),
+        );
+      case 4:
         return BlocProvider(
           key: const ValueKey('evaluator-settings'),
           create: (_) => getIt<SettingsCubit>(),

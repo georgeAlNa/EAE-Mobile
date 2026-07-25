@@ -11,6 +11,8 @@ import '../models/login/login_request_body.dart';
 import '../models/login/login_response.dart';
 import '../models/logout/logout_request_body.dart';
 import '../models/logout/logout_response.dart';
+import '../models/mfa_verify/mfa_verify_request_body.dart';
+import '../models/mfa_verify/mfa_verify_response.dart';
 import '../models/refresh_token/refresh_token_request_body.dart';
 import '../models/refresh_token/refresh_token_response.dart';
 import '../models/register/register_request_body.dart';
@@ -31,6 +33,9 @@ abstract class AuthRemoteDataSource {
     RefreshTokenRequestBody refreshTokenRequestBody,
   );
   Future<LogoutResponse> logout(LogoutRequestBody logoutRequestBody);
+  Future<MfaVerifyResponse> verifyMfa(
+    MfaVerifyRequestBody mfaVerifyRequestBody,
+  );
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -167,6 +172,25 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       await sharedPref.clearSessionData();
 
       return response;
+    } on DioException catch (e) {
+      throw NetworkExceptions.getException(e);
+    } catch (e) {
+      throw NetworkExceptions.getException(e);
+    }
+  }
+
+  @override
+  Future<MfaVerifyResponse> verifyMfa(
+    MfaVerifyRequestBody mfaVerifyRequestBody,
+  ) async {
+    try {
+      final request = await apiServicesImpl.post(
+        AppLinkUrl.mfaVerify,
+        body: mfaVerifyRequestBody.toJson(),
+        token: _token,
+      );
+
+      return MfaVerifyResponse.fromJson(request);
     } on DioException catch (e) {
       throw NetworkExceptions.getException(e);
     } catch (e) {

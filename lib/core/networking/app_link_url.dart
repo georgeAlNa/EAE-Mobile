@@ -8,6 +8,7 @@ class AppLinkUrl {
   static const String resetPassword = "auth/password/reset";
   static const String refreshToken = "auth/refresh";
   static const String logout = "auth/logout";
+  static const String mfaVerify = "auth/mfa/verify";
 
   // public identity
   static const String identityProfile = "identity/profile";
@@ -67,4 +68,16 @@ class AppLinkUrl {
       "competencies/$competencyId";
   static String moveCompetency(String competencyId) =>
       "competencies/$competencyId/move";
+
+  // manual evaluation
+  static String pendingEvaluations(String sessionId) =>
+      "exam-sessions/$sessionId/pending-evaluations";
+  static String answerEvaluationScore(String evaluationId) =>
+      "answer-evaluations/$evaluationId/score";
+
+  // result publication
+  static String publishSessionResult(String sessionId) =>
+      "exam-sessions/$sessionId/result/publish";
+  static String resultPublicationStatus(String sessionId) =>
+      "exam-sessions/$sessionId/result/publication-status";
 }
