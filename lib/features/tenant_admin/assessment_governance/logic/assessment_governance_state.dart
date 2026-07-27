@@ -4,6 +4,7 @@ abstract class AssessmentGovernanceState {
   const AssessmentGovernanceState();
 
   const factory AssessmentGovernanceState.initial() = _Initial;
+  factory AssessmentGovernanceState.uiChanged() = _UiChanged;
   const factory AssessmentGovernanceState.governanceLoading() =
       _GovernanceLoading;
   const factory AssessmentGovernanceState.governanceLoaded({
@@ -37,6 +38,7 @@ abstract class AssessmentGovernanceState {
       _ActionError;
 
   T maybeWhen<T>({
+    T Function()? uiChanged,
     T Function()? governanceLoading,
     T Function(
       PenaltyRulesResponse penaltyRulesResponse,
@@ -56,6 +58,9 @@ abstract class AssessmentGovernanceState {
     required T Function() orElse,
   }) {
     final state = this;
+    if (state is _UiChanged && uiChanged != null) {
+      return uiChanged();
+    }
     if (state is _GovernanceLoading && governanceLoading != null) {
       return governanceLoading();
     }
@@ -102,6 +107,8 @@ abstract class AssessmentGovernanceState {
 class _Initial extends AssessmentGovernanceState {
   const _Initial();
 }
+
+class _UiChanged extends AssessmentGovernanceState {}
 
 class _GovernanceLoading extends AssessmentGovernanceState {
   const _GovernanceLoading();

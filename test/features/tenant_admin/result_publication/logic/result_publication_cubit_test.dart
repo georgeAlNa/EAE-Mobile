@@ -88,6 +88,12 @@ void main() {
   });
 
   group('ResultPublicationCubit', () {
+    test('owns session id controller for publication actions', () {
+      cubit.sessionIdController.text = 'session_001';
+
+      expect(cubit.sessionIdController.text, 'session_001');
+    });
+
     test('getResultPublicationStatus emits loading then loaded', () async {
       final response = statusResponse();
       when(

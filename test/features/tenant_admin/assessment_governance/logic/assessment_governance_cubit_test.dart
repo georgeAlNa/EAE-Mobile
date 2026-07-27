@@ -76,6 +76,9 @@ bool isLoading(AssessmentGovernanceState state) => state.maybeWhen(
   orElse: () => false,
 );
 
+bool isUiChanged(AssessmentGovernanceState state) =>
+    state.maybeWhen(uiChanged: () => true, orElse: () => false);
+
 String? stateError(AssessmentGovernanceState state) => state.maybeWhen(
   governanceLoadError: (error) => error,
   penaltySaveError: (error) => error,
@@ -133,6 +136,69 @@ void main() {
   });
 
   group('AssessmentGovernanceCubit', () {
+    test('owns governance form controllers and emits UI changes', () async {
+      final emission = expectLater(
+        cubit.stream,
+        emitsInOrder([
+          predicate<AssessmentGovernanceState>(isUiChanged),
+          predicate<AssessmentGovernanceState>(isUiChanged),
+          predicate<AssessmentGovernanceState>(isUiChanged),
+          predicate<AssessmentGovernanceState>(isUiChanged),
+        ]),
+      );
+
+      cubit.setTabIndex(1);
+      cubit.setPenaltyCumulative(false);
+      cubit.setPenaltyActive(false);
+      cubit.setOverrideAvailable(true);
+      await emission;
+
+      expect(cubit.tabIndex, 1);
+      expect(cubit.penaltyCumulative, isFalse);
+      expect(cubit.penaltyActive, isFalse);
+      expect(cubit.overrideAvailable, isTrue);
+      expect(cubit.chainStepController.text, '1');
+      expect(cubit.conditionTypeController.text, 'min_score');
+      expect(cubit.logicalOperatorController.text, 'AND');
+    });
+
+    test('fills and clears penalty and eligibility forms', () {
+      cubit.fillPenaltyForm(penaltyRule(isActive: false));
+
+      expect(cubit.editingPenaltyRuleId, 'rule_001');
+      expect(cubit.penaltyNameController.text, 'test penalty');
+      expect(cubit.penaltyTypeController.text, 'test penalty type');
+      expect(cubit.triggerConditionController.text, 'test');
+      expect(cubit.penaltyPointsController.text, '12');
+      expect(cubit.penaltyPercentageController.text, '17');
+      expect(cubit.penaltyActive, isFalse);
+
+      cubit.clearPenaltyForm();
+
+      expect(cubit.editingPenaltyRuleId, isNull);
+      expect(cubit.penaltyNameController.text, isEmpty);
+      expect(cubit.penaltyCumulative, isTrue);
+      expect(cubit.penaltyActive, isTrue);
+
+      cubit.fillEligibilityForm(eligibilityChain(score: '70.00'));
+
+      expect(cubit.editingEligibilityChainId, 'chain_001');
+      expect(cubit.examIdController.text, 'exam_001');
+      expect(cubit.chainStepController.text, '1');
+      expect(cubit.conditionTypeController.text, 'min_score');
+      expect(cubit.logicalOperatorController.text, 'AND');
+      expect(cubit.minScoreController.text, '70.00');
+
+      cubit.clearEligibilityForm();
+
+      expect(cubit.editingEligibilityChainId, isNull);
+      expect(cubit.examIdController.text, isEmpty);
+      expect(cubit.chainStepController.text, '1');
+      expect(cubit.conditionTypeController.text, 'min_score');
+      expect(cubit.logicalOperatorController.text, 'AND');
+      expect(cubit.overrideAvailable, isFalse);
+    });
+
     test('constructor loads governance data and stores responses', () async {
       final localRepo = MockAssessmentGovernanceRepo();
       when(

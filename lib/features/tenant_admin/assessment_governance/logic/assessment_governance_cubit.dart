@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/networking/error/error_handler/network_exceptions.dart';
@@ -18,6 +19,101 @@ class AssessmentGovernanceCubit extends Cubit<AssessmentGovernanceState> {
   PenaltyRulesResponse? penaltyRulesResponse;
   EligibilityChainsResponse? eligibilityChainsResponse;
   String? eligibilityExamIdFilter;
+
+  final TextEditingController examFilterController = TextEditingController();
+  final TextEditingController penaltyNameController = TextEditingController();
+  final TextEditingController penaltyTypeController = TextEditingController();
+  final TextEditingController triggerConditionController =
+      TextEditingController();
+  final TextEditingController penaltyPointsController =
+      TextEditingController();
+  final TextEditingController penaltyPercentageController =
+      TextEditingController();
+  final TextEditingController examIdController = TextEditingController();
+  final TextEditingController chainStepController = TextEditingController(
+    text: '1',
+  );
+  final TextEditingController prerequisiteExamIdController =
+      TextEditingController();
+  final TextEditingController conditionTypeController = TextEditingController(
+    text: 'min_score',
+  );
+  final TextEditingController logicalOperatorController =
+      TextEditingController(text: 'AND');
+  final TextEditingController minScoreController = TextEditingController();
+
+  bool penaltyCumulative = true;
+  bool penaltyActive = true;
+  bool overrideAvailable = false;
+  int tabIndex = 0;
+  String? editingPenaltyRuleId;
+  String? editingEligibilityChainId;
+
+  void setTabIndex(int value) {
+    tabIndex = value;
+    emit(AssessmentGovernanceState.uiChanged());
+  }
+
+  void setPenaltyCumulative(bool value) {
+    penaltyCumulative = value;
+    emit(AssessmentGovernanceState.uiChanged());
+  }
+
+  void setPenaltyActive(bool value) {
+    penaltyActive = value;
+    emit(AssessmentGovernanceState.uiChanged());
+  }
+
+  void setOverrideAvailable(bool value) {
+    overrideAvailable = value;
+    emit(AssessmentGovernanceState.uiChanged());
+  }
+
+  void fillPenaltyForm(PenaltyRule rule) {
+    penaltyNameController.text = rule.penaltyName;
+    penaltyTypeController.text = rule.penaltyType;
+    triggerConditionController.text = rule.triggerCondition;
+    penaltyPointsController.text = '${rule.penaltyPoints}';
+    penaltyPercentageController.text = '${rule.penaltyPercentage}';
+    editingPenaltyRuleId = rule.penaltyRuleId;
+    penaltyCumulative = rule.isCumulative;
+    penaltyActive = rule.isActive;
+    emit(AssessmentGovernanceState.uiChanged());
+  }
+
+  void fillEligibilityForm(EligibilityChain chain) {
+    examIdController.text = chain.examId;
+    chainStepController.text = '${chain.chainStepNumber}';
+    prerequisiteExamIdController.text = chain.prerequisiteExamId ?? '';
+    conditionTypeController.text = chain.conditionType;
+    logicalOperatorController.text = chain.logicalOperator;
+    minScoreController.text = chain.minScoreRequired ?? '';
+    editingEligibilityChainId = chain.chainId;
+    overrideAvailable = chain.isSatisfiedOverrideAvailable;
+    emit(AssessmentGovernanceState.uiChanged());
+  }
+
+  void clearPenaltyForm() {
+    penaltyNameController.clear();
+    penaltyTypeController.clear();
+    triggerConditionController.clear();
+    penaltyPointsController.clear();
+    penaltyPercentageController.clear();
+    editingPenaltyRuleId = null;
+    penaltyCumulative = true;
+    penaltyActive = true;
+  }
+
+  void clearEligibilityForm() {
+    examIdController.clear();
+    chainStepController.text = '1';
+    prerequisiteExamIdController.clear();
+    conditionTypeController.text = 'min_score';
+    logicalOperatorController.text = 'AND';
+    minScoreController.clear();
+    editingEligibilityChainId = null;
+    overrideAvailable = false;
+  }
 
   Future<void> loadAssessmentGovernance({String? examId}) async {
     emit(const AssessmentGovernanceState.governanceLoading());
@@ -242,5 +338,22 @@ class AssessmentGovernanceCubit extends Cubit<AssessmentGovernanceState> {
         ),
       );
     }
+  }
+
+  @override
+  Future<void> close() {
+    examFilterController.dispose();
+    penaltyNameController.dispose();
+    penaltyTypeController.dispose();
+    triggerConditionController.dispose();
+    penaltyPointsController.dispose();
+    penaltyPercentageController.dispose();
+    examIdController.dispose();
+    chainStepController.dispose();
+    prerequisiteExamIdController.dispose();
+    conditionTypeController.dispose();
+    logicalOperatorController.dispose();
+    minScoreController.dispose();
+    return super.close();
   }
 }

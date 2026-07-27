@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/networking/error/error_handler/network_exceptions.dart';
@@ -11,6 +12,8 @@ class ResultPublicationCubit extends Cubit<ResultPublicationState> {
 
   ResultPublicationCubit({required this.resultPublicationRepo})
     : super(const ResultPublicationState.initial());
+
+  final TextEditingController sessionIdController = TextEditingController();
 
   ResultPublicationStatusResponse? resultPublicationStatusResponse;
   ResultPublicationResponse? resultPublicationResponse;
@@ -61,5 +64,11 @@ class ResultPublicationCubit extends Cubit<ResultPublicationState> {
         ),
       );
     }
+  }
+
+  @override
+  Future<void> close() {
+    sessionIdController.dispose();
+    return super.close();
   }
 }

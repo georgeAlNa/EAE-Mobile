@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/networking/error/error_handler/network_exceptions.dart';
@@ -13,9 +14,23 @@ class ManualEvaluationCubit extends Cubit<ManualEvaluationState> {
   ManualEvaluationCubit({required this.manualEvaluationRepo})
     : super(const ManualEvaluationState.initial());
 
+  final TextEditingController sessionIdController = TextEditingController();
+  final TextEditingController evaluationIdController = TextEditingController();
+  final TextEditingController scoreController = TextEditingController();
+  final TextEditingController maxScoreController = TextEditingController();
+  final TextEditingController commentsController = TextEditingController();
+
   PendingEvaluationsResponse? pendingEvaluationsResponse;
   ResultPublicationStatusResponse? resultPublicationStatusResponse;
   ResultPublicationResponse? resultPublicationResponse;
+
+  void selectEvaluation(PendingEvaluationItem evaluation) {
+    evaluationIdController.text = evaluation.id ?? '';
+    final maxScore = evaluation.maxScorePossible;
+    if (maxScore != null) {
+      maxScoreController.text = '$maxScore';
+    }
+  }
 
   Future<void> getPendingEvaluations(String sessionId) async {
     emit(const ManualEvaluationState.pendingLoading());
@@ -114,5 +129,15 @@ class ManualEvaluationCubit extends Cubit<ManualEvaluationState> {
         ),
       );
     }
+  }
+
+  @override
+  Future<void> close() {
+    sessionIdController.dispose();
+    evaluationIdController.dispose();
+    scoreController.dispose();
+    maxScoreController.dispose();
+    commentsController.dispose();
+    return super.close();
   }
 }

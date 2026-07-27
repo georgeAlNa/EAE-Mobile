@@ -156,6 +156,20 @@ void main() {
   });
 
   group('ManualEvaluationCubit', () {
+    test('owns manual evaluation form controllers and fills selected evaluation', () {
+      cubit.sessionIdController.text = 'session_001';
+      cubit.scoreController.text = '1';
+      cubit.commentsController.text = 'Looks good';
+
+      cubit.selectEvaluation(pendingEvaluation());
+
+      expect(cubit.sessionIdController.text, 'session_001');
+      expect(cubit.evaluationIdController.text, 'eval_001');
+      expect(cubit.maxScoreController.text, '1');
+      expect(cubit.scoreController.text, '1');
+      expect(cubit.commentsController.text, 'Looks good');
+    });
+
     test('getPendingEvaluations emits loading then loaded and stores response', () async {
       final response = pendingResponse();
       when(
