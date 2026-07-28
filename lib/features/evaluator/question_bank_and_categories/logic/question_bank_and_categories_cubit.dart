@@ -14,19 +14,21 @@ class QuestionBankAndCategoriesCubit
   final QuestionBankAndCategoriesRepo questionBankAndCategoriesRepo;
 
   QuestionBankAndCategoriesCubit({required this.questionBankAndCategoriesRepo})
-    : super(const QuestionBankAndCategoriesState.initial()) {
+      : super(const QuestionBankAndCategoriesState.initial()) {
     loadQuestionBankAndCategories();
   }
 
   CategoriesTreeResponse? categoriesTreeResponse;
   QuestionsResponse? questionsResponse;
+  QuestionCompetenciesResponse? questionCompetenciesResponse;
+  BulkImportQuestionsResponse? bulkImportQuestionsResponse;
 
   Future<void> loadQuestionBankAndCategories() async {
     emit(const QuestionBankAndCategoriesState.questionBankLoading());
 
     try {
-      final categories = await questionBankAndCategoriesRepo
-          .getCategoriesTree();
+      final categories =
+          await questionBankAndCategoriesRepo.getCategoriesTree();
       final questions = await questionBankAndCategoriesRepo.getQuestions();
 
       categoriesTreeResponse = categories;
@@ -194,6 +196,147 @@ class QuestionBankAndCategoriesCubit
       emit(
         const QuestionBankAndCategoriesState.actionError(
           error: 'Failed to delete question',
+        ),
+      );
+    }
+  }
+
+  Future<void> bulkImportQuestions(
+    BulkImportQuestionsRequestBody requestBody,
+  ) async {
+    emit(const QuestionBankAndCategoriesState.actionLoading());
+
+    try {
+      final response = await questionBankAndCategoriesRepo.bulkImportQuestions(
+        requestBody,
+      );
+      bulkImportQuestionsResponse = response;
+      emit(
+        QuestionBankAndCategoriesState.actionSuccess(
+          QuestionBankActionResponse(message: response.data.importLogId),
+        ),
+      );
+    } on NetworkExceptions catch (e) {
+      emit(
+        QuestionBankAndCategoriesState.actionError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
+    } catch (e) {
+      emit(
+        const QuestionBankAndCategoriesState.actionError(
+          error: 'Failed to import questions',
+        ),
+      );
+    }
+  }
+
+  Future<void> addQuestionCompetency(
+    String questionId,
+    QuestionCompetencyRequestBody requestBody,
+  ) async {
+    emit(const QuestionBankAndCategoriesState.questionSaveLoading());
+
+    try {
+      final response = await questionBankAndCategoriesRepo
+          .addQuestionCompetency(questionId, requestBody);
+      emit(
+        QuestionBankAndCategoriesState.actionSuccess(
+          QuestionBankActionResponse(message: response.data.weightId),
+        ),
+      );
+    } on NetworkExceptions catch (e) {
+      emit(
+        QuestionBankAndCategoriesState.actionError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
+    } catch (e) {
+      emit(
+        const QuestionBankAndCategoriesState.actionError(
+          error: 'Failed to link competency',
+        ),
+      );
+    }
+  }
+
+  Future<void> getQuestionCompetencies(String questionId) async {
+    emit(const QuestionBankAndCategoriesState.actionLoading());
+
+    try {
+      final response = await questionBankAndCategoriesRepo
+          .getQuestionCompetencies(questionId);
+      questionCompetenciesResponse = response;
+      emit(
+        QuestionBankAndCategoriesState.actionSuccess(
+          QuestionBankActionResponse(message: '${response.data.length}'),
+        ),
+      );
+    } on NetworkExceptions catch (e) {
+      emit(
+        QuestionBankAndCategoriesState.actionError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
+    } catch (e) {
+      emit(
+        const QuestionBankAndCategoriesState.actionError(
+          error: 'Failed to load question competencies',
+        ),
+      );
+    }
+  }
+
+  Future<void> approveQuestionVersion(String versionId) async {
+    emit(const QuestionBankAndCategoriesState.actionLoading());
+
+    try {
+      final response =
+          await questionBankAndCategoriesRepo.approveQuestionVersion(versionId);
+      emit(
+        QuestionBankAndCategoriesState.actionSuccess(
+          QuestionBankActionResponse(message: response.data.versionId),
+        ),
+      );
+    } on NetworkExceptions catch (e) {
+      emit(
+        QuestionBankAndCategoriesState.actionError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
+    } catch (e) {
+      emit(
+        const QuestionBankAndCategoriesState.actionError(
+          error: 'Failed to approve question version',
+        ),
+      );
+    }
+  }
+
+  Future<void> updateQuestionVersionPsychometrics(
+    String versionId,
+    QuestionVersionPsychometricsRequestBody requestBody,
+  ) async {
+    emit(const QuestionBankAndCategoriesState.questionSaveLoading());
+
+    try {
+      final response = await questionBankAndCategoriesRepo
+          .updateQuestionVersionPsychometrics(versionId, requestBody);
+      emit(
+        QuestionBankAndCategoriesState.actionSuccess(
+          QuestionBankActionResponse(message: response.data.psychometricId),
+        ),
+      );
+    } on NetworkExceptions catch (e) {
+      emit(
+        QuestionBankAndCategoriesState.actionError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
+    } catch (e) {
+      emit(
+        const QuestionBankAndCategoriesState.actionError(
+          error: 'Failed to update psychometrics',
         ),
       );
     }

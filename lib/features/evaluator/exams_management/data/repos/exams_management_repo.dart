@@ -104,4 +104,76 @@ class ExamsManagementRepo {
       throw const NetworkExceptions.noInternetConnection();
     }
   }
+
+  Future<ExamSectionResponse> createExamSection(
+    String examId,
+    ExamSectionRequestBody examSectionRequestBody,
+  ) async {
+    if (await networkInfo.isConnected) {
+      try {
+        return await examsManagementRemoteDataSource.createExamSection(
+          examId,
+          examSectionRequestBody,
+        );
+      } catch (e) {
+        throw NetworkExceptions.getException(e);
+      }
+    } else {
+      throw const NetworkExceptions.noInternetConnection();
+    }
+  }
+
+  Future<ExamSectionsResponse> getExamSections(String examId) async {
+    if (await networkInfo.isConnected) {
+      try {
+        return await examsManagementRemoteDataSource.getExamSections(examId);
+      } catch (e) {
+        throw NetworkExceptions.getException(e);
+      }
+    } else {
+      throw const NetworkExceptions.noInternetConnection();
+    }
+  }
+
+  Future<ExamBlueprintResponse> createExamBlueprint(
+    String examId,
+    ExamBlueprintRequestBody examBlueprintRequestBody,
+  ) async {
+    if (await networkInfo.isConnected) {
+      try {
+        return await examsManagementRemoteDataSource.createExamBlueprint(
+          examId,
+          examBlueprintRequestBody,
+        );
+      } catch (e) {
+        throw NetworkExceptions.getException(e);
+      }
+    } else {
+      throw const NetworkExceptions.noInternetConnection();
+    }
+  }
+
+  Future<ExamBlueprintsResponse> getExamBlueprints(String examId) async {
+    if (await networkInfo.isConnected) {
+      try {
+        return await examsManagementRemoteDataSource.getExamBlueprints(examId);
+      } catch (e) {
+        throw NetworkExceptions.getException(e);
+      }
+    } else {
+      throw const NetworkExceptions.noInternetConnection();
+    }
+  }
+
+  Future<ExamResultsExportResponse> exportExamResults(String examId) async {
+    if (await networkInfo.isConnected) {
+      try {
+        return await examsManagementRemoteDataSource.exportExamResults(examId);
+      } catch (e) {
+        throw NetworkExceptions.getException(e);
+      }
+    } else {
+      throw const NetworkExceptions.noInternetConnection();
+    }
+  }
 }

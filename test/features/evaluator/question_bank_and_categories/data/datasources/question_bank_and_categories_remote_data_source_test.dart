@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:eae_mobile/core/constants/shared_pref_keys.dart';
 import 'package:eae_mobile/core/helpers/app_shared_preferences.dart';
 import 'package:eae_mobile/core/networking/api_services_impl.dart';
@@ -63,6 +66,58 @@ Map<String, dynamic> questionJson({String id = 'question_001'}) => {
   'updated_at': '2026-07-15T20:00:00.000Z',
 };
 
+Map<String, dynamic> competencyWeightJson() => {
+  'weight_id': 'weight_001',
+  'question_id': 'question_001',
+  'competency_id': 'competency_001',
+  'weight_percentage': '100.00',
+  'skill_category': null,
+  'skill_gap_trigger': null,
+  'is_primary_competency': true,
+  'weighting_metadata': null,
+  'created_at': '2026-07-21T02:31:13.000000Z',
+  'updated_at': '2026-07-21T02:31:13.000000Z',
+  'competency': null,
+};
+
+Map<String, dynamic> approvalJson() => {
+  'version_id': 'version_001',
+  'question_id': 'question_001',
+  'created_by_user_id': 'user_001',
+  'ver_num': 1,
+  'question_text': 'What is 2 + 2?',
+  'question_type': 'mcq',
+  'question_stem': null,
+  'correct_answer_json': null,
+  'explanation_text': null,
+  'evaluator_instructions': null,
+  'approval_status': 'approved',
+  'approved_by_user_id': 'user_001',
+  'usage_count_in_exams': 0,
+  'content_hash': 'hash',
+  'version_metadata': null,
+  'created_at': '2026-07-21T02:22:03.000000Z',
+  'approved_at': '2026-07-26T19:09:23.000000Z',
+  'deleted_at': null,
+};
+
+Map<String, dynamic> versionPsychometricsJson() => {
+  'psychometric_id': 'psychometric_001',
+  'question_version_id': 'version_001',
+  'tenant_id': 'tenant_001',
+  'difficulty_index': '0.5000',
+  'discrimination_index': '0.5000',
+  'point_biserial': null,
+  'sample_size': 10,
+  'correct_count': 5,
+  'is_calibrated': true,
+  'calibration_status': 'calibrated',
+  'calibration_metadata': null,
+  'last_calibrated_at': '2026-07-26T19:10:27.000000Z',
+  'created_at': '2026-07-21T02:22:03.000000Z',
+  'updated_at': '2026-07-26T19:10:27.000000Z',
+};
+
 CreateQuestionRequestBody createQuestionRequest() {
   return CreateQuestionRequestBody(
     categoryId: 'cat_001',
@@ -122,6 +177,7 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(<String, dynamic>{});
+    registerFallbackValue(FormData());
     registerFallbackValue('');
   });
 
@@ -320,6 +376,160 @@ void main() {
           token: 'access-token',
         ),
       ).called(1);
+    });
+
+    test('bulk import posts multipart file with stored token', () async {
+      final file = File('${Directory.systemTemp.path}/questions_import.csv');
+      await file.writeAsString('title,type\nQuestion,mcq');
+      addTearDown(() {
+        if (file.existsSync()) {
+          file.deleteSync();
+        }
+      });
+
+      when(
+        () => apiServicesImpl.post(
+          AppLinkUrl.questionsBulkImport,
+          formData: any(named: 'formData'),
+          token: any(named: 'token'),
+        ),
+      ).thenAnswer(
+        (_) async => {
+          'data': {
+            'import_log_id': 'import_001',
+            'total': 1,
+            'successful': 1,
+            'failed': 0,
+            'errors': const [],
+          },
+        },
+      );
+
+      final response = await remoteDataSource.bulkImportQuestions(
+        BulkImportQuestionsRequestBody(
+          filePath: file.path,
+          fileName: 'questions_import.csv',
+        ),
+      );
+
+      expect(response.data.importLogId, 'import_001');
+      final captured = verify(
+        () => apiServicesImpl.post(
+          AppLinkUrl.questionsBulkImport,
+          formData: captureAny(named: 'formData'),
+          token: captureAny(named: 'token'),
+        ),
+      ).captured;
+      expect(captured[0], isA<FormData>());
+      expect(captured[1], 'access-token');
+    });
+
+    test('question competency endpoints use stored token and bodies', () async {
+      when(
+        () => apiServicesImpl.post(
+          AppLinkUrl.questionCompetencies('question_001'),
+          body: any(named: 'body'),
+          token: any(named: 'token'),
+        ),
+      ).thenAnswer((_) async => {'data': competencyWeightJson()});
+      when(
+        () => apiServicesImpl.get(
+          AppLinkUrl.questionCompetencies('question_001'),
+          token: any(named: 'token'),
+        ),
+      ).thenAnswer(
+        (_) async => {
+          'data': [competencyWeightJson()],
+        },
+      );
+
+      expect(
+        (await remoteDataSource.addQuestionCompetency(
+          'question_001',
+          QuestionCompetencyRequestBody(
+            competencyId: 'competency_001',
+            weightPercentage: 100,
+            isPrimaryCompetency: true,
+          ),
+        )).data.weightId,
+        'weight_001',
+      );
+      expect(
+        (await remoteDataSource.getQuestionCompetencies(
+          'question_001',
+        )).data.single.competencyId,
+        'competency_001',
+      );
+
+      final captured = verify(
+        () => apiServicesImpl.post(
+          AppLinkUrl.questionCompetencies('question_001'),
+          body: captureAny(named: 'body'),
+          token: captureAny(named: 'token'),
+        ),
+      ).captured;
+      expect(captured[0], {
+        'competency_id': 'competency_001',
+        'weight_percentage': 100,
+        'is_primary_competency': true,
+      });
+      expect(captured[1], 'access-token');
+    });
+
+    test('question version endpoints use stored token and bodies', () async {
+      when(
+        () => apiServicesImpl.post(
+          AppLinkUrl.questionVersionApprove('version_001'),
+          token: any(named: 'token'),
+        ),
+      ).thenAnswer((_) async => {'data': approvalJson()});
+      when(
+        () => apiServicesImpl.patch(
+          AppLinkUrl.questionVersionPsychometrics('version_001'),
+          body: any(named: 'body'),
+          token: any(named: 'token'),
+        ),
+      ).thenAnswer((_) async => {'data': versionPsychometricsJson()});
+
+      expect(
+        (await remoteDataSource.approveQuestionVersion(
+          'version_001',
+        )).data.approvalStatus,
+        'approved',
+      );
+      expect(
+        (await remoteDataSource.updateQuestionVersionPsychometrics(
+          'version_001',
+          QuestionVersionPsychometricsRequestBody(
+            difficultyIndex: 0.5,
+            discriminationIndex: 0.5,
+            sampleSize: 10,
+            correctCount: 5,
+          ),
+        )).data.psychometricId,
+        'psychometric_001',
+      );
+
+      verify(
+        () => apiServicesImpl.post(
+          AppLinkUrl.questionVersionApprove('version_001'),
+          token: 'access-token',
+        ),
+      ).called(1);
+      final captured = verify(
+        () => apiServicesImpl.patch(
+          AppLinkUrl.questionVersionPsychometrics('version_001'),
+          body: captureAny(named: 'body'),
+          token: captureAny(named: 'token'),
+        ),
+      ).captured;
+      expect(captured[0], {
+        'difficulty_index': 0.5,
+        'discrimination_index': 0.5,
+        'sample_size': 10,
+        'correct_count': 5,
+      });
+      expect(captured[1], 'access-token');
     });
 
     test('wraps unexpected API failures as NetworkExceptions', () {

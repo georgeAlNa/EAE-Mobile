@@ -61,6 +61,42 @@ ExamItem exam({String id = 'exam_001', String status = 'draft'}) {
 
 ExamsResponse examsResponse() => ExamsResponse(data: [exam()]);
 
+ExamSectionRequestBody sectionRequest() => ExamSectionRequestBody(
+  sectionName: 'Second Section',
+  sectionSequence: 2,
+  questionsInSection: 1,
+);
+
+ExamBlueprintRequestBody blueprintRequest() => ExamBlueprintRequestBody(
+  sectionId: 'section_001',
+  competencyId: 'competency_001',
+  minQuestionsCount: 1,
+  maxQuestionsCount: 1,
+  minWeightPercentage: 100,
+  maxWeightPercentage: 100,
+);
+
+ExamSection section({String id = 'section_001'}) => ExamSection(
+  sectionId: id,
+  tenantId: 'tenant_001',
+  examId: 'exam_001',
+  sectionName: 'Main Section',
+  sectionSequence: 1,
+  questionsInSection: 1,
+  blueprints: const [],
+);
+
+ExamBlueprint blueprint({String id = 'blueprint_001'}) => ExamBlueprint(
+  blueprintId: id,
+  examId: 'exam_001',
+  sectionId: 'section_001',
+  competencyId: 'competency_001',
+  minQuestionsCount: 1,
+  maxQuestionsCount: 1,
+  minWeightPercentage: '100.00',
+  maxWeightPercentage: '100.00',
+);
+
 Future<ExamsManagementState> waitForLoadTerminal(ExamsManagementCubit cubit) {
   return cubit.stream.firstWhere(
     (state) => state.maybeWhen(
@@ -112,6 +148,8 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(examRequest());
+    registerFallbackValue(sectionRequest());
+    registerFallbackValue(blueprintRequest());
     registerFallbackValue('');
   });
 
@@ -357,5 +395,107 @@ void main() {
       await cubit.deleteExam('missing_exam');
       await emission;
     });
+
+    test('section methods emit actionSuccess and store section list', () async {
+      final cubit = await loadedCubit();
+      final created = ExamSectionResponse(data: section(id: 'section_new'));
+      final sections = ExamSectionsResponse(data: [section()]);
+      when(
+        () => repo.createExamSection(any(), any()),
+      ).thenAnswer((_) async => created);
+      when(() => repo.getExamSections(any())).thenAnswer((_) async => sections);
+
+      var emission = expectLater(
+        cubit.stream,
+        emitsInOrder([
+          predicate<ExamsManagementState>(isLoading),
+          predicate<ExamsManagementState>(
+            (state) => actionResponse(state)?.message == 'section_new',
+          ),
+        ]),
+      );
+      await cubit.createExamSection('exam_001', sectionRequest());
+      await emission;
+
+      emission = expectLater(
+        cubit.stream,
+        emitsInOrder([
+          predicate<ExamsManagementState>(isLoading),
+          predicate<ExamsManagementState>(
+            (state) => actionResponse(state)?.message == '1',
+          ),
+        ]),
+      );
+      await cubit.getExamSections('exam_001');
+      await emission;
+      expect(cubit.examSectionsResponse, same(sections));
+    });
+
+    test(
+      'blueprint methods emit actionSuccess and store blueprint list',
+      () async {
+        final cubit = await loadedCubit();
+        final created = ExamBlueprintResponse(
+          data: blueprint(id: 'blueprint_new'),
+        );
+        final blueprints = ExamBlueprintsResponse(data: [blueprint()]);
+        when(
+          () => repo.createExamBlueprint(any(), any()),
+        ).thenAnswer((_) async => created);
+        when(
+          () => repo.getExamBlueprints(any()),
+        ).thenAnswer((_) async => blueprints);
+
+        var emission = expectLater(
+          cubit.stream,
+          emitsInOrder([
+            predicate<ExamsManagementState>(isLoading),
+            predicate<ExamsManagementState>(
+              (state) => actionResponse(state)?.message == 'blueprint_new',
+            ),
+          ]),
+        );
+        await cubit.createExamBlueprint('exam_001', blueprintRequest());
+        await emission;
+
+        emission = expectLater(
+          cubit.stream,
+          emitsInOrder([
+            predicate<ExamsManagementState>(isLoading),
+            predicate<ExamsManagementState>(
+              (state) => actionResponse(state)?.message == '1',
+            ),
+          ]),
+        );
+        await cubit.getExamBlueprints('exam_001');
+        await emission;
+        expect(cubit.examBlueprintsResponse, same(blueprints));
+      },
+    );
+
+    test(
+      'exportExamResults emits actionSuccess and stores CSV response',
+      () async {
+        final cubit = await loadedCubit();
+        final response = ExamResultsExportResponse(data: 'csv');
+        when(
+          () => repo.exportExamResults(any()),
+        ).thenAnswer((_) async => response);
+
+        final emission = expectLater(
+          cubit.stream,
+          emitsInOrder([
+            predicate<ExamsManagementState>(isLoading),
+            predicate<ExamsManagementState>(
+              (state) => actionResponse(state)?.message == 'csv',
+            ),
+          ]),
+        );
+
+        await cubit.exportExamResults('exam_001');
+        await emission;
+        expect(cubit.examResultsExportResponse, same(response));
+      },
+    );
   });
 }

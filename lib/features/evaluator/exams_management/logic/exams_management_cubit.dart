@@ -13,12 +13,15 @@ class ExamsManagementCubit extends Cubit<ExamsManagementState> {
   final ExamsManagementRepo examsManagementRepo;
 
   ExamsManagementCubit({required this.examsManagementRepo})
-    : super(const ExamsManagementState.initial()) {
+      : super(const ExamsManagementState.initial()) {
     getExams();
   }
 
   ExamsResponse? examsResponse;
   ExamResponse? selectedExamResponse;
+  ExamSectionsResponse? examSectionsResponse;
+  ExamBlueprintsResponse? examBlueprintsResponse;
+  ExamResultsExportResponse? examResultsExportResponse;
 
   Future<void> getExams() async {
     emit(const ExamsManagementState.examsLoading());
@@ -152,6 +155,146 @@ class ExamsManagementCubit extends Cubit<ExamsManagementState> {
     } catch (e) {
       emit(
         const ExamsManagementState.saveError(error: 'Failed to archive exam'),
+      );
+    }
+  }
+
+  Future<void> createExamSection(
+    String examId,
+    ExamSectionRequestBody requestBody,
+  ) async {
+    emit(const ExamsManagementState.actionLoading());
+
+    try {
+      final response = await examsManagementRepo.createExamSection(
+        examId,
+        requestBody,
+      );
+      emit(
+        ExamsManagementState.actionSuccess(
+          ExamActionResponse(message: response.data.sectionId),
+        ),
+      );
+    } on NetworkExceptions catch (e) {
+      emit(
+        ExamsManagementState.actionError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
+    } catch (e) {
+      emit(
+        const ExamsManagementState.actionError(
+          error: 'Failed to create exam section',
+        ),
+      );
+    }
+  }
+
+  Future<void> getExamSections(String examId) async {
+    emit(const ExamsManagementState.actionLoading());
+
+    try {
+      final response = await examsManagementRepo.getExamSections(examId);
+      examSectionsResponse = response;
+      emit(
+        ExamsManagementState.actionSuccess(
+          ExamActionResponse(message: '${response.data.length}'),
+        ),
+      );
+    } on NetworkExceptions catch (e) {
+      emit(
+        ExamsManagementState.actionError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
+    } catch (e) {
+      emit(
+        const ExamsManagementState.actionError(
+          error: 'Failed to load exam sections',
+        ),
+      );
+    }
+  }
+
+  Future<void> createExamBlueprint(
+    String examId,
+    ExamBlueprintRequestBody requestBody,
+  ) async {
+    emit(const ExamsManagementState.actionLoading());
+
+    try {
+      final response = await examsManagementRepo.createExamBlueprint(
+        examId,
+        requestBody,
+      );
+      emit(
+        ExamsManagementState.actionSuccess(
+          ExamActionResponse(message: response.data.blueprintId),
+        ),
+      );
+    } on NetworkExceptions catch (e) {
+      emit(
+        ExamsManagementState.actionError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
+    } catch (e) {
+      emit(
+        const ExamsManagementState.actionError(
+          error: 'Failed to create exam blueprint',
+        ),
+      );
+    }
+  }
+
+  Future<void> getExamBlueprints(String examId) async {
+    emit(const ExamsManagementState.actionLoading());
+
+    try {
+      final response = await examsManagementRepo.getExamBlueprints(examId);
+      examBlueprintsResponse = response;
+      emit(
+        ExamsManagementState.actionSuccess(
+          ExamActionResponse(message: '${response.data.length}'),
+        ),
+      );
+    } on NetworkExceptions catch (e) {
+      emit(
+        ExamsManagementState.actionError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
+    } catch (e) {
+      emit(
+        const ExamsManagementState.actionError(
+          error: 'Failed to load exam blueprints',
+        ),
+      );
+    }
+  }
+
+  Future<void> exportExamResults(String examId) async {
+    emit(const ExamsManagementState.actionLoading());
+
+    try {
+      final response = await examsManagementRepo.exportExamResults(examId);
+      examResultsExportResponse = response;
+      emit(
+        ExamsManagementState.actionSuccess(
+          ExamActionResponse(message: response.data),
+        ),
+      );
+    } on NetworkExceptions catch (e) {
+      emit(
+        ExamsManagementState.actionError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
+    } catch (e) {
+      emit(
+        const ExamsManagementState.actionError(
+          error: 'Failed to export exam results',
+        ),
       );
     }
   }

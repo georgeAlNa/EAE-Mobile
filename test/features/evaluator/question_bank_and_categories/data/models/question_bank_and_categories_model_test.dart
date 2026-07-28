@@ -73,6 +73,63 @@ Map<String, dynamic> createQuestionJson() => {
   ],
 };
 
+Map<String, dynamic> competencyWeightJson() => {
+  'weight_id': 'weight_001',
+  'question_id': 'question_001',
+  'competency_id': 'competency_001',
+  'weight_percentage': '100.00',
+  'skill_category': null,
+  'skill_gap_trigger': null,
+  'is_primary_competency': true,
+  'weighting_metadata': null,
+  'created_at': '2026-07-21T02:31:13.000000Z',
+  'updated_at': '2026-07-21T02:31:13.000000Z',
+  'competency': {
+    'competency_id': 'competency_001',
+    'competency_name': 'Basic Math Skills',
+    'competency_type': 'knowledge',
+    'is_active': true,
+  },
+};
+
+Map<String, dynamic> approvalJson() => {
+  'version_id': 'version_001',
+  'question_id': 'question_001',
+  'created_by_user_id': 'user_001',
+  'ver_num': 1,
+  'question_text': 'What is 2 + 2?',
+  'question_type': 'mcq',
+  'question_stem': null,
+  'correct_answer_json': null,
+  'explanation_text': null,
+  'evaluator_instructions': null,
+  'approval_status': 'approved',
+  'approved_by_user_id': 'user_001',
+  'usage_count_in_exams': 0,
+  'content_hash': 'hash',
+  'version_metadata': null,
+  'created_at': '2026-07-21T02:22:03.000000Z',
+  'approved_at': '2026-07-26T19:09:23.000000Z',
+  'deleted_at': null,
+};
+
+Map<String, dynamic> versionPsychometricsJson() => {
+  'psychometric_id': 'psychometric_001',
+  'question_version_id': 'version_001',
+  'tenant_id': 'tenant_001',
+  'difficulty_index': '0.5000',
+  'discrimination_index': '0.5000',
+  'point_biserial': null,
+  'sample_size': 10,
+  'correct_count': 5,
+  'is_calibrated': true,
+  'calibration_status': 'calibrated',
+  'calibration_metadata': null,
+  'last_calibrated_at': '2026-07-26T19:10:27.000000Z',
+  'created_at': '2026-07-21T02:22:03.000000Z',
+  'updated_at': '2026-07-26T19:10:27.000000Z',
+};
+
 void main() {
   group('category request models', () {
     test('CreateCategoryRequestBody serializes backend fields', () {
@@ -131,6 +188,42 @@ void main() {
       expect(request.title, 'Updated question');
       expect(request.toJson()['title'], 'Updated question');
       expect(request.toJson()['category_id'], 'cat_001');
+    });
+
+    test('new QuestionBank request models serialize backend fields', () {
+      expect(
+        BulkImportQuestionsRequestBody(
+          filePath: 'C:/tmp/questions.csv',
+          fileName: 'questions.csv',
+        ).toJson(),
+        {'file': 'C:/tmp/questions.csv', 'file_name': 'questions.csv'},
+      );
+      expect(
+        QuestionCompetencyRequestBody(
+          competencyId: 'competency_001',
+          weightPercentage: 100,
+          isPrimaryCompetency: true,
+        ).toJson(),
+        {
+          'competency_id': 'competency_001',
+          'weight_percentage': 100,
+          'is_primary_competency': true,
+        },
+      );
+      expect(
+        QuestionVersionPsychometricsRequestBody(
+          difficultyIndex: 0.5,
+          discriminationIndex: 0.5,
+          sampleSize: 10,
+          correctCount: 5,
+        ).toJson(),
+        {
+          'difficulty_index': 0.5,
+          'discrimination_index': 0.5,
+          'sample_size': 10,
+          'correct_count': 5,
+        },
+      );
     });
   });
 
@@ -197,6 +290,64 @@ void main() {
 
       expect(response.data.id, 'question_details');
       expect(response.toJson(), {'data': same(response.data)});
+    });
+
+    test(
+      'QuestionDetailsResponse tolerates missing optional backend fields',
+      () {
+        final response = QuestionDetailsResponse.fromJson({
+          'data': {
+            ...questionJson(id: 'question_details'),
+            'created_at': null,
+            'updated_at': null,
+            'choices': [
+              {
+                'option_text': 'Flutter',
+                'is_correct': true,
+                'option_sequence': 1,
+              },
+            ],
+          },
+        });
+
+        expect(response.data.createdAt, '');
+        expect(response.data.updatedAt, '');
+        expect(response.data.choices.single.id, '');
+      },
+    );
+
+    test('new QuestionBank response models parse backend payloads', () {
+      final importResponse = BulkImportQuestionsResponse.fromJson({
+        'data': {
+          'import_log_id': 'import_001',
+          'total': 3,
+          'successful': 3,
+          'failed': 0,
+          'errors': const [],
+        },
+      });
+      final competencyResponse = QuestionCompetencyResponse.fromJson({
+        'data': competencyWeightJson(),
+      });
+      final competenciesResponse = QuestionCompetenciesResponse.fromJson({
+        'data': [competencyWeightJson()],
+      });
+      final approvalResponse = QuestionVersionApprovalResponse.fromJson({
+        'data': approvalJson(),
+      });
+      final psychometricsResponse =
+          QuestionVersionPsychometricsResponse.fromJson({
+            'data': versionPsychometricsJson(),
+          });
+
+      expect(importResponse.data.successful, 3);
+      expect(
+        competencyResponse.data.competency?.competencyName,
+        'Basic Math Skills',
+      );
+      expect(competenciesResponse.data.single.weightPercentage, '100.00');
+      expect(approvalResponse.data.approvalStatus, 'approved');
+      expect(psychometricsResponse.data.calibrationStatus, 'calibrated');
     });
   });
 

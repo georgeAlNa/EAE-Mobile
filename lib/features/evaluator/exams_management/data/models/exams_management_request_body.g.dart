@@ -43,3 +43,41 @@ Map<String, dynamic> _$ExamRequestBodyToJson(ExamRequestBody instance) =>
       'timer_visible_to_candidate': instance.timerVisibleToCandidate,
       'show_correct_answers_after': instance.showCorrectAnswersAfter,
     };
+
+ExamSectionRequestBody _$ExamSectionRequestBodyFromJson(
+  Map<String, dynamic> json,
+) => ExamSectionRequestBody(
+  sectionName: json['section_name'] as String,
+  sectionSequence: (json['section_sequence'] as num).toInt(),
+  questionsInSection: (json['questions_in_section'] as num).toInt(),
+);
+
+Map<String, dynamic> _$ExamSectionRequestBodyToJson(
+  ExamSectionRequestBody instance,
+) => <String, dynamic>{
+  'section_name': instance.sectionName,
+  'section_sequence': instance.sectionSequence,
+  'questions_in_section': instance.questionsInSection,
+};
+
+ExamBlueprintRequestBody _$ExamBlueprintRequestBodyFromJson(
+  Map<String, dynamic> json,
+) => ExamBlueprintRequestBody(
+  sectionId: json['section_id'] as String,
+  competencyId: json['competency_id'] as String,
+  minQuestionsCount: (json['min_questions_count'] as num).toInt(),
+  maxQuestionsCount: (json['max_questions_count'] as num).toInt(),
+  minWeightPercentage: json['min_weight_percentage'] as num,
+  maxWeightPercentage: json['max_weight_percentage'] as num,
+);
+
+Map<String, dynamic> _$ExamBlueprintRequestBodyToJson(
+  ExamBlueprintRequestBody instance,
+) => <String, dynamic>{
+  'section_id': instance.sectionId,
+  'competency_id': instance.competencyId,
+  'min_questions_count': instance.minQuestionsCount,
+  'max_questions_count': instance.maxQuestionsCount,
+  'min_weight_percentage': instance.minWeightPercentage,
+  'max_weight_percentage': instance.maxWeightPercentage,
+};

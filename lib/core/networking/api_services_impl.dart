@@ -47,8 +47,7 @@ class ApiServicesImpl implements ApiServices {
 
   ApiServicesImpl() {
     _dio.options
-      ..baseUrl = AppLinkUrl
-          .baseUrl // Put here your base Url
+      ..baseUrl = AppLinkUrl.baseUrl // Put here your base Url
       ..responseType = ResponseType.plain
       ..sendTimeout = const Duration(minutes: 1)
       ..receiveTimeout = const Duration(minutes: 1)
@@ -220,6 +219,45 @@ class ApiServicesImpl implements ApiServices {
     }
   }
 
+  Future<String> getPlain(
+    String path, {
+    Map<String, String>? queryParams,
+    String? token,
+    String? accept,
+    bool retryOnUnauthorized = true,
+  }) async {
+    try {
+      await setHeaders(token: token ?? _storedToken);
+      final headers = Map<String, dynamic>.from(_headers);
+      if (accept != null && accept.isNotEmpty) {
+        headers['Accept'] = accept;
+      }
+
+      final response = await _dio.get(
+        path,
+        queryParameters: queryParams,
+        options: Options(headers: headers, responseType: ResponseType.plain),
+      );
+
+      return response.data?.toString() ?? '';
+    } on DioException catch (error) {
+      if (retryOnUnauthorized &&
+          _shouldAttemptTokenRefresh(error, path) &&
+          await _refreshAuthToken()) {
+        return getPlain(
+          path,
+          queryParams: queryParams,
+          token: _storedToken,
+          accept: accept,
+          retryOnUnauthorized: false,
+        );
+      }
+      rethrow;
+    } catch (error) {
+      rethrow;
+    }
+  }
+
   @override
   Future<dynamic> post(
     String path, {
@@ -238,7 +276,7 @@ class ApiServicesImpl implements ApiServices {
         data: formData ?? body,
         options: Options(
           headers: _headers,
-          contentType: Headers.jsonContentType,
+          contentType: formData == null ? Headers.jsonContentType : null,
         ),
       );
       return _parseJsonResponse(response);

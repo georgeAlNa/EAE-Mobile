@@ -63,6 +63,42 @@ ExamItem exam({String id = 'exam_001', String status = 'draft'}) {
   );
 }
 
+ExamSectionRequestBody sectionRequest() => ExamSectionRequestBody(
+  sectionName: 'Second Section',
+  sectionSequence: 2,
+  questionsInSection: 1,
+);
+
+ExamBlueprintRequestBody blueprintRequest() => ExamBlueprintRequestBody(
+  sectionId: 'section_001',
+  competencyId: 'competency_001',
+  minQuestionsCount: 1,
+  maxQuestionsCount: 1,
+  minWeightPercentage: 100,
+  maxWeightPercentage: 100,
+);
+
+ExamSection section({String id = 'section_001'}) => ExamSection(
+  sectionId: id,
+  tenantId: 'tenant_001',
+  examId: 'exam_001',
+  sectionName: 'Main Section',
+  sectionSequence: 1,
+  questionsInSection: 1,
+  blueprints: const [],
+);
+
+ExamBlueprint blueprint({String id = 'blueprint_001'}) => ExamBlueprint(
+  blueprintId: id,
+  examId: 'exam_001',
+  sectionId: 'section_001',
+  competencyId: 'competency_001',
+  minQuestionsCount: 1,
+  maxQuestionsCount: 1,
+  minWeightPercentage: '100.00',
+  maxWeightPercentage: '100.00',
+);
+
 void main() {
   late MockExamsManagementRemoteDataSource remoteDataSource;
   late MockNetworkInfo networkInfo;
@@ -70,6 +106,8 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue(examRequest());
+    registerFallbackValue(sectionRequest());
+    registerFallbackValue(blueprintRequest());
     registerFallbackValue('');
   });
 
@@ -299,6 +337,74 @@ void main() {
         throwsA(const NetworkExceptions.noInternetConnection()),
       );
       verifyNever(() => remoteDataSource.archiveExam(any()));
+    });
+  });
+
+  group('exam sections, blueprints, and export', () {
+    test('new ExamEngine methods call remote when connected', () async {
+      connected();
+      final sectionCreated = ExamSectionResponse(
+        data: section(id: 'section_new'),
+      );
+      final sections = ExamSectionsResponse(data: [section()]);
+      final blueprintCreated = ExamBlueprintResponse(
+        data: blueprint(id: 'blueprint_new'),
+      );
+      final blueprints = ExamBlueprintsResponse(data: [blueprint()]);
+      final export = ExamResultsExportResponse(data: 'csv');
+
+      when(
+        () => remoteDataSource.createExamSection(any(), any()),
+      ).thenAnswer((_) async => sectionCreated);
+      when(
+        () => remoteDataSource.getExamSections(any()),
+      ).thenAnswer((_) async => sections);
+      when(
+        () => remoteDataSource.createExamBlueprint(any(), any()),
+      ).thenAnswer((_) async => blueprintCreated);
+      when(
+        () => remoteDataSource.getExamBlueprints(any()),
+      ).thenAnswer((_) async => blueprints);
+      when(
+        () => remoteDataSource.exportExamResults(any()),
+      ).thenAnswer((_) async => export);
+
+      expect(
+        await repo.createExamSection('exam_001', sectionRequest()),
+        same(sectionCreated),
+      );
+      expect(await repo.getExamSections('exam_001'), same(sections));
+      expect(
+        await repo.createExamBlueprint('exam_001', blueprintRequest()),
+        same(blueprintCreated),
+      );
+      expect(await repo.getExamBlueprints('exam_001'), same(blueprints));
+      expect(await repo.exportExamResults('exam_001'), same(export));
+    });
+
+    test('new ExamEngine methods throw noInternetConnection when offline', () {
+      offline();
+
+      expect(
+        () => repo.createExamSection('exam_001', sectionRequest()),
+        throwsA(const NetworkExceptions.noInternetConnection()),
+      );
+      expect(
+        () => repo.getExamSections('exam_001'),
+        throwsA(const NetworkExceptions.noInternetConnection()),
+      );
+      expect(
+        () => repo.createExamBlueprint('exam_001', blueprintRequest()),
+        throwsA(const NetworkExceptions.noInternetConnection()),
+      );
+      expect(
+        () => repo.getExamBlueprints('exam_001'),
+        throwsA(const NetworkExceptions.noInternetConnection()),
+      );
+      expect(
+        () => repo.exportExamResults('exam_001'),
+        throwsA(const NetworkExceptions.noInternetConnection()),
+      );
     });
   });
 }

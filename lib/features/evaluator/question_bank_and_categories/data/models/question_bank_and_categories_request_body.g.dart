@@ -147,3 +147,51 @@ Map<String, dynamic> _$QuestionChoiceRequestBodyToJson(
   'is_correct': instance.isCorrect,
   'option_sequence': instance.optionSequence,
 };
+
+BulkImportQuestionsRequestBody _$BulkImportQuestionsRequestBodyFromJson(
+  Map<String, dynamic> json,
+) => BulkImportQuestionsRequestBody(
+  filePath: json['file'] as String,
+  fileName: json['file_name'] as String?,
+);
+
+Map<String, dynamic> _$BulkImportQuestionsRequestBodyToJson(
+  BulkImportQuestionsRequestBody instance,
+) => <String, dynamic>{
+  'file': instance.filePath,
+  'file_name': instance.fileName,
+};
+
+QuestionCompetencyRequestBody _$QuestionCompetencyRequestBodyFromJson(
+  Map<String, dynamic> json,
+) => QuestionCompetencyRequestBody(
+  competencyId: json['competency_id'] as String,
+  weightPercentage: json['weight_percentage'] as num,
+  isPrimaryCompetency: json['is_primary_competency'] as bool,
+);
+
+Map<String, dynamic> _$QuestionCompetencyRequestBodyToJson(
+  QuestionCompetencyRequestBody instance,
+) => <String, dynamic>{
+  'competency_id': instance.competencyId,
+  'weight_percentage': instance.weightPercentage,
+  'is_primary_competency': instance.isPrimaryCompetency,
+};
+
+QuestionVersionPsychometricsRequestBody
+_$QuestionVersionPsychometricsRequestBodyFromJson(Map<String, dynamic> json) =>
+    QuestionVersionPsychometricsRequestBody(
+      difficultyIndex: json['difficulty_index'] as num,
+      discriminationIndex: json['discrimination_index'] as num,
+      sampleSize: (json['sample_size'] as num).toInt(),
+      correctCount: (json['correct_count'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$QuestionVersionPsychometricsRequestBodyToJson(
+  QuestionVersionPsychometricsRequestBody instance,
+) => <String, dynamic>{
+  'difficulty_index': instance.difficultyIndex,
+  'discrimination_index': instance.discriminationIndex,
+  'sample_size': instance.sampleSize,
+  'correct_count': instance.correctCount,
+};

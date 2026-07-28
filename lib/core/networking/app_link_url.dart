@@ -23,6 +23,10 @@ class AppLinkUrl {
   static String examDetails(String examId) => "exams/$examId";
   static String publishExam(String examId) => "exams/$examId/publish";
   static String archiveExam(String examId) => "exams/$examId/archive";
+  static String examSections(String examId) => "exams/$examId/sections";
+  static String examBlueprints(String examId) => "exams/$examId/blueprints";
+  static String examResultsExport(String examId) =>
+      "exams/$examId/results/export";
   static const String analyticsDashboard = "analytics/dashboard";
 
   // users management
@@ -73,6 +77,13 @@ class AppLinkUrl {
       "categories/$categoryId/move";
   static const String questions = "questions";
   static String questionDetails(String questionId) => "questions/$questionId";
+  static const String questionsBulkImport = "questions/bulk-import";
+  static String questionCompetencies(String questionId) =>
+      "questions/$questionId/competencies";
+  static String questionVersionApprove(String versionId) =>
+      "question-versions/$versionId/approve";
+  static String questionVersionPsychometrics(String versionId) =>
+      "question-versions/$versionId/psychometrics";
 
   // competencies
   static const String competenciesTree = "competencies/tree";
@@ -89,8 +100,23 @@ class AppLinkUrl {
       "answer-evaluations/$evaluationId/score";
 
   // result publication
+  static String examSessionResult(String sessionId) =>
+      "exam-sessions/$sessionId/result";
   static String publishSessionResult(String sessionId) =>
       "exam-sessions/$sessionId/result/publish";
   static String resultPublicationStatus(String sessionId) =>
       "exam-sessions/$sessionId/result/publication-status";
+
+  // certificates
+  static const String certificates = "certificates";
+  static String certificateDetails(String certificateId) =>
+      "certificates/$certificateId";
+  static String examSessionCertificate(String sessionId) =>
+      "exam-sessions/$sessionId/certificate";
+  static String regenerateCertificate(String certificateId) =>
+      "certificates/$certificateId/regenerate";
+  static String revokeCertificate(String certificateId) =>
+      "certificates/$certificateId/revoke";
+  static String verifyCertificate(String certificateCode) =>
+      "certificates/verify/$certificateCode";
 }

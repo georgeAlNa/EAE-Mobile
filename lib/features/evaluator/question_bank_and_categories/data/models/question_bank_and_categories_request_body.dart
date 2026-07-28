@@ -156,7 +156,8 @@ class QuestionPsychometricsRequestBody {
 
   factory QuestionPsychometricsRequestBody.fromJson(
     Map<String, dynamic> json,
-  ) => _$QuestionPsychometricsRequestBodyFromJson(json);
+  ) =>
+      _$QuestionPsychometricsRequestBodyFromJson(json);
 
   Map<String, dynamic> toJson() =>
       _$QuestionPsychometricsRequestBodyToJson(this);
@@ -183,4 +184,75 @@ class QuestionChoiceRequestBody {
       _$QuestionChoiceRequestBodyFromJson(json);
 
   Map<String, dynamic> toJson() => _$QuestionChoiceRequestBodyToJson(this);
+}
+
+@JsonSerializable()
+class BulkImportQuestionsRequestBody {
+  @JsonKey(name: 'file')
+  final String filePath;
+
+  @JsonKey(name: 'file_name')
+  final String? fileName;
+
+  BulkImportQuestionsRequestBody({required this.filePath, this.fileName});
+
+  factory BulkImportQuestionsRequestBody.fromJson(
+    Map<String, dynamic> json,
+  ) =>
+      _$BulkImportQuestionsRequestBodyFromJson(json);
+
+  Map<String, dynamic> toJson() => _$BulkImportQuestionsRequestBodyToJson(this);
+}
+
+@JsonSerializable()
+class QuestionCompetencyRequestBody {
+  @JsonKey(name: 'competency_id')
+  final String competencyId;
+
+  @JsonKey(name: 'weight_percentage')
+  final num weightPercentage;
+
+  @JsonKey(name: 'is_primary_competency')
+  final bool isPrimaryCompetency;
+
+  QuestionCompetencyRequestBody({
+    required this.competencyId,
+    required this.weightPercentage,
+    required this.isPrimaryCompetency,
+  });
+
+  factory QuestionCompetencyRequestBody.fromJson(Map<String, dynamic> json) =>
+      _$QuestionCompetencyRequestBodyFromJson(json);
+
+  Map<String, dynamic> toJson() => _$QuestionCompetencyRequestBodyToJson(this);
+}
+
+@JsonSerializable()
+class QuestionVersionPsychometricsRequestBody {
+  @JsonKey(name: 'difficulty_index')
+  final num difficultyIndex;
+
+  @JsonKey(name: 'discrimination_index')
+  final num discriminationIndex;
+
+  @JsonKey(name: 'sample_size')
+  final int sampleSize;
+
+  @JsonKey(name: 'correct_count')
+  final int correctCount;
+
+  QuestionVersionPsychometricsRequestBody({
+    required this.difficultyIndex,
+    required this.discriminationIndex,
+    required this.sampleSize,
+    required this.correctCount,
+  });
+
+  factory QuestionVersionPsychometricsRequestBody.fromJson(
+    Map<String, dynamic> json,
+  ) =>
+      _$QuestionVersionPsychometricsRequestBodyFromJson(json);
+
+  Map<String, dynamic> toJson() =>
+      _$QuestionVersionPsychometricsRequestBodyToJson(this);
 }

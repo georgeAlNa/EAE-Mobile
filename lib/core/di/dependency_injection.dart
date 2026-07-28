@@ -5,6 +5,12 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 import '../../features/candidate/assessment_inventory/data/datasources/assessment_inventory_remote_data_source.dart';
 import '../../features/candidate/assessment_inventory/data/repos/assessment_inventory_repo.dart';
+import '../../features/candidate/assessment_results/data/datasources/assessment_results_remote_data_source.dart';
+import '../../features/candidate/assessment_results/data/repos/assessment_results_repo.dart';
+import '../../features/candidate/assessment_results/logic/assessment_results_cubit.dart';
+import '../../features/certificates/data/datasources/certificates_remote_data_source.dart';
+import '../../features/certificates/data/repos/certificates_repo.dart';
+import '../../features/certificates/logic/certificates_cubit.dart';
 import '../../features/evaluator/competencies/data/datasources/competencies_remote_data_source.dart';
 import '../../features/evaluator/competencies/data/repos/competencies_repo.dart';
 import '../../features/evaluator/competencies/logic/competencies_cubit.dart';
@@ -109,6 +115,23 @@ Future<void> setupGetit() async {
     () => AssessmentInventoryDetailsCubit(assessmentInventoryRepo: getIt()),
   );
 
+  // //! feature - assessment results
+  // datasource
+  getIt.registerLazySingleton<AssessmentResultsRemoteDataSource>(
+    () => AssessmentResultsRemoteDataSourceImpl(apiServicesImpl: getIt()),
+  );
+  // repo
+  getIt.registerLazySingleton<AssessmentResultsRepo>(
+    () => AssessmentResultsRepo(
+      assessmentResultsRemoteDataSource: getIt(),
+      networkInfo: getIt(),
+    ),
+  );
+  // cubit
+  getIt.registerFactory<AssessmentResultsCubit>(
+    () => AssessmentResultsCubit(assessmentResultsRepo: getIt()),
+  );
+
   // //! feature - users management
   // datasource
   getIt.registerLazySingleton<UsersManagementRemoteDataSource>(
@@ -160,6 +183,23 @@ Future<void> setupGetit() async {
     () => ResultPublicationCubit(resultPublicationRepo: getIt()),
   );
 
+  // //! feature - certificates
+  // datasource
+  getIt.registerLazySingleton<CertificatesRemoteDataSource>(
+    () => CertificatesRemoteDataSourceImpl(apiServicesImpl: getIt()),
+  );
+  // repo
+  getIt.registerLazySingleton<CertificatesRepo>(
+    () => CertificatesRepo(
+      certificatesRemoteDataSource: getIt(),
+      networkInfo: getIt(),
+    ),
+  );
+  // cubit
+  getIt.registerFactory<CertificatesCubit>(
+    () => CertificatesCubit(certificatesRepo: getIt()),
+  );
+
   // //! feature - roles and security
   // datasource
   getIt.registerLazySingleton<RolesAndSecurityRemoteDataSource>(
@@ -192,8 +232,7 @@ Future<void> setupGetit() async {
   // //! feature - live sessions and enrollment management
   // datasource
   getIt.registerLazySingleton<
-    LiveSessionsAndEnrollmentManagementRemoteDataSource
-  >(
+      LiveSessionsAndEnrollmentManagementRemoteDataSource>(
     () => LiveSessionsAndEnrollmentManagementRemoteDataSourceImpl(
       apiServicesImpl: getIt(),
     ),

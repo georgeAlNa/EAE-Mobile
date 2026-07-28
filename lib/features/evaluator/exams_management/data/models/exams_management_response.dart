@@ -40,6 +40,222 @@ class ExamActionResponse {
 }
 
 @JsonSerializable()
+class ExamSectionsResponse {
+  final List<ExamSection> data;
+
+  ExamSectionsResponse({required this.data});
+
+  factory ExamSectionsResponse.fromJson(Map<String, dynamic> json) =>
+      _$ExamSectionsResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ExamSectionsResponseToJson(this);
+}
+
+@JsonSerializable()
+class ExamSectionResponse {
+  final ExamSection data;
+
+  ExamSectionResponse({required this.data});
+
+  factory ExamSectionResponse.fromJson(Map<String, dynamic> json) =>
+      _$ExamSectionResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ExamSectionResponseToJson(this);
+}
+
+@JsonSerializable()
+class ExamBlueprintsResponse {
+  final List<ExamBlueprint> data;
+
+  ExamBlueprintsResponse({required this.data});
+
+  factory ExamBlueprintsResponse.fromJson(Map<String, dynamic> json) =>
+      _$ExamBlueprintsResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ExamBlueprintsResponseToJson(this);
+}
+
+@JsonSerializable()
+class ExamBlueprintResponse {
+  final ExamBlueprint data;
+
+  ExamBlueprintResponse({required this.data});
+
+  factory ExamBlueprintResponse.fromJson(Map<String, dynamic> json) =>
+      _$ExamBlueprintResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ExamBlueprintResponseToJson(this);
+}
+
+@JsonSerializable()
+class ExamResultsExportResponse {
+  final String data;
+
+  ExamResultsExportResponse({required this.data});
+
+  factory ExamResultsExportResponse.fromJson(Map<String, dynamic> json) =>
+      _$ExamResultsExportResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ExamResultsExportResponseToJson(this);
+}
+
+@JsonSerializable()
+class ExamSection {
+  @JsonKey(name: 'section_id')
+  final String sectionId;
+
+  @JsonKey(name: 'tenant_id')
+  final String? tenantId;
+
+  @JsonKey(name: 'exam_id')
+  final String examId;
+
+  @JsonKey(name: 'section_name')
+  final String sectionName;
+
+  @JsonKey(name: 'section_code')
+  final String? sectionCode;
+
+  @JsonKey(name: 'section_sequence')
+  final int sectionSequence;
+
+  @JsonKey(name: 'questions_in_section')
+  final int questionsInSection;
+
+  @JsonKey(name: 'time_limit_minutes')
+  final int? timeLimitMinutes;
+
+  @JsonKey(name: 'branching_logic')
+  final Map<String, dynamic>? branchingLogic;
+
+  @JsonKey(name: 'section_metadata')
+  final Map<String, dynamic>? sectionMetadata;
+
+  @JsonKey(name: 'created_at')
+  final String? createdAt;
+
+  @JsonKey(defaultValue: <ExamBlueprint>[])
+  final List<ExamBlueprint> blueprints;
+
+  ExamSection({
+    required this.sectionId,
+    this.tenantId,
+    required this.examId,
+    required this.sectionName,
+    this.sectionCode,
+    required this.sectionSequence,
+    required this.questionsInSection,
+    this.timeLimitMinutes,
+    this.branchingLogic,
+    this.sectionMetadata,
+    this.createdAt,
+    required this.blueprints,
+  });
+
+  factory ExamSection.fromJson(Map<String, dynamic> json) =>
+      _$ExamSectionFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ExamSectionToJson(this);
+}
+
+@JsonSerializable()
+class ExamBlueprint {
+  @JsonKey(name: 'blueprint_id')
+  final String blueprintId;
+
+  @JsonKey(name: 'exam_id')
+  final String examId;
+
+  @JsonKey(name: 'section_id')
+  final String sectionId;
+
+  @JsonKey(name: 'competency_id')
+  final String competencyId;
+
+  @JsonKey(name: 'min_questions_count')
+  final int minQuestionsCount;
+
+  @JsonKey(name: 'max_questions_count')
+  final int maxQuestionsCount;
+
+  @JsonKey(name: 'min_weight_percentage')
+  final String minWeightPercentage;
+
+  @JsonKey(name: 'max_weight_percentage')
+  final String maxWeightPercentage;
+
+  @JsonKey(name: 'bloom_distribution')
+  final Map<String, dynamic>? bloomDistribution;
+
+  @JsonKey(name: 'target_difficulty')
+  final String? targetDifficulty;
+
+  @JsonKey(name: 'min_discrimination')
+  final String? minDiscrimination;
+
+  @JsonKey(name: 'resolution_strategy')
+  final String? resolutionStrategy;
+
+  @JsonKey(name: 'blueprint_metadata')
+  final Map<String, dynamic>? blueprintMetadata;
+
+  @JsonKey(name: 'created_at')
+  final String? createdAt;
+
+  final ExamBlueprintCompetency? competency;
+
+  ExamBlueprint({
+    required this.blueprintId,
+    required this.examId,
+    required this.sectionId,
+    required this.competencyId,
+    required this.minQuestionsCount,
+    required this.maxQuestionsCount,
+    required this.minWeightPercentage,
+    required this.maxWeightPercentage,
+    this.bloomDistribution,
+    this.targetDifficulty,
+    this.minDiscrimination,
+    this.resolutionStrategy,
+    this.blueprintMetadata,
+    this.createdAt,
+    this.competency,
+  });
+
+  factory ExamBlueprint.fromJson(Map<String, dynamic> json) =>
+      _$ExamBlueprintFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ExamBlueprintToJson(this);
+}
+
+@JsonSerializable()
+class ExamBlueprintCompetency {
+  @JsonKey(name: 'competency_id')
+  final String competencyId;
+
+  @JsonKey(name: 'competency_name')
+  final String competencyName;
+
+  @JsonKey(name: 'competency_type')
+  final String competencyType;
+
+  @JsonKey(name: 'is_active')
+  final bool isActive;
+
+  ExamBlueprintCompetency({
+    required this.competencyId,
+    required this.competencyName,
+    required this.competencyType,
+    required this.isActive,
+  });
+
+  factory ExamBlueprintCompetency.fromJson(Map<String, dynamic> json) =>
+      _$ExamBlueprintCompetencyFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ExamBlueprintCompetencyToJson(this);
+}
+
+@JsonSerializable()
 class ExamItem {
   final String id;
 

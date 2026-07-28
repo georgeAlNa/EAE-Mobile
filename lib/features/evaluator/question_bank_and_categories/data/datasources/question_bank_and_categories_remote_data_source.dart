@@ -36,6 +36,30 @@ abstract class QuestionBankAndCategoriesRemoteDataSource {
   );
 
   Future<QuestionBankActionResponse> deleteQuestion(String questionId);
+
+  Future<BulkImportQuestionsResponse> bulkImportQuestions(
+    BulkImportQuestionsRequestBody bulkImportQuestionsRequestBody,
+  );
+
+  Future<QuestionCompetencyResponse> addQuestionCompetency(
+    String questionId,
+    QuestionCompetencyRequestBody questionCompetencyRequestBody,
+  );
+
+  Future<QuestionCompetenciesResponse> getQuestionCompetencies(
+    String questionId,
+  );
+
+  Future<QuestionVersionApprovalResponse> approveQuestionVersion(
+    String versionId,
+  );
+
+  Future<QuestionVersionPsychometricsResponse>
+      updateQuestionVersionPsychometrics(
+    String versionId,
+    QuestionVersionPsychometricsRequestBody
+        questionVersionPsychometricsRequestBody,
+  );
 }
 
 class QuestionBankAndCategoriesRemoteDataSourceImpl
@@ -202,6 +226,108 @@ class QuestionBankAndCategoriesRemoteDataSourceImpl
       );
 
       return QuestionBankActionResponse.fromJson(request);
+    } on DioException catch (e) {
+      throw NetworkExceptions.getException(e);
+    } catch (e) {
+      throw NetworkExceptions.getException(e);
+    }
+  }
+
+  @override
+  Future<BulkImportQuestionsResponse> bulkImportQuestions(
+    BulkImportQuestionsRequestBody bulkImportQuestionsRequestBody,
+  ) async {
+    try {
+      final request = await apiServicesImpl.post(
+        AppLinkUrl.questionsBulkImport,
+        formData: FormData.fromMap({
+          'file': await MultipartFile.fromFile(
+            bulkImportQuestionsRequestBody.filePath,
+            filename: bulkImportQuestionsRequestBody.fileName,
+          ),
+        }),
+        token: _token,
+      );
+
+      return BulkImportQuestionsResponse.fromJson(request);
+    } on DioException catch (e) {
+      throw NetworkExceptions.getException(e);
+    } catch (e) {
+      throw NetworkExceptions.getException(e);
+    }
+  }
+
+  @override
+  Future<QuestionCompetencyResponse> addQuestionCompetency(
+    String questionId,
+    QuestionCompetencyRequestBody questionCompetencyRequestBody,
+  ) async {
+    try {
+      final request = await apiServicesImpl.post(
+        AppLinkUrl.questionCompetencies(questionId),
+        body: questionCompetencyRequestBody.toJson(),
+        token: _token,
+      );
+
+      return QuestionCompetencyResponse.fromJson(request);
+    } on DioException catch (e) {
+      throw NetworkExceptions.getException(e);
+    } catch (e) {
+      throw NetworkExceptions.getException(e);
+    }
+  }
+
+  @override
+  Future<QuestionCompetenciesResponse> getQuestionCompetencies(
+    String questionId,
+  ) async {
+    try {
+      final request = await apiServicesImpl.get(
+        AppLinkUrl.questionCompetencies(questionId),
+        token: _token,
+      );
+
+      return QuestionCompetenciesResponse.fromJson(request);
+    } on DioException catch (e) {
+      throw NetworkExceptions.getException(e);
+    } catch (e) {
+      throw NetworkExceptions.getException(e);
+    }
+  }
+
+  @override
+  Future<QuestionVersionApprovalResponse> approveQuestionVersion(
+    String versionId,
+  ) async {
+    try {
+      final request = await apiServicesImpl.post(
+        AppLinkUrl.questionVersionApprove(versionId),
+        token: _token,
+      );
+
+      return QuestionVersionApprovalResponse.fromJson(request);
+    } on DioException catch (e) {
+      throw NetworkExceptions.getException(e);
+    } catch (e) {
+      throw NetworkExceptions.getException(e);
+    }
+  }
+
+  @override
+  Future<QuestionVersionPsychometricsResponse>
+      updateQuestionVersionPsychometrics(
+    String versionId,
+    QuestionVersionPsychometricsRequestBody
+        questionVersionPsychometricsRequestBody,
+  ) async {
+    try {
+      final request = await apiServicesImpl.patch(
+        AppLinkUrl.questionVersionPsychometrics(versionId),
+        body: questionVersionPsychometricsRequestBody.toJson(),
+        token: _token,
+      );
+
+      return QuestionVersionPsychometricsResponse.fromJson(request);
     } on DioException catch (e) {
       throw NetworkExceptions.getException(e);
     } catch (e) {

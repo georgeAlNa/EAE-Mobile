@@ -77,6 +77,59 @@ UpdateQuestionRequestBody updateQuestionRequest() => UpdateQuestionRequestBody(
   correctAnswer: const {'choice_sequence': 1},
 );
 
+BulkImportQuestionsRequestBody bulkImportRequest() =>
+    BulkImportQuestionsRequestBody(filePath: 'C:/tmp/questions.csv');
+
+QuestionCompetencyRequestBody competencyRequest() =>
+    QuestionCompetencyRequestBody(
+      competencyId: 'competency_001',
+      weightPercentage: 100,
+      isPrimaryCompetency: true,
+    );
+
+QuestionVersionPsychometricsRequestBody versionPsychometricsRequest() =>
+    QuestionVersionPsychometricsRequestBody(
+      difficultyIndex: 0.5,
+      discriminationIndex: 0.5,
+      sampleSize: 10,
+      correctCount: 5,
+    );
+
+QuestionCompetencyWeight competencyWeight() => QuestionCompetencyWeight(
+  weightId: 'weight_001',
+  questionId: 'question_001',
+  competencyId: 'competency_001',
+  weightPercentage: '100.00',
+  isPrimaryCompetency: true,
+);
+
+QuestionVersionApproval approval() => QuestionVersionApproval(
+  versionId: 'version_001',
+  questionId: 'question_001',
+  createdByUserId: 'user_001',
+  verNum: 1,
+  questionText: 'What is 2 + 2?',
+  questionType: 'mcq',
+  approvalStatus: 'approved',
+  approvedByUserId: 'user_001',
+  usageCountInExams: 0,
+  contentHash: 'hash',
+  createdAt: '2026-07-21T02:22:03.000000Z',
+);
+
+QuestionVersionPsychometrics versionPsychometrics() =>
+    QuestionVersionPsychometrics(
+      psychometricId: 'psychometric_001',
+      questionVersionId: 'version_001',
+      tenantId: 'tenant_001',
+      difficultyIndex: '0.5000',
+      discriminationIndex: '0.5000',
+      sampleSize: 10,
+      correctCount: 5,
+      isCalibrated: true,
+      calibrationStatus: 'calibrated',
+    );
+
 bool isLoading(QuestionBankAndCategoriesState state) => state.maybeWhen(
   questionBankLoading: () => true,
   categorySaveLoading: () => true,
@@ -127,6 +180,9 @@ void main() {
     registerFallbackValue(moveCategoryRequest());
     registerFallbackValue(createQuestionRequest());
     registerFallbackValue(updateQuestionRequest());
+    registerFallbackValue(bulkImportRequest());
+    registerFallbackValue(competencyRequest());
+    registerFallbackValue(versionPsychometricsRequest());
     registerFallbackValue('');
   });
 
@@ -353,5 +409,118 @@ void main() {
         await emission;
       },
     );
+
+    test(
+      'bulkImportQuestions emits actionSuccess and stores response',
+      () async {
+        final cubit = await loadedCubit();
+        final response = BulkImportQuestionsResponse(
+          data: BulkImportQuestionsResult(
+            importLogId: 'import_001',
+            total: 1,
+            successful: 1,
+            failed: 0,
+            errors: const [],
+          ),
+        );
+        when(
+          () => repo.bulkImportQuestions(any()),
+        ).thenAnswer((_) async => response);
+
+        final emission = expectLater(
+          cubit.stream,
+          emitsInOrder([
+            predicate<QuestionBankAndCategoriesState>(isLoading),
+            predicate<QuestionBankAndCategoriesState>(
+              (state) => actionResponse(state)?.message == 'import_001',
+            ),
+          ]),
+        );
+
+        await cubit.bulkImportQuestions(bulkImportRequest());
+        await emission;
+        expect(cubit.bulkImportQuestionsResponse, same(response));
+      },
+    );
+
+    test(
+      'question competency methods emit actionSuccess and store list',
+      () async {
+        final cubit = await loadedCubit();
+        final saved = QuestionCompetencyResponse(data: competencyWeight());
+        final list = QuestionCompetenciesResponse(data: [competencyWeight()]);
+        when(
+          () => repo.addQuestionCompetency(any(), any()),
+        ).thenAnswer((_) async => saved);
+        when(
+          () => repo.getQuestionCompetencies(any()),
+        ).thenAnswer((_) async => list);
+
+        var emission = expectLater(
+          cubit.stream,
+          emitsInOrder([
+            predicate<QuestionBankAndCategoriesState>(isLoading),
+            predicate<QuestionBankAndCategoriesState>(
+              (state) => actionResponse(state)?.message == 'weight_001',
+            ),
+          ]),
+        );
+        await cubit.addQuestionCompetency('question_001', competencyRequest());
+        await emission;
+
+        emission = expectLater(
+          cubit.stream,
+          emitsInOrder([
+            predicate<QuestionBankAndCategoriesState>(isLoading),
+            predicate<QuestionBankAndCategoriesState>(
+              (state) => actionResponse(state)?.message == '1',
+            ),
+          ]),
+        );
+        await cubit.getQuestionCompetencies('question_001');
+        await emission;
+        expect(cubit.questionCompetenciesResponse, same(list));
+      },
+    );
+
+    test('version action methods emit actionSuccess', () async {
+      final cubit = await loadedCubit();
+      when(() => repo.approveQuestionVersion(any())).thenAnswer(
+        (_) async => QuestionVersionApprovalResponse(data: approval()),
+      );
+      when(
+        () => repo.updateQuestionVersionPsychometrics(any(), any()),
+      ).thenAnswer(
+        (_) async =>
+            QuestionVersionPsychometricsResponse(data: versionPsychometrics()),
+      );
+
+      var emission = expectLater(
+        cubit.stream,
+        emitsInOrder([
+          predicate<QuestionBankAndCategoriesState>(isLoading),
+          predicate<QuestionBankAndCategoriesState>(
+            (state) => actionResponse(state)?.message == 'version_001',
+          ),
+        ]),
+      );
+      await cubit.approveQuestionVersion('version_001');
+      await emission;
+
+      emission = expectLater(
+        cubit.stream,
+        emitsInOrder([
+          predicate<QuestionBankAndCategoriesState>(isLoading),
+          predicate<QuestionBankAndCategoriesState>(
+            (state) => actionResponse(state)?.message == 'psychometric_001',
+          ),
+        ]),
+      );
+      await cubit.updateQuestionVersionPsychometrics(
+        'version_001',
+        versionPsychometricsRequest(),
+      );
+      await emission;
+    });
   });
 }

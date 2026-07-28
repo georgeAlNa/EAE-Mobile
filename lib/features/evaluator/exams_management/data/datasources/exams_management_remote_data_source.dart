@@ -25,6 +25,22 @@ abstract class ExamsManagementRemoteDataSource {
   Future<ExamResponse> publishExam(String examId);
 
   Future<ExamResponse> archiveExam(String examId);
+
+  Future<ExamSectionResponse> createExamSection(
+    String examId,
+    ExamSectionRequestBody examSectionRequestBody,
+  );
+
+  Future<ExamSectionsResponse> getExamSections(String examId);
+
+  Future<ExamBlueprintResponse> createExamBlueprint(
+    String examId,
+    ExamBlueprintRequestBody examBlueprintRequestBody,
+  );
+
+  Future<ExamBlueprintsResponse> getExamBlueprints(String examId);
+
+  Future<ExamResultsExportResponse> exportExamResults(String examId);
 }
 
 class ExamsManagementRemoteDataSourceImpl
@@ -148,6 +164,95 @@ class ExamsManagementRemoteDataSourceImpl
       );
 
       return ExamResponse.fromJson(request);
+    } on DioException catch (e) {
+      throw NetworkExceptions.getException(e);
+    } catch (e) {
+      throw NetworkExceptions.getException(e);
+    }
+  }
+
+  @override
+  Future<ExamSectionResponse> createExamSection(
+    String examId,
+    ExamSectionRequestBody examSectionRequestBody,
+  ) async {
+    try {
+      final request = await apiServicesImpl.post(
+        AppLinkUrl.examSections(examId),
+        body: examSectionRequestBody.toJson(),
+        token: _token,
+      );
+
+      return ExamSectionResponse.fromJson(request);
+    } on DioException catch (e) {
+      throw NetworkExceptions.getException(e);
+    } catch (e) {
+      throw NetworkExceptions.getException(e);
+    }
+  }
+
+  @override
+  Future<ExamSectionsResponse> getExamSections(String examId) async {
+    try {
+      final request = await apiServicesImpl.get(
+        AppLinkUrl.examSections(examId),
+        token: _token,
+      );
+
+      return ExamSectionsResponse.fromJson(request);
+    } on DioException catch (e) {
+      throw NetworkExceptions.getException(e);
+    } catch (e) {
+      throw NetworkExceptions.getException(e);
+    }
+  }
+
+  @override
+  Future<ExamBlueprintResponse> createExamBlueprint(
+    String examId,
+    ExamBlueprintRequestBody examBlueprintRequestBody,
+  ) async {
+    try {
+      final request = await apiServicesImpl.post(
+        AppLinkUrl.examBlueprints(examId),
+        body: examBlueprintRequestBody.toJson(),
+        token: _token,
+      );
+
+      return ExamBlueprintResponse.fromJson(request);
+    } on DioException catch (e) {
+      throw NetworkExceptions.getException(e);
+    } catch (e) {
+      throw NetworkExceptions.getException(e);
+    }
+  }
+
+  @override
+  Future<ExamBlueprintsResponse> getExamBlueprints(String examId) async {
+    try {
+      final request = await apiServicesImpl.get(
+        AppLinkUrl.examBlueprints(examId),
+        token: _token,
+      );
+
+      return ExamBlueprintsResponse.fromJson(request);
+    } on DioException catch (e) {
+      throw NetworkExceptions.getException(e);
+    } catch (e) {
+      throw NetworkExceptions.getException(e);
+    }
+  }
+
+  @override
+  Future<ExamResultsExportResponse> exportExamResults(String examId) async {
+    try {
+      final request = await apiServicesImpl.getPlain(
+        AppLinkUrl.examResultsExport(examId),
+        accept: 'text/csv',
+        token: _token,
+      );
+
+      return ExamResultsExportResponse(data: request);
     } on DioException catch (e) {
       throw NetworkExceptions.getException(e);
     } catch (e) {

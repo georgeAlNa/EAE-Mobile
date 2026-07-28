@@ -60,6 +60,54 @@ Map<String, dynamic> examJson({
   'updated_at': '2026-07-15T20:00:00.000Z',
 };
 
+Map<String, dynamic> sectionJson({String id = 'section_001'}) => {
+  'section_id': id,
+  'tenant_id': 'tenant_001',
+  'exam_id': 'exam_001',
+  'section_name': 'Main Section',
+  'section_code': null,
+  'section_sequence': 1,
+  'questions_in_section': 1,
+  'time_limit_minutes': null,
+  'branching_logic': null,
+  'section_metadata': null,
+  'created_at': '2026-07-21T02:33:01.000000Z',
+  'blueprints': const [],
+};
+
+Map<String, dynamic> blueprintJson({String id = 'blueprint_001'}) => {
+  'blueprint_id': id,
+  'exam_id': 'exam_001',
+  'section_id': 'section_001',
+  'competency_id': 'competency_001',
+  'min_questions_count': 1,
+  'max_questions_count': 1,
+  'min_weight_percentage': '100.00',
+  'max_weight_percentage': '100.00',
+  'bloom_distribution': null,
+  'target_difficulty': '0.600',
+  'min_discrimination': '0.000',
+  'resolution_strategy': 'stratified',
+  'blueprint_metadata': null,
+  'created_at': '2026-07-21T02:35:15.000000Z',
+  'competency': null,
+};
+
+ExamSectionRequestBody sectionRequest() => ExamSectionRequestBody(
+  sectionName: 'Second Section',
+  sectionSequence: 2,
+  questionsInSection: 1,
+);
+
+ExamBlueprintRequestBody blueprintRequest() => ExamBlueprintRequestBody(
+  sectionId: 'section_001',
+  competencyId: 'competency_001',
+  minQuestionsCount: 1,
+  maxQuestionsCount: 1,
+  minWeightPercentage: 100,
+  maxWeightPercentage: 100,
+);
+
 void main() {
   late MockApiServicesImpl apiServicesImpl;
   late ExamsManagementRemoteDataSourceImpl remoteDataSource;
@@ -222,6 +270,132 @@ void main() {
       verify(
         () => apiServicesImpl.post(
           AppLinkUrl.archiveExam('exam_001'),
+          token: 'access-token',
+        ),
+      ).called(1);
+    });
+
+    test('section endpoints use stored token and bodies', () async {
+      when(
+        () => apiServicesImpl.post(
+          AppLinkUrl.examSections('exam_001'),
+          body: any(named: 'body'),
+          token: any(named: 'token'),
+        ),
+      ).thenAnswer((_) async => {'data': sectionJson(id: 'section_created')});
+      when(
+        () => apiServicesImpl.get(
+          AppLinkUrl.examSections('exam_001'),
+          token: any(named: 'token'),
+        ),
+      ).thenAnswer(
+        (_) async => {
+          'data': [sectionJson()],
+        },
+      );
+
+      expect(
+        (await remoteDataSource.createExamSection(
+          'exam_001',
+          sectionRequest(),
+        )).data.sectionId,
+        'section_created',
+      );
+      expect(
+        (await remoteDataSource.getExamSections(
+          'exam_001',
+        )).data.single.sectionId,
+        'section_001',
+      );
+
+      final createCapture = verify(
+        () => apiServicesImpl.post(
+          AppLinkUrl.examSections('exam_001'),
+          body: captureAny(named: 'body'),
+          token: captureAny(named: 'token'),
+        ),
+      ).captured;
+      expect(createCapture[0], {
+        'section_name': 'Second Section',
+        'section_sequence': 2,
+        'questions_in_section': 1,
+      });
+      expect(createCapture[1], 'access-token');
+      verify(
+        () => apiServicesImpl.get(
+          AppLinkUrl.examSections('exam_001'),
+          token: 'access-token',
+        ),
+      ).called(1);
+    });
+
+    test('blueprint endpoints use stored token and bodies', () async {
+      when(
+        () => apiServicesImpl.post(
+          AppLinkUrl.examBlueprints('exam_001'),
+          body: any(named: 'body'),
+          token: any(named: 'token'),
+        ),
+      ).thenAnswer((_) async => {'data': blueprintJson(id: 'blueprint_new')});
+      when(
+        () => apiServicesImpl.get(
+          AppLinkUrl.examBlueprints('exam_001'),
+          token: any(named: 'token'),
+        ),
+      ).thenAnswer(
+        (_) async => {
+          'data': [blueprintJson()],
+        },
+      );
+
+      expect(
+        (await remoteDataSource.createExamBlueprint(
+          'exam_001',
+          blueprintRequest(),
+        )).data.blueprintId,
+        'blueprint_new',
+      );
+      expect(
+        (await remoteDataSource.getExamBlueprints(
+          'exam_001',
+        )).data.single.blueprintId,
+        'blueprint_001',
+      );
+
+      final createCapture = verify(
+        () => apiServicesImpl.post(
+          AppLinkUrl.examBlueprints('exam_001'),
+          body: captureAny(named: 'body'),
+          token: captureAny(named: 'token'),
+        ),
+      ).captured;
+      expect(createCapture[0], {
+        'section_id': 'section_001',
+        'competency_id': 'competency_001',
+        'min_questions_count': 1,
+        'max_questions_count': 1,
+        'min_weight_percentage': 100,
+        'max_weight_percentage': 100,
+      });
+      expect(createCapture[1], 'access-token');
+    });
+
+    test('exportExamResults gets CSV payload with text/csv accept', () async {
+      when(
+        () => apiServicesImpl.getPlain(
+          AppLinkUrl.examResultsExport('exam_001'),
+          accept: any(named: 'accept'),
+          token: any(named: 'token'),
+        ),
+      ).thenAnswer((_) async => '"Candidate Name","Final Score"');
+
+      final response = await remoteDataSource.exportExamResults('exam_001');
+
+      expect(response.data, contains('Candidate Name'));
+      verify(
+        () => apiServicesImpl.getPlain(
+          AppLinkUrl.examResultsExport('exam_001'),
+          accept: 'text/csv',
           token: 'access-token',
         ),
       ).called(1);

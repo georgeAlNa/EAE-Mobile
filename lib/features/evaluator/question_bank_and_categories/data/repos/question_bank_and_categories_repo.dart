@@ -6,7 +6,7 @@ import '../models/question_bank_and_categories_response.dart';
 
 class QuestionBankAndCategoriesRepo {
   final QuestionBankAndCategoriesRemoteDataSource
-  questionBankAndCategoriesRemoteDataSource;
+      questionBankAndCategoriesRemoteDataSource;
   final NetworkInfo networkInfo;
 
   QuestionBankAndCategoriesRepo({
@@ -139,6 +139,88 @@ class QuestionBankAndCategoriesRepo {
       try {
         return await questionBankAndCategoriesRemoteDataSource.deleteQuestion(
           questionId,
+        );
+      } catch (e) {
+        throw NetworkExceptions.getException(e);
+      }
+    } else {
+      throw const NetworkExceptions.noInternetConnection();
+    }
+  }
+
+  Future<BulkImportQuestionsResponse> bulkImportQuestions(
+    BulkImportQuestionsRequestBody bulkImportQuestionsRequestBody,
+  ) async {
+    if (await networkInfo.isConnected) {
+      try {
+        return await questionBankAndCategoriesRemoteDataSource
+            .bulkImportQuestions(bulkImportQuestionsRequestBody);
+      } catch (e) {
+        throw NetworkExceptions.getException(e);
+      }
+    } else {
+      throw const NetworkExceptions.noInternetConnection();
+    }
+  }
+
+  Future<QuestionCompetencyResponse> addQuestionCompetency(
+    String questionId,
+    QuestionCompetencyRequestBody questionCompetencyRequestBody,
+  ) async {
+    if (await networkInfo.isConnected) {
+      try {
+        return await questionBankAndCategoriesRemoteDataSource
+            .addQuestionCompetency(questionId, questionCompetencyRequestBody);
+      } catch (e) {
+        throw NetworkExceptions.getException(e);
+      }
+    } else {
+      throw const NetworkExceptions.noInternetConnection();
+    }
+  }
+
+  Future<QuestionCompetenciesResponse> getQuestionCompetencies(
+    String questionId,
+  ) async {
+    if (await networkInfo.isConnected) {
+      try {
+        return await questionBankAndCategoriesRemoteDataSource
+            .getQuestionCompetencies(questionId);
+      } catch (e) {
+        throw NetworkExceptions.getException(e);
+      }
+    } else {
+      throw const NetworkExceptions.noInternetConnection();
+    }
+  }
+
+  Future<QuestionVersionApprovalResponse> approveQuestionVersion(
+    String versionId,
+  ) async {
+    if (await networkInfo.isConnected) {
+      try {
+        return await questionBankAndCategoriesRemoteDataSource
+            .approveQuestionVersion(versionId);
+      } catch (e) {
+        throw NetworkExceptions.getException(e);
+      }
+    } else {
+      throw const NetworkExceptions.noInternetConnection();
+    }
+  }
+
+  Future<QuestionVersionPsychometricsResponse>
+      updateQuestionVersionPsychometrics(
+    String versionId,
+    QuestionVersionPsychometricsRequestBody
+        questionVersionPsychometricsRequestBody,
+  ) async {
+    if (await networkInfo.isConnected) {
+      try {
+        return await questionBankAndCategoriesRemoteDataSource
+            .updateQuestionVersionPsychometrics(
+          versionId,
+          questionVersionPsychometricsRequestBody,
         );
       } catch (e) {
         throw NetworkExceptions.getException(e);
