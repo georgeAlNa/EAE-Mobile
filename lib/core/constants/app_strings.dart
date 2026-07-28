@@ -239,9 +239,9 @@ class AppStrings {
       _isArabic ? 'Ø¯Ø±Ø¯Ø´Ø© Ù…Ø¨Ø§Ø´Ø±Ø©' : 'Live Chat';
 
   // Competency Task
-  static String get AssessmentSessionTitle =>
+  static String get assessmentSessionTitle =>
       _isArabic ? 'Ù…Ù‡Ù…Ø© Ø§Ù„ÙƒÙØ§Ø¡Ø© 04' : 'Competency Task 04';
-  static String get AssessmentSessionDescription => _isArabic
+  static String get assessmentSessionDescription => _isArabic
       ? 'ÙŠØ±Ø¬Ù‰ ØªØ³Ø¬ÙŠÙ„ Ø±Ø¯ ÙÙŠØ¯ÙŠÙˆ ÙˆØ§Ø¶Ø­ ÙŠØ´Ø±Ø­ Ø§Ø³ØªØ±Ø§ØªÙŠØ¬ÙŠØ© ØªØ®ÙÙŠÙ Ø§Ù„Ù…Ø®Ø§Ø·Ø± ÙÙŠ Ø¨ÙŠØ¦Ø§Øª Ø¹Ø§Ù„ÙŠØ© Ø§Ù„ØªÙ‚Ù„Ø¨. ØªØ£ÙƒØ¯ Ù…Ù† Ø£Ù† ÙˆØ¬Ù‡Ùƒ Ø¸Ø§Ù‡Ø± Ø¨ÙˆØ¶ÙˆØ­.'
       : 'Please record a clear video response explaining your strategy for risk mitigation in high-volatility environments. Ensure your face is clearly visible.';
   static String get encryptedMediaSandboxActive => _isArabic

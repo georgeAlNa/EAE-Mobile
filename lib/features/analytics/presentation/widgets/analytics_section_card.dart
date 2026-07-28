@@ -19,7 +19,7 @@ class AnalyticsSectionCard extends StatelessWidget {
         border: Border.all(color: AppColors.tertiaryColor2),
         boxShadow: [
           BoxShadow(
-            color: AppColors.tertiaryColor2.withOpacity(0.22),
+            color: AppColors.tertiaryColor2.withValues(alpha: 0.22),
             blurRadius: 20.r,
             offset: Offset(0, 10.h),
           ),

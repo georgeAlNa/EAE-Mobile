@@ -67,7 +67,7 @@ class SettingsDropdownField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonFormField<String>(
-      value: value,
+      initialValue: value,
       items: items
           .map(
             (item) => DropdownMenuItem<String>(value: item, child: Text(item)),
@@ -136,7 +136,7 @@ class SettingsSwitchTile extends StatelessWidget {
         Switch.adaptive(
           value: value,
           onChanged: onChanged,
-          activeColor: AppColors.secondaryColor6,
+          activeThumbColor: AppColors.secondaryColor6,
           activeTrackColor: AppColors.secondaryColor3,
           inactiveThumbColor: AppColors.neutralColor,
           inactiveTrackColor: AppColors.tertiaryColor2,

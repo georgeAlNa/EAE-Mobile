@@ -27,7 +27,7 @@ class AnalyticsCredentialsCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18.r),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primaryColor10.withOpacity(0.18),
+            color: AppColors.primaryColor10.withValues(alpha: 0.18),
             blurRadius: 24.r,
             offset: Offset(0, 12.h),
           ),
@@ -44,7 +44,7 @@ class AnalyticsCredentialsCard extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: AppColors.neutralColor.withOpacity(0.06),
+                  color: AppColors.neutralColor.withValues(alpha: 0.06),
                   width: 12.w,
                 ),
               ),
@@ -119,9 +119,11 @@ class _CredentialTile extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(14.r),
       decoration: BoxDecoration(
-        color: AppColors.neutralColor.withOpacity(0.04),
+        color: AppColors.neutralColor.withValues(alpha: 0.04),
         borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.neutralColor.withOpacity(0.14)),
+        border: Border.all(
+          color: AppColors.neutralColor.withValues(alpha: 0.14),
+        ),
       ),
       child: Row(
         children: [
@@ -154,7 +156,7 @@ class _CredentialTile extends StatelessWidget {
                 Text(
                   credential.subtitle,
                   style: AppTextStyles.font10DarkGreyRegular.copyWith(
-                    color: AppColors.neutralColor.withOpacity(0.72),
+                    color: AppColors.neutralColor.withValues(alpha: 0.72),
                   ),
                 ),
               ],

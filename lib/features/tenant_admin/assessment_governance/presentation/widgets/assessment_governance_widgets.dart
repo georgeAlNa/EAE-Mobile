@@ -143,7 +143,7 @@ class _PenaltyRulesView extends StatelessWidget {
                 title: const Text('Cumulative'),
                 value: isCumulative,
                 onChanged: onCumulativeChanged,
-                activeColor: AppColors.secondaryColor7,
+                activeThumbColor: AppColors.secondaryColor7,
                 activeTrackColor: AppColors.secondaryColor3,
               ),
               SwitchListTile.adaptive(
@@ -151,7 +151,7 @@ class _PenaltyRulesView extends StatelessWidget {
                 title: const Text('Active'),
                 value: isActive,
                 onChanged: onActiveChanged,
-                activeColor: AppColors.secondaryColor7,
+                activeThumbColor: AppColors.secondaryColor7,
                 activeTrackColor: AppColors.secondaryColor3,
               ),
               SizedBox(
@@ -333,7 +333,7 @@ class _EligibilityChainsView extends StatelessWidget {
                 title: const Text('Override available'),
                 value: overrideAvailable,
                 onChanged: onOverrideChanged,
-                activeColor: AppColors.secondaryColor7,
+                activeThumbColor: AppColors.secondaryColor7,
                 activeTrackColor: AppColors.secondaryColor3,
               ),
               SizedBox(
