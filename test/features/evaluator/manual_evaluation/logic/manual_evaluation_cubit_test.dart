@@ -113,29 +113,16 @@ String? stateError(ManualEvaluationState state) => state.maybeWhen(
 );
 
 PendingEvaluationsResponse? pendingLoaded(ManualEvaluationState state) =>
-    state.maybeWhen(
-      pendingLoaded: (response) => response,
-      orElse: () => null,
-    );
+    state.maybeWhen(pendingLoaded: (response) => response, orElse: () => null);
 
 ScoreEvaluationResponse? scoreSubmitted(ManualEvaluationState state) =>
-    state.maybeWhen(
-      scoreSubmitted: (response) => response,
-      orElse: () => null,
-    );
+    state.maybeWhen(scoreSubmitted: (response) => response, orElse: () => null);
 
-ResultPublicationStatusResponse? statusLoaded(
-  ManualEvaluationState state,
-) => state.maybeWhen(
-  statusLoaded: (response) => response,
-  orElse: () => null,
-);
+ResultPublicationStatusResponse? statusLoaded(ManualEvaluationState state) =>
+    state.maybeWhen(statusLoaded: (response) => response, orElse: () => null);
 
 ResultPublicationResponse? published(ManualEvaluationState state) =>
-    state.maybeWhen(
-      published: (response) => response,
-      orElse: () => null,
-    );
+    state.maybeWhen(published: (response) => response, orElse: () => null);
 
 void main() {
   late MockManualEvaluationRepo repo;
@@ -156,63 +143,72 @@ void main() {
   });
 
   group('ManualEvaluationCubit', () {
-    test('owns manual evaluation form controllers and fills selected evaluation', () {
-      cubit.sessionIdController.text = 'session_001';
-      cubit.scoreController.text = '1';
-      cubit.commentsController.text = 'Looks good';
+    test(
+      'owns manual evaluation form controllers and fills selected evaluation',
+      () {
+        cubit.sessionIdController.text = 'session_001';
+        cubit.scoreController.text = '1';
+        cubit.commentsController.text = 'Looks good';
 
-      cubit.selectEvaluation(pendingEvaluation());
+        cubit.selectEvaluation(pendingEvaluation());
 
-      expect(cubit.sessionIdController.text, 'session_001');
-      expect(cubit.evaluationIdController.text, 'eval_001');
-      expect(cubit.maxScoreController.text, '1');
-      expect(cubit.scoreController.text, '1');
-      expect(cubit.commentsController.text, 'Looks good');
-    });
+        expect(cubit.sessionIdController.text, 'session_001');
+        expect(cubit.evaluationIdController.text, 'eval_001');
+        expect(cubit.maxScoreController.text, '1');
+        expect(cubit.scoreController.text, '1');
+        expect(cubit.commentsController.text, 'Looks good');
+      },
+    );
 
-    test('getPendingEvaluations emits loading then loaded and stores response', () async {
-      final response = pendingResponse();
-      when(
-        () => repo.getPendingEvaluations(any()),
-      ).thenAnswer((_) async => response);
+    test(
+      'getPendingEvaluations emits loading then loaded and stores response',
+      () async {
+        final response = pendingResponse();
+        when(
+          () => repo.getPendingEvaluations(any()),
+        ).thenAnswer((_) async => response);
 
-      final emission = expectLater(
-        cubit.stream,
-        emitsInOrder([
-          predicate<ManualEvaluationState>(isLoading),
-          predicate<ManualEvaluationState>(
-            (state) => pendingLoaded(state)?.data.single.id == 'eval_001',
-          ),
-        ]),
-      );
+        final emission = expectLater(
+          cubit.stream,
+          emitsInOrder([
+            predicate<ManualEvaluationState>(isLoading),
+            predicate<ManualEvaluationState>(
+              (state) => pendingLoaded(state)?.data.single.id == 'eval_001',
+            ),
+          ]),
+        );
 
-      await cubit.getPendingEvaluations('session_001');
-      await emission;
+        await cubit.getPendingEvaluations('session_001');
+        await emission;
 
-      expect(cubit.pendingEvaluationsResponse, same(response));
-      verify(() => repo.getPendingEvaluations('session_001')).called(1);
-    });
+        expect(cubit.pendingEvaluationsResponse, same(response));
+        verify(() => repo.getPendingEvaluations('session_001')).called(1);
+      },
+    );
 
-    test('getPendingEvaluations emits loading then error when API fails', () async {
-      when(() => repo.getPendingEvaluations(any())).thenThrow(
-        const NetworkExceptions.unauthorizedRequest('Unauthorized'),
-      );
+    test(
+      'getPendingEvaluations emits loading then error when API fails',
+      () async {
+        when(() => repo.getPendingEvaluations(any())).thenThrow(
+          const NetworkExceptions.unauthorizedRequest('Unauthorized'),
+        );
 
-      final emission = expectLater(
-        cubit.stream,
-        emitsInOrder([
-          predicate<ManualEvaluationState>(isLoading),
-          predicate<ManualEvaluationState>(
-            (state) => stateError(state) == 'Unauthorized',
-          ),
-        ]),
-      );
+        final emission = expectLater(
+          cubit.stream,
+          emitsInOrder([
+            predicate<ManualEvaluationState>(isLoading),
+            predicate<ManualEvaluationState>(
+              (state) => stateError(state) == 'Unauthorized',
+            ),
+          ]),
+        );
 
-      await cubit.getPendingEvaluations('session_001');
-      await emission;
+        await cubit.getPendingEvaluations('session_001');
+        await emission;
 
-      expect(cubit.pendingEvaluationsResponse, isNull);
-    });
+        expect(cubit.pendingEvaluationsResponse, isNull);
+      },
+    );
 
     test('scoreEvaluation emits loading then scoreSubmitted', () async {
       final response = scoreResponse();
@@ -241,9 +237,9 @@ void main() {
     });
 
     test('scoreEvaluation emits loading then error when API fails', () async {
-      when(() => repo.scoreEvaluation(any(), any())).thenThrow(
-        const NetworkExceptions.unprocessableEntity('Invalid score'),
-      );
+      when(
+        () => repo.scoreEvaluation(any(), any()),
+      ).thenThrow(const NetworkExceptions.unprocessableEntity('Invalid score'));
 
       final emission = expectLater(
         cubit.stream,
@@ -289,9 +285,9 @@ void main() {
     test(
       'getResultPublicationStatus emits loading then error when API fails',
       () async {
-        when(() => repo.getResultPublicationStatus(any())).thenThrow(
-          const NetworkExceptions.notFound('Result not found'),
-        );
+        when(
+          () => repo.getResultPublicationStatus(any()),
+        ).thenThrow(const NetworkExceptions.notFound('Result not found'));
 
         final emission = expectLater(
           cubit.stream,
@@ -308,47 +304,56 @@ void main() {
       },
     );
 
-    test('publishSessionResult emits loading then published and stores response', () async {
-      final response = publishedResponse();
-      when(
-        () => repo.publishSessionResult(any()),
-      ).thenAnswer((_) async => response);
+    test(
+      'publishSessionResult emits loading then published and stores response',
+      () async {
+        final response = publishedResponse();
+        when(
+          () => repo.publishSessionResult(any()),
+        ).thenAnswer((_) async => response);
 
-      final emission = expectLater(
-        cubit.stream,
-        emitsInOrder([
-          predicate<ManualEvaluationState>(isLoading),
-          predicate<ManualEvaluationState>(
-            (state) =>
-                published(state)?.data.status.publicationStatus == 'published',
+        final emission = expectLater(
+          cubit.stream,
+          emitsInOrder([
+            predicate<ManualEvaluationState>(isLoading),
+            predicate<ManualEvaluationState>(
+              (state) =>
+                  published(state)?.data.status.publicationStatus ==
+                  'published',
+            ),
+          ]),
+        );
+
+        await cubit.publishSessionResult('session_001');
+        await emission;
+
+        expect(cubit.resultPublicationResponse, same(response));
+        verify(() => repo.publishSessionResult('session_001')).called(1);
+      },
+    );
+
+    test(
+      'publishSessionResult emits loading then error when API fails',
+      () async {
+        when(() => repo.publishSessionResult(any())).thenThrow(
+          const NetworkExceptions.unprocessableEntity(
+            'Pending evaluations exist',
           ),
-        ]),
-      );
+        );
 
-      await cubit.publishSessionResult('session_001');
-      await emission;
+        final emission = expectLater(
+          cubit.stream,
+          emitsInOrder([
+            predicate<ManualEvaluationState>(isLoading),
+            predicate<ManualEvaluationState>(
+              (state) => stateError(state) == 'Pending evaluations exist',
+            ),
+          ]),
+        );
 
-      expect(cubit.resultPublicationResponse, same(response));
-      verify(() => repo.publishSessionResult('session_001')).called(1);
-    });
-
-    test('publishSessionResult emits loading then error when API fails', () async {
-      when(() => repo.publishSessionResult(any())).thenThrow(
-        const NetworkExceptions.unprocessableEntity('Pending evaluations exist'),
-      );
-
-      final emission = expectLater(
-        cubit.stream,
-        emitsInOrder([
-          predicate<ManualEvaluationState>(isLoading),
-          predicate<ManualEvaluationState>(
-            (state) => stateError(state) == 'Pending evaluations exist',
-          ),
-        ]),
-      );
-
-      await cubit.publishSessionResult('session_001');
-      await emission;
-    });
+        await cubit.publishSessionResult('session_001');
+        await emission;
+      },
+    );
   });
 }

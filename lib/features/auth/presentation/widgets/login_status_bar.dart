@@ -15,8 +15,11 @@ class LoginStatusBar extends StatelessWidget {
       children: [
         Divider(color: AppColors.tertiaryColor2, thickness: 1),
         verticalSpace(10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        Wrap(
+          alignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: 8.w,
+          runSpacing: 6.h,
           children: [
             Text(
               AppStrings.statusLabel,
@@ -25,9 +28,7 @@ class LoginStatusBar extends StatelessWidget {
                 letterSpacing: 1.2,
               ),
             ),
-            horizontalSpace(10),
             Icon(Icons.circle, color: AppColors.secondaryColor6, size: 8.sp),
-            horizontalSpace(8),
             Text(
               AppStrings.allSystemsOperational,
               style: AppTextStyles.font10DarkGreyRegular.copyWith(
@@ -39,11 +40,12 @@ class LoginStatusBar extends StatelessWidget {
           ],
         ),
         verticalSpace(12),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        Wrap(
+          alignment: WrapAlignment.center,
+          spacing: 16.w,
+          runSpacing: 6.h,
           children: [
             _MetaItem(icon: Icons.public, label: AppStrings.regionLabel),
-            horizontalSpace(16),
             _MetaItem(icon: Icons.memory, label: AppStrings.nodeLabel),
           ],
         ),
@@ -61,13 +63,18 @@ class _MetaItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon, color: AppColors.tertiaryColor6, size: 14.sp),
         horizontalSpace(6),
-        Text(
-          label,
-          style: AppTextStyles.font10DarkGreyRegular.copyWith(
-            color: AppColors.tertiaryColor6,
+        Flexible(
+          child: Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.font10DarkGreyRegular.copyWith(
+              color: AppColors.tertiaryColor6,
+            ),
           ),
         ),
       ],

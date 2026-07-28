@@ -25,8 +25,7 @@ class AssessmentGovernanceCubit extends Cubit<AssessmentGovernanceState> {
   final TextEditingController penaltyTypeController = TextEditingController();
   final TextEditingController triggerConditionController =
       TextEditingController();
-  final TextEditingController penaltyPointsController =
-      TextEditingController();
+  final TextEditingController penaltyPointsController = TextEditingController();
   final TextEditingController penaltyPercentageController =
       TextEditingController();
   final TextEditingController examIdController = TextEditingController();
@@ -38,8 +37,9 @@ class AssessmentGovernanceCubit extends Cubit<AssessmentGovernanceState> {
   final TextEditingController conditionTypeController = TextEditingController(
     text: 'min_score',
   );
-  final TextEditingController logicalOperatorController =
-      TextEditingController(text: 'AND');
+  final TextEditingController logicalOperatorController = TextEditingController(
+    text: 'AND',
+  );
   final TextEditingController minScoreController = TextEditingController();
 
   bool penaltyCumulative = true;

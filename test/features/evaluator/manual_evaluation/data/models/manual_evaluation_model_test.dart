@@ -103,7 +103,10 @@ void main() {
 
       expect(response.data.single.id, 'eval_001');
       expect(response.data.single.sessionId, 'session_001');
-      expect(response.data.single.evaluationMetadata?['reason'], 'requires_human_evaluation');
+      expect(
+        response.data.single.evaluationMetadata?['reason'],
+        'requires_human_evaluation',
+      );
     });
   });
 

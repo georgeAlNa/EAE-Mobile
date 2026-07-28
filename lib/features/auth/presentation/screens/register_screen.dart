@@ -100,10 +100,12 @@ class _RegisterCard extends StatelessWidget {
                       size: 20.sp,
                     ),
                     horizontalSpace(8),
-                    Text(
-                      AppStrings.acceptInvite,
-                      style: AppTextStyles.font14DarkGreySemiBold.copyWith(
-                        color: AppColors.primaryColor9,
+                    Expanded(
+                      child: Text(
+                        AppStrings.acceptInvite,
+                        style: AppTextStyles.font14DarkGreySemiBold.copyWith(
+                          color: AppColors.primaryColor9,
+                        ),
                       ),
                     ),
                   ],

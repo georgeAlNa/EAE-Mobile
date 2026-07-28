@@ -13,31 +13,38 @@ class AssessmentHeader extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Row(
-          children: [
-            Container(
-              width: 32.w,
-              height: 32.w,
-              decoration: BoxDecoration(
-                color: AppColors.primaryColor5,
-                borderRadius: BorderRadius.circular(10.r),
+        Expanded(
+          child: Row(
+            children: [
+              Container(
+                width: 32.w,
+                height: 32.w,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryColor5,
+                  borderRadius: BorderRadius.circular(10.r),
+                ),
+                child: Icon(
+                  Icons.shield_outlined,
+                  size: 18.sp,
+                  color: AppColors.primaryColor9,
+                ),
               ),
-              child: Icon(
-                Icons.shield_outlined,
-                size: 18.sp,
-                color: AppColors.primaryColor9,
+              SizedBox(width: 10.w),
+              Expanded(
+                child: Text(
+                  AppStrings.enterpriseAssessmentTitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppTextStyles.font12DarkGreySemiBold.copyWith(
+                    color: AppColors.primaryColor9,
+                    letterSpacing: 0.8,
+                  ),
+                ),
               ),
-            ),
-            SizedBox(width: 10.w),
-            Text(
-              AppStrings.enterpriseAssessmentTitle,
-              style: AppTextStyles.font12DarkGreySemiBold.copyWith(
-                color: AppColors.primaryColor9,
-                letterSpacing: 0.8,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
+        SizedBox(width: 12.w),
         Container(
           width: 34.w,
           height: 34.w,

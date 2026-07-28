@@ -343,21 +343,26 @@ void main() {
     );
     final response = MfaVerifyResponse(message: 'MFA verified');
 
-    test('returns MfaVerifyResponse when connected and remote succeeds', () async {
-      when(() => networkInfo.isConnected).thenAnswer((_) async => true);
-      when(
-        () => remoteDataSource.verifyMfa(any()),
-      ).thenAnswer((_) async => response);
+    test(
+      'returns MfaVerifyResponse when connected and remote succeeds',
+      () async {
+        when(() => networkInfo.isConnected).thenAnswer((_) async => true);
+        when(
+          () => remoteDataSource.verifyMfa(any()),
+        ).thenAnswer((_) async => response);
 
-      final result = await authRepo.verifyMfa(request);
+        final result = await authRepo.verifyMfa(request);
 
-      expect(result, same(response));
-      final captured =
-          verify(() => remoteDataSource.verifyMfa(captureAny())).captured.single
-              as MfaVerifyRequestBody;
-      expect(captured.sessionId, 'sess_001');
-      expect(captured.oneTimeCode, '123456');
-    });
+        expect(result, same(response));
+        final captured =
+            verify(
+                  () => remoteDataSource.verifyMfa(captureAny()),
+                ).captured.single
+                as MfaVerifyRequestBody;
+        expect(captured.sessionId, 'sess_001');
+        expect(captured.oneTimeCode, '123456');
+      },
+    );
 
     test('throws noInternetConnection when verifyMfa is offline', () {
       when(() => networkInfo.isConnected).thenAnswer((_) async => false);

@@ -75,11 +75,15 @@ class LoginCard extends StatelessWidget {
                       size: 18.sp,
                     ),
                     horizontalSpace(8),
-                    Text(
-                      AppStrings.biometricSecurityActive,
-                      style: AppTextStyles.font12DarkGreyLight.copyWith(
-                        color: AppColors.secondaryColor7,
-                        fontWeight: FontWeight.w600,
+                    Flexible(
+                      child: Text(
+                        AppStrings.biometricSecurityActive,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTextStyles.font12DarkGreyLight.copyWith(
+                          color: AppColors.secondaryColor7,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ],
@@ -108,10 +112,12 @@ class LoginCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      AppStrings.password,
-                      style: AppTextStyles.font12DarkGreySemiBold.copyWith(
-                        color: AppColors.primaryColor9,
+                    Expanded(
+                      child: Text(
+                        AppStrings.password,
+                        style: AppTextStyles.font12DarkGreySemiBold.copyWith(
+                          color: AppColors.primaryColor9,
+                        ),
                       ),
                     ),
                     InkWell(
@@ -163,10 +169,12 @@ class LoginCard extends StatelessWidget {
                         color: AppColors.secondaryColor7,
                       ),
                       horizontalSpace(6),
-                      Text(
-                        'Too many attempts. Try again in ${_formatSeconds(rateLimitedSeconds)}',
-                        style: AppTextStyles.font11OrangeLowInStockSemiBold
-                            .copyWith(color: AppColors.secondaryColor7),
+                      Expanded(
+                        child: Text(
+                          'Too many attempts. Try again in ${_formatSeconds(rateLimitedSeconds)}',
+                          style: AppTextStyles.font11OrangeLowInStockSemiBold
+                              .copyWith(color: AppColors.secondaryColor7),
+                        ),
                       ),
                     ],
                   ),
@@ -297,11 +305,15 @@ class _BiometricButton extends StatelessWidget {
           children: [
             Icon(Icons.fingerprint, color: AppColors.neutralColor, size: 18.sp),
             horizontalSpace(10),
-            Text(
-              AppStrings.signInWithBiometrics,
-              style: AppTextStyles.font14DarkGreySemiBold.copyWith(
-                color: AppColors.neutralColor,
-                letterSpacing: 0.4,
+            Flexible(
+              child: Text(
+                AppStrings.signInWithBiometrics,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTextStyles.font14DarkGreySemiBold.copyWith(
+                  color: AppColors.neutralColor,
+                  letterSpacing: 0.4,
+                ),
               ),
             ),
           ],

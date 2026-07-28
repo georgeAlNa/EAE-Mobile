@@ -185,9 +185,7 @@ class AssessmentGovernanceScreen extends StatelessWidget {
   void _reload(BuildContext context) {
     final cubit = context.read<AssessmentGovernanceCubit>();
     final examId = cubit.examFilterController.text.trim();
-    cubit.loadAssessmentGovernance(
-      examId: examId.isEmpty ? null : examId,
-    );
+    cubit.loadAssessmentGovernance(examId: examId.isEmpty ? null : examId);
   }
 
   void _submitPenaltyRule(BuildContext context) {
@@ -240,11 +238,8 @@ class AssessmentGovernanceScreen extends StatelessWidget {
         EligibilityChainRequestBody(
           examId: cubit.examIdController.text.trim(),
           chainStepNumber: step,
-          prerequisiteExamId: cubit
-              .prerequisiteExamIdController
-              .text
-              .trim()
-              .isEmpty
+          prerequisiteExamId:
+              cubit.prerequisiteExamIdController.text.trim().isEmpty
               ? null
               : cubit.prerequisiteExamIdController.text.trim(),
           conditionType: cubit.conditionTypeController.text.trim(),

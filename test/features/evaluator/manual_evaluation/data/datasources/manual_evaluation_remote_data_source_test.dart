@@ -173,26 +173,29 @@ void main() {
       ).called(1);
     });
 
-    test('getResultPublicationStatus gets endpoint with stored token', () async {
-      when(
-        () => apiServicesImpl.get(
-          AppLinkUrl.resultPublicationStatus('session_001'),
-          token: any(named: 'token'),
-        ),
-      ).thenAnswer((_) async => {'data': publicationStatusJson()});
+    test(
+      'getResultPublicationStatus gets endpoint with stored token',
+      () async {
+        when(
+          () => apiServicesImpl.get(
+            AppLinkUrl.resultPublicationStatus('session_001'),
+            token: any(named: 'token'),
+          ),
+        ).thenAnswer((_) async => {'data': publicationStatusJson()});
 
-      final response = await remoteDataSource.getResultPublicationStatus(
-        'session_001',
-      );
+        final response = await remoteDataSource.getResultPublicationStatus(
+          'session_001',
+        );
 
-      expect(response.data.publicationStatus, 'unpublished');
-      verify(
-        () => apiServicesImpl.get(
-          AppLinkUrl.resultPublicationStatus('session_001'),
-          token: 'access-token',
-        ),
-      ).called(1);
-    });
+        expect(response.data.publicationStatus, 'unpublished');
+        verify(
+          () => apiServicesImpl.get(
+            AppLinkUrl.resultPublicationStatus('session_001'),
+            token: 'access-token',
+          ),
+        ).called(1);
+      },
+    );
 
     test('wraps unexpected API failures as NetworkExceptions', () {
       when(

@@ -102,10 +102,12 @@ class _ResetPasswordCard extends StatelessWidget {
                       size: 20.sp,
                     ),
                     horizontalSpace(8),
-                    Text(
-                      'Create New Password',
-                      style: AppTextStyles.font14DarkGreySemiBold.copyWith(
-                        color: AppColors.primaryColor9,
+                    Expanded(
+                      child: Text(
+                        'Create New Password',
+                        style: AppTextStyles.font14DarkGreySemiBold.copyWith(
+                          color: AppColors.primaryColor9,
+                        ),
                       ),
                     ),
                   ],

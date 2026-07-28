@@ -13,14 +13,15 @@ class LoginFooter extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        Wrap(
+          alignment: WrapAlignment.center,
+          spacing: 12.w,
+          runSpacing: 8.h,
           children: [
             _BadgeChip(
               icon: Icons.shield_outlined,
               label: AppStrings.soc2Certified,
             ),
-            horizontalSpace(12),
             _BadgeChip(
               icon: Icons.lock_outline,
               label: AppStrings.encryption256,
@@ -65,15 +66,20 @@ class _BadgeChip extends StatelessWidget {
         border: Border.all(color: AppColors.secondaryColor4),
       ),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, color: AppColors.secondaryColor7, size: 16.sp),
           horizontalSpace(6),
-          Text(
-            label,
-            style: AppTextStyles.font10DarkGreyRegular.copyWith(
-              color: AppColors.secondaryColor7,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 0.8,
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTextStyles.font10DarkGreyRegular.copyWith(
+                color: AppColors.secondaryColor7,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.8,
+              ),
             ),
           ),
         ],

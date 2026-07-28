@@ -25,10 +25,7 @@ Future<void> pumpBottomNav(
                 label: 'ROLES',
                 icon: Icons.admin_panel_settings_outlined,
               ),
-              AppBottomNavItem(
-                label: 'COHORTS',
-                icon: Icons.groups_outlined,
-              ),
+              AppBottomNavItem(label: 'COHORTS', icon: Icons.groups_outlined),
             ],
           ),
         ),

@@ -72,7 +72,9 @@ void main() {
       final result = await repo.getPendingEvaluations('session_001');
 
       expect(result, same(response));
-      verify(() => remoteDataSource.getPendingEvaluations('session_001')).called(1);
+      verify(
+        () => remoteDataSource.getPendingEvaluations('session_001'),
+      ).called(1);
     });
 
     test('throws noInternetConnection when offline', () {
@@ -156,7 +158,9 @@ void main() {
       final result = await repo.publishSessionResult('session_001');
 
       expect(result, same(response));
-      verify(() => remoteDataSource.publishSessionResult('session_001')).called(1);
+      verify(
+        () => remoteDataSource.publishSessionResult('session_001'),
+      ).called(1);
     });
 
     test('gets publication status when connected', () async {
@@ -176,7 +180,9 @@ void main() {
       final result = await repo.getResultPublicationStatus('session_001');
 
       expect(result, same(response));
-      verify(() => remoteDataSource.getResultPublicationStatus('session_001')).called(1);
+      verify(
+        () => remoteDataSource.getResultPublicationStatus('session_001'),
+      ).called(1);
     });
   });
 }

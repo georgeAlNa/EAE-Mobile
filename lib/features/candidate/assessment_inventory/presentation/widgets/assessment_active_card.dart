@@ -69,18 +69,25 @@ class AssessmentActiveCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    _ProctorAvatars(count: assessment.proctorsAvailable),
-                    horizontalSpace(10),
-                    Text(
-                      '${assessment.proctorsAvailable} ${AppStrings.proctorsAvailable}',
-                      style: AppTextStyles.font11DarkGreyLight.copyWith(
-                        color: AppColors.tertiaryColor7,
+                Expanded(
+                  child: Row(
+                    children: [
+                      _ProctorAvatars(count: assessment.proctorsAvailable),
+                      horizontalSpace(10),
+                      Expanded(
+                        child: Text(
+                          '${assessment.proctorsAvailable} ${AppStrings.proctorsAvailable}',
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppTextStyles.font11DarkGreyLight.copyWith(
+                            color: AppColors.tertiaryColor7,
+                          ),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
+                SizedBox(width: 12.w),
                 _ActionButton(
                   label: AppStrings.showMore,
                   isPrimary: assessment.isPrimaryAction,
