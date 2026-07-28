@@ -55,10 +55,10 @@ abstract class QuestionBankAndCategoriesRemoteDataSource {
   );
 
   Future<QuestionVersionPsychometricsResponse>
-      updateQuestionVersionPsychometrics(
+  updateQuestionVersionPsychometrics(
     String versionId,
     QuestionVersionPsychometricsRequestBody
-        questionVersionPsychometricsRequestBody,
+    questionVersionPsychometricsRequestBody,
   );
 }
 
@@ -240,7 +240,7 @@ class QuestionBankAndCategoriesRemoteDataSourceImpl
     try {
       final request = await apiServicesImpl.post(
         AppLinkUrl.questionsBulkImport,
-        formData: FormData.fromMap({
+        formDataBuilder: () async => FormData.fromMap({
           'file': await MultipartFile.fromFile(
             bulkImportQuestionsRequestBody.filePath,
             filename: bulkImportQuestionsRequestBody.fileName,
@@ -315,10 +315,10 @@ class QuestionBankAndCategoriesRemoteDataSourceImpl
 
   @override
   Future<QuestionVersionPsychometricsResponse>
-      updateQuestionVersionPsychometrics(
+  updateQuestionVersionPsychometrics(
     String versionId,
     QuestionVersionPsychometricsRequestBody
-        questionVersionPsychometricsRequestBody,
+    questionVersionPsychometricsRequestBody,
   ) async {
     try {
       final request = await apiServicesImpl.patch(

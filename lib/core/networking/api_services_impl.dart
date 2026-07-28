@@ -47,7 +47,8 @@ class ApiServicesImpl implements ApiServices {
 
   ApiServicesImpl() {
     _dio.options
-      ..baseUrl = AppLinkUrl.baseUrl // Put here your base Url
+      ..baseUrl = AppLinkUrl
+          .baseUrl // Put here your base Url
       ..responseType = ResponseType.plain
       ..sendTimeout = const Duration(minutes: 1)
       ..receiveTimeout = const Duration(minutes: 1)
@@ -264,19 +265,25 @@ class ApiServicesImpl implements ApiServices {
     Map<String, dynamic>? queryParams,
     Map<String, dynamic>? body,
     FormData? formData,
+    FormDataBuilder? formDataBuilder,
     String? token,
     bool retryOnUnauthorized = true,
   }) async {
     try {
       await setHeaders(token: token ?? _storedToken);
+      final resolvedFormData = formDataBuilder != null
+          ? await formDataBuilder()
+          : formData;
 
       final response = await _dio.post(
         path,
         queryParameters: queryParams,
-        data: formData ?? body,
+        data: resolvedFormData ?? body,
         options: Options(
           headers: _headers,
-          contentType: formData == null ? Headers.jsonContentType : null,
+          contentType: resolvedFormData == null
+              ? Headers.jsonContentType
+              : null,
         ),
       );
       return _parseJsonResponse(response);
@@ -289,6 +296,7 @@ class ApiServicesImpl implements ApiServices {
           queryParams: queryParams,
           body: body,
           formData: formData,
+          formDataBuilder: formDataBuilder,
           token: _storedToken,
           retryOnUnauthorized: false,
         );
@@ -305,18 +313,24 @@ class ApiServicesImpl implements ApiServices {
     Map<String, dynamic>? queryParams,
     Map<String, dynamic>? body,
     FormData? formData,
+    FormDataBuilder? formDataBuilder,
     String? token,
     bool retryOnUnauthorized = true,
   }) async {
     try {
       await setHeaders(token: token ?? _storedToken);
+      final resolvedFormData = formDataBuilder != null
+          ? await formDataBuilder()
+          : formData;
       final response = await _dio.put(
         path,
         queryParameters: queryParams,
-        data: formData ?? body,
+        data: resolvedFormData ?? body,
         options: Options(
           headers: _headers,
-          contentType: Headers.jsonContentType,
+          contentType: resolvedFormData == null
+              ? Headers.jsonContentType
+              : null,
         ),
       );
       return _parseJsonResponse(response);
@@ -329,6 +343,7 @@ class ApiServicesImpl implements ApiServices {
           queryParams: queryParams,
           body: body,
           formData: formData,
+          formDataBuilder: formDataBuilder,
           token: _storedToken,
           retryOnUnauthorized: false,
         );
@@ -345,19 +360,25 @@ class ApiServicesImpl implements ApiServices {
     Map<String, dynamic>? queryParams,
     Map<String, dynamic>? body,
     FormData? formData,
+    FormDataBuilder? formDataBuilder,
     // bool? hasToken,
     String? token,
     bool retryOnUnauthorized = true,
   }) async {
     try {
       await setHeaders(token: token ?? _storedToken);
+      final resolvedFormData = formDataBuilder != null
+          ? await formDataBuilder()
+          : formData;
       final response = await _dio.patch(
         path,
         queryParameters: queryParams,
-        data: formData ?? body,
+        data: resolvedFormData ?? body,
         options: Options(
           headers: _headers,
-          contentType: Headers.jsonContentType,
+          contentType: resolvedFormData == null
+              ? Headers.jsonContentType
+              : null,
         ),
       );
       return _parseJsonResponse(response);
@@ -370,6 +391,7 @@ class ApiServicesImpl implements ApiServices {
           queryParams: queryParams,
           body: body,
           formData: formData,
+          formDataBuilder: formDataBuilder,
           token: _storedToken,
           retryOnUnauthorized: false,
         );

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:eae_mobile/core/constants/shared_pref_keys.dart';
 import 'package:eae_mobile/core/helpers/app_shared_preferences.dart';
+import 'package:eae_mobile/core/networking/api_services.dart';
 import 'package:eae_mobile/core/networking/api_services_impl.dart';
 import 'package:eae_mobile/core/networking/app_link_url.dart';
 import 'package:eae_mobile/core/networking/error/error_handler/network_exceptions.dart';
@@ -390,7 +391,7 @@ void main() {
       when(
         () => apiServicesImpl.post(
           AppLinkUrl.questionsBulkImport,
-          formData: any(named: 'formData'),
+          formDataBuilder: any(named: 'formDataBuilder'),
           token: any(named: 'token'),
         ),
       ).thenAnswer(
@@ -416,11 +417,13 @@ void main() {
       final captured = verify(
         () => apiServicesImpl.post(
           AppLinkUrl.questionsBulkImport,
-          formData: captureAny(named: 'formData'),
+          formDataBuilder: captureAny(named: 'formDataBuilder'),
           token: captureAny(named: 'token'),
         ),
       ).captured;
-      expect(captured[0], isA<FormData>());
+      final formData = await (captured[0] as FormDataBuilder)();
+      expect(formData, isA<FormData>());
+      expect(formData.files.single.key, 'file');
       expect(captured[1], 'access-token');
     });
 
