@@ -68,6 +68,15 @@ Map<String, dynamic> sessionsJson() => {
   ],
 };
 
+Map<String, dynamic> systemStatusJson() => {
+  'data': {
+    'status': 'ok',
+    'tenant_id': 'tenant_001',
+    'database': 'connected',
+    'timestamp': '2026-06-25T14:03:03Z',
+  },
+};
+
 void main() {
   late MockApiServicesImpl apiServicesImpl;
   late SettingsRemoteDataSourceImpl remoteDataSource;
@@ -221,6 +230,24 @@ void main() {
           AppLinkUrl.identitySessionsAll,
           token: 'access-token',
         ),
+      ).called(1);
+    });
+
+    test('getSystemStatus gets system status with stored token', () async {
+      when(
+        () => apiServicesImpl.get(
+          AppLinkUrl.systemStatus,
+          token: any(named: 'token'),
+        ),
+      ).thenAnswer((_) async => systemStatusJson());
+
+      final response = await remoteDataSource.getSystemStatus();
+
+      expect(response.data.status, 'ok');
+      expect(response.data.database, 'connected');
+      verify(
+        () =>
+            apiServicesImpl.get(AppLinkUrl.systemStatus, token: 'access-token'),
       ).called(1);
     });
 

@@ -17,16 +17,20 @@ import '../widgets/forensics_notice_card.dart';
 import '../widgets/forensics_protocol_chip.dart';
 
 class ForensicsCheckpointScreen extends StatelessWidget {
-  const ForensicsCheckpointScreen({super.key});
+  final String? examId;
+
+  const ForensicsCheckpointScreen({super.key, this.examId});
 
   @override
   Widget build(BuildContext context) {
-    return const _ForensicsCheckpointView();
+    return _ForensicsCheckpointView(examId: examId);
   }
 }
 
 class _ForensicsCheckpointView extends StatelessWidget {
-  const _ForensicsCheckpointView();
+  final String? examId;
+
+  const _ForensicsCheckpointView({this.examId});
 
   @override
   Widget build(BuildContext context) {
@@ -86,8 +90,10 @@ class _ForensicsCheckpointView extends StatelessWidget {
                   verticalSpace(16),
                   _ActionButton(
                     label: viewData.actionLabel,
-                    onTap: () =>
-                        context.pushNamed(Routes.assessmentSetupScreen),
+                    onTap: () => context.pushNamed(
+                      Routes.assessmentSetupScreen,
+                      arguments: examId,
+                    ),
                   ),
                   verticalSpace(16),
                   ForensicsFooterStats(

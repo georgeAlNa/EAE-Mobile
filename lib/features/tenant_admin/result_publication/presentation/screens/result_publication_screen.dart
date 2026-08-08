@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,6 +11,7 @@ import '../../../../../core/public_widgets/app_state_widgets.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
 import '../../../../../core/public_widgets/text_field_widget.dart';
 import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
+import '../../data/models/result_publication_request_body.dart';
 import '../../data/models/result_publication_response.dart';
 import '../../logic/result_publication_cubit.dart';
 
@@ -28,9 +31,11 @@ class ResultPublicationScreen extends StatelessWidget {
             final cubit = context.read<ResultPublicationCubit>();
             final status = cubit.resultPublicationStatusResponse;
             final published = cubit.resultPublicationResponse;
+            final workflow = cubit.approvalWorkflowActionResponse;
             final isLoading = state.maybeWhen(
               statusLoading: () => true,
               publishLoading: () => true,
+              workflowLoading: () => true,
               orElse: () => false,
             );
 
@@ -84,13 +89,81 @@ class ResultPublicationScreen extends StatelessWidget {
                       ),
                     ),
                     verticalSpace(14),
+                    _ResultPublicationCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Approval workflow',
+                            style: AppTextStyles.font14DarkGreySemiBold
+                                .copyWith(color: AppColors.primaryColor9),
+                          ),
+                          verticalSpace(12),
+                          TextFieldWidget(
+                            controller: cubit.workflowResourceIdController,
+                            hintText: 'assessment result resource id',
+                            labelText: 'Resource ID',
+                            obscureText: false,
+                          ),
+                          verticalSpace(12),
+                          TextFieldWidget(
+                            controller: cubit.workflowIdController,
+                            hintText: 'workflow id',
+                            labelText: 'Workflow ID',
+                            obscureText: false,
+                          ),
+                          verticalSpace(12),
+                          Wrap(
+                            spacing: 8.w,
+                            runSpacing: 8.h,
+                            children: [
+                              FilledButton.icon(
+                                onPressed: () => _createWorkflow(context),
+                                icon: const Icon(Icons.account_tree_outlined),
+                                label: const Text('Create'),
+                                style: _filledActionButtonStyle(),
+                              ),
+                              OutlinedButton.icon(
+                                onPressed: () => _getWorkflow(context),
+                                icon: const Icon(Icons.search_rounded),
+                                label: const Text('Get'),
+                                style: _outlinedActionButtonStyle(),
+                              ),
+                              OutlinedButton.icon(
+                                onPressed: () => _approveWorkflow(context),
+                                icon: const Icon(Icons.verified_outlined),
+                                label: const Text('Approve'),
+                                style: _outlinedActionButtonStyle(),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (workflow != null) ...[
+                      verticalSpace(14),
+                      _ResultPublicationCard(
+                        child: Text(
+                          const JsonEncoder.withIndent(
+                            '  ',
+                          ).convert(workflow.toJson()),
+                          style: AppTextStyles.font11DarkGreyLight.copyWith(
+                            color: AppColors.primaryColor9,
+                            height: 1.4,
+                          ),
+                        ),
+                      ),
+                    ],
+                    verticalSpace(14),
                     if (status != null)
                       _PublicationStatusCard(status: status.data),
                     if (published != null) ...[
                       if (status != null) verticalSpace(14),
                       _PublishedResultCard(result: published.data),
                     ],
-                    if (status == null && published == null) ...[
+                    if (status == null &&
+                        published == null &&
+                        workflow == null) ...[
                       TenantAdminEmptyState(
                         icon: Icons.publish_outlined,
                         title: 'No session loaded',
@@ -123,6 +196,8 @@ class ResultPublicationScreen extends StatelessWidget {
       },
       statusError: (error) => showAppSnackBar(context, error),
       publishError: (error) => showAppSnackBar(context, error),
+      workflowLoaded: (_) => showAppSnackBar(context, 'Workflow updated'),
+      workflowError: (error) => showAppSnackBar(context, error),
       orElse: () {},
     );
   }
@@ -145,5 +220,44 @@ class ResultPublicationScreen extends StatelessWidget {
       return;
     }
     cubit.publishSessionResult(sessionId);
+  }
+
+  void _createWorkflow(BuildContext context) {
+    final cubit = context.read<ResultPublicationCubit>();
+    final resourceId = cubit.workflowResourceIdController.text.trim();
+    if (resourceId.isEmpty) {
+      showAppSnackBar(context, 'Enter resource id first');
+      return;
+    }
+
+    cubit.createApprovalWorkflow(
+      CreateApprovalWorkflowRequestBody(
+        resourceType: 'assessment_result',
+        resourceId: resourceId,
+        workflowType: 'result_publication',
+      ),
+    );
+  }
+
+  void _getWorkflow(BuildContext context) {
+    final cubit = context.read<ResultPublicationCubit>();
+    final workflowId = cubit.workflowIdController.text.trim();
+    if (workflowId.isEmpty) {
+      showAppSnackBar(context, 'Enter workflow id first');
+      return;
+    }
+
+    cubit.getApprovalWorkflow(workflowId);
+  }
+
+  void _approveWorkflow(BuildContext context) {
+    final cubit = context.read<ResultPublicationCubit>();
+    final workflowId = cubit.workflowIdController.text.trim();
+    if (workflowId.isEmpty) {
+      showAppSnackBar(context, 'Enter workflow id first');
+      return;
+    }
+
+    cubit.approveWorkflow(workflowId);
   }
 }

@@ -176,3 +176,38 @@ class SettingsActionResponse {
 
   Map<String, dynamic> toJson() => _$SettingsActionResponseToJson(this);
 }
+
+@JsonSerializable()
+class SystemStatusResponse {
+  final SystemStatusData data;
+
+  SystemStatusResponse({required this.data});
+
+  factory SystemStatusResponse.fromJson(Map<String, dynamic> json) =>
+      _$SystemStatusResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SystemStatusResponseToJson(this);
+}
+
+@JsonSerializable()
+class SystemStatusData {
+  final String status;
+
+  @JsonKey(name: 'tenant_id')
+  final String tenantId;
+
+  final String database;
+  final String timestamp;
+
+  SystemStatusData({
+    required this.status,
+    required this.tenantId,
+    required this.database,
+    required this.timestamp,
+  });
+
+  factory SystemStatusData.fromJson(Map<String, dynamic> json) =>
+      _$SystemStatusDataFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SystemStatusDataToJson(this);
+}

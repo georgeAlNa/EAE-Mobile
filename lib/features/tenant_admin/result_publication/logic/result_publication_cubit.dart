@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/networking/error/error_handler/network_exceptions.dart';
+import '../data/models/result_publication_request_body.dart';
 import '../data/models/result_publication_response.dart';
 import '../data/repos/result_publication_repo.dart';
 
@@ -14,9 +15,13 @@ class ResultPublicationCubit extends Cubit<ResultPublicationState> {
     : super(const ResultPublicationState.initial());
 
   final TextEditingController sessionIdController = TextEditingController();
+  final TextEditingController workflowResourceIdController =
+      TextEditingController();
+  final TextEditingController workflowIdController = TextEditingController();
 
   ResultPublicationStatusResponse? resultPublicationStatusResponse;
   ResultPublicationResponse? resultPublicationResponse;
+  ApprovalWorkflowActionResponse? approvalWorkflowActionResponse;
 
   Future<void> getResultPublicationStatus(String sessionId) async {
     emit(const ResultPublicationState.statusLoading());
@@ -66,9 +71,83 @@ class ResultPublicationCubit extends Cubit<ResultPublicationState> {
     }
   }
 
+  Future<void> createApprovalWorkflow(
+    CreateApprovalWorkflowRequestBody requestBody,
+  ) async {
+    emit(const ResultPublicationState.workflowLoading());
+
+    try {
+      final response = await resultPublicationRepo.createApprovalWorkflow(
+        requestBody,
+      );
+      approvalWorkflowActionResponse = response;
+      emit(ResultPublicationState.workflowLoaded(response));
+    } on NetworkExceptions catch (e) {
+      emit(
+        ResultPublicationState.workflowError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
+    } catch (e) {
+      emit(
+        const ResultPublicationState.workflowError(
+          error: 'Failed to create approval workflow',
+        ),
+      );
+    }
+  }
+
+  Future<void> getApprovalWorkflow(String workflowId) async {
+    emit(const ResultPublicationState.workflowLoading());
+
+    try {
+      final response = await resultPublicationRepo.getApprovalWorkflow(
+        workflowId,
+      );
+      approvalWorkflowActionResponse = response;
+      emit(ResultPublicationState.workflowLoaded(response));
+    } on NetworkExceptions catch (e) {
+      emit(
+        ResultPublicationState.workflowError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
+    } catch (e) {
+      emit(
+        const ResultPublicationState.workflowError(
+          error: 'Failed to load approval workflow',
+        ),
+      );
+    }
+  }
+
+  Future<void> approveWorkflow(String workflowId) async {
+    emit(const ResultPublicationState.workflowLoading());
+
+    try {
+      final response = await resultPublicationRepo.approveWorkflow(workflowId);
+      approvalWorkflowActionResponse = response;
+      emit(ResultPublicationState.workflowLoaded(response));
+    } on NetworkExceptions catch (e) {
+      emit(
+        ResultPublicationState.workflowError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
+    } catch (e) {
+      emit(
+        const ResultPublicationState.workflowError(
+          error: 'Failed to approve workflow',
+        ),
+      );
+    }
+  }
+
   @override
   Future<void> close() {
     sessionIdController.dispose();
+    workflowResourceIdController.dispose();
+    workflowIdController.dispose();
     return super.close();
   }
 }

@@ -93,6 +93,8 @@ class _SettingsView extends StatelessWidget {
                           isActionLoading: isActionLoading,
                         ),
                         verticalSpace(18),
+                        _SystemStatusCard(isActionLoading: isActionLoading),
+                        verticalSpace(18),
                         _AccountActionsCard(isActionLoading: isActionLoading),
                         verticalSpace(24),
                       ],
@@ -101,6 +103,76 @@ class _SettingsView extends StatelessWidget {
                 },
           );
         },
+      ),
+    );
+  }
+}
+
+class _SystemStatusCard extends StatelessWidget {
+  final bool isActionLoading;
+
+  const _SystemStatusCard({required this.isActionLoading});
+
+  @override
+  Widget build(BuildContext context) {
+    final status = context.read<SettingsCubit>().systemStatus;
+
+    return SettingsSectionCard(
+      title: 'System Status',
+      icon: Icons.health_and_safety_outlined,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (status == null)
+            Text(
+              'No system status loaded.',
+              style: AppTextStyles.font12DarkGreyRegular.copyWith(
+                color: AppColors.tertiaryColor6,
+              ),
+            )
+          else ...[
+            _DetailPill(
+              label: 'Status',
+              value: status.status,
+              icon: Icons.check_circle_outline,
+              valueColor: status.status == 'ok'
+                  ? AppColors.secondaryColor7
+                  : AppColors.tertiaryColor6,
+            ),
+            verticalSpace(10),
+            _DetailPill(
+              label: 'Database',
+              value: status.database,
+              icon: Icons.storage_outlined,
+              valueColor: AppColors.primaryColor9,
+            ),
+            verticalSpace(10),
+            _DetailPill(
+              label: 'Timestamp',
+              value: _formatDate(status.timestamp),
+              icon: Icons.schedule_rounded,
+              valueColor: AppColors.primaryColor9,
+            ),
+          ],
+          verticalSpace(12),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: isActionLoading
+                  ? null
+                  : context.read<SettingsCubit>().loadSystemStatus,
+              icon: const Icon(Icons.refresh_rounded),
+              label: const Text('Refresh System Status'),
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: AppColors.tertiaryColor2),
+                foregroundColor: AppColors.primaryColor9,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

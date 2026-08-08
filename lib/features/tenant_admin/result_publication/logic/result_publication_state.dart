@@ -16,6 +16,12 @@ abstract class ResultPublicationState {
   ) = _Published;
   const factory ResultPublicationState.publishError({required String error}) =
       _PublishError;
+  const factory ResultPublicationState.workflowLoading() = _WorkflowLoading;
+  const factory ResultPublicationState.workflowLoaded(
+    ApprovalWorkflowActionResponse response,
+  ) = _WorkflowLoaded;
+  const factory ResultPublicationState.workflowError({required String error}) =
+      _WorkflowError;
 
   T maybeWhen<T>({
     T Function()? statusLoading,
@@ -24,6 +30,9 @@ abstract class ResultPublicationState {
     T Function()? publishLoading,
     T Function(ResultPublicationResponse response)? published,
     T Function(String error)? publishError,
+    T Function()? workflowLoading,
+    T Function(ApprovalWorkflowActionResponse response)? workflowLoaded,
+    T Function(String error)? workflowError,
     required T Function() orElse,
   }) {
     final state = this;
@@ -44,6 +53,15 @@ abstract class ResultPublicationState {
     }
     if (state is _PublishError && publishError != null) {
       return publishError(state.error);
+    }
+    if (state is _WorkflowLoading && workflowLoading != null) {
+      return workflowLoading();
+    }
+    if (state is _WorkflowLoaded && workflowLoaded != null) {
+      return workflowLoaded(state.response);
+    }
+    if (state is _WorkflowError && workflowError != null) {
+      return workflowError(state.error);
     }
     return orElse();
   }
@@ -83,4 +101,20 @@ class _PublishError extends ResultPublicationState {
   final String error;
 
   const _PublishError({required this.error});
+}
+
+class _WorkflowLoading extends ResultPublicationState {
+  const _WorkflowLoading();
+}
+
+class _WorkflowLoaded extends ResultPublicationState {
+  final ApprovalWorkflowActionResponse response;
+
+  const _WorkflowLoaded(this.response);
+}
+
+class _WorkflowError extends ResultPublicationState {
+  final String error;
+
+  const _WorkflowError({required this.error});
 }

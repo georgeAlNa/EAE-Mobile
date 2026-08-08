@@ -180,6 +180,13 @@ void main() {
           scrollable: scrollable,
         );
         expect(find.text('Logout'), findsOneWidget);
+        await tester.scrollUntilVisible(
+          find.text('Refresh System Status'),
+          300,
+          scrollable: scrollable,
+        );
+        expect(find.text('System Status'), findsOneWidget);
+        expect(find.text('Refresh System Status'), findsOneWidget);
       },
     );
 

@@ -22,6 +22,8 @@ abstract class SettingsRemoteDataSource {
   Future<SettingsActionResponse> deleteSession(String sessionId);
 
   Future<SettingsActionResponse> deleteAllSessions();
+
+  Future<SystemStatusResponse> getSystemStatus();
 }
 
 class SettingsRemoteDataSourceImpl implements SettingsRemoteDataSource {
@@ -126,6 +128,22 @@ class SettingsRemoteDataSourceImpl implements SettingsRemoteDataSource {
       );
 
       return SettingsActionResponse.fromJson(request);
+    } on DioException catch (e) {
+      throw NetworkExceptions.getException(e);
+    } catch (e) {
+      throw NetworkExceptions.getException(e);
+    }
+  }
+
+  @override
+  Future<SystemStatusResponse> getSystemStatus() async {
+    try {
+      final request = await apiServicesImpl.get(
+        AppLinkUrl.systemStatus,
+        token: _token,
+      );
+
+      return SystemStatusResponse.fromJson(request);
     } on DioException catch (e) {
       throw NetworkExceptions.getException(e);
     } catch (e) {

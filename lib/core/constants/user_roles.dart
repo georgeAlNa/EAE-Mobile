@@ -1,7 +1,8 @@
 enum UserRole {
   candidate('candidate', 'Candidate', 'Assessment candidate'),
   tenantAdmin('tenant_admin', 'Tenant Admin', 'Institution administrator'),
-  evaluator('evaluator', 'Evaluator', 'Assessment evaluator');
+  evaluator('evaluator', 'Evaluator', 'Assessment evaluator'),
+  proctor('proctor', 'Proctor', 'Session monitoring officer');
 
   final String value;
   final String label;

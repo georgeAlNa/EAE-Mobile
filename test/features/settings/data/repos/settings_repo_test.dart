@@ -52,6 +52,15 @@ SettingsSessionData session({String sessionId = 'sess_001'}) {
   );
 }
 
+SystemStatusResponse systemStatusResponse() => SystemStatusResponse(
+  data: SystemStatusData(
+    status: 'ok',
+    tenantId: 'tenant_001',
+    database: 'connected',
+    timestamp: '2026-06-25T14:03:03Z',
+  ),
+);
+
 void main() {
   late MockSettingsRemoteDataSource remoteDataSource;
   late MockNetworkInfo networkInfo;
@@ -107,6 +116,31 @@ void main() {
       when(() => remoteDataSource.getProfile()).thenThrow(exception);
 
       expect(() => settingsRepo.getProfile(), throwsA(exception));
+    });
+  });
+
+  group('getSystemStatus', () {
+    test('returns system status when connected and remote succeeds', () async {
+      final response = systemStatusResponse();
+      when(() => networkInfo.isConnected).thenAnswer((_) async => true);
+      when(
+        () => remoteDataSource.getSystemStatus(),
+      ).thenAnswer((_) async => response);
+
+      final result = await settingsRepo.getSystemStatus();
+
+      expect(result, same(response));
+      verify(() => remoteDataSource.getSystemStatus()).called(1);
+    });
+
+    test('throws noInternetConnection when offline', () {
+      when(() => networkInfo.isConnected).thenAnswer((_) async => false);
+
+      expect(
+        () => settingsRepo.getSystemStatus(),
+        throwsA(const NetworkExceptions.noInternetConnection()),
+      );
+      verifyNever(() => remoteDataSource.getSystemStatus());
     });
   });
 

@@ -137,6 +137,58 @@ class UpdateQuestionRequestBody {
   Map<String, dynamic> toJson() => _$UpdateQuestionRequestBodyToJson(this);
 }
 
+@JsonSerializable(includeIfNull: false)
+class PartialUpdateQuestionRequestBody {
+  final String? title;
+
+  @JsonKey(name: 'category_id')
+  final String? categoryId;
+
+  @JsonKey(name: 'bloom_level')
+  final int? bloomLevel;
+
+  @JsonKey(name: 'difficulty_level')
+  final int? difficultyLevel;
+
+  @JsonKey(name: 'question_text')
+  final String? questionText;
+
+  final String? stem;
+
+  @JsonKey(name: 'correct_answer')
+  final dynamic correctAnswer;
+
+  @JsonKey(name: 'accepted_answers')
+  final List<String>? acceptedAnswers;
+
+  @JsonKey(name: 'match_mode')
+  final String? matchMode;
+
+  final QuestionPsychometricsRequestBody? psychometrics;
+  final List<QuestionChoiceRequestBody>? choices;
+
+  PartialUpdateQuestionRequestBody({
+    this.title,
+    this.categoryId,
+    this.bloomLevel,
+    this.difficultyLevel,
+    this.questionText,
+    this.stem,
+    this.correctAnswer,
+    this.acceptedAnswers,
+    this.matchMode,
+    this.psychometrics,
+    this.choices,
+  });
+
+  factory PartialUpdateQuestionRequestBody.fromJson(
+    Map<String, dynamic> json,
+  ) => _$PartialUpdateQuestionRequestBodyFromJson(json);
+
+  Map<String, dynamic> toJson() =>
+      _$PartialUpdateQuestionRequestBodyToJson(this);
+}
+
 @JsonSerializable()
 class QuestionPsychometricsRequestBody {
   @JsonKey(name: 'p_value')
@@ -156,8 +208,7 @@ class QuestionPsychometricsRequestBody {
 
   factory QuestionPsychometricsRequestBody.fromJson(
     Map<String, dynamic> json,
-  ) =>
-      _$QuestionPsychometricsRequestBodyFromJson(json);
+  ) => _$QuestionPsychometricsRequestBodyFromJson(json);
 
   Map<String, dynamic> toJson() =>
       _$QuestionPsychometricsRequestBodyToJson(this);
@@ -196,9 +247,7 @@ class BulkImportQuestionsRequestBody {
 
   BulkImportQuestionsRequestBody({required this.filePath, this.fileName});
 
-  factory BulkImportQuestionsRequestBody.fromJson(
-    Map<String, dynamic> json,
-  ) =>
+  factory BulkImportQuestionsRequestBody.fromJson(Map<String, dynamic> json) =>
       _$BulkImportQuestionsRequestBodyFromJson(json);
 
   Map<String, dynamic> toJson() => _$BulkImportQuestionsRequestBodyToJson(this);
@@ -250,8 +299,7 @@ class QuestionVersionPsychometricsRequestBody {
 
   factory QuestionVersionPsychometricsRequestBody.fromJson(
     Map<String, dynamic> json,
-  ) =>
-      _$QuestionVersionPsychometricsRequestBodyFromJson(json);
+  ) => _$QuestionVersionPsychometricsRequestBodyFromJson(json);
 
   Map<String, dynamic> toJson() =>
       _$QuestionVersionPsychometricsRequestBodyToJson(this);

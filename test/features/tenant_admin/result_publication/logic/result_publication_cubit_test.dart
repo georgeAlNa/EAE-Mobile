@@ -1,4 +1,5 @@
 import 'package:eae_mobile/core/networking/error/error_handler/network_exceptions.dart';
+import 'package:eae_mobile/features/tenant_admin/result_publication/data/models/result_publication_request_body.dart';
 import 'package:eae_mobile/features/tenant_admin/result_publication/data/models/result_publication_response.dart';
 import 'package:eae_mobile/features/tenant_admin/result_publication/data/repos/result_publication_repo.dart';
 import 'package:eae_mobile/features/tenant_admin/result_publication/logic/result_publication_cubit.dart';
@@ -55,12 +56,14 @@ ResultPublicationStatusResponse statusResponse({
 bool isLoading(ResultPublicationState state) => state.maybeWhen(
   statusLoading: () => true,
   publishLoading: () => true,
+  workflowLoading: () => true,
   orElse: () => false,
 );
 
 String? stateError(ResultPublicationState state) => state.maybeWhen(
   statusError: (error) => error,
   publishError: (error) => error,
+  workflowError: (error) => error,
   orElse: () => null,
 );
 
@@ -70,11 +73,21 @@ ResultPublicationStatusResponse? loadedStatus(ResultPublicationState state) =>
 ResultPublicationResponse? published(ResultPublicationState state) =>
     state.maybeWhen(published: (response) => response, orElse: () => null);
 
+ApprovalWorkflowActionResponse? workflowLoaded(ResultPublicationState state) =>
+    state.maybeWhen(workflowLoaded: (response) => response, orElse: () => null);
+
 void main() {
   late MockResultPublicationRepo repo;
   late ResultPublicationCubit cubit;
 
   setUpAll(() {
+    registerFallbackValue(
+      CreateApprovalWorkflowRequestBody(
+        resourceType: '',
+        resourceId: '',
+        workflowType: '',
+      ),
+    );
     registerFallbackValue('');
   });
 
@@ -90,8 +103,10 @@ void main() {
   group('ResultPublicationCubit', () {
     test('owns session id controller for publication actions', () {
       cubit.sessionIdController.text = 'session_001';
+      cubit.workflowIdController.text = 'workflow_001';
 
       expect(cubit.sessionIdController.text, 'session_001');
+      expect(cubit.workflowIdController.text, 'workflow_001');
     });
 
     test('getResultPublicationStatus emits loading then loaded', () async {
@@ -179,6 +194,90 @@ void main() {
       );
 
       await cubit.publishSessionResult('session_001');
+      await emission;
+    });
+
+    test('createApprovalWorkflow emits loading then loaded', () async {
+      final response = ApprovalWorkflowActionResponse(message: 'created');
+      when(
+        () => repo.createApprovalWorkflow(any()),
+      ).thenAnswer((_) async => response);
+
+      final emission = expectLater(
+        cubit.stream,
+        emitsInOrder([
+          predicate<ResultPublicationState>(isLoading),
+          predicate<ResultPublicationState>(
+            (state) => workflowLoaded(state)?.message == 'created',
+          ),
+        ]),
+      );
+
+      await cubit.createApprovalWorkflow(
+        CreateApprovalWorkflowRequestBody(
+          resourceType: 'assessment_result',
+          resourceId: 'result_001',
+          workflowType: 'result_publication',
+        ),
+      );
+      await emission;
+
+      expect(cubit.approvalWorkflowActionResponse, same(response));
+      verify(() => repo.createApprovalWorkflow(any())).called(1);
+    });
+
+    test('getApprovalWorkflow and approveWorkflow emit loaded', () async {
+      final loaded = ApprovalWorkflowActionResponse(
+        message: 'loaded',
+        data: {'id': 'workflow_001'},
+      );
+      final approved = ApprovalWorkflowActionResponse(message: 'approved');
+      when(
+        () => repo.getApprovalWorkflow(any()),
+      ).thenAnswer((_) async => loaded);
+      when(() => repo.approveWorkflow(any())).thenAnswer((_) async => approved);
+
+      var emission = expectLater(
+        cubit.stream,
+        emitsInOrder([
+          predicate<ResultPublicationState>(isLoading),
+          predicate<ResultPublicationState>(
+            (state) => workflowLoaded(state)?.message == 'loaded',
+          ),
+        ]),
+      );
+      await cubit.getApprovalWorkflow('workflow_001');
+      await emission;
+
+      emission = expectLater(
+        cubit.stream,
+        emitsInOrder([
+          predicate<ResultPublicationState>(isLoading),
+          predicate<ResultPublicationState>(
+            (state) => workflowLoaded(state)?.message == 'approved',
+          ),
+        ]),
+      );
+      await cubit.approveWorkflow('workflow_001');
+      await emission;
+    });
+
+    test('workflow errors use network exception message', () async {
+      when(
+        () => repo.approveWorkflow(any()),
+      ).thenThrow(const NetworkExceptions.notFound('Workflow not found'));
+
+      final emission = expectLater(
+        cubit.stream,
+        emitsInOrder([
+          predicate<ResultPublicationState>(isLoading),
+          predicate<ResultPublicationState>(
+            (state) => stateError(state) == 'Workflow not found',
+          ),
+        ]),
+      );
+
+      await cubit.approveWorkflow('missing_workflow');
       await emission;
     });
   });

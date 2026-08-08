@@ -28,6 +28,21 @@ class ResultPublicationStatusResponse {
 }
 
 @JsonSerializable()
+class ApprovalWorkflowActionResponse {
+  @JsonKey(defaultValue: '')
+  final String message;
+
+  final dynamic data;
+
+  ApprovalWorkflowActionResponse({required this.message, this.data});
+
+  factory ApprovalWorkflowActionResponse.fromJson(Map<String, dynamic> json) =>
+      _$ApprovalWorkflowActionResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ApprovalWorkflowActionResponseToJson(this);
+}
+
+@JsonSerializable()
 class PublishedSessionResult {
   @JsonKey(name: 'result_id')
   final String resultId;

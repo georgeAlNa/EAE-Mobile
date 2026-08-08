@@ -75,6 +75,10 @@ void main() {
         AuthRoleResolver.roleFromServerUserType('tenant_admin'),
         UserRole.tenantAdmin,
       );
+      expect(
+        AuthRoleResolver.roleFromServerUserType('Session Proctor'),
+        UserRole.proctor,
+      );
     });
 
     test('returns null for unsupported server roles', () {
@@ -179,6 +183,34 @@ void main() {
         );
       },
     );
+
+    test('verifies proctor account and routes to proctor shell', () async {
+      await resetPrefs(selectedRole: UserRole.proctor);
+      when(() => settingsRepo.getProfile()).thenAnswer(
+        (_) async =>
+            SettingsProfileResponse(data: profile(userType: 'Proctor')),
+      );
+      when(() => settingsRepo.getPermissions()).thenAnswer(
+        (_) async => SettingsPermissionsResponse(data: permissions()),
+      );
+
+      final emission = expectLater(
+        cubit.stream,
+        emitsInOrder([
+          isA<RoleVerificationLoading>(),
+          isA<RoleVerificationVerified>()
+              .having((state) => state.role, 'role', UserRole.proctor)
+              .having(
+                (state) => state.routeName,
+                'routeName',
+                Routes.proctorNavigationShell,
+              ),
+        ]),
+      );
+
+      await cubit.verifyRole();
+      await emission;
+    });
 
     test(
       'allows Tenant Admin to enter Evaluator workspace when selected',

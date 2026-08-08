@@ -60,6 +60,15 @@ SettingsSessionData session({String sessionId = 'sess_001'}) {
   );
 }
 
+SystemStatusResponse systemStatusResponse() => SystemStatusResponse(
+  data: SystemStatusData(
+    status: 'ok',
+    tenantId: 'tenant_001',
+    database: 'connected',
+    timestamp: '2026-06-25T14:03:03Z',
+  ),
+);
+
 Future<void> resetPrefs({String? token, String? sessionId}) async {
   TestWidgetsFlutterBinding.ensureInitialized();
   SharedPreferences.setMockInitialValues({});
@@ -460,6 +469,31 @@ void main() {
 
       await cubit.logout();
       await emission;
+    });
+
+    test('loadSystemStatus stores status and emits ready message', () async {
+      stubLoadSuccess(settingsRepo);
+      final cubit = createCubit();
+      await waitForLoaded(cubit);
+      when(
+        () => settingsRepo.getSystemStatus(),
+      ).thenAnswer((_) async => systemStatusResponse());
+
+      final emission = expectLater(
+        cubit.stream,
+        emitsInOrder([
+          predicate<SettingsState>(readyIsActionLoading),
+          predicate<SettingsState>(
+            (state) => readyMessage(state) == 'System status updated',
+          ),
+        ]),
+      );
+
+      await cubit.loadSystemStatus();
+      await emission;
+
+      expect(cubit.systemStatus?.database, 'connected');
+      verify(() => settingsRepo.getSystemStatus()).called(1);
     });
   });
 }

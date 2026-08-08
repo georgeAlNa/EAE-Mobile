@@ -26,6 +26,17 @@ Map<String, dynamic> _$ResultPublicationStatusResponseToJson(
   ResultPublicationStatusResponse instance,
 ) => <String, dynamic>{'data': instance.data};
 
+ApprovalWorkflowActionResponse _$ApprovalWorkflowActionResponseFromJson(
+  Map<String, dynamic> json,
+) => ApprovalWorkflowActionResponse(
+  message: json['message'] as String? ?? '',
+  data: json['data'],
+);
+
+Map<String, dynamic> _$ApprovalWorkflowActionResponseToJson(
+  ApprovalWorkflowActionResponse instance,
+) => <String, dynamic>{'message': instance.message, 'data': instance.data};
+
 PublishedSessionResult _$PublishedSessionResultFromJson(
   Map<String, dynamic> json,
 ) => PublishedSessionResult(

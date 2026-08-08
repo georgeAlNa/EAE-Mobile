@@ -14,7 +14,7 @@ class QuestionBankAndCategoriesCubit
   final QuestionBankAndCategoriesRepo questionBankAndCategoriesRepo;
 
   QuestionBankAndCategoriesCubit({required this.questionBankAndCategoriesRepo})
-      : super(const QuestionBankAndCategoriesState.initial()) {
+    : super(const QuestionBankAndCategoriesState.initial()) {
     loadQuestionBankAndCategories();
   }
 
@@ -27,8 +27,8 @@ class QuestionBankAndCategoriesCubit
     emit(const QuestionBankAndCategoriesState.questionBankLoading());
 
     try {
-      final categories =
-          await questionBankAndCategoriesRepo.getCategoriesTree();
+      final categories = await questionBankAndCategoriesRepo
+          .getCategoriesTree();
       final questions = await questionBankAndCategoriesRepo.getQuestions();
 
       categoriesTreeResponse = categories;
@@ -178,6 +178,31 @@ class QuestionBankAndCategoriesCubit
     }
   }
 
+  Future<void> partialUpdateQuestion(
+    String questionId,
+    PartialUpdateQuestionRequestBody requestBody,
+  ) async {
+    emit(const QuestionBankAndCategoriesState.questionSaveLoading());
+
+    try {
+      final response = await questionBankAndCategoriesRepo
+          .partialUpdateQuestion(questionId, requestBody);
+      emit(QuestionBankAndCategoriesState.questionSaved(response));
+    } on NetworkExceptions catch (e) {
+      emit(
+        QuestionBankAndCategoriesState.questionSaveError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
+    } catch (e) {
+      emit(
+        const QuestionBankAndCategoriesState.questionSaveError(
+          error: 'Failed to update question',
+        ),
+      );
+    }
+  }
+
   Future<void> deleteQuestion(String questionId) async {
     emit(const QuestionBankAndCategoriesState.actionLoading());
 
@@ -291,8 +316,8 @@ class QuestionBankAndCategoriesCubit
     emit(const QuestionBankAndCategoriesState.actionLoading());
 
     try {
-      final response =
-          await questionBankAndCategoriesRepo.approveQuestionVersion(versionId);
+      final response = await questionBankAndCategoriesRepo
+          .approveQuestionVersion(versionId);
       emit(
         QuestionBankAndCategoriesState.actionSuccess(
           QuestionBankActionResponse(message: response.data.versionId),

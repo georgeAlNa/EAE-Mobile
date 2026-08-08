@@ -8,6 +8,8 @@ import '../../features/candidate/assessment_inventory/data/repos/assessment_inve
 import '../../features/candidate/assessment_results/data/datasources/assessment_results_remote_data_source.dart';
 import '../../features/candidate/assessment_results/data/repos/assessment_results_repo.dart';
 import '../../features/candidate/assessment_results/logic/assessment_results_cubit.dart';
+import '../../features/candidate/assessment_session/data/datasources/assessment_session_remote_data_source.dart';
+import '../../features/candidate/assessment_session/data/repos/assessment_session_repo.dart';
 import '../../features/certificates/data/datasources/certificates_remote_data_source.dart';
 import '../../features/certificates/data/repos/certificates_repo.dart';
 import '../../features/certificates/logic/certificates_cubit.dart';
@@ -23,6 +25,9 @@ import '../../features/evaluator/manual_evaluation/logic/manual_evaluation_cubit
 import '../../features/evaluator/question_bank_and_categories/data/datasources/question_bank_and_categories_remote_data_source.dart';
 import '../../features/evaluator/question_bank_and_categories/data/repos/question_bank_and_categories_repo.dart';
 import '../../features/evaluator/question_bank_and_categories/logic/question_bank_and_categories_cubit.dart';
+import '../../features/proctor/session_monitoring/data/datasources/proctor_session_remote_data_source.dart';
+import '../../features/proctor/session_monitoring/data/repos/proctor_session_repo.dart';
+import '../../features/proctor/session_monitoring/logic/proctor_session_cubit.dart';
 import '../../features/tenant_admin/users_management/data/datasources/users_management_remote_data_source.dart';
 import '../../features/tenant_admin/users_management/data/repos/users_management_repo.dart';
 import '../../features/tenant_admin/users_management/logic/users_management_cubit.dart';
@@ -132,6 +137,19 @@ Future<void> setupGetit() async {
     () => AssessmentResultsCubit(assessmentResultsRepo: getIt()),
   );
 
+  // //! feature - assessment session
+  // datasource
+  getIt.registerLazySingleton<AssessmentSessionRemoteDataSource>(
+    () => AssessmentSessionRemoteDataSourceImpl(apiServicesImpl: getIt()),
+  );
+  // repo
+  getIt.registerLazySingleton<AssessmentSessionRepo>(
+    () => AssessmentSessionRepo(
+      assessmentSessionRemoteDataSource: getIt(),
+      networkInfo: getIt(),
+    ),
+  );
+
   // //! feature - users management
   // datasource
   getIt.registerLazySingleton<UsersManagementRemoteDataSource>(
@@ -232,7 +250,8 @@ Future<void> setupGetit() async {
   // //! feature - live sessions and enrollment management
   // datasource
   getIt.registerLazySingleton<
-      LiveSessionsAndEnrollmentManagementRemoteDataSource>(
+    LiveSessionsAndEnrollmentManagementRemoteDataSource
+  >(
     () => LiveSessionsAndEnrollmentManagementRemoteDataSourceImpl(
       apiServicesImpl: getIt(),
     ),
@@ -351,7 +370,29 @@ Future<void> setupGetit() async {
 
   // //! feature - competency task
   // cubit
-  getIt.registerFactory<AssessmentSessionCubit>(() => AssessmentSessionCubit());
+  getIt.registerFactoryParam<AssessmentSessionCubit, String?, void>(
+    (examId, _) => AssessmentSessionCubit(
+      assessmentSessionRepo: getIt(),
+      initialExamId: examId,
+    ),
+  );
+
+  // //! feature - proctor session monitoring
+  // datasource
+  getIt.registerLazySingleton<ProctorSessionRemoteDataSource>(
+    () => ProctorSessionRemoteDataSourceImpl(apiServicesImpl: getIt()),
+  );
+  // repo
+  getIt.registerLazySingleton<ProctorSessionRepo>(
+    () => ProctorSessionRepo(
+      proctorSessionRemoteDataSource: getIt(),
+      networkInfo: getIt(),
+    ),
+  );
+  // cubit
+  getIt.registerFactory<ProctorSessionCubit>(
+    () => ProctorSessionCubit(proctorSessionRepo: getIt()),
+  );
 
   //! Core
 

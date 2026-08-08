@@ -80,6 +80,12 @@ UpdateQuestionRequestBody updateQuestionRequest() => UpdateQuestionRequestBody(
   correctAnswer: const {'choice_sequence': 1},
 );
 
+PartialUpdateQuestionRequestBody partialUpdateQuestionRequest() =>
+    PartialUpdateQuestionRequestBody(
+      questionText: 'Partially updated text',
+      difficultyLevel: 4,
+    );
+
 BulkImportQuestionsRequestBody bulkImportRequest() =>
     BulkImportQuestionsRequestBody(filePath: 'C:/tmp/questions.csv');
 
@@ -143,6 +149,7 @@ void main() {
     registerFallbackValue(moveCategoryRequest());
     registerFallbackValue(createQuestionRequest());
     registerFallbackValue(updateQuestionRequest());
+    registerFallbackValue(partialUpdateQuestionRequest());
     registerFallbackValue(bulkImportRequest());
     registerFallbackValue(competencyRequest());
     registerFallbackValue(versionPsychometricsRequest());
@@ -280,6 +287,9 @@ void main() {
         () => remoteDataSource.updateQuestion(any(), any()),
       ).thenAnswer((_) async => details);
       when(
+        () => remoteDataSource.partialUpdateQuestion(any(), any()),
+      ).thenAnswer((_) async => details);
+      when(
         () => remoteDataSource.deleteQuestion(any()),
       ).thenAnswer((_) async => action);
 
@@ -287,6 +297,13 @@ void main() {
       expect(await repo.getQuestionDetails('question_001'), same(details));
       expect(
         await repo.updateQuestion('question_001', updateQuestionRequest()),
+        same(details),
+      );
+      expect(
+        await repo.partialUpdateQuestion(
+          'question_001',
+          partialUpdateQuestionRequest(),
+        ),
         same(details),
       );
       expect(await repo.deleteQuestion('question_001'), same(action));
@@ -305,6 +322,13 @@ void main() {
       );
       expect(
         () => repo.updateQuestion('question_001', updateQuestionRequest()),
+        throwsA(const NetworkExceptions.noInternetConnection()),
+      );
+      expect(
+        () => repo.partialUpdateQuestion(
+          'question_001',
+          partialUpdateQuestionRequest(),
+        ),
         throwsA(const NetworkExceptions.noInternetConnection()),
       );
       expect(

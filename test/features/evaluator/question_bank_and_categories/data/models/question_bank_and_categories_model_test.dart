@@ -190,6 +190,20 @@ void main() {
       expect(request.toJson()['category_id'], 'cat_001');
     });
 
+    test('PartialUpdateQuestionRequestBody omits null fields', () {
+      final request = PartialUpdateQuestionRequestBody.fromJson({
+        'question_text': 'Partially updated text',
+        'difficulty_level': 4,
+      });
+
+      expect(request.questionText, 'Partially updated text');
+      expect(request.difficultyLevel, 4);
+      expect(request.toJson(), {
+        'difficulty_level': 4,
+        'question_text': 'Partially updated text',
+      });
+    });
+
     test('new QuestionBank request models serialize backend fields', () {
       expect(
         BulkImportQuestionsRequestBody(

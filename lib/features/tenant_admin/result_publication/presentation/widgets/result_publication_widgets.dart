@@ -113,6 +113,7 @@ class _ResultPublicationActionBanner extends StatelessWidget {
     final message = state.maybeWhen(
       statusLoading: () => 'Checking publication status...',
       publishLoading: () => 'Publishing result...',
+      workflowLoading: () => 'Updating workflow...',
       orElse: () => 'Working...',
     );
 

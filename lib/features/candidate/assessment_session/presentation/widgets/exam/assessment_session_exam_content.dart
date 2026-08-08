@@ -464,6 +464,27 @@ class _AssessmentSessionExamContentState
           );
 
           if (viewData == null) {
+            final error = state.maybeWhen(
+              error: (error) => error,
+              orElse: () => null,
+            );
+
+            if (error != null) {
+              return Center(
+                child: Padding(
+                  padding: EdgeInsets.all(24.w),
+                  child: Text(
+                    error,
+                    textAlign: TextAlign.center,
+                    style: AppTextStyles.font12DarkGreyRegular.copyWith(
+                      color: AppColors.secondaryColor7,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+              );
+            }
+
             return const Center(child: CircularProgressIndicator());
           }
 

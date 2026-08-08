@@ -1,3 +1,4 @@
+import 'package:eae_mobile/features/tenant_admin/result_publication/data/models/result_publication_request_body.dart';
 import 'package:eae_mobile/features/tenant_admin/result_publication/data/models/result_publication_response.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -83,6 +84,34 @@ void main() {
       expect(response.data.resultStatus, 'provisional');
       expect(response.data.publicationStatus, 'unpublished');
       expect(response.toJson()['data'], isA<ResultPublicationStatus>());
+    });
+  });
+
+  group('Approval workflow models', () {
+    test('CreateApprovalWorkflowRequestBody serializes backend fields', () {
+      final request = CreateApprovalWorkflowRequestBody.fromJson({
+        'resource_type': 'assessment_result',
+        'resource_id': 'result_001',
+        'workflow_type': 'result_publication',
+      });
+
+      expect(request.resourceType, 'assessment_result');
+      expect(request.toJson(), {
+        'resource_type': 'assessment_result',
+        'resource_id': 'result_001',
+        'workflow_type': 'result_publication',
+      });
+    });
+
+    test('ApprovalWorkflowActionResponse preserves generic data', () {
+      final response = ApprovalWorkflowActionResponse.fromJson({
+        'message': 'created',
+        'data': {'id': 'workflow_001'},
+      });
+
+      expect(response.message, 'created');
+      expect(response.data, {'id': 'workflow_001'});
+      expect(response.toJson()['message'], 'created');
     });
   });
 }

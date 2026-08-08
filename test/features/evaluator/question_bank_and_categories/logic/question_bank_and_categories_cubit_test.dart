@@ -77,6 +77,12 @@ UpdateQuestionRequestBody updateQuestionRequest() => UpdateQuestionRequestBody(
   correctAnswer: const {'choice_sequence': 1},
 );
 
+PartialUpdateQuestionRequestBody partialUpdateQuestionRequest() =>
+    PartialUpdateQuestionRequestBody(
+      questionText: 'Partially updated text',
+      difficultyLevel: 4,
+    );
+
 BulkImportQuestionsRequestBody bulkImportRequest() =>
     BulkImportQuestionsRequestBody(filePath: 'C:/tmp/questions.csv');
 
@@ -180,6 +186,7 @@ void main() {
     registerFallbackValue(moveCategoryRequest());
     registerFallbackValue(createQuestionRequest());
     registerFallbackValue(updateQuestionRequest());
+    registerFallbackValue(partialUpdateQuestionRequest());
     registerFallbackValue(bulkImportRequest());
     registerFallbackValue(competencyRequest());
     registerFallbackValue(versionPsychometricsRequest());
@@ -347,6 +354,9 @@ void main() {
       when(
         () => repo.updateQuestion(any(), any()),
       ).thenAnswer((_) async => response);
+      when(
+        () => repo.partialUpdateQuestion(any(), any()),
+      ).thenAnswer((_) async => response);
 
       var emission = expectLater(
         cubit.stream,
@@ -370,6 +380,21 @@ void main() {
         ]),
       );
       await cubit.updateQuestion('question_001', updateQuestionRequest());
+      await emission;
+
+      emission = expectLater(
+        cubit.stream,
+        emitsInOrder([
+          predicate<QuestionBankAndCategoriesState>(isLoading),
+          predicate<QuestionBankAndCategoriesState>(
+            (state) => questionSaved(state)?.data.id == 'question_saved',
+          ),
+        ]),
+      );
+      await cubit.partialUpdateQuestion(
+        'question_001',
+        partialUpdateQuestionRequest(),
+      );
       await emission;
     });
 

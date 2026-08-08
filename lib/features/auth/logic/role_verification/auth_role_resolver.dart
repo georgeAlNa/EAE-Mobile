@@ -30,6 +30,10 @@ class AuthRoleResolver {
       case 'technicalevaluator':
       case 'assessmentevaluator':
         return UserRole.evaluator;
+      case 'proctor':
+      case 'examproctor':
+      case 'sessionproctor':
+        return UserRole.proctor;
       default:
         return null;
     }
@@ -43,6 +47,8 @@ class AuthRoleResolver {
         return Routes.tenantAdminNavigationShell;
       case UserRole.evaluator:
         return Routes.evaluatorNavigationShell;
+      case UserRole.proctor:
+        return Routes.proctorNavigationShell;
     }
   }
 

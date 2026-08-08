@@ -18,16 +18,20 @@ import '../widgets/assessment_setup_footer.dart';
 import '../widgets/assessment_setup_header.dart';
 
 class AssessmentSetupScreen extends StatelessWidget {
-  const AssessmentSetupScreen({super.key});
+  final String? examId;
+
+  const AssessmentSetupScreen({super.key, this.examId});
 
   @override
   Widget build(BuildContext context) {
-    return const _AssessmentSetupView();
+    return _AssessmentSetupView(examId: examId);
   }
 }
 
 class _AssessmentSetupView extends StatelessWidget {
-  const _AssessmentSetupView();
+  final String? examId;
+
+  const _AssessmentSetupView({this.examId});
 
   @override
   Widget build(BuildContext context) {
@@ -102,6 +106,7 @@ class _AssessmentSetupView extends StatelessWidget {
                     enabled: isAcknowledged,
                     onTap: () => context.pushReplacementNamed(
                       Routes.assessmentSessionScreen,
+                      arguments: examId,
                     ),
                   ),
                   verticalSpace(12),

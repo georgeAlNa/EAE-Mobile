@@ -4,6 +4,7 @@ import 'package:eae_mobile/core/networking/api_services_impl.dart';
 import 'package:eae_mobile/core/networking/app_link_url.dart';
 import 'package:eae_mobile/core/networking/error/error_handler/network_exceptions.dart';
 import 'package:eae_mobile/features/tenant_admin/result_publication/data/datasources/result_publication_remote_data_source.dart';
+import 'package:eae_mobile/features/tenant_admin/result_publication/data/models/result_publication_request_body.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -118,6 +119,77 @@ void main() {
         verify(
           () => apiServicesImpl.get(
             AppLinkUrl.resultPublicationStatus('session_001'),
+            token: 'access-token',
+          ),
+        ).called(1);
+      },
+    );
+
+    test(
+      'workflow endpoints use expected endpoints, bodies, and token',
+      () async {
+        when(
+          () => apiServicesImpl.post(
+            AppLinkUrl.workflows,
+            body: any(named: 'body'),
+            token: any(named: 'token'),
+          ),
+        ).thenAnswer((_) async => {'message': 'created'});
+        when(
+          () => apiServicesImpl.get(
+            AppLinkUrl.workflowDetails('workflow_001'),
+            token: any(named: 'token'),
+          ),
+        ).thenAnswer(
+          (_) async => {
+            'message': 'loaded',
+            'data': {'id': 'workflow_001'},
+          },
+        );
+        when(
+          () => apiServicesImpl.post(
+            AppLinkUrl.approveWorkflow('workflow_001'),
+            token: any(named: 'token'),
+          ),
+        ).thenAnswer((_) async => {'message': 'approved'});
+
+        final created = await remoteDataSource.createApprovalWorkflow(
+          CreateApprovalWorkflowRequestBody(
+            resourceType: 'assessment_result',
+            resourceId: 'result_001',
+            workflowType: 'result_publication',
+          ),
+        );
+        final loaded = await remoteDataSource.getApprovalWorkflow(
+          'workflow_001',
+        );
+        final approved = await remoteDataSource.approveWorkflow('workflow_001');
+
+        expect(created.message, 'created');
+        expect(loaded.data, {'id': 'workflow_001'});
+        expect(approved.message, 'approved');
+        final captured = verify(
+          () => apiServicesImpl.post(
+            AppLinkUrl.workflows,
+            body: captureAny(named: 'body'),
+            token: captureAny(named: 'token'),
+          ),
+        ).captured;
+        expect(captured[0], {
+          'resource_type': 'assessment_result',
+          'resource_id': 'result_001',
+          'workflow_type': 'result_publication',
+        });
+        expect(captured[1], 'access-token');
+        verify(
+          () => apiServicesImpl.get(
+            AppLinkUrl.workflowDetails('workflow_001'),
+            token: 'access-token',
+          ),
+        ).called(1);
+        verify(
+          () => apiServicesImpl.post(
+            AppLinkUrl.approveWorkflow('workflow_001'),
             token: 'access-token',
           ),
         ).called(1);

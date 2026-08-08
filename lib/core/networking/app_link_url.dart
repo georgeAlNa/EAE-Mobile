@@ -113,10 +113,40 @@ class AppLinkUrl {
       "certificates/$certificateId";
   static String examSessionCertificate(String sessionId) =>
       "exam-sessions/$sessionId/certificate";
+  static const String examSessions = "exam-sessions";
+  static String examSession(String sessionId) => "exam-sessions/$sessionId";
+  static String examSessionCurrentQuestion(String sessionId) =>
+      "exam-sessions/$sessionId/current-question";
+  static String examSessionResponses(String sessionId) =>
+      "exam-sessions/$sessionId/responses";
+  static String completeExamSession(String sessionId) =>
+      "exam-sessions/$sessionId/complete";
+  static String examSessionHeartbeat(String sessionId) =>
+      "exam-sessions/$sessionId/heartbeat";
+  static String suspendExamSession(String sessionId) =>
+      "exam-sessions/$sessionId/suspend";
+  static String resumeExamSession(String sessionId) =>
+      "exam-sessions/$sessionId/resume";
+  static String terminateExamSession(String sessionId) =>
+      "exam-sessions/$sessionId/terminate";
+  static String examSessionSanctions(String sessionId) =>
+      "exam-sessions/$sessionId/sanctions";
+  static String voidSanction(String sanctionId) => "sanctions/$sanctionId/void";
+  static String examSessionProctorEvents(String sessionId) =>
+      "exam-sessions/$sessionId/proctor-events";
   static String regenerateCertificate(String certificateId) =>
       "certificates/$certificateId/regenerate";
   static String revokeCertificate(String certificateId) =>
       "certificates/$certificateId/revoke";
   static String verifyCertificate(String certificateCode) =>
       "certificates/verify/$certificateCode";
+
+  // workflows
+  static const String workflows = "workflows";
+  static String workflowDetails(String workflowId) => "workflows/$workflowId";
+  static String approveWorkflow(String workflowId) =>
+      "workflows/$workflowId/approve";
+
+  // system
+  static const String systemStatus = "system/status";
 }

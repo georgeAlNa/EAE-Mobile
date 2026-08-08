@@ -188,5 +188,7 @@ IconData _roleIcon(UserRole role) {
       return Icons.admin_panel_settings_outlined;
     case UserRole.evaluator:
       return Icons.rate_review_outlined;
+    case UserRole.proctor:
+      return Icons.monitor_heart_outlined;
   }
 }

@@ -32,7 +32,10 @@ class SettingsCubit extends Cubit<SettingsState> {
 
   SettingsProfileData? _profile;
   SettingsPermissionsData? _permissions;
+  SystemStatusData? _systemStatus;
   List<SettingsSessionData> _sessions = const [];
+
+  SystemStatusData? get systemStatus => _systemStatus;
 
   String? get currentSessionId =>
       AppSharedPreferences().getString(AppSharedPrefKeys.sessionId);
@@ -124,6 +127,20 @@ class SettingsCubit extends Cubit<SettingsState> {
       _emitReady(message: NetworkExceptions.getErrorMessage(e));
     } catch (e) {
       _emitReady(message: 'Failed to revoke sessions');
+    }
+  }
+
+  Future<void> loadSystemStatus() async {
+    _emitReady(isActionLoading: true);
+
+    try {
+      final response = await settingsRepo.getSystemStatus();
+      _systemStatus = response.data;
+      _emitReady(message: 'System status updated');
+    } on NetworkExceptions catch (e) {
+      _emitReady(message: NetworkExceptions.getErrorMessage(e));
+    } catch (e) {
+      _emitReady(message: 'Failed to load system status');
     }
   }
 

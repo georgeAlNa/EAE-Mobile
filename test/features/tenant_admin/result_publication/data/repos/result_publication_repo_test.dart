@@ -1,6 +1,7 @@
 import 'package:eae_mobile/core/networking/error/error_handler/network_exceptions.dart';
 import 'package:eae_mobile/core/networking/network_info.dart';
 import 'package:eae_mobile/features/tenant_admin/result_publication/data/datasources/result_publication_remote_data_source.dart';
+import 'package:eae_mobile/features/tenant_admin/result_publication/data/models/result_publication_request_body.dart';
 import 'package:eae_mobile/features/tenant_admin/result_publication/data/models/result_publication_response.dart';
 import 'package:eae_mobile/features/tenant_admin/result_publication/data/repos/result_publication_repo.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -61,6 +62,13 @@ void main() {
   late ResultPublicationRepo repo;
 
   setUpAll(() {
+    registerFallbackValue(
+      CreateApprovalWorkflowRequestBody(
+        resourceType: '',
+        resourceId: '',
+        workflowType: '',
+      ),
+    );
     registerFallbackValue('');
   });
 
@@ -124,6 +132,56 @@ void main() {
       );
       verifyNever(() => remoteDataSource.publishSessionResult(any()));
       verifyNever(() => remoteDataSource.getResultPublicationStatus(any()));
+    });
+
+    test('workflow actions call remote when connected', () async {
+      connected();
+      final response = ApprovalWorkflowActionResponse(message: 'ok');
+      when(
+        () => remoteDataSource.createApprovalWorkflow(any()),
+      ).thenAnswer((_) async => response);
+      when(
+        () => remoteDataSource.getApprovalWorkflow(any()),
+      ).thenAnswer((_) async => response);
+      when(
+        () => remoteDataSource.approveWorkflow(any()),
+      ).thenAnswer((_) async => response);
+
+      expect(
+        await repo.createApprovalWorkflow(
+          CreateApprovalWorkflowRequestBody(
+            resourceType: 'assessment_result',
+            resourceId: 'result_001',
+            workflowType: 'result_publication',
+          ),
+        ),
+        same(response),
+      );
+      expect(await repo.getApprovalWorkflow('workflow_001'), same(response));
+      expect(await repo.approveWorkflow('workflow_001'), same(response));
+    });
+
+    test('workflow actions throw noInternetConnection when offline', () {
+      offline();
+
+      expect(
+        () => repo.createApprovalWorkflow(
+          CreateApprovalWorkflowRequestBody(
+            resourceType: 'assessment_result',
+            resourceId: 'result_001',
+            workflowType: 'result_publication',
+          ),
+        ),
+        throwsA(const NetworkExceptions.noInternetConnection()),
+      );
+      expect(
+        () => repo.getApprovalWorkflow('workflow_001'),
+        throwsA(const NetworkExceptions.noInternetConnection()),
+      );
+      expect(
+        () => repo.approveWorkflow('workflow_001'),
+        throwsA(const NetworkExceptions.noInternetConnection()),
+      );
     });
   });
 }

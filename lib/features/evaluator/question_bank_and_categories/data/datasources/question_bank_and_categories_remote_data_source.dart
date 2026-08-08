@@ -35,6 +35,11 @@ abstract class QuestionBankAndCategoriesRemoteDataSource {
     UpdateQuestionRequestBody updateQuestionRequestBody,
   );
 
+  Future<QuestionDetailsResponse> partialUpdateQuestion(
+    String questionId,
+    PartialUpdateQuestionRequestBody partialUpdateQuestionRequestBody,
+  );
+
   Future<QuestionBankActionResponse> deleteQuestion(String questionId);
 
   Future<BulkImportQuestionsResponse> bulkImportQuestions(
@@ -206,6 +211,26 @@ class QuestionBankAndCategoriesRemoteDataSourceImpl
       final request = await apiServicesImpl.put(
         AppLinkUrl.questionDetails(questionId),
         body: updateQuestionRequestBody.toJson(),
+        token: _token,
+      );
+
+      return QuestionDetailsResponse.fromJson(request);
+    } on DioException catch (e) {
+      throw NetworkExceptions.getException(e);
+    } catch (e) {
+      throw NetworkExceptions.getException(e);
+    }
+  }
+
+  @override
+  Future<QuestionDetailsResponse> partialUpdateQuestion(
+    String questionId,
+    PartialUpdateQuestionRequestBody partialUpdateQuestionRequestBody,
+  ) async {
+    try {
+      final request = await apiServicesImpl.patch(
+        AppLinkUrl.questionDetails(questionId),
+        body: partialUpdateQuestionRequestBody.toJson(),
         token: _token,
       );
 

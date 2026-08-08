@@ -20,6 +20,7 @@ void main() {
       expect(find.text('Candidate'), findsOneWidget);
       expect(find.text('Tenant Admin'), findsOneWidget);
       expect(find.text('Evaluator'), findsOneWidget);
+      expect(find.text('Proctor'), findsOneWidget);
       expect(find.text('System Admin'), findsNothing);
     });
 
@@ -38,6 +39,30 @@ void main() {
       expect(
         AppSharedPreferences().getString(AppSharedPrefKeys.selectedRole),
         UserRole.evaluator.value,
+      );
+      expect(
+        observer.pushedRoutes.map((route) => route.settings.name),
+        contains(Routes.loginScreen),
+      );
+    });
+
+    testWidgets('stores selected proctor role and navigates to login', (
+      tester,
+    ) async {
+      final observer = RecordingNavigatorObserver();
+
+      await pumpTestApp(
+        tester,
+        navigatorObserver: observer,
+        child: const RoleSelectionScreen(),
+      );
+
+      await tester.tap(find.text('Proctor'));
+      await tester.pump();
+
+      expect(
+        AppSharedPreferences().getString(AppSharedPrefKeys.selectedRole),
+        UserRole.proctor.value,
       );
       expect(
         observer.pushedRoutes.map((route) => route.settings.name),

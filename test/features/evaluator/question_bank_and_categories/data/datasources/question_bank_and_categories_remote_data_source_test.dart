@@ -172,6 +172,13 @@ UpdateQuestionRequestBody updateQuestionRequest() {
   );
 }
 
+PartialUpdateQuestionRequestBody partialUpdateQuestionRequest() {
+  return PartialUpdateQuestionRequestBody(
+    questionText: 'Partially updated text',
+    difficultyLevel: 4,
+  );
+}
+
 void main() {
   late MockApiServicesImpl apiServicesImpl;
   late QuestionBankAndCategoriesRemoteDataSourceImpl remoteDataSource;
@@ -318,6 +325,13 @@ void main() {
         ),
       ).thenAnswer((_) async => {'data': questionJson()});
       when(
+        () => apiServicesImpl.patch(
+          AppLinkUrl.questionDetails('question_001'),
+          body: any(named: 'body'),
+          token: any(named: 'token'),
+        ),
+      ).thenAnswer((_) async => {'data': questionJson()});
+      when(
         () => apiServicesImpl.delete(
           AppLinkUrl.questionDetails('question_001'),
           token: any(named: 'token'),
@@ -342,6 +356,13 @@ void main() {
         (await remoteDataSource.updateQuestion(
           'question_001',
           updateQuestionRequest(),
+        )).data.id,
+        'question_001',
+      );
+      expect(
+        (await remoteDataSource.partialUpdateQuestion(
+          'question_001',
+          partialUpdateQuestionRequest(),
         )).data.id,
         'question_001',
       );
@@ -371,6 +392,18 @@ void main() {
           token: 'access-token',
         ),
       ).called(1);
+      final partialCapture = verify(
+        () => apiServicesImpl.patch(
+          AppLinkUrl.questionDetails('question_001'),
+          body: captureAny(named: 'body'),
+          token: captureAny(named: 'token'),
+        ),
+      ).captured;
+      expect(partialCapture[0], {
+        'difficulty_level': 4,
+        'question_text': 'Partially updated text',
+      });
+      expect(partialCapture[1], 'access-token');
       verify(
         () => apiServicesImpl.delete(
           AppLinkUrl.questionDetails('question_001'),

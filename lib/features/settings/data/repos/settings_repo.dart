@@ -88,4 +88,16 @@ class SettingsRepo {
       throw const NetworkExceptions.noInternetConnection();
     }
   }
+
+  Future<SystemStatusResponse> getSystemStatus() async {
+    if (await networkInfo.isConnected) {
+      try {
+        return await settingsRemoteDataSource.getSystemStatus();
+      } catch (e) {
+        throw NetworkExceptions.getException(e);
+      }
+    } else {
+      throw const NetworkExceptions.noInternetConnection();
+    }
+  }
 }

@@ -6,7 +6,7 @@ import '../models/question_bank_and_categories_response.dart';
 
 class QuestionBankAndCategoriesRepo {
   final QuestionBankAndCategoriesRemoteDataSource
-      questionBankAndCategoriesRemoteDataSource;
+  questionBankAndCategoriesRemoteDataSource;
   final NetworkInfo networkInfo;
 
   QuestionBankAndCategoriesRepo({
@@ -134,6 +134,25 @@ class QuestionBankAndCategoriesRepo {
     }
   }
 
+  Future<QuestionDetailsResponse> partialUpdateQuestion(
+    String questionId,
+    PartialUpdateQuestionRequestBody partialUpdateQuestionRequestBody,
+  ) async {
+    if (await networkInfo.isConnected) {
+      try {
+        return await questionBankAndCategoriesRemoteDataSource
+            .partialUpdateQuestion(
+              questionId,
+              partialUpdateQuestionRequestBody,
+            );
+      } catch (e) {
+        throw NetworkExceptions.getException(e);
+      }
+    } else {
+      throw const NetworkExceptions.noInternetConnection();
+    }
+  }
+
   Future<QuestionBankActionResponse> deleteQuestion(String questionId) async {
     if (await networkInfo.isConnected) {
       try {
@@ -210,18 +229,18 @@ class QuestionBankAndCategoriesRepo {
   }
 
   Future<QuestionVersionPsychometricsResponse>
-      updateQuestionVersionPsychometrics(
+  updateQuestionVersionPsychometrics(
     String versionId,
     QuestionVersionPsychometricsRequestBody
-        questionVersionPsychometricsRequestBody,
+    questionVersionPsychometricsRequestBody,
   ) async {
     if (await networkInfo.isConnected) {
       try {
         return await questionBankAndCategoriesRemoteDataSource
             .updateQuestionVersionPsychometrics(
-          versionId,
-          questionVersionPsychometricsRequestBody,
-        );
+              versionId,
+              questionVersionPsychometricsRequestBody,
+            );
       } catch (e) {
         throw NetworkExceptions.getException(e);
       }

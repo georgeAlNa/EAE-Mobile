@@ -4,23 +4,60 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/networking/error/error_handler/network_exceptions.dart';
 import '../data/models/assessment_session_models.dart';
+import '../data/models/assessment_session_request_body.dart';
+import '../data/models/assessment_session_response.dart';
+import '../data/repos/assessment_session_repo.dart';
 
 part 'assessment_session_state.dart';
-part 'assessment_session_cubit.freezed.dart';
 
 class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
+  final AssessmentSessionRepo assessmentSessionRepo;
+  final String? initialExamId;
   Timer? _timer;
   final ImagePicker _imagePicker = ImagePicker();
+  ExamSessionResponse? _sessionResponse;
 
-  AssessmentSessionCubit() : super(const AssessmentSessionState.loading()) {
-    _loadMockData();
+  AssessmentSessionCubit({
+    required this.assessmentSessionRepo,
+    this.initialExamId,
+  }) : super(const AssessmentSessionState.loading()) {
+    final examId = initialExamId?.trim();
+    if (examId == null || examId.isEmpty) {
+      _loadMockData();
+    } else {
+      startExamSession(examId);
+    }
   }
 
-  void _loadMockData() {
+  Future<void> startExamSession(String examId) async {
+    emit(const AssessmentSessionState.loading());
+
+    try {
+      final response = await assessmentSessionRepo.startExamSession(
+        StartExamSessionRequestBody(examId: examId),
+      );
+      _sessionResponse = response;
+      _loadMockData(sessionData: response.data);
+    } on NetworkExceptions catch (e) {
+      emit(
+        AssessmentSessionState.error(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
+    } catch (e) {
+      emit(
+        const AssessmentSessionState.error(
+          error: 'Failed to start exam session',
+        ),
+      );
+    }
+  }
+
+  void _loadMockData({ExamSessionData? sessionData}) {
     final questions = _buildQuestions();
     final viewData = AssessmentSessionViewData(
       headerTitle: AppStrings.enterpriseAssessmentTitle,
@@ -28,7 +65,7 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
       description:
           'Answer the questions below using the correct control, policy, or response pattern for each scenario.',
       badgeLabel: AppStrings.encryptedMediaSandboxActive,
-      sessionId: '8829-XQA-991',
+      sessionId: sessionData?.sessionId ?? '8829-XQA-991',
       recordingTime: formatAssessmentSessionDuration(165),
       resolutionLabel: '1080P | 60FPS',
       isoLabel: 'ISO 400',
@@ -276,7 +313,7 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
 
           if (viewData.remainingSeconds <= 0) {
             timer.cancel();
-            submitExam(autoSubmitted: true);
+            unawaited(submitExam(autoSubmitted: true));
             return;
           }
 
@@ -287,10 +324,25 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
               ),
             ),
           );
+
+          final sessionId = _sessionResponse?.data.sessionId;
+          if (sessionId != null &&
+              sessionId.isNotEmpty &&
+              viewData.remainingSeconds % 30 == 0) {
+            unawaited(_sendHeartbeat(sessionId));
+          }
         },
         orElse: () {},
       );
     });
+  }
+
+  Future<void> _sendHeartbeat(String sessionId) async {
+    try {
+      _sessionResponse = await assessmentSessionRepo.heartbeat(sessionId);
+    } catch (_) {
+      // Heartbeat failures should not interrupt local answer entry.
+    }
   }
 
   void goToQuestion(int index) {
@@ -310,14 +362,37 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
     );
   }
 
-  void submitExam({bool autoSubmitted = false}) {
-    state.maybeWhen(
-      ready: (viewData) {
+  Future<void> submitExam({bool autoSubmitted = false}) async {
+    await state.maybeWhen<Future<void>>(
+      ready: (viewData) async {
         if (viewData.isSubmitted) {
           return;
         }
 
         _timer?.cancel();
+
+        final sessionId = _sessionResponse?.data.sessionId;
+        if (sessionId != null && sessionId.isNotEmpty) {
+          try {
+            _sessionResponse = await assessmentSessionRepo.completeExamSession(
+              sessionId,
+            );
+          } on NetworkExceptions catch (e) {
+            emit(
+              AssessmentSessionState.error(
+                error: NetworkExceptions.getErrorMessage(e),
+              ),
+            );
+            return;
+          } catch (e) {
+            emit(
+              const AssessmentSessionState.error(
+                error: 'Failed to complete exam session',
+              ),
+            );
+            return;
+          }
+        }
 
         emit(
           AssessmentSessionState.ready(
@@ -328,7 +403,7 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
           ),
         );
       },
-      orElse: () {},
+      orElse: () async {},
     );
   }
 

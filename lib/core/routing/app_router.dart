@@ -16,6 +16,7 @@ import 'package:eae_mobile/features/auth/presentation/screens/reset_password_scr
 import 'package:eae_mobile/features/auth/presentation/screens/role_selection_screen.dart';
 import 'package:eae_mobile/features/auth/presentation/screens/role_verification_screen.dart';
 import 'package:eae_mobile/features/evaluator/bottom_nav/presentation/screens/evaluator_navigation_shell.dart';
+import 'package:eae_mobile/features/proctor/bottom_nav/presentation/screens/proctor_navigation_shell.dart';
 import 'package:eae_mobile/features/tenant_admin/bottom_nav/presentation/screens/tenant_admin_navigation_shell.dart';
 import 'package:eae_mobile/features/candidate/assessment_setup/logic/assessment_setup_cubit.dart';
 import 'package:eae_mobile/features/candidate/assessment_setup/presentation/screens/assessment_setup_screen.dart';
@@ -102,6 +103,11 @@ class AppRouter {
           builder: (_) => const EvaluatorNavigationShell(initialIndex: 0),
         );
 
+      case Routes.proctorNavigationShell:
+        return MaterialPageRoute(
+          builder: (_) => const ProctorNavigationShell(initialIndex: 0),
+        );
+
       case Routes.assessmentInventoryScreen:
         return MaterialPageRoute(
           builder: (_) => MultiBlocProvider(
@@ -169,25 +175,31 @@ class AppRouter {
         );
 
       case Routes.forensicsCheckpointScreen:
+        final examId = settings.arguments as String?;
+
         return MaterialPageRoute(
           builder: (_) => BlocProvider(
             create: (context) => getIt<ForensicsCheckpointCubit>(),
-            child: const ForensicsCheckpointScreen(),
+            child: ForensicsCheckpointScreen(examId: examId),
           ),
         );
 
       case Routes.assessmentSetupScreen:
+        final examId = settings.arguments as String?;
+
         return MaterialPageRoute(
           builder: (_) => BlocProvider(
             create: (context) => getIt<AssessmentSetupCubit>(),
-            child: const AssessmentSetupScreen(),
+            child: AssessmentSetupScreen(examId: examId),
           ),
         );
 
       case Routes.assessmentSessionScreen:
+        final examId = settings.arguments as String?;
+
         return MaterialPageRoute(
           builder: (_) => BlocProvider(
-            create: (context) => getIt<AssessmentSessionCubit>(),
+            create: (context) => getIt<AssessmentSessionCubit>(param1: examId),
             child: const AssessmentSessionScreen(),
           ),
         );

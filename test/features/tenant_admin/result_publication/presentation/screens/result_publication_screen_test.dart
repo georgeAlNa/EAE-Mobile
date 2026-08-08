@@ -1,7 +1,9 @@
+import 'package:eae_mobile/features/tenant_admin/result_publication/data/models/result_publication_request_body.dart';
 import 'package:eae_mobile/features/tenant_admin/result_publication/data/models/result_publication_response.dart';
 import 'package:eae_mobile/features/tenant_admin/result_publication/data/repos/result_publication_repo.dart';
 import 'package:eae_mobile/features/tenant_admin/result_publication/logic/result_publication_cubit.dart';
 import 'package:eae_mobile/features/tenant_admin/result_publication/presentation/screens/result_publication_screen.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -80,6 +82,17 @@ void main() {
     await resetWidgetTestPreferences();
   });
 
+  setUpAll(() {
+    registerFallbackValue(
+      CreateApprovalWorkflowRequestBody(
+        resourceType: '',
+        resourceId: '',
+        workflowType: '',
+      ),
+    );
+    registerFallbackValue('');
+  });
+
   testWidgets('renders initial empty publication state', (tester) async {
     await pumpScreen(tester, cubit);
 
@@ -87,6 +100,10 @@ void main() {
     expect(find.text('No session loaded'), findsOneWidget);
     expect(find.text('Status'), findsOneWidget);
     expect(find.text('Publish'), findsOneWidget);
+    expect(find.text('Approval workflow'), findsOneWidget);
+    expect(find.text('Create'), findsOneWidget);
+    expect(find.text('Get'), findsOneWidget);
+    expect(find.text('Approve'), findsOneWidget);
   });
 
   testWidgets('validates missing session id before status request', (
@@ -131,8 +148,34 @@ void main() {
     await tester.tap(find.text('Publish'));
     await tester.pumpAndSettle();
 
+    await tester.scrollUntilVisible(
+      find.text('Published result'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+
     expect(find.text('Published result'), findsOneWidget);
     expect(find.textContaining('published'), findsWidgets);
     verify(() => repo.publishSessionResult('session_001')).called(1);
+  });
+
+  testWidgets('creates approval workflow through cubit', (tester) async {
+    when(() => repo.createApprovalWorkflow(any())).thenAnswer(
+      (_) async => ApprovalWorkflowActionResponse(message: 'created'),
+    );
+    await pumpScreen(tester, cubit);
+
+    cubit.workflowResourceIdController.text = 'result_001';
+    await tester.pump();
+    await tester.tap(find.text('Create'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Workflow updated'), findsOneWidget);
+    final captured =
+        verify(() => repo.createApprovalWorkflow(captureAny())).captured.single
+            as CreateApprovalWorkflowRequestBody;
+    expect(captured.resourceType, 'assessment_result');
+    expect(captured.resourceId, 'result_001');
+    expect(captured.workflowType, 'result_publication');
   });
 }

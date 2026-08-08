@@ -116,6 +116,48 @@ Map<String, dynamic> _$UpdateQuestionRequestBodyToJson(
   'choices': instance.choices,
 };
 
+PartialUpdateQuestionRequestBody _$PartialUpdateQuestionRequestBodyFromJson(
+  Map<String, dynamic> json,
+) => PartialUpdateQuestionRequestBody(
+  title: json['title'] as String?,
+  categoryId: json['category_id'] as String?,
+  bloomLevel: (json['bloom_level'] as num?)?.toInt(),
+  difficultyLevel: (json['difficulty_level'] as num?)?.toInt(),
+  questionText: json['question_text'] as String?,
+  stem: json['stem'] as String?,
+  correctAnswer: json['correct_answer'],
+  acceptedAnswers: (json['accepted_answers'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  matchMode: json['match_mode'] as String?,
+  psychometrics: json['psychometrics'] == null
+      ? null
+      : QuestionPsychometricsRequestBody.fromJson(
+          json['psychometrics'] as Map<String, dynamic>,
+        ),
+  choices: (json['choices'] as List<dynamic>?)
+      ?.map(
+        (e) => QuestionChoiceRequestBody.fromJson(e as Map<String, dynamic>),
+      )
+      .toList(),
+);
+
+Map<String, dynamic> _$PartialUpdateQuestionRequestBodyToJson(
+  PartialUpdateQuestionRequestBody instance,
+) => <String, dynamic>{
+  'title': ?instance.title,
+  'category_id': ?instance.categoryId,
+  'bloom_level': ?instance.bloomLevel,
+  'difficulty_level': ?instance.difficultyLevel,
+  'question_text': ?instance.questionText,
+  'stem': ?instance.stem,
+  'correct_answer': ?instance.correctAnswer,
+  'accepted_answers': ?instance.acceptedAnswers,
+  'match_mode': ?instance.matchMode,
+  'psychometrics': ?instance.psychometrics,
+  'choices': ?instance.choices,
+};
+
 QuestionPsychometricsRequestBody _$QuestionPsychometricsRequestBodyFromJson(
   Map<String, dynamic> json,
 ) => QuestionPsychometricsRequestBody(

@@ -125,3 +125,29 @@ SettingsActionResponse _$SettingsActionResponseFromJson(
 Map<String, dynamic> _$SettingsActionResponseToJson(
   SettingsActionResponse instance,
 ) => <String, dynamic>{'message': instance.message};
+
+SystemStatusResponse _$SystemStatusResponseFromJson(
+  Map<String, dynamic> json,
+) => SystemStatusResponse(
+  data: SystemStatusData.fromJson(json['data'] as Map<String, dynamic>),
+);
+
+Map<String, dynamic> _$SystemStatusResponseToJson(
+  SystemStatusResponse instance,
+) => <String, dynamic>{'data': instance.data};
+
+SystemStatusData _$SystemStatusDataFromJson(Map<String, dynamic> json) =>
+    SystemStatusData(
+      status: json['status'] as String,
+      tenantId: json['tenant_id'] as String,
+      database: json['database'] as String,
+      timestamp: json['timestamp'] as String,
+    );
+
+Map<String, dynamic> _$SystemStatusDataToJson(SystemStatusData instance) =>
+    <String, dynamic>{
+      'status': instance.status,
+      'tenant_id': instance.tenantId,
+      'database': instance.database,
+      'timestamp': instance.timestamp,
+    };

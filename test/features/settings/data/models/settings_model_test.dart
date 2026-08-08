@@ -200,4 +200,27 @@ void main() {
       expect(response.message, '');
     });
   });
+
+  group('SystemStatusResponse', () {
+    test('fromJson parses tenant system status', () {
+      final response = SystemStatusResponse.fromJson({
+        'data': {
+          'status': 'ok',
+          'tenant_id': 'tenant_001',
+          'database': 'connected',
+          'timestamp': '2026-06-25T14:03:03Z',
+        },
+      });
+
+      expect(response.data.status, 'ok');
+      expect(response.data.tenantId, 'tenant_001');
+      expect(response.data.database, 'connected');
+      expect(response.data.toJson(), {
+        'status': 'ok',
+        'tenant_id': 'tenant_001',
+        'database': 'connected',
+        'timestamp': '2026-06-25T14:03:03Z',
+      });
+    });
+  });
 }
