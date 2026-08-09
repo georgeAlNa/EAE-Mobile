@@ -302,7 +302,7 @@ return resetPasswordError(_that.error);case _:
 
 class _Initial implements UsersManagementState {
   const _Initial();
-
+  
 
 
 
@@ -334,7 +334,7 @@ String toString() {
 
 class _UsersLoading implements UsersManagementState {
   const _UsersLoading();
-
+  
 
 
 
@@ -366,7 +366,7 @@ String toString() {
 
 class _UsersLoaded implements UsersManagementState {
   const _UsersLoaded(this.response);
-
+  
 
  final  UsersManagementResponse response;
 
@@ -432,7 +432,7 @@ as UsersManagementResponse,
 
 class _UsersLoadError implements UsersManagementState {
   const _UsersLoadError({required this.error});
-
+  
 
  final  String error;
 
@@ -498,7 +498,7 @@ as String,
 
 class _UserDetailsLoading implements UsersManagementState {
   const _UserDetailsLoading();
-
+  
 
 
 
@@ -530,7 +530,7 @@ String toString() {
 
 class _UserLoaded implements UsersManagementState {
   const _UserLoaded(this.response);
-
+  
 
  final  UserDetailsResponse response;
 
@@ -596,7 +596,7 @@ as UserDetailsResponse,
 
 class _UserDetailsError implements UsersManagementState {
   const _UserDetailsError({required this.error});
-
+  
 
  final  String error;
 
@@ -662,7 +662,7 @@ as String,
 
 class _CreateUserLoading implements UsersManagementState {
   const _CreateUserLoading();
-
+  
 
 
 
@@ -694,7 +694,7 @@ String toString() {
 
 class _CreateSuccess implements UsersManagementState {
   const _CreateSuccess(this.response);
-
+  
 
  final  CreateUserResponse response;
 
@@ -760,7 +760,7 @@ as CreateUserResponse,
 
 class _CreateUserError implements UsersManagementState {
   const _CreateUserError({required this.error});
-
+  
 
  final  String error;
 
@@ -826,7 +826,7 @@ as String,
 
 class _InviteUserLoading implements UsersManagementState {
   const _InviteUserLoading();
-
+  
 
 
 
@@ -858,7 +858,7 @@ String toString() {
 
 class _InviteSuccess implements UsersManagementState {
   const _InviteSuccess(this.response);
-
+  
 
  final  InviteUserResponse response;
 
@@ -924,7 +924,7 @@ as InviteUserResponse,
 
 class _InviteUserError implements UsersManagementState {
   const _InviteUserError({required this.error});
-
+  
 
  final  String error;
 
@@ -990,7 +990,7 @@ as String,
 
 class _RoleAssignmentLoading implements UsersManagementState {
   const _RoleAssignmentLoading();
-
+  
 
 
 
@@ -1022,7 +1022,7 @@ String toString() {
 
 class _RoleAssignmentSuccess implements UsersManagementState {
   const _RoleAssignmentSuccess(this.response);
-
+  
 
  final  RoleActionResponse response;
 
@@ -1088,7 +1088,7 @@ as RoleActionResponse,
 
 class _RoleAssignmentError implements UsersManagementState {
   const _RoleAssignmentError({required this.error});
-
+  
 
  final  String error;
 
@@ -1154,7 +1154,7 @@ as String,
 
 class _DeactivateUserLoading implements UsersManagementState {
   const _DeactivateUserLoading();
-
+  
 
 
 
@@ -1186,7 +1186,7 @@ String toString() {
 
 class _DeactivateSuccess implements UsersManagementState {
   const _DeactivateSuccess(this.response);
-
+  
 
  final  UserActionResponse response;
 
@@ -1252,7 +1252,7 @@ as UserActionResponse,
 
 class _DeactivateUserError implements UsersManagementState {
   const _DeactivateUserError({required this.error});
-
+  
 
  final  String error;
 
@@ -1318,7 +1318,7 @@ as String,
 
 class _ResetPasswordLoading implements UsersManagementState {
   const _ResetPasswordLoading();
-
+  
 
 
 
@@ -1350,7 +1350,7 @@ String toString() {
 
 class _ResetPasswordSuccess implements UsersManagementState {
   const _ResetPasswordSuccess(this.response);
-
+  
 
  final  UserActionResponse response;
 
@@ -1416,7 +1416,7 @@ as UserActionResponse,
 
 class _ResetPasswordError implements UsersManagementState {
   const _ResetPasswordError({required this.error});
-
+  
 
  final  String error;
 
