@@ -55,7 +55,7 @@ extension UsersManagementStatePatterns on UsersManagementState {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _UsersLoading value)?  usersLoading,TResult Function( _UsersLoaded value)?  usersLoaded,TResult Function( _UsersLoadError value)?  usersLoadError,TResult Function( _UserDetailsLoading value)?  userDetailsLoading,TResult Function( _UserLoaded value)?  userLoaded,TResult Function( _UserDetailsError value)?  userDetailsError,TResult Function( _CreateUserLoading value)?  createUserLoading,TResult Function( _CreateSuccess value)?  createSuccess,TResult Function( _CreateUserError value)?  createUserError,TResult Function( _InviteUserLoading value)?  inviteUserLoading,TResult Function( _InviteSuccess value)?  inviteSuccess,TResult Function( _InviteUserError value)?  inviteUserError,TResult Function( _DeactivateUserLoading value)?  deactivateUserLoading,TResult Function( _DeactivateSuccess value)?  deactivateSuccess,TResult Function( _DeactivateUserError value)?  deactivateUserError,TResult Function( _ResetPasswordLoading value)?  resetPasswordLoading,TResult Function( _ResetPasswordSuccess value)?  resetPasswordSuccess,TResult Function( _ResetPasswordError value)?  resetPasswordError,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( _UsersLoading value)?  usersLoading,TResult Function( _UsersLoaded value)?  usersLoaded,TResult Function( _UsersLoadError value)?  usersLoadError,TResult Function( _UserDetailsLoading value)?  userDetailsLoading,TResult Function( _UserLoaded value)?  userLoaded,TResult Function( _UserDetailsError value)?  userDetailsError,TResult Function( _CreateUserLoading value)?  createUserLoading,TResult Function( _CreateSuccess value)?  createSuccess,TResult Function( _CreateUserError value)?  createUserError,TResult Function( _InviteUserLoading value)?  inviteUserLoading,TResult Function( _InviteSuccess value)?  inviteSuccess,TResult Function( _InviteUserError value)?  inviteUserError,TResult Function( _RoleAssignmentLoading value)?  roleAssignmentLoading,TResult Function( _RoleAssignmentSuccess value)?  roleAssignmentSuccess,TResult Function( _RoleAssignmentError value)?  roleAssignmentError,TResult Function( _DeactivateUserLoading value)?  deactivateUserLoading,TResult Function( _DeactivateSuccess value)?  deactivateSuccess,TResult Function( _DeactivateUserError value)?  deactivateUserError,TResult Function( _ResetPasswordLoading value)?  resetPasswordLoading,TResult Function( _ResetPasswordSuccess value)?  resetPasswordSuccess,TResult Function( _ResetPasswordError value)?  resetPasswordError,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
@@ -71,7 +71,10 @@ return createSuccess(_that);case _CreateUserError() when createUserError != null
 return createUserError(_that);case _InviteUserLoading() when inviteUserLoading != null:
 return inviteUserLoading(_that);case _InviteSuccess() when inviteSuccess != null:
 return inviteSuccess(_that);case _InviteUserError() when inviteUserError != null:
-return inviteUserError(_that);case _DeactivateUserLoading() when deactivateUserLoading != null:
+return inviteUserError(_that);case _RoleAssignmentLoading() when roleAssignmentLoading != null:
+return roleAssignmentLoading(_that);case _RoleAssignmentSuccess() when roleAssignmentSuccess != null:
+return roleAssignmentSuccess(_that);case _RoleAssignmentError() when roleAssignmentError != null:
+return roleAssignmentError(_that);case _DeactivateUserLoading() when deactivateUserLoading != null:
 return deactivateUserLoading(_that);case _DeactivateSuccess() when deactivateSuccess != null:
 return deactivateSuccess(_that);case _DeactivateUserError() when deactivateUserError != null:
 return deactivateUserError(_that);case _ResetPasswordLoading() when resetPasswordLoading != null:
@@ -95,7 +98,7 @@ return resetPasswordError(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _UsersLoading value)  usersLoading,required TResult Function( _UsersLoaded value)  usersLoaded,required TResult Function( _UsersLoadError value)  usersLoadError,required TResult Function( _UserDetailsLoading value)  userDetailsLoading,required TResult Function( _UserLoaded value)  userLoaded,required TResult Function( _UserDetailsError value)  userDetailsError,required TResult Function( _CreateUserLoading value)  createUserLoading,required TResult Function( _CreateSuccess value)  createSuccess,required TResult Function( _CreateUserError value)  createUserError,required TResult Function( _InviteUserLoading value)  inviteUserLoading,required TResult Function( _InviteSuccess value)  inviteSuccess,required TResult Function( _InviteUserError value)  inviteUserError,required TResult Function( _DeactivateUserLoading value)  deactivateUserLoading,required TResult Function( _DeactivateSuccess value)  deactivateSuccess,required TResult Function( _DeactivateUserError value)  deactivateUserError,required TResult Function( _ResetPasswordLoading value)  resetPasswordLoading,required TResult Function( _ResetPasswordSuccess value)  resetPasswordSuccess,required TResult Function( _ResetPasswordError value)  resetPasswordError,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( _UsersLoading value)  usersLoading,required TResult Function( _UsersLoaded value)  usersLoaded,required TResult Function( _UsersLoadError value)  usersLoadError,required TResult Function( _UserDetailsLoading value)  userDetailsLoading,required TResult Function( _UserLoaded value)  userLoaded,required TResult Function( _UserDetailsError value)  userDetailsError,required TResult Function( _CreateUserLoading value)  createUserLoading,required TResult Function( _CreateSuccess value)  createSuccess,required TResult Function( _CreateUserError value)  createUserError,required TResult Function( _InviteUserLoading value)  inviteUserLoading,required TResult Function( _InviteSuccess value)  inviteSuccess,required TResult Function( _InviteUserError value)  inviteUserError,required TResult Function( _RoleAssignmentLoading value)  roleAssignmentLoading,required TResult Function( _RoleAssignmentSuccess value)  roleAssignmentSuccess,required TResult Function( _RoleAssignmentError value)  roleAssignmentError,required TResult Function( _DeactivateUserLoading value)  deactivateUserLoading,required TResult Function( _DeactivateSuccess value)  deactivateSuccess,required TResult Function( _DeactivateUserError value)  deactivateUserError,required TResult Function( _ResetPasswordLoading value)  resetPasswordLoading,required TResult Function( _ResetPasswordSuccess value)  resetPasswordSuccess,required TResult Function( _ResetPasswordError value)  resetPasswordError,}){
 final _that = this;
 switch (_that) {
 case _Initial():
@@ -111,7 +114,10 @@ return createSuccess(_that);case _CreateUserError():
 return createUserError(_that);case _InviteUserLoading():
 return inviteUserLoading(_that);case _InviteSuccess():
 return inviteSuccess(_that);case _InviteUserError():
-return inviteUserError(_that);case _DeactivateUserLoading():
+return inviteUserError(_that);case _RoleAssignmentLoading():
+return roleAssignmentLoading(_that);case _RoleAssignmentSuccess():
+return roleAssignmentSuccess(_that);case _RoleAssignmentError():
+return roleAssignmentError(_that);case _DeactivateUserLoading():
 return deactivateUserLoading(_that);case _DeactivateSuccess():
 return deactivateSuccess(_that);case _DeactivateUserError():
 return deactivateUserError(_that);case _ResetPasswordLoading():
@@ -134,7 +140,7 @@ return resetPasswordError(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _UsersLoading value)?  usersLoading,TResult? Function( _UsersLoaded value)?  usersLoaded,TResult? Function( _UsersLoadError value)?  usersLoadError,TResult? Function( _UserDetailsLoading value)?  userDetailsLoading,TResult? Function( _UserLoaded value)?  userLoaded,TResult? Function( _UserDetailsError value)?  userDetailsError,TResult? Function( _CreateUserLoading value)?  createUserLoading,TResult? Function( _CreateSuccess value)?  createSuccess,TResult? Function( _CreateUserError value)?  createUserError,TResult? Function( _InviteUserLoading value)?  inviteUserLoading,TResult? Function( _InviteSuccess value)?  inviteSuccess,TResult? Function( _InviteUserError value)?  inviteUserError,TResult? Function( _DeactivateUserLoading value)?  deactivateUserLoading,TResult? Function( _DeactivateSuccess value)?  deactivateSuccess,TResult? Function( _DeactivateUserError value)?  deactivateUserError,TResult? Function( _ResetPasswordLoading value)?  resetPasswordLoading,TResult? Function( _ResetPasswordSuccess value)?  resetPasswordSuccess,TResult? Function( _ResetPasswordError value)?  resetPasswordError,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( _UsersLoading value)?  usersLoading,TResult? Function( _UsersLoaded value)?  usersLoaded,TResult? Function( _UsersLoadError value)?  usersLoadError,TResult? Function( _UserDetailsLoading value)?  userDetailsLoading,TResult? Function( _UserLoaded value)?  userLoaded,TResult? Function( _UserDetailsError value)?  userDetailsError,TResult? Function( _CreateUserLoading value)?  createUserLoading,TResult? Function( _CreateSuccess value)?  createSuccess,TResult? Function( _CreateUserError value)?  createUserError,TResult? Function( _InviteUserLoading value)?  inviteUserLoading,TResult? Function( _InviteSuccess value)?  inviteSuccess,TResult? Function( _InviteUserError value)?  inviteUserError,TResult? Function( _RoleAssignmentLoading value)?  roleAssignmentLoading,TResult? Function( _RoleAssignmentSuccess value)?  roleAssignmentSuccess,TResult? Function( _RoleAssignmentError value)?  roleAssignmentError,TResult? Function( _DeactivateUserLoading value)?  deactivateUserLoading,TResult? Function( _DeactivateSuccess value)?  deactivateSuccess,TResult? Function( _DeactivateUserError value)?  deactivateUserError,TResult? Function( _ResetPasswordLoading value)?  resetPasswordLoading,TResult? Function( _ResetPasswordSuccess value)?  resetPasswordSuccess,TResult? Function( _ResetPasswordError value)?  resetPasswordError,}){
 final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
@@ -150,7 +156,10 @@ return createSuccess(_that);case _CreateUserError() when createUserError != null
 return createUserError(_that);case _InviteUserLoading() when inviteUserLoading != null:
 return inviteUserLoading(_that);case _InviteSuccess() when inviteSuccess != null:
 return inviteSuccess(_that);case _InviteUserError() when inviteUserError != null:
-return inviteUserError(_that);case _DeactivateUserLoading() when deactivateUserLoading != null:
+return inviteUserError(_that);case _RoleAssignmentLoading() when roleAssignmentLoading != null:
+return roleAssignmentLoading(_that);case _RoleAssignmentSuccess() when roleAssignmentSuccess != null:
+return roleAssignmentSuccess(_that);case _RoleAssignmentError() when roleAssignmentError != null:
+return roleAssignmentError(_that);case _DeactivateUserLoading() when deactivateUserLoading != null:
 return deactivateUserLoading(_that);case _DeactivateSuccess() when deactivateSuccess != null:
 return deactivateSuccess(_that);case _DeactivateUserError() when deactivateUserError != null:
 return deactivateUserError(_that);case _ResetPasswordLoading() when resetPasswordLoading != null:
@@ -173,7 +182,7 @@ return resetPasswordError(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  usersLoading,TResult Function( UsersManagementResponse response)?  usersLoaded,TResult Function( String error)?  usersLoadError,TResult Function()?  userDetailsLoading,TResult Function( UserDetailsResponse response)?  userLoaded,TResult Function( String error)?  userDetailsError,TResult Function()?  createUserLoading,TResult Function( CreateUserResponse response)?  createSuccess,TResult Function( String error)?  createUserError,TResult Function()?  inviteUserLoading,TResult Function( InviteUserResponse response)?  inviteSuccess,TResult Function( String error)?  inviteUserError,TResult Function()?  deactivateUserLoading,TResult Function( UserActionResponse response)?  deactivateSuccess,TResult Function( String error)?  deactivateUserError,TResult Function()?  resetPasswordLoading,TResult Function( UserActionResponse response)?  resetPasswordSuccess,TResult Function( String error)?  resetPasswordError,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  usersLoading,TResult Function( UsersManagementResponse response)?  usersLoaded,TResult Function( String error)?  usersLoadError,TResult Function()?  userDetailsLoading,TResult Function( UserDetailsResponse response)?  userLoaded,TResult Function( String error)?  userDetailsError,TResult Function()?  createUserLoading,TResult Function( CreateUserResponse response)?  createSuccess,TResult Function( String error)?  createUserError,TResult Function()?  inviteUserLoading,TResult Function( InviteUserResponse response)?  inviteSuccess,TResult Function( String error)?  inviteUserError,TResult Function()?  roleAssignmentLoading,TResult Function( RoleActionResponse response)?  roleAssignmentSuccess,TResult Function( String error)?  roleAssignmentError,TResult Function()?  deactivateUserLoading,TResult Function( UserActionResponse response)?  deactivateSuccess,TResult Function( String error)?  deactivateUserError,TResult Function()?  resetPasswordLoading,TResult Function( UserActionResponse response)?  resetPasswordSuccess,TResult Function( String error)?  resetPasswordError,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _UsersLoading() when usersLoading != null:
@@ -188,7 +197,10 @@ return createSuccess(_that.response);case _CreateUserError() when createUserErro
 return createUserError(_that.error);case _InviteUserLoading() when inviteUserLoading != null:
 return inviteUserLoading();case _InviteSuccess() when inviteSuccess != null:
 return inviteSuccess(_that.response);case _InviteUserError() when inviteUserError != null:
-return inviteUserError(_that.error);case _DeactivateUserLoading() when deactivateUserLoading != null:
+return inviteUserError(_that.error);case _RoleAssignmentLoading() when roleAssignmentLoading != null:
+return roleAssignmentLoading();case _RoleAssignmentSuccess() when roleAssignmentSuccess != null:
+return roleAssignmentSuccess(_that.response);case _RoleAssignmentError() when roleAssignmentError != null:
+return roleAssignmentError(_that.error);case _DeactivateUserLoading() when deactivateUserLoading != null:
 return deactivateUserLoading();case _DeactivateSuccess() when deactivateSuccess != null:
 return deactivateSuccess(_that.response);case _DeactivateUserError() when deactivateUserError != null:
 return deactivateUserError(_that.error);case _ResetPasswordLoading() when resetPasswordLoading != null:
@@ -212,7 +224,7 @@ return resetPasswordError(_that.error);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  usersLoading,required TResult Function( UsersManagementResponse response)  usersLoaded,required TResult Function( String error)  usersLoadError,required TResult Function()  userDetailsLoading,required TResult Function( UserDetailsResponse response)  userLoaded,required TResult Function( String error)  userDetailsError,required TResult Function()  createUserLoading,required TResult Function( CreateUserResponse response)  createSuccess,required TResult Function( String error)  createUserError,required TResult Function()  inviteUserLoading,required TResult Function( InviteUserResponse response)  inviteSuccess,required TResult Function( String error)  inviteUserError,required TResult Function()  deactivateUserLoading,required TResult Function( UserActionResponse response)  deactivateSuccess,required TResult Function( String error)  deactivateUserError,required TResult Function()  resetPasswordLoading,required TResult Function( UserActionResponse response)  resetPasswordSuccess,required TResult Function( String error)  resetPasswordError,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  usersLoading,required TResult Function( UsersManagementResponse response)  usersLoaded,required TResult Function( String error)  usersLoadError,required TResult Function()  userDetailsLoading,required TResult Function( UserDetailsResponse response)  userLoaded,required TResult Function( String error)  userDetailsError,required TResult Function()  createUserLoading,required TResult Function( CreateUserResponse response)  createSuccess,required TResult Function( String error)  createUserError,required TResult Function()  inviteUserLoading,required TResult Function( InviteUserResponse response)  inviteSuccess,required TResult Function( String error)  inviteUserError,required TResult Function()  roleAssignmentLoading,required TResult Function( RoleActionResponse response)  roleAssignmentSuccess,required TResult Function( String error)  roleAssignmentError,required TResult Function()  deactivateUserLoading,required TResult Function( UserActionResponse response)  deactivateSuccess,required TResult Function( String error)  deactivateUserError,required TResult Function()  resetPasswordLoading,required TResult Function( UserActionResponse response)  resetPasswordSuccess,required TResult Function( String error)  resetPasswordError,}) {final _that = this;
 switch (_that) {
 case _Initial():
 return initial();case _UsersLoading():
@@ -227,7 +239,10 @@ return createSuccess(_that.response);case _CreateUserError():
 return createUserError(_that.error);case _InviteUserLoading():
 return inviteUserLoading();case _InviteSuccess():
 return inviteSuccess(_that.response);case _InviteUserError():
-return inviteUserError(_that.error);case _DeactivateUserLoading():
+return inviteUserError(_that.error);case _RoleAssignmentLoading():
+return roleAssignmentLoading();case _RoleAssignmentSuccess():
+return roleAssignmentSuccess(_that.response);case _RoleAssignmentError():
+return roleAssignmentError(_that.error);case _DeactivateUserLoading():
 return deactivateUserLoading();case _DeactivateSuccess():
 return deactivateSuccess(_that.response);case _DeactivateUserError():
 return deactivateUserError(_that.error);case _ResetPasswordLoading():
@@ -250,7 +265,7 @@ return resetPasswordError(_that.error);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  usersLoading,TResult? Function( UsersManagementResponse response)?  usersLoaded,TResult? Function( String error)?  usersLoadError,TResult? Function()?  userDetailsLoading,TResult? Function( UserDetailsResponse response)?  userLoaded,TResult? Function( String error)?  userDetailsError,TResult? Function()?  createUserLoading,TResult? Function( CreateUserResponse response)?  createSuccess,TResult? Function( String error)?  createUserError,TResult? Function()?  inviteUserLoading,TResult? Function( InviteUserResponse response)?  inviteSuccess,TResult? Function( String error)?  inviteUserError,TResult? Function()?  deactivateUserLoading,TResult? Function( UserActionResponse response)?  deactivateSuccess,TResult? Function( String error)?  deactivateUserError,TResult? Function()?  resetPasswordLoading,TResult? Function( UserActionResponse response)?  resetPasswordSuccess,TResult? Function( String error)?  resetPasswordError,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  usersLoading,TResult? Function( UsersManagementResponse response)?  usersLoaded,TResult? Function( String error)?  usersLoadError,TResult? Function()?  userDetailsLoading,TResult? Function( UserDetailsResponse response)?  userLoaded,TResult? Function( String error)?  userDetailsError,TResult? Function()?  createUserLoading,TResult? Function( CreateUserResponse response)?  createSuccess,TResult? Function( String error)?  createUserError,TResult? Function()?  inviteUserLoading,TResult? Function( InviteUserResponse response)?  inviteSuccess,TResult? Function( String error)?  inviteUserError,TResult? Function()?  roleAssignmentLoading,TResult? Function( RoleActionResponse response)?  roleAssignmentSuccess,TResult? Function( String error)?  roleAssignmentError,TResult? Function()?  deactivateUserLoading,TResult? Function( UserActionResponse response)?  deactivateSuccess,TResult? Function( String error)?  deactivateUserError,TResult? Function()?  resetPasswordLoading,TResult? Function( UserActionResponse response)?  resetPasswordSuccess,TResult? Function( String error)?  resetPasswordError,}) {final _that = this;
 switch (_that) {
 case _Initial() when initial != null:
 return initial();case _UsersLoading() when usersLoading != null:
@@ -265,7 +280,10 @@ return createSuccess(_that.response);case _CreateUserError() when createUserErro
 return createUserError(_that.error);case _InviteUserLoading() when inviteUserLoading != null:
 return inviteUserLoading();case _InviteSuccess() when inviteSuccess != null:
 return inviteSuccess(_that.response);case _InviteUserError() when inviteUserError != null:
-return inviteUserError(_that.error);case _DeactivateUserLoading() when deactivateUserLoading != null:
+return inviteUserError(_that.error);case _RoleAssignmentLoading() when roleAssignmentLoading != null:
+return roleAssignmentLoading();case _RoleAssignmentSuccess() when roleAssignmentSuccess != null:
+return roleAssignmentSuccess(_that.response);case _RoleAssignmentError() when roleAssignmentError != null:
+return roleAssignmentError(_that.error);case _DeactivateUserLoading() when deactivateUserLoading != null:
 return deactivateUserLoading();case _DeactivateSuccess() when deactivateSuccess != null:
 return deactivateSuccess(_that.response);case _DeactivateUserError() when deactivateUserError != null:
 return deactivateUserError(_that.error);case _ResetPasswordLoading() when resetPasswordLoading != null:
@@ -284,7 +302,7 @@ return resetPasswordError(_that.error);case _:
 
 class _Initial implements UsersManagementState {
   const _Initial();
-  
+
 
 
 
@@ -316,7 +334,7 @@ String toString() {
 
 class _UsersLoading implements UsersManagementState {
   const _UsersLoading();
-  
+
 
 
 
@@ -348,7 +366,7 @@ String toString() {
 
 class _UsersLoaded implements UsersManagementState {
   const _UsersLoaded(this.response);
-  
+
 
  final  UsersManagementResponse response;
 
@@ -414,7 +432,7 @@ as UsersManagementResponse,
 
 class _UsersLoadError implements UsersManagementState {
   const _UsersLoadError({required this.error});
-  
+
 
  final  String error;
 
@@ -480,7 +498,7 @@ as String,
 
 class _UserDetailsLoading implements UsersManagementState {
   const _UserDetailsLoading();
-  
+
 
 
 
@@ -512,7 +530,7 @@ String toString() {
 
 class _UserLoaded implements UsersManagementState {
   const _UserLoaded(this.response);
-  
+
 
  final  UserDetailsResponse response;
 
@@ -578,7 +596,7 @@ as UserDetailsResponse,
 
 class _UserDetailsError implements UsersManagementState {
   const _UserDetailsError({required this.error});
-  
+
 
  final  String error;
 
@@ -644,7 +662,7 @@ as String,
 
 class _CreateUserLoading implements UsersManagementState {
   const _CreateUserLoading();
-  
+
 
 
 
@@ -676,7 +694,7 @@ String toString() {
 
 class _CreateSuccess implements UsersManagementState {
   const _CreateSuccess(this.response);
-  
+
 
  final  CreateUserResponse response;
 
@@ -742,7 +760,7 @@ as CreateUserResponse,
 
 class _CreateUserError implements UsersManagementState {
   const _CreateUserError({required this.error});
-  
+
 
  final  String error;
 
@@ -808,7 +826,7 @@ as String,
 
 class _InviteUserLoading implements UsersManagementState {
   const _InviteUserLoading();
-  
+
 
 
 
@@ -840,7 +858,7 @@ String toString() {
 
 class _InviteSuccess implements UsersManagementState {
   const _InviteSuccess(this.response);
-  
+
 
  final  InviteUserResponse response;
 
@@ -906,7 +924,7 @@ as InviteUserResponse,
 
 class _InviteUserError implements UsersManagementState {
   const _InviteUserError({required this.error});
-  
+
 
  final  String error;
 
@@ -970,9 +988,173 @@ as String,
 /// @nodoc
 
 
+class _RoleAssignmentLoading implements UsersManagementState {
+  const _RoleAssignmentLoading();
+
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RoleAssignmentLoading);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'UsersManagementState.roleAssignmentLoading()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class _RoleAssignmentSuccess implements UsersManagementState {
+  const _RoleAssignmentSuccess(this.response);
+
+
+ final  RoleActionResponse response;
+
+/// Create a copy of UsersManagementState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$RoleAssignmentSuccessCopyWith<_RoleAssignmentSuccess> get copyWith => __$RoleAssignmentSuccessCopyWithImpl<_RoleAssignmentSuccess>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RoleAssignmentSuccess&&(identical(other.response, response) || other.response == response));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,response);
+
+@override
+String toString() {
+  return 'UsersManagementState.roleAssignmentSuccess(response: $response)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$RoleAssignmentSuccessCopyWith<$Res> implements $UsersManagementStateCopyWith<$Res> {
+  factory _$RoleAssignmentSuccessCopyWith(_RoleAssignmentSuccess value, $Res Function(_RoleAssignmentSuccess) _then) = __$RoleAssignmentSuccessCopyWithImpl;
+@useResult
+$Res call({
+ RoleActionResponse response
+});
+
+
+
+
+}
+/// @nodoc
+class __$RoleAssignmentSuccessCopyWithImpl<$Res>
+    implements _$RoleAssignmentSuccessCopyWith<$Res> {
+  __$RoleAssignmentSuccessCopyWithImpl(this._self, this._then);
+
+  final _RoleAssignmentSuccess _self;
+  final $Res Function(_RoleAssignmentSuccess) _then;
+
+/// Create a copy of UsersManagementState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? response = null,}) {
+  return _then(_RoleAssignmentSuccess(
+null == response ? _self.response : response // ignore: cast_nullable_to_non_nullable
+as RoleActionResponse,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _RoleAssignmentError implements UsersManagementState {
+  const _RoleAssignmentError({required this.error});
+
+
+ final  String error;
+
+/// Create a copy of UsersManagementState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$RoleAssignmentErrorCopyWith<_RoleAssignmentError> get copyWith => __$RoleAssignmentErrorCopyWithImpl<_RoleAssignmentError>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RoleAssignmentError&&(identical(other.error, error) || other.error == error));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,error);
+
+@override
+String toString() {
+  return 'UsersManagementState.roleAssignmentError(error: $error)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$RoleAssignmentErrorCopyWith<$Res> implements $UsersManagementStateCopyWith<$Res> {
+  factory _$RoleAssignmentErrorCopyWith(_RoleAssignmentError value, $Res Function(_RoleAssignmentError) _then) = __$RoleAssignmentErrorCopyWithImpl;
+@useResult
+$Res call({
+ String error
+});
+
+
+
+
+}
+/// @nodoc
+class __$RoleAssignmentErrorCopyWithImpl<$Res>
+    implements _$RoleAssignmentErrorCopyWith<$Res> {
+  __$RoleAssignmentErrorCopyWithImpl(this._self, this._then);
+
+  final _RoleAssignmentError _self;
+  final $Res Function(_RoleAssignmentError) _then;
+
+/// Create a copy of UsersManagementState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? error = null,}) {
+  return _then(_RoleAssignmentError(
+error: null == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
 class _DeactivateUserLoading implements UsersManagementState {
   const _DeactivateUserLoading();
-  
+
 
 
 
@@ -1004,7 +1186,7 @@ String toString() {
 
 class _DeactivateSuccess implements UsersManagementState {
   const _DeactivateSuccess(this.response);
-  
+
 
  final  UserActionResponse response;
 
@@ -1070,7 +1252,7 @@ as UserActionResponse,
 
 class _DeactivateUserError implements UsersManagementState {
   const _DeactivateUserError({required this.error});
-  
+
 
  final  String error;
 
@@ -1136,7 +1318,7 @@ as String,
 
 class _ResetPasswordLoading implements UsersManagementState {
   const _ResetPasswordLoading();
-  
+
 
 
 
@@ -1168,7 +1350,7 @@ String toString() {
 
 class _ResetPasswordSuccess implements UsersManagementState {
   const _ResetPasswordSuccess(this.response);
-  
+
 
  final  UserActionResponse response;
 
@@ -1234,7 +1416,7 @@ as UserActionResponse,
 
 class _ResetPasswordError implements UsersManagementState {
   const _ResetPasswordError({required this.error});
-  
+
 
  final  String error;
 

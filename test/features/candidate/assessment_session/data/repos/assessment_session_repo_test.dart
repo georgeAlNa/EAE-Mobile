@@ -25,7 +25,7 @@ ExamSessionResponse sessionResponse({String state = 'in_progress'}) =>
         progress: ExamSessionProgress(
           totalQuestionsResponded: 0,
           totalQuestionsFlagged: 0,
-          progressData: const [],
+          progressData: const {},
         ),
         timestamps: ExamSessionTimestamps(startedAt: '2026-06-25T14:03:03Z'),
         totalSessionDurationSeconds: 0,
@@ -112,15 +112,30 @@ void main() {
 
     test('raw session methods call remote when connected', () async {
       connected();
+      final session = sessionResponse();
+      final question = CurrentQuestionResponse(
+        data: CandidateQuestion(
+          questionVersionId: 'question_version_001',
+          questionType: 'mcq',
+          questionText: 'Question',
+          choices: [
+            CandidateQuestionChoice(
+              optionId: 'option_001',
+              optionText: 'A',
+              optionSequence: 1,
+            ),
+          ],
+        ),
+      );
       when(
         () => remoteDataSource.getExamSessionState(any()),
-      ).thenAnswer((_) async => {'message': ''});
+      ).thenAnswer((_) async => session);
       when(
         () => remoteDataSource.getCurrentQuestion(any()),
-      ).thenAnswer((_) async => {'message': ''});
+      ).thenAnswer((_) async => question);
 
-      expect(await repo.getExamSessionState('session_001'), {'message': ''});
-      expect(await repo.getCurrentQuestion('session_001'), {'message': ''});
+      expect(await repo.getExamSessionState('session_001'), same(session));
+      expect(await repo.getCurrentQuestion('session_001'), same(question));
     });
 
     test('throws noInternetConnection when offline', () {

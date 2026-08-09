@@ -103,14 +103,25 @@ void main() {
       });
     });
 
-    test('ApprovalWorkflowActionResponse preserves generic data', () {
+    test('ApprovalWorkflowActionResponse parses typed workflow data', () {
       final response = ApprovalWorkflowActionResponse.fromJson({
         'message': 'created',
-        'data': {'id': 'workflow_001'},
+        'data': {
+          'workflow_id': 'workflow_001',
+          'resource_type': 'exam',
+          'resource_id': 'exam_001',
+          'workflow_type': 'exam_publication',
+          'current_workflow_status': 'pending',
+          'current_stage_key': null,
+          'workflow_initiated_at': '2026-07-21T03:00:00Z',
+          'workflow_completed_at': null,
+          'workflow_metadata': [],
+        },
       });
 
       expect(response.message, 'created');
-      expect(response.data, {'id': 'workflow_001'});
+      expect(response.data?.workflowId, 'workflow_001');
+      expect(response.data?.currentWorkflowStatus, 'pending');
       expect(response.toJson()['message'], 'created');
     });
   });

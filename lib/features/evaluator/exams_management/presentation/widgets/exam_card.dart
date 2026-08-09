@@ -12,7 +12,8 @@ class ExamCard extends StatelessWidget {
   final VoidCallback onDetails;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
-  final VoidCallback onPublish;
+  final VoidCallback onCreatePublicationWorkflow;
+  final VoidCallback onViewPublicationWorkflow;
   final VoidCallback onArchive;
 
   const ExamCard({
@@ -21,7 +22,8 @@ class ExamCard extends StatelessWidget {
     required this.onDetails,
     required this.onEdit,
     required this.onDelete,
-    required this.onPublish,
+    required this.onCreatePublicationWorkflow,
+    required this.onViewPublicationWorkflow,
     required this.onArchive,
   });
 
@@ -91,8 +93,10 @@ class ExamCard extends StatelessWidget {
                         onDetails();
                       case _ExamAction.edit:
                         onEdit();
-                      case _ExamAction.publish:
-                        onPublish();
+                      case _ExamAction.createPublicationWorkflow:
+                        onCreatePublicationWorkflow();
+                      case _ExamAction.viewPublicationWorkflow:
+                        onViewPublicationWorkflow();
                       case _ExamAction.archive:
                         onArchive();
                       case _ExamAction.delete:
@@ -108,11 +112,14 @@ class ExamCard extends StatelessWidget {
                       value: _ExamAction.edit,
                       child: Text('Edit'),
                     ),
-                    if (!exam.isPublished)
-                      const PopupMenuItem(
-                        value: _ExamAction.publish,
-                        child: Text('Publish'),
-                      ),
+                    const PopupMenuItem(
+                      value: _ExamAction.createPublicationWorkflow,
+                      child: Text('Create publication workflow'),
+                    ),
+                    const PopupMenuItem(
+                      value: _ExamAction.viewPublicationWorkflow,
+                      child: Text('View publication workflow'),
+                    ),
                     if (exam.examStatus.toLowerCase() != 'archived')
                       const PopupMenuItem(
                         value: _ExamAction.archive,
@@ -195,4 +202,11 @@ class _ExamChip extends StatelessWidget {
   }
 }
 
-enum _ExamAction { details, edit, publish, archive, delete }
+enum _ExamAction {
+  details,
+  edit,
+  createPublicationWorkflow,
+  viewPublicationWorkflow,
+  archive,
+  delete,
+}

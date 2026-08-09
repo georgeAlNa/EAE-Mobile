@@ -26,6 +26,14 @@ class UsersManagementState with _$UsersManagementState {
   ) = _InviteSuccess;
   const factory UsersManagementState.inviteUserError({required String error}) =
       _InviteUserError;
+  const factory UsersManagementState.roleAssignmentLoading() =
+      _RoleAssignmentLoading;
+  const factory UsersManagementState.roleAssignmentSuccess(
+    RoleActionResponse response,
+  ) = _RoleAssignmentSuccess;
+  const factory UsersManagementState.roleAssignmentError({
+    required String error,
+  }) = _RoleAssignmentError;
   const factory UsersManagementState.deactivateUserLoading() =
       _DeactivateUserLoading;
   const factory UsersManagementState.deactivateSuccess(

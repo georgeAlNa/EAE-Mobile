@@ -3,10 +3,14 @@ import 'package:eae_mobile/features/tenant_admin/users_management/data/models/us
 import 'package:eae_mobile/features/tenant_admin/users_management/data/models/users_management_response.dart';
 import 'package:eae_mobile/features/tenant_admin/users_management/data/repos/users_management_repo.dart';
 import 'package:eae_mobile/features/tenant_admin/users_management/logic/users_management_cubit.dart';
+import 'package:eae_mobile/features/tenant_admin/roles_and_security/data/models/roles_and_security_response.dart';
+import 'package:eae_mobile/features/tenant_admin/roles_and_security/data/repos/roles_and_security_repo.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockUsersManagementRepo extends Mock implements UsersManagementRepo {}
+
+class MockRolesAndSecurityRepo extends Mock implements RolesAndSecurityRepo {}
 
 UserManagementUser user({String id = 'user_001'}) => UserManagementUser(
   id: id,
@@ -41,7 +45,33 @@ InviteUserRequestBody inviteUserRequest() => InviteUserRequestBody(
   email: 'invite@example.com',
   firstName: 'Omar',
   lastName: 'Ali',
-  userType: 'candidate',
+  userType: 'examinee',
+);
+
+RoleItem role({
+  String roleId = 'role_candidate',
+  String roleName = 'Candidate',
+}) => RoleItem(
+  roleId: roleId,
+  tenantId: 'tenant_001',
+  roleName: roleName,
+  description: roleName,
+  roleCategory: 'tenant',
+  isCustomRole: false,
+  isSystemRole: true,
+  roleMetadata: null,
+  createdAt: '2026-07-01T20:00:00.000Z',
+  updatedAt: '2026-07-01T20:00:00.000Z',
+);
+
+RolesResponse rolesResponse() => RolesResponse(
+  data: [
+    role(),
+    role(roleId: 'role_admin', roleName: 'Tenant Admin'),
+    role(roleId: 'role_evaluator', roleName: 'Technical Evaluator'),
+    role(roleId: 'role_proctor', roleName: 'Proctor'),
+  ],
+  meta: RolesMeta(currentPage: 1, perPage: 10, total: 4, lastPage: 1),
 );
 
 ResetUserPasswordRequestBody resetPasswordRequest() =>
@@ -73,6 +103,9 @@ bool isCreateUserLoading(UsersManagementState state) =>
 bool isInviteUserLoading(UsersManagementState state) =>
     state.maybeWhen(inviteUserLoading: () => true, orElse: () => false);
 
+bool isRoleAssignmentLoading(UsersManagementState state) =>
+    state.maybeWhen(roleAssignmentLoading: () => true, orElse: () => false);
+
 bool isDeactivateUserLoading(UsersManagementState state) =>
     state.maybeWhen(deactivateUserLoading: () => true, orElse: () => false);
 
@@ -84,6 +117,7 @@ String? stateError(UsersManagementState state) => state.whenOrNull(
   userDetailsError: (error) => error,
   createUserError: (error) => error,
   inviteUserError: (error) => error,
+  roleAssignmentError: (error) => error,
   deactivateUserError: (error) => error,
   resetPasswordError: (error) => error,
 );
@@ -99,6 +133,9 @@ CreateUserResponse? createSuccess(UsersManagementState state) =>
 
 InviteUserResponse? inviteSuccess(UsersManagementState state) =>
     state.whenOrNull(inviteSuccess: (response) => response);
+
+RoleActionResponse? roleAssignmentSuccess(UsersManagementState state) =>
+    state.whenOrNull(roleAssignmentSuccess: (response) => response);
 
 UserActionResponse? actionSuccess(UsersManagementState state) =>
     state.whenOrNull(
@@ -118,6 +155,7 @@ Future<UsersManagementState> waitForUsersTerminal(UsersManagementCubit cubit) {
 
 void main() {
   late MockUsersManagementRepo repo;
+  late MockRolesAndSecurityRepo rolesRepo;
 
   setUpAll(() {
     registerFallbackValue(createUserRequest());
@@ -129,10 +167,20 @@ void main() {
 
   setUp(() {
     repo = MockUsersManagementRepo();
+    rolesRepo = MockRolesAndSecurityRepo();
+    when(
+      () => rolesRepo.rolesAndSecurity(),
+    ).thenAnswer((_) async => rolesResponse());
+    when(
+      () => rolesRepo.assignRoleToUser(any(), any()),
+    ).thenAnswer((_) async => RoleActionResponse(message: 'assigned'));
   });
 
   UsersManagementCubit createCubit() {
-    final cubit = UsersManagementCubit(usersManagementRepo: repo);
+    final cubit = UsersManagementCubit(
+      usersManagementRepo: repo,
+      rolesAndSecurityRepo: rolesRepo,
+    );
     addTearDown(cubit.close);
     return cubit;
   }
@@ -252,6 +300,7 @@ void main() {
 
     test('createUser emits createSuccess and handles error', () async {
       final cubit = await loadedCubit();
+      await cubit.loadRolesForAssignment();
       final response = CreateUserResponse(
         data: CreatedUserData(userId: 'user_created', tenantId: 'tenant_001'),
       );
@@ -266,8 +315,14 @@ void main() {
           ),
         ]),
       );
-      await cubit.createUser(createUserRequest());
+      await cubit.createUser(
+        createUserRequest(),
+        selectedRoleName: 'Tenant Admin',
+      );
       await emission;
+      verify(
+        () => rolesRepo.assignRoleToUser('role_admin', 'user_created'),
+      ).called(1);
 
       when(
         () => repo.createUser(any()),
@@ -281,18 +336,52 @@ void main() {
           ),
         ]),
       );
-      await cubit.createUser(createUserRequest());
+      await cubit.createUser(
+        createUserRequest(),
+        selectedRoleName: 'Tenant Admin',
+      );
       await emission;
     });
 
+    test(
+      'createUser does not create when selected role cannot be resolved',
+      () async {
+        when(() => rolesRepo.rolesAndSecurity()).thenAnswer(
+          (_) async => RolesResponse(data: [], meta: rolesResponse().meta),
+        );
+        final cubit = await loadedCubit();
+
+        final emission = expectLater(
+          cubit.stream,
+          emitsInOrder([
+            predicate<UsersManagementState>(isCreateUserLoading),
+            predicate<UsersManagementState>(
+              (state) =>
+                  stateError(state)?.contains('could not be resolved') ?? false,
+            ),
+          ]),
+        );
+
+        await cubit.createUser(
+          createUserRequest(),
+          selectedRoleName: 'Tenant Admin',
+        );
+        await emission;
+
+        verifyNever(() => repo.createUser(any()));
+        verifyNever(() => rolesRepo.assignRoleToUser(any(), any()));
+      },
+    );
+
     test('inviteUser emits inviteSuccess', () async {
       final cubit = await loadedCubit();
+      await cubit.loadRolesForAssignment();
       final response = InviteUserResponse(
         data: InvitedUserData(
           userId: 'user_invited',
           tenantId: 'tenant_001',
           inviteToken: 'invite-token',
-          status: 'invited',
+          status: 'pending',
         ),
       );
       when(() => repo.inviteUser(any())).thenAnswer((_) async => response);
@@ -302,14 +391,69 @@ void main() {
         emitsInOrder([
           predicate<UsersManagementState>(isInviteUserLoading),
           predicate<UsersManagementState>(
-            (state) => inviteSuccess(state)?.data.status == 'invited',
+            (state) => inviteSuccess(state)?.data.status == 'pending',
           ),
         ]),
       );
 
-      await cubit.inviteUser(inviteUserRequest());
+      await cubit.inviteUser(
+        inviteUserRequest(),
+        selectedRoleName: 'Candidate',
+      );
       await emission;
+      verify(
+        () => rolesRepo.assignRoleToUser('role_candidate', 'user_invited'),
+      ).called(1);
     });
+
+    test(
+      'retryPendingRoleAssignment uses neutral role assignment state',
+      () async {
+        final cubit = await loadedCubit();
+        await cubit.loadRolesForAssignment();
+        final response = InviteUserResponse(
+          data: InvitedUserData(
+            userId: 'user_invited',
+            tenantId: 'tenant_001',
+            inviteToken: 'invite-token',
+            status: 'pending',
+          ),
+        );
+        when(() => repo.inviteUser(any())).thenAnswer((_) async => response);
+        when(() => rolesRepo.assignRoleToUser(any(), any())).thenThrow(
+          const NetworkExceptions.unprocessableEntity('Role assignment failed'),
+        );
+
+        await cubit.inviteUser(
+          inviteUserRequest(),
+          selectedRoleName: 'Candidate',
+        );
+        expect(cubit.pendingRoleAssignment?.operationLabel, 'invited');
+
+        when(
+          () => rolesRepo.assignRoleToUser('role_candidate', 'user_invited'),
+        ).thenAnswer((_) async => RoleActionResponse(message: 'assigned'));
+
+        final emission = expectLater(
+          cubit.stream,
+          emitsInOrder([
+            predicate<UsersManagementState>(isRoleAssignmentLoading),
+            predicate<UsersManagementState>(
+              (state) => roleAssignmentSuccess(state)?.message == 'assigned',
+            ),
+            predicate<UsersManagementState>(isUsersLoading),
+            predicate<UsersManagementState>(
+              (state) => usersLoaded(state)?.data.single.id == 'user_001',
+            ),
+          ]),
+        );
+
+        await cubit.retryPendingRoleAssignment();
+        await emission;
+
+        verify(() => repo.inviteUser(any())).called(1);
+      },
+    );
 
     test('deactivate and reset password emit actionSuccess', () async {
       final cubit = await loadedCubit();

@@ -14,6 +14,8 @@ abstract class ResultPublicationState {
   const factory ResultPublicationState.published(
     ResultPublicationResponse response,
   ) = _Published;
+  const factory ResultPublicationState.examPublished(ExamResponse response) =
+      _ExamPublished;
   const factory ResultPublicationState.publishError({required String error}) =
       _PublishError;
   const factory ResultPublicationState.workflowLoading() = _WorkflowLoading;
@@ -29,6 +31,7 @@ abstract class ResultPublicationState {
     T Function(String error)? statusError,
     T Function()? publishLoading,
     T Function(ResultPublicationResponse response)? published,
+    T Function(ExamResponse response)? examPublished,
     T Function(String error)? publishError,
     T Function()? workflowLoading,
     T Function(ApprovalWorkflowActionResponse response)? workflowLoaded,
@@ -50,6 +53,9 @@ abstract class ResultPublicationState {
     }
     if (state is _Published && published != null) {
       return published(state.response);
+    }
+    if (state is _ExamPublished && examPublished != null) {
+      return examPublished(state.response);
     }
     if (state is _PublishError && publishError != null) {
       return publishError(state.error);
@@ -95,6 +101,12 @@ class _Published extends ResultPublicationState {
   final ResultPublicationResponse response;
 
   const _Published(this.response);
+}
+
+class _ExamPublished extends ResultPublicationState {
+  final ExamResponse response;
+
+  const _ExamPublished(this.response);
 }
 
 class _PublishError extends ResultPublicationState {

@@ -1,3 +1,4 @@
+import 'package:eae_mobile/features/tenant_admin/users_management/data/models/role_user_type_mapper.dart';
 import 'package:eae_mobile/features/tenant_admin/users_management/data/models/users_management_request_body.dart';
 import 'package:eae_mobile/features/tenant_admin/users_management/data/models/users_management_response.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -32,6 +33,9 @@ void main() {
         'first_name': 'Sara',
         'last_name': 'Ahmed',
         'user_type': 'tenant_admin',
+        'external_employee_id': 'EMP-001',
+        'department_id': null,
+        'user_attributes': {},
       });
 
       expect(request.email, 'user@example.com');
@@ -44,6 +48,8 @@ void main() {
         'first_name': 'Sara',
         'last_name': 'Ahmed',
         'user_type': 'tenant_admin',
+        'external_employee_id': 'EMP-001',
+        'user_attributes': {},
       });
     });
 
@@ -52,8 +58,10 @@ void main() {
         'email': 'invite@example.com',
         'first_name': 'Omar',
         'last_name': 'Ali',
-        'user_type': 'candidate',
+        'user_type': 'examinee',
         'external_employee_id': 'EMP-002',
+        'department_id': null,
+        'user_attributes': {},
       });
 
       expect(request.externalEmployeeId, 'EMP-002');
@@ -61,9 +69,18 @@ void main() {
         'email': 'invite@example.com',
         'first_name': 'Omar',
         'last_name': 'Ali',
-        'user_type': 'candidate',
+        'user_type': 'examinee',
         'external_employee_id': 'EMP-002',
+        'user_attributes': {},
       });
+    });
+
+    test('role names map to backend user_type values', () {
+      expect(userTypeForRoleName('Tenant Admin'), 'tenant_admin');
+      expect(userTypeForRoleName('Technical Evaluator'), 'staff');
+      expect(userTypeForRoleName('Proctor'), 'staff');
+      expect(userTypeForRoleName('Candidate'), 'examinee');
+      expect(userTypeForRoleName('Unknown Role'), isNull);
     });
 
     test('ResetUserPasswordRequestBody serializes password fields', () {
@@ -146,13 +163,13 @@ void main() {
           'user_id': 'user_invited',
           'tenant_id': 'tenant_001',
           'invite_token': 'invite-token',
-          'status': 'invited',
+          'status': 'pending',
         },
       });
 
       expect(response.data.userId, 'user_invited');
       expect(response.data.inviteToken, 'invite-token');
-      expect(response.data.status, 'invited');
+      expect(response.data.status, 'pending');
     });
 
     test('UserActionResponse parses and defaults message', () {

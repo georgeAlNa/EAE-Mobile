@@ -1,4 +1,5 @@
 import 'package:eae_mobile/core/networking/error/error_handler/network_exceptions.dart';
+import 'package:eae_mobile/features/evaluator/exams_management/data/repos/exams_management_repo.dart';
 import 'package:eae_mobile/features/tenant_admin/result_publication/data/models/result_publication_request_body.dart';
 import 'package:eae_mobile/features/tenant_admin/result_publication/data/models/result_publication_response.dart';
 import 'package:eae_mobile/features/tenant_admin/result_publication/data/repos/result_publication_repo.dart';
@@ -7,6 +8,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockResultPublicationRepo extends Mock implements ResultPublicationRepo {}
+
+class MockExamsManagementRepo extends Mock implements ExamsManagementRepo {}
 
 ResultPublicationResponse publishedResponse() => ResultPublicationResponse(
   data: PublishedSessionResult(
@@ -78,6 +81,7 @@ ApprovalWorkflowActionResponse? workflowLoaded(ResultPublicationState state) =>
 
 void main() {
   late MockResultPublicationRepo repo;
+  late MockExamsManagementRepo examsRepo;
   late ResultPublicationCubit cubit;
 
   setUpAll(() {
@@ -93,7 +97,11 @@ void main() {
 
   setUp(() {
     repo = MockResultPublicationRepo();
-    cubit = ResultPublicationCubit(resultPublicationRepo: repo);
+    examsRepo = MockExamsManagementRepo();
+    cubit = ResultPublicationCubit(
+      resultPublicationRepo: repo,
+      examsManagementRepo: examsRepo,
+    );
   });
 
   tearDown(() async {
@@ -229,7 +237,13 @@ void main() {
     test('getApprovalWorkflow and approveWorkflow emit loaded', () async {
       final loaded = ApprovalWorkflowActionResponse(
         message: 'loaded',
-        data: {'id': 'workflow_001'},
+        data: ApprovalWorkflowData(
+          workflowId: 'workflow_001',
+          resourceType: 'assessment_result',
+          resourceId: 'result_001',
+          workflowType: 'result_publication',
+          currentWorkflowStatus: 'pending',
+        ),
       );
       final approved = ApprovalWorkflowActionResponse(message: 'approved');
       when(

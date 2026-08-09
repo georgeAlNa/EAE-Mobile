@@ -12,12 +12,12 @@ import '../question/assessment_session_file_upload_card.dart';
 
 class AssessmentSessionExamFooter extends StatelessWidget {
   final AssessmentSessionViewData viewData;
-  final VoidCallback onSubmitExam;
+  final VoidCallback onPrimaryAction;
 
   const AssessmentSessionExamFooter({
     super.key,
     required this.viewData,
-    required this.onSubmitExam,
+    required this.onPrimaryAction,
   });
 
   @override
@@ -35,10 +35,25 @@ class AssessmentSessionExamFooter extends StatelessWidget {
         SizedBox(
           width: double.infinity,
           child: ElevatedButton.icon(
-            onPressed: viewData.isSubmitted ? null : onSubmitExam,
-            icon: const Icon(Icons.done_all_rounded),
+            onPressed:
+                viewData.isSubmitted ||
+                    viewData.isSubmittingAnswer ||
+                    viewData.isCompletingExam
+                ? null
+                : onPrimaryAction,
+            icon: Icon(
+              viewData.isEndOfQuestions
+                  ? Icons.done_all_rounded
+                  : Icons.send_rounded,
+            ),
             label: Text(
-              'Submit Exam',
+              viewData.isCompletingExam
+                  ? 'Completing...'
+                  : viewData.isSubmittingAnswer
+                  ? 'Submitting...'
+                  : viewData.isEndOfQuestions
+                  ? 'Complete Exam'
+                  : 'Submit Answer',
               style: AppTextStyles.font12DarkGreySemiBold.copyWith(
                 color: AppColors.neutralColor,
                 letterSpacing: 0.7,

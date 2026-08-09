@@ -38,7 +38,7 @@ Map<String, dynamic> sessionResponse({String state = 'in_progress'}) => {
     'progress': {
       'total_questions_responded': 0,
       'total_questions_flagged': 0,
-      'progress_data': [],
+      'progress_data': {},
     },
     'timestamps': {
       'started_at': '2026-06-25T14:03:03Z',
@@ -116,18 +116,24 @@ void main() {
         selectedOptions: const ['option_001'],
         timeSpentSeconds: 15,
         timeElapsedFromStartSeconds: 15,
+        expectedItemVersionLock: 0,
       ),
     );
     final complete = await remoteDataSource.completeExamSession('session_001');
 
     expect(complete.data.state, 'completed');
-    verify(
-      () => apiServicesImpl.post(
-        AppLinkUrl.examSessionResponses('session_001'),
-        body: any(named: 'body'),
-        token: 'access-token',
-      ),
-    ).called(1);
+    final submitBody =
+        verify(
+              () => apiServicesImpl.post(
+                AppLinkUrl.examSessionResponses('session_001'),
+                body: captureAny(named: 'body'),
+                token: 'access-token',
+              ),
+            ).captured.single
+            as Map<String, dynamic>;
+    expect(submitBody['session_item_id'], 'item_001');
+    expect(submitBody['selected_options'], ['option_001']);
+    expect(submitBody['expected_item_version_lock'], 0);
     verify(
       () => apiServicesImpl.post(
         AppLinkUrl.completeExamSession('session_001'),

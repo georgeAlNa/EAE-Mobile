@@ -26,14 +26,14 @@ class SubmitExamAnswerRequestBody {
   @JsonKey(name: 'selected_options')
   final List<String>? selectedOptions;
 
-  @JsonKey(name: 'text_response')
-  final String? textResponse;
+  @JsonKey(name: 'response_data')
+  final List<dynamic>? responseData;
 
-  @JsonKey(name: 'file_url')
-  final String? fileUrl;
+  @JsonKey(name: 'response_text')
+  final String? responseText;
 
-  @JsonKey(name: 'video_url')
-  final String? videoUrl;
+  @JsonKey(name: 'file_upload_url')
+  final String? fileUploadUrl;
 
   @JsonKey(name: 'time_spent_seconds')
   final int timeSpentSeconds;
@@ -41,15 +41,23 @@ class SubmitExamAnswerRequestBody {
   @JsonKey(name: 'time_elapsed_from_start_seconds')
   final int timeElapsedFromStartSeconds;
 
+  @JsonKey(name: 'is_flagged_for_review')
+  final bool? isFlaggedForReview;
+
+  @JsonKey(name: 'expected_item_version_lock')
+  final int? expectedItemVersionLock;
+
   SubmitExamAnswerRequestBody({
     required this.sessionItemId,
     required this.responseType,
     this.selectedOptions,
-    this.textResponse,
-    this.fileUrl,
-    this.videoUrl,
+    this.responseData,
+    this.responseText,
+    this.fileUploadUrl,
     required this.timeSpentSeconds,
     required this.timeElapsedFromStartSeconds,
+    this.isFlaggedForReview,
+    this.expectedItemVersionLock,
   });
 
   factory SubmitExamAnswerRequestBody.fromJson(Map<String, dynamic> json) =>

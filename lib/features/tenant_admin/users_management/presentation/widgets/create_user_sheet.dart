@@ -10,6 +10,7 @@ import '../../../../../core/public_widgets/button_widget.dart';
 import '../../../../../core/public_widgets/custom_dropdown.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
 import '../../../../../core/public_widgets/text_field_widget.dart';
+import '../../data/models/role_user_type_mapper.dart';
 import '../../data/models/users_management_request_body.dart';
 import '../../logic/users_management_cubit.dart';
 import 'users_management_sheet_scaffold.dart';
@@ -28,7 +29,9 @@ class _CreateUserSheetState extends State<CreateUserSheet> {
   final _passwordConfirmationController = TextEditingController();
   final _firstNameController = TextEditingController();
   final _lastNameController = TextEditingController();
-  String? _userType = 'examinee';
+  final _externalEmployeeIdController = TextEditingController();
+  final _departmentIdController = TextEditingController();
+  String? _selectedRoleName = TenantUserRoleNames.candidate;
 
   @override
   void dispose() {
@@ -37,6 +40,8 @@ class _CreateUserSheetState extends State<CreateUserSheet> {
     _passwordConfirmationController.dispose();
     _firstNameController.dispose();
     _lastNameController.dispose();
+    _externalEmployeeIdController.dispose();
+    _departmentIdController.dispose();
     super.dispose();
   }
 
@@ -72,13 +77,41 @@ class _CreateUserSheetState extends State<CreateUserSheet> {
               obscureText: false,
             ),
             verticalSpace(12),
-            CustomDropdown(
-              items: const ['examinee', 'evaluator', 'tenant_admin', 'proctor'],
-              value: _userType,
-              hintText: 'User type',
-              onChanged: (value) => setState(() => _userType = value),
-              validator: (value) =>
-                  value == null || value.isEmpty ? 'Required' : null,
+            Builder(
+              builder: (context) {
+                final cubit = context.read<UsersManagementCubit>();
+                final loadedRoleNames = cubit.rolesResponse?.data
+                    .map((role) => role.roleName)
+                    .where(TenantUserRoleNames.verified.contains)
+                    .toList();
+                final roleNames =
+                    loadedRoleNames == null || loadedRoleNames.isEmpty
+                    ? TenantUserRoleNames.verified
+                    : loadedRoleNames;
+                return CustomDropdown(
+                  items: roleNames,
+                  value: _selectedRoleName,
+                  hintText: 'Selected role',
+                  onChanged: (value) =>
+                      setState(() => _selectedRoleName = value),
+                  validator: (value) =>
+                      value == null || value.isEmpty ? 'Required' : null,
+                );
+              },
+            ),
+            verticalSpace(12),
+            TextFieldWidget(
+              controller: _externalEmployeeIdController,
+              hintText: 'EMP-123',
+              labelText: 'External employee ID',
+              obscureText: false,
+            ),
+            verticalSpace(12),
+            TextFieldWidget(
+              controller: _departmentIdController,
+              hintText: 'optional department id',
+              labelText: 'Department ID',
+              obscureText: false,
             ),
             verticalSpace(12),
             TextFieldWidget(
@@ -87,6 +120,8 @@ class _CreateUserSheetState extends State<CreateUserSheet> {
               labelText: 'Password',
               obscureText: true,
               validationType: InputValidationType.password,
+              customPattern:
+                  r'^(?=.*[a-z])(?=.*[A-Z])(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{12,}$',
             ),
             verticalSpace(12),
             TextFieldWidget(
@@ -95,6 +130,8 @@ class _CreateUserSheetState extends State<CreateUserSheet> {
               labelText: 'Confirm password',
               obscureText: true,
               validationType: InputValidationType.password,
+              customPattern:
+                  r'^(?=.*[a-z])(?=.*[A-Z])(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{12,}$',
             ),
             verticalSpace(20),
             ButtonWidget(
@@ -118,7 +155,7 @@ class _CreateUserSheetState extends State<CreateUserSheet> {
 
     if (_firstNameController.text.trim().isEmpty ||
         _lastNameController.text.trim().isEmpty ||
-        (_userType ?? '').isEmpty ||
+        (_selectedRoleName ?? '').isEmpty ||
         _passwordController.text.trim().isEmpty ||
         _passwordConfirmationController.text.trim().isEmpty) {
       showAppSnackBar(context, 'Please fill all required fields');
@@ -131,15 +168,34 @@ class _CreateUserSheetState extends State<CreateUserSheet> {
       return;
     }
 
-    context.read<UsersManagementCubit>().createUser(
+    final cubit = context.read<UsersManagementCubit>();
+    final selectedRoleName = _selectedRoleName!;
+    final userType = userTypeForRoleName(selectedRoleName);
+    if (userType == null) {
+      showAppSnackBar(
+        context,
+        'Selected role "$selectedRoleName" is not supported for user creation',
+      );
+      return;
+    }
+
+    final externalEmployeeId = _externalEmployeeIdController.text.trim();
+    final departmentId = _departmentIdController.text.trim();
+    cubit.createUser(
       CreateUserRequestBody(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
         passwordConfirmation: _passwordConfirmationController.text.trim(),
         firstName: _firstNameController.text.trim(),
         lastName: _lastNameController.text.trim(),
-        userType: _userType!,
+        userType: userType,
+        externalEmployeeId: externalEmployeeId.isEmpty
+            ? null
+            : externalEmployeeId,
+        departmentId: departmentId.isEmpty ? null : departmentId,
+        userAttributes: const {},
       ),
+      selectedRoleName: selectedRoleName,
     );
 
     Navigator.pop(context);

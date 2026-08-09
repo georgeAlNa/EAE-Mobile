@@ -51,7 +51,7 @@ class ExamsManagementHeader extends StatelessWidget {
         ),
         verticalSpace(8),
         Text(
-          'Build, publish, and archive evaluator exams from the backend.',
+          'Build, archive, and manage publication workflows for evaluator exams.',
           style: AppTextStyles.font14DarkGreyRegular.copyWith(
             color: AppColors.tertiaryColor6,
             height: 1.5,

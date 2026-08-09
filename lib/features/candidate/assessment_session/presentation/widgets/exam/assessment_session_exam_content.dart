@@ -272,6 +272,16 @@ class _AssessmentSessionExamContentState
   void _handleStateChange(BuildContext context, AssessmentSessionState state) {
     state.maybeWhen(
       ready: (viewData) {
+        final message = viewData.statusMessage;
+        if (message != null && message.trim().isNotEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(message),
+              duration: const Duration(seconds: 4),
+            ),
+          );
+        }
+
         if (viewData.isSubmitted) {
           if (!_hasNavigatedAfterSubmit) {
             _hasNavigatedAfterSubmit = true;
@@ -417,34 +427,43 @@ class _AssessmentSessionExamContentState
             onNext: () => context.read<AssessmentSessionCubit>().nextQuestion(),
           ),
           verticalSpace(16),
-          AssessmentSessionQuestionCard(
-            question: viewData.currentQuestion,
-            onSingleChoiceSelected: (optionIndex) => context
-                .read<AssessmentSessionCubit>()
-                .selectSingleOption(optionIndex),
-            onMultiSelectToggled: (optionIndex) => context
-                .read<AssessmentSessionCubit>()
-                .toggleMultiSelectOption(optionIndex),
-            onTextChanged: (value) => context
-                .read<AssessmentSessionCubit>()
-                .updateResponseText(value),
-            onToggleFlag: () => context
-                .read<AssessmentSessionCubit>()
-                .toggleFlagForCurrentQuestion(),
-            onPickFile: () => context
-                .read<AssessmentSessionCubit>()
-                .pickFileForCurrentQuestion(),
-            onRecordVideo: () => context
-                .read<AssessmentSessionCubit>()
-                .recordVideoForCurrentQuestion(),
-            recordingTime: viewData.recordingTime,
-            resolutionLabel: viewData.resolutionLabel,
-            isoLabel: viewData.isoLabel,
-          ),
+          if (viewData.isEndOfQuestions)
+            _EndOfQuestionsCard(viewData: viewData)
+          else
+            AssessmentSessionQuestionCard(
+              question: viewData.currentQuestion,
+              onSingleChoiceSelected: (optionIndex) => context
+                  .read<AssessmentSessionCubit>()
+                  .selectSingleOption(optionIndex),
+              onMultiSelectToggled: (optionIndex) => context
+                  .read<AssessmentSessionCubit>()
+                  .toggleMultiSelectOption(optionIndex),
+              onTextChanged: (value) => context
+                  .read<AssessmentSessionCubit>()
+                  .updateResponseText(value),
+              onToggleFlag: () => context
+                  .read<AssessmentSessionCubit>()
+                  .toggleFlagForCurrentQuestion(),
+              onPickFile: () => context
+                  .read<AssessmentSessionCubit>()
+                  .pickFileForCurrentQuestion(),
+              onRecordVideo: () => context
+                  .read<AssessmentSessionCubit>()
+                  .recordVideoForCurrentQuestion(),
+              recordingTime: viewData.recordingTime,
+              resolutionLabel: viewData.resolutionLabel,
+              isoLabel: viewData.isoLabel,
+            ),
           verticalSpace(16),
           AssessmentSessionExamFooter(
             viewData: viewData,
-            onSubmitExam: () => _showSubmitWarningDialog(context, viewData),
+            onPrimaryAction: () {
+              if (viewData.isEndOfQuestions) {
+                _showSubmitWarningDialog(context, viewData);
+              } else {
+                context.read<AssessmentSessionCubit>().submitCurrentAnswer();
+              }
+            },
           ),
           verticalSpace(24),
         ],
@@ -490,6 +509,63 @@ class _AssessmentSessionExamContentState
 
           return _buildExamView(context, viewData);
         },
+      ),
+    );
+  }
+}
+
+class _EndOfQuestionsCard extends StatelessWidget {
+  final AssessmentSessionViewData viewData;
+
+  const _EndOfQuestionsCard({required this.viewData});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(18.r),
+      decoration: BoxDecoration(
+        color: AppColors.neutralColor,
+        borderRadius: BorderRadius.circular(18.r),
+        border: Border.all(color: AppColors.tertiaryColor2),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.task_alt_rounded,
+                color: AppColors.secondaryColor7,
+                size: 24.sp,
+              ),
+              horizontalSpace(10),
+              Expanded(
+                child: Text(
+                  'End of questions',
+                  style: AppTextStyles.font16DarkGreyBold.copyWith(
+                    color: AppColors.primaryColor9,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          verticalSpace(10),
+          Text(
+            'You have reached the end of the exam. Complete the exam to submit the session.',
+            style: AppTextStyles.font12DarkGreyRegular.copyWith(
+              color: AppColors.tertiaryColor7,
+              height: 1.45,
+            ),
+          ),
+          verticalSpace(10),
+          Text(
+            'Answered: ${viewData.totalQuestions == 0 ? '-' : viewData.totalQuestions}',
+            style: AppTextStyles.font11DarkGreyLight.copyWith(
+              color: AppColors.tertiaryColor6,
+            ),
+          ),
+        ],
       ),
     );
   }

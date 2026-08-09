@@ -98,6 +98,23 @@ void main() {
     expect(find.text('Draft'), findsWidgets);
   });
 
+  testWidgets('action menu hides direct publish and keeps workflow actions', (
+    tester,
+  ) async {
+    final cubit = await createCubit(
+      repo,
+      load: () async => ExamsResponse(data: [exam()]),
+    );
+
+    await pumpScreen(tester, cubit);
+    await tester.tap(find.byTooltip('Exam actions').first);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Publish'), findsNothing);
+    expect(find.text('Create publication workflow'), findsOneWidget);
+    expect(find.text('View publication workflow'), findsOneWidget);
+  });
+
   testWidgets('filters exams from search input', (tester) async {
     final cubit = await createCubit(
       repo,

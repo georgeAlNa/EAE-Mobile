@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -119,7 +121,10 @@ class _ExamsManagementScreenState extends State<ExamsManagementScreen> {
                           onEdit: (exam) =>
                               showExamFormSheet(context: context, exam: exam),
                           onDelete: (exam) => _confirmDelete(context, exam),
-                          onPublish: (exam) => _confirmPublish(context, exam),
+                          onCreatePublicationWorkflow: (exam) =>
+                              _createPublicationWorkflow(context, exam),
+                          onViewPublicationWorkflow: (exam) =>
+                              _promptViewPublicationWorkflow(context, exam),
                           onArchive: (exam) => _confirmArchive(context, exam),
                         ),
                       ],
@@ -182,13 +187,85 @@ class _ExamsManagementScreenState extends State<ExamsManagementScreen> {
     );
   }
 
-  void _confirmPublish(BuildContext context, ExamItem exam) {
-    confirmExamAction(
+  Future<void> _createPublicationWorkflow(
+    BuildContext context,
+    ExamItem exam,
+  ) async {
+    final cubit = context.read<ExamsManagementCubit>();
+    await cubit.createExamPublicationWorkflow(exam.id);
+    if (!context.mounted) return;
+    final workflow = cubit.examPublicationWorkflowResponse;
+    if (workflow != null) {
+      _showWorkflowDetailsDialog(context, workflow.toJson());
+    }
+  }
+
+  Future<void> _promptViewPublicationWorkflow(
+    BuildContext context,
+    ExamItem exam,
+  ) async {
+    final controller = TextEditingController();
+    final workflowId = await showDialog<String>(
       context: context,
-      title: 'Publish exam',
-      message: 'Publish ${exam.examName}?',
-      onConfirmed: () =>
-          context.read<ExamsManagementCubit>().publishExam(exam.id),
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: Text('View workflow for ${exam.examName}'),
+          content: TextField(
+            controller: controller,
+            decoration: const InputDecoration(
+              labelText: 'Workflow ID',
+              hintText: 'workflow id',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () =>
+                  Navigator.pop(dialogContext, controller.text.trim()),
+              child: const Text('View'),
+            ),
+          ],
+        );
+      },
+    );
+    controller.dispose();
+
+    if (workflowId == null || workflowId.isEmpty || !context.mounted) return;
+
+    final cubit = context.read<ExamsManagementCubit>();
+    await cubit.getExamPublicationWorkflow(workflowId);
+    if (!context.mounted) return;
+    final workflow = cubit.examPublicationWorkflowResponse;
+    if (workflow != null) {
+      _showWorkflowDetailsDialog(context, workflow.toJson());
+    }
+  }
+
+  void _showWorkflowDetailsDialog(
+    BuildContext context,
+    Map<String, dynamic> workflowJson,
+  ) {
+    showDialog<void>(
+      context: context,
+      builder: (_) {
+        return AlertDialog(
+          title: const Text('Exam publication workflow'),
+          content: SingleChildScrollView(
+            child: Text(
+              const JsonEncoder.withIndent('  ').convert(workflowJson),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Close'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -212,7 +289,8 @@ class _ExamsDataSection extends StatelessWidget {
   final ValueChanged<ExamItem> onDetails;
   final ValueChanged<ExamItem> onEdit;
   final ValueChanged<ExamItem> onDelete;
-  final ValueChanged<ExamItem> onPublish;
+  final ValueChanged<ExamItem> onCreatePublicationWorkflow;
+  final ValueChanged<ExamItem> onViewPublicationWorkflow;
   final ValueChanged<ExamItem> onArchive;
 
   const _ExamsDataSection({
@@ -224,7 +302,8 @@ class _ExamsDataSection extends StatelessWidget {
     required this.onDetails,
     required this.onEdit,
     required this.onDelete,
-    required this.onPublish,
+    required this.onCreatePublicationWorkflow,
+    required this.onViewPublicationWorkflow,
     required this.onArchive,
   });
 
@@ -255,7 +334,7 @@ class _ExamsDataSection extends StatelessWidget {
       return ExamsManagementEmptyState(
         title: query.isEmpty ? 'No exams yet' : 'No matching exams',
         message: query.isEmpty
-            ? 'Create the first exam and publish it when ready.'
+            ? 'Create the first exam and start a publication workflow when ready.'
             : 'Try another name, code, type, mode, or status.',
       );
     }
@@ -272,7 +351,10 @@ class _ExamsDataSection extends StatelessWidget {
                 onDetails: () => onDetails(entry.value),
                 onEdit: () => onEdit(entry.value),
                 onDelete: () => onDelete(entry.value),
-                onPublish: () => onPublish(entry.value),
+                onCreatePublicationWorkflow: () =>
+                    onCreatePublicationWorkflow(entry.value),
+                onViewPublicationWorkflow: () =>
+                    onViewPublicationWorkflow(entry.value),
                 onArchive: () => onArchive(entry.value),
               ),
             ),

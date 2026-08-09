@@ -97,8 +97,8 @@ class ExamSessionProgress {
   @JsonKey(name: 'total_questions_flagged')
   final int totalQuestionsFlagged;
 
-  @JsonKey(name: 'progress_data')
-  final List<dynamic> progressData;
+  @JsonKey(name: 'progress_data', fromJson: _jsonMapFromJson)
+  final Map<String, dynamic> progressData;
 
   ExamSessionProgress({
     required this.totalQuestionsResponded,
@@ -110,6 +110,72 @@ class ExamSessionProgress {
       _$ExamSessionProgressFromJson(json);
 
   Map<String, dynamic> toJson() => _$ExamSessionProgressToJson(this);
+}
+
+@JsonSerializable()
+class CurrentQuestionResponse {
+  final CandidateQuestion data;
+
+  CurrentQuestionResponse({required this.data});
+
+  factory CurrentQuestionResponse.fromJson(Map<String, dynamic> json) =>
+      _$CurrentQuestionResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CurrentQuestionResponseToJson(this);
+}
+
+@JsonSerializable()
+class CandidateQuestion {
+  @JsonKey(name: 'question_version_id')
+  final String questionVersionId;
+
+  @JsonKey(name: 'question_type')
+  final String questionType;
+
+  @JsonKey(name: 'question_text')
+  final String questionText;
+
+  @JsonKey(name: 'question_stem')
+  final String? questionStem;
+
+  @JsonKey(defaultValue: <CandidateQuestionChoice>[])
+  final List<CandidateQuestionChoice> choices;
+
+  CandidateQuestion({
+    required this.questionVersionId,
+    required this.questionType,
+    required this.questionText,
+    this.questionStem,
+    required this.choices,
+  });
+
+  factory CandidateQuestion.fromJson(Map<String, dynamic> json) =>
+      _$CandidateQuestionFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CandidateQuestionToJson(this);
+}
+
+@JsonSerializable()
+class CandidateQuestionChoice {
+  @JsonKey(name: 'option_id')
+  final String optionId;
+
+  @JsonKey(name: 'option_text')
+  final String optionText;
+
+  @JsonKey(name: 'option_sequence')
+  final int optionSequence;
+
+  CandidateQuestionChoice({
+    required this.optionId,
+    required this.optionText,
+    required this.optionSequence,
+  });
+
+  factory CandidateQuestionChoice.fromJson(Map<String, dynamic> json) =>
+      _$CandidateQuestionChoiceFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CandidateQuestionChoiceToJson(this);
 }
 
 @JsonSerializable()
@@ -137,4 +203,9 @@ class ExamSessionTimestamps {
       _$ExamSessionTimestampsFromJson(json);
 
   Map<String, dynamic> toJson() => _$ExamSessionTimestampsToJson(this);
+}
+
+Map<String, dynamic> _jsonMapFromJson(Object? json) {
+  if (json == null) return const {};
+  return Map<String, dynamic>.from(json as Map);
 }

@@ -164,7 +164,10 @@ Future<void> setupGetit() async {
   );
   // cubit
   getIt.registerFactory<UsersManagementCubit>(
-    () => UsersManagementCubit(usersManagementRepo: getIt()),
+    () => UsersManagementCubit(
+      usersManagementRepo: getIt(),
+      rolesAndSecurityRepo: getIt(),
+    ),
   );
 
   // //! feature - assessment governance
@@ -198,7 +201,10 @@ Future<void> setupGetit() async {
   );
   // cubit
   getIt.registerFactory<ResultPublicationCubit>(
-    () => ResultPublicationCubit(resultPublicationRepo: getIt()),
+    () => ResultPublicationCubit(
+      resultPublicationRepo: getIt(),
+      examsManagementRepo: getIt(),
+    ),
   );
 
   // //! feature - certificates
@@ -320,7 +326,10 @@ Future<void> setupGetit() async {
   );
   // cubit
   getIt.registerFactory<ExamsManagementCubit>(
-    () => ExamsManagementCubit(examsManagementRepo: getIt()),
+    () => ExamsManagementCubit(
+      examsManagementRepo: getIt(),
+      resultPublicationRepo: getIt(),
+    ),
   );
 
   // //! feature - manual evaluation

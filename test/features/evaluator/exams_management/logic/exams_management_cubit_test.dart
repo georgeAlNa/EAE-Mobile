@@ -3,10 +3,15 @@ import 'package:eae_mobile/features/evaluator/exams_management/data/models/exams
 import 'package:eae_mobile/features/evaluator/exams_management/data/models/exams_management_response.dart';
 import 'package:eae_mobile/features/evaluator/exams_management/data/repos/exams_management_repo.dart';
 import 'package:eae_mobile/features/evaluator/exams_management/logic/exams_management_cubit.dart';
+import 'package:eae_mobile/features/tenant_admin/result_publication/data/models/result_publication_request_body.dart';
+import 'package:eae_mobile/features/tenant_admin/result_publication/data/models/result_publication_response.dart';
+import 'package:eae_mobile/features/tenant_admin/result_publication/data/repos/result_publication_repo.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockExamsManagementRepo extends Mock implements ExamsManagementRepo {}
+
+class MockResultPublicationRepo extends Mock implements ResultPublicationRepo {}
 
 ExamRequestBody examRequest() {
   return ExamRequestBody(
@@ -145,20 +150,32 @@ ExamActionResponse? actionResponse(ExamsManagementState state) {
 
 void main() {
   late MockExamsManagementRepo repo;
+  late MockResultPublicationRepo workflowRepo;
 
   setUpAll(() {
     registerFallbackValue(examRequest());
     registerFallbackValue(sectionRequest());
     registerFallbackValue(blueprintRequest());
+    registerFallbackValue(
+      CreateApprovalWorkflowRequestBody(
+        resourceType: '',
+        resourceId: '',
+        workflowType: '',
+      ),
+    );
     registerFallbackValue('');
   });
 
   setUp(() {
     repo = MockExamsManagementRepo();
+    workflowRepo = MockResultPublicationRepo();
   });
 
   ExamsManagementCubit createCubit() {
-    final cubit = ExamsManagementCubit(examsManagementRepo: repo);
+    final cubit = ExamsManagementCubit(
+      examsManagementRepo: repo,
+      resultPublicationRepo: workflowRepo,
+    );
     addTearDown(cubit.close);
     return cubit;
   }
@@ -336,6 +353,76 @@ void main() {
       await cubit.publishExam('exam_001');
       await emission;
     });
+
+    test(
+      'creates and views exam publication workflow without approval',
+      () async {
+        final cubit = await loadedCubit();
+        final created = ApprovalWorkflowActionResponse(
+          message: 'created',
+          data: ApprovalWorkflowData(
+            workflowId: 'workflow_001',
+            resourceType: 'exam',
+            resourceId: 'exam_001',
+            workflowType: 'exam_publication',
+            currentWorkflowStatus: 'pending',
+          ),
+        );
+        final loaded = ApprovalWorkflowActionResponse(
+          message: 'loaded',
+          data: ApprovalWorkflowData(
+            workflowId: 'workflow_001',
+            resourceType: 'exam',
+            resourceId: 'exam_001',
+            workflowType: 'exam_publication',
+            currentWorkflowStatus: 'approved',
+          ),
+        );
+        when(
+          () => workflowRepo.createApprovalWorkflow(any()),
+        ).thenAnswer((_) async => created);
+        when(
+          () => workflowRepo.getApprovalWorkflow(any()),
+        ).thenAnswer((_) async => loaded);
+
+        var emission = expectLater(
+          cubit.stream,
+          emitsInOrder([
+            predicate<ExamsManagementState>(isLoading),
+            predicate<ExamsManagementState>(
+              (state) => actionResponse(state)?.message == 'workflow_001',
+            ),
+          ]),
+        );
+        await cubit.createExamPublicationWorkflow('exam_001');
+        await emission;
+        final request =
+            verify(
+                  () => workflowRepo.createApprovalWorkflow(captureAny()),
+                ).captured.single
+                as CreateApprovalWorkflowRequestBody;
+        expect(request.resourceType, 'exam');
+        expect(request.resourceId, 'exam_001');
+        expect(request.workflowType, 'exam_publication');
+
+        emission = expectLater(
+          cubit.stream,
+          emitsInOrder([
+            predicate<ExamsManagementState>(isLoading),
+            predicate<ExamsManagementState>(
+              (state) => actionResponse(state)?.message == 'approved',
+            ),
+          ]),
+        );
+        await cubit.getExamPublicationWorkflow('workflow_001');
+        await emission;
+
+        verify(
+          () => workflowRepo.getApprovalWorkflow('workflow_001'),
+        ).called(1);
+        verifyNever(() => workflowRepo.approveWorkflow(any()));
+      },
+    );
 
     test('archiveExam emits loading then saved', () async {
       final cubit = await loadedCubit();

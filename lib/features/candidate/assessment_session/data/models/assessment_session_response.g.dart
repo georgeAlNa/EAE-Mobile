@@ -73,7 +73,7 @@ ExamSessionProgress _$ExamSessionProgressFromJson(Map<String, dynamic> json) =>
       totalQuestionsResponded: (json['total_questions_responded'] as num)
           .toInt(),
       totalQuestionsFlagged: (json['total_questions_flagged'] as num).toInt(),
-      progressData: json['progress_data'] as List<dynamic>,
+      progressData: _jsonMapFromJson(json['progress_data']),
     );
 
 Map<String, dynamic> _$ExamSessionProgressToJson(
@@ -82,6 +82,57 @@ Map<String, dynamic> _$ExamSessionProgressToJson(
   'total_questions_responded': instance.totalQuestionsResponded,
   'total_questions_flagged': instance.totalQuestionsFlagged,
   'progress_data': instance.progressData,
+};
+
+CurrentQuestionResponse _$CurrentQuestionResponseFromJson(
+  Map<String, dynamic> json,
+) => CurrentQuestionResponse(
+  data: CandidateQuestion.fromJson(json['data'] as Map<String, dynamic>),
+);
+
+Map<String, dynamic> _$CurrentQuestionResponseToJson(
+  CurrentQuestionResponse instance,
+) => <String, dynamic>{'data': instance.data};
+
+CandidateQuestion _$CandidateQuestionFromJson(Map<String, dynamic> json) =>
+    CandidateQuestion(
+      questionVersionId: json['question_version_id'] as String,
+      questionType: json['question_type'] as String,
+      questionText: json['question_text'] as String,
+      questionStem: json['question_stem'] as String?,
+      choices:
+          (json['choices'] as List<dynamic>?)
+              ?.map(
+                (e) =>
+                    CandidateQuestionChoice.fromJson(e as Map<String, dynamic>),
+              )
+              .toList() ??
+          [],
+    );
+
+Map<String, dynamic> _$CandidateQuestionToJson(CandidateQuestion instance) =>
+    <String, dynamic>{
+      'question_version_id': instance.questionVersionId,
+      'question_type': instance.questionType,
+      'question_text': instance.questionText,
+      'question_stem': instance.questionStem,
+      'choices': instance.choices,
+    };
+
+CandidateQuestionChoice _$CandidateQuestionChoiceFromJson(
+  Map<String, dynamic> json,
+) => CandidateQuestionChoice(
+  optionId: json['option_id'] as String,
+  optionText: json['option_text'] as String,
+  optionSequence: (json['option_sequence'] as num).toInt(),
+);
+
+Map<String, dynamic> _$CandidateQuestionChoiceToJson(
+  CandidateQuestionChoice instance,
+) => <String, dynamic>{
+  'option_id': instance.optionId,
+  'option_text': instance.optionText,
+  'option_sequence': instance.optionSequence,
 };
 
 ExamSessionTimestamps _$ExamSessionTimestampsFromJson(

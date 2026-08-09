@@ -8,26 +8,53 @@ import 'package:mocktail/mocktail.dart';
 
 class MockAssessmentSessionRepo extends Mock implements AssessmentSessionRepo {}
 
-ExamSessionResponse sessionResponse({String state = 'in_progress'}) =>
-    ExamSessionResponse(
-      data: ExamSessionData(
-        sessionId: 'session_001',
-        tenantId: 'tenant_001',
-        examId: 'exam_001',
-        candidateId: 'candidate_001',
-        enrollmentId: 'enrollment_001',
-        state: state,
-        current: ExamSessionCurrent(questionIndex: 0),
-        progress: ExamSessionProgress(
-          totalQuestionsResponded: 0,
-          totalQuestionsFlagged: 0,
-          progressData: const [],
-        ),
-        timestamps: ExamSessionTimestamps(startedAt: '2026-06-25T14:03:03Z'),
-        totalSessionDurationSeconds: 0,
-        versionLock: 0,
+ExamSessionResponse sessionResponse({
+  String state = 'in_progress',
+  String? sessionItemId = 'session_item_001',
+  String? questionVersionId = 'question_version_001',
+  int versionLock = 0,
+  String? startedAt = '2026-06-25T14:03:03Z',
+  int? totalSessionDurationSeconds = 0,
+}) => ExamSessionResponse(
+  data: ExamSessionData(
+    sessionId: 'session_001',
+    tenantId: 'tenant_001',
+    examId: 'exam_001',
+    candidateId: 'candidate_001',
+    enrollmentId: 'enrollment_001',
+    state: state,
+    current: ExamSessionCurrent(
+      sessionItemId: sessionItemId,
+      questionVersionId: questionVersionId,
+      questionIndex: 1,
+    ),
+    progress: ExamSessionProgress(
+      totalQuestionsResponded: sessionItemId == null ? 1 : 0,
+      totalQuestionsFlagged: 0,
+      progressData: const {},
+    ),
+    timestamps: ExamSessionTimestamps(startedAt: startedAt),
+    totalSessionDurationSeconds: totalSessionDurationSeconds,
+    versionLock: versionLock,
+  ),
+);
+
+CurrentQuestionResponse currentQuestionResponse({
+  String questionType = 'mcq',
+}) => CurrentQuestionResponse(
+  data: CandidateQuestion(
+    questionVersionId: 'question_version_001',
+    questionType: questionType,
+    questionText: 'Choose one',
+    choices: [
+      CandidateQuestionChoice(
+        optionId: 'option_001',
+        optionText: 'Option A',
+        optionSequence: 1,
       ),
-    );
+    ],
+  ),
+);
 
 bool isReady(AssessmentSessionState state) =>
     state.maybeWhen(ready: (_) => true, orElse: () => false);
@@ -56,18 +83,21 @@ void main() {
   });
 
   group('AssessmentSessionCubit', () {
-    test('loads local view data when no exam id is provided', () async {
+    test('emits error when no exam id is provided', () async {
       final cubit = AssessmentSessionCubit(assessmentSessionRepo: repo);
       addTearDown(cubit.close);
 
-      expect(isReady(cubit.state), isTrue);
+      expect(stateError(cubit.state), 'Missing exam id');
       verifyNever(() => repo.startExamSession(any()));
     });
 
-    test('starts backend session when initial exam id is provided', () async {
+    test('starts session then loads current backend question', () async {
       when(
         () => repo.startExamSession(any()),
       ).thenAnswer((_) async => sessionResponse());
+      when(
+        () => repo.getCurrentQuestion(any()),
+      ).thenAnswer((_) async => currentQuestionResponse());
 
       final cubit = AssessmentSessionCubit(
         assessmentSessionRepo: repo,
@@ -79,21 +109,59 @@ void main() {
 
       expect(
         state.maybeWhen(
-          ready: (viewData) => viewData.sessionId,
+          ready: (viewData) => viewData.currentQuestion.options.single.optionId,
           orElse: () => '',
         ),
-        'session_001',
+        'option_001',
       );
-      final captured =
-          verify(() => repo.startExamSession(captureAny())).captured.single
-              as StartExamSessionRequestBody;
-      expect(captured.examId, 'exam_001');
+      verify(() => repo.getCurrentQuestion('session_001')).called(1);
     });
 
-    test('emits error when backend start fails', () async {
+    test('does not invent a client time limit from session duration', () async {
       when(() => repo.startExamSession(any())).thenAnswer(
-        (_) async => throw const NetworkExceptions.unprocessableEntity(
-          'Enrollment required',
+        (_) async => sessionResponse(totalSessionDurationSeconds: 0),
+      );
+      when(
+        () => repo.getCurrentQuestion(any()),
+      ).thenAnswer((_) async => currentQuestionResponse());
+
+      final cubit = AssessmentSessionCubit(
+        assessmentSessionRepo: repo,
+        initialExamId: 'exam_001',
+      );
+      addTearDown(cubit.close);
+
+      final state = await cubit.stream.firstWhere(isReady);
+
+      expect(
+        state.maybeWhen(
+          ready: (viewData) => viewData.totalDurationSeconds,
+          orElse: () => -1,
+        ),
+        0,
+      );
+      expect(
+        state.maybeWhen(
+          ready: (viewData) => viewData.remainingSeconds,
+          orElse: () => -1,
+        ),
+        0,
+      );
+      verifyNever(() => repo.completeExamSession(any()));
+    });
+
+    test('submits MCQ using active session item and version lock', () async {
+      when(
+        () => repo.startExamSession(any()),
+      ).thenAnswer((_) async => sessionResponse(versionLock: 3));
+      when(
+        () => repo.getCurrentQuestion(any()),
+      ).thenAnswer((_) async => currentQuestionResponse());
+      when(() => repo.submitExamAnswer(any(), any())).thenAnswer(
+        (_) async => sessionResponse(
+          sessionItemId: null,
+          questionVersionId: null,
+          versionLock: 4,
         ),
       );
 
@@ -102,23 +170,137 @@ void main() {
         initialExamId: 'exam_001',
       );
       addTearDown(cubit.close);
+      await cubit.stream.firstWhere(isReady);
+      cubit.selectSingleOption(0);
 
-      var state = cubit.state;
-      if (stateError(state) == null) {
-        state = await cubit.stream.firstWhere(
-          (state) => stateError(state) != null,
-        );
-      }
+      await cubit.submitCurrentAnswer();
 
-      expect(stateError(state), 'Enrollment required');
+      final request =
+          verify(
+                () => repo.submitExamAnswer('session_001', captureAny()),
+              ).captured.single
+              as SubmitExamAnswerRequestBody;
+      expect(request.sessionItemId, 'session_item_001');
+      expect(request.selectedOptions, ['option_001']);
+      expect(request.expectedItemVersionLock, 3);
+      expect(
+        cubit.state.maybeWhen(
+          ready: (viewData) => viewData.isEndOfQuestions,
+          orElse: () => false,
+        ),
+        isTrue,
+      );
+      verify(() => repo.getCurrentQuestion(any())).called(1);
+    });
+
+    test('submits text answer with response_text', () async {
+      final startedAt = DateTime.now()
+          .subtract(const Duration(seconds: 45))
+          .toUtc()
+          .toIso8601String();
+      when(
+        () => repo.startExamSession(any()),
+      ).thenAnswer((_) async => sessionResponse(startedAt: startedAt));
+      when(
+        () => repo.getCurrentQuestion(any()),
+      ).thenAnswer((_) async => currentQuestionResponse(questionType: 'essay'));
+      when(() => repo.submitExamAnswer(any(), any())).thenAnswer(
+        (_) async =>
+            sessionResponse(sessionItemId: null, questionVersionId: null),
+      );
+
+      final cubit = AssessmentSessionCubit(
+        assessmentSessionRepo: repo,
+        initialExamId: 'exam_001',
+      );
+      addTearDown(cubit.close);
+      await cubit.stream.firstWhere(isReady);
+      cubit.updateResponseText('Written answer');
+
+      await cubit.submitCurrentAnswer();
+
+      final request =
+          verify(
+                () => repo.submitExamAnswer('session_001', captureAny()),
+              ).captured.single
+              as SubmitExamAnswerRequestBody;
+      expect(request.responseText, 'Written answer');
+      expect(request.selectedOptions, isNull);
+      expect(request.timeElapsedFromStartSeconds, greaterThanOrEqualTo(45));
+    });
+
+    test('does not submit file upload answer with local device path', () async {
+      when(
+        () => repo.startExamSession(any()),
+      ).thenAnswer((_) async => sessionResponse());
+      when(() => repo.getCurrentQuestion(any())).thenAnswer(
+        (_) async => currentQuestionResponse(questionType: 'file_upload'),
+      );
+
+      final cubit = AssessmentSessionCubit(
+        assessmentSessionRepo: repo,
+        initialExamId: 'exam_001',
+      );
+      addTearDown(cubit.close);
+      await cubit.stream.firstWhere(isReady);
+      cubit.updateResponseText(r'C:\local\answer.pdf');
+
+      await cubit.submitCurrentAnswer();
+
+      verifyNever(() => repo.submitExamAnswer(any(), any()));
+      expect(
+        cubit.state.maybeWhen(
+          ready: (viewData) => viewData.statusMessage,
+          orElse: () => null,
+        ),
+        contains('backend-accessible file URL'),
+      );
     });
 
     test(
-      'submitExam completes backend session before marking submitted',
+      'stale version lock refreshes session without retrying answer',
       () async {
         when(
           () => repo.startExamSession(any()),
         ).thenAnswer((_) async => sessionResponse());
+        when(
+          () => repo.getCurrentQuestion(any()),
+        ).thenAnswer((_) async => currentQuestionResponse());
+        when(
+          () => repo.submitExamAnswer(any(), any()),
+        ).thenThrow(const NetworkExceptions.conflict());
+        when(
+          () => repo.getExamSessionState(any()),
+        ).thenAnswer((_) async => sessionResponse(versionLock: 2));
+
+        final cubit = AssessmentSessionCubit(
+          assessmentSessionRepo: repo,
+          initialExamId: 'exam_001',
+        );
+        addTearDown(cubit.close);
+        await cubit.stream.firstWhere(isReady);
+
+        await cubit.submitCurrentAnswer();
+
+        expect(
+          cubit.state.maybeWhen(
+            ready: (viewData) => viewData.statusMessage,
+            orElse: () => null,
+          ),
+          contains('refreshed'),
+        );
+        verify(() => repo.submitExamAnswer(any(), any())).called(1);
+        verify(() => repo.getExamSessionState('session_001')).called(1);
+      },
+    );
+
+    test(
+      'completeExam completes backend session before marking submitted',
+      () async {
+        when(() => repo.startExamSession(any())).thenAnswer(
+          (_) async =>
+              sessionResponse(sessionItemId: null, questionVersionId: null),
+        );
         when(
           () => repo.completeExamSession(any()),
         ).thenAnswer((_) async => sessionResponse(state: 'completed'));
@@ -130,7 +312,7 @@ void main() {
         addTearDown(cubit.close);
         await cubit.stream.firstWhere(isReady);
 
-        await cubit.submitExam();
+        await cubit.completeExam();
 
         expect(
           cubit.state.maybeWhen(

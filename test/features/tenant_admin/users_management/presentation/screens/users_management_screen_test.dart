@@ -4,6 +4,8 @@ import 'package:eae_mobile/features/tenant_admin/users_management/data/models/us
 import 'package:eae_mobile/features/tenant_admin/users_management/data/repos/users_management_repo.dart';
 import 'package:eae_mobile/features/tenant_admin/users_management/logic/users_management_cubit.dart';
 import 'package:eae_mobile/features/tenant_admin/users_management/presentation/screens/users_management_screen.dart';
+import 'package:eae_mobile/features/tenant_admin/roles_and_security/data/models/roles_and_security_response.dart';
+import 'package:eae_mobile/features/tenant_admin/roles_and_security/data/repos/roles_and_security_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,9 +15,11 @@ import '../../../../../helpers/widget_test_helpers.dart';
 
 class MockUsersManagementRepo extends Mock implements UsersManagementRepo {}
 
+class MockRolesAndSecurityRepo extends Mock implements RolesAndSecurityRepo {}
+
 class TestUsersManagementCubit extends UsersManagementCubit {
-  TestUsersManagementCubit(UsersManagementRepo repo)
-    : super(usersManagementRepo: repo);
+  TestUsersManagementCubit(UsersManagementRepo repo, RolesAndSecurityRepo roles)
+    : super(usersManagementRepo: repo, rolesAndSecurityRepo: roles);
 
   void emitForTest(UsersManagementState state) => emit(state);
 }
@@ -60,7 +64,14 @@ Future<TestUsersManagementCubit> pumpUsersManagement(
   WidgetTester tester, {
   required MockUsersManagementRepo repo,
 }) async {
-  final cubit = TestUsersManagementCubit(repo);
+  final rolesRepo = MockRolesAndSecurityRepo();
+  when(() => rolesRepo.rolesAndSecurity()).thenAnswer(
+    (_) async => RolesResponse(
+      data: const [],
+      meta: RolesMeta(currentPage: 1, perPage: 10, total: 0, lastPage: 1),
+    ),
+  );
+  final cubit = TestUsersManagementCubit(repo, rolesRepo);
   addTearDown(cubit.close);
 
   await pumpTestApp(

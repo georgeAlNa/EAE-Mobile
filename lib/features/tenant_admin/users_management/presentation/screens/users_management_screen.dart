@@ -55,11 +55,17 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
             state.maybeWhen(
               usersLoaded: (response) => _users = response.data,
               createSuccess: (_) {
-                showAppSnackBar(context, 'User created successfully');
+                showAppSnackBar(
+                  context,
+                  'User created and role assigned successfully',
+                );
                 context.read<UsersManagementCubit>().getUsers();
               },
               inviteSuccess: (_) {
-                showAppSnackBar(context, 'Invitation sent successfully');
+                showAppSnackBar(
+                  context,
+                  'Invitation sent and role assigned successfully',
+                );
                 context.read<UsersManagementCubit>().getUsers();
               },
               deactivateSuccess: (_) {
@@ -71,6 +77,10 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
               },
               createUserError: (error) => showAppSnackBar(context, error),
               inviteUserError: (error) => showAppSnackBar(context, error),
+              roleAssignmentSuccess: (_) {
+                showAppSnackBar(context, 'Role assigned successfully');
+              },
+              roleAssignmentError: (error) => showAppSnackBar(context, error),
               deactivateUserError: (error) => showAppSnackBar(context, error),
               resetPasswordError: (error) => showAppSnackBar(context, error),
               orElse: () {},
@@ -93,6 +103,7 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
             final isActionLoading = state.maybeWhen(
               createUserLoading: () => true,
               inviteUserLoading: () => true,
+              roleAssignmentLoading: () => true,
               deactivateUserLoading: () => true,
               resetPasswordLoading: () => true,
               orElse: () => false,
@@ -137,41 +148,60 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
                           );
                         }
 
-                        return _UsersDataSection(
-                          users: visibleUsers,
-                          query: _query,
-                          isLoading: users == null && isUsersLoading,
-                          loadError: users == null ? loadError : null,
-                          onRetry: screenContext
-                              .read<UsersManagementCubit>()
-                              .getUsers,
-                          itemBuilder: (user, index) => _AnimatedListItem(
-                            index: index,
-                            child: UserManagementCard(
-                              user: user,
-                              onDetails: () => _showUserDetailsSheet(
-                                context: screenContext,
-                                userId: user.id,
+                        return Column(
+                          children: [
+                            if (screenContext
+                                    .read<UsersManagementCubit>()
+                                    .pendingRoleAssignment !=
+                                null) ...[
+                              _PendingRoleAssignmentBanner(
+                                pending: screenContext
+                                    .read<UsersManagementCubit>()
+                                    .pendingRoleAssignment!,
+                                onRetry: () => screenContext
+                                    .read<UsersManagementCubit>()
+                                    .retryPendingRoleAssignment(),
                               ),
-                              onEdit: () => _showUpdateUserSheet(
-                                context: screenContext,
-                                user: user,
+                              verticalSpace(12),
+                            ],
+                            _UsersDataSection(
+                              users: visibleUsers,
+                              query: _query,
+                              isLoading: users == null && isUsersLoading,
+                              loadError: users == null ? loadError : null,
+                              onRetry: screenContext
+                                  .read<UsersManagementCubit>()
+                                  .getUsers,
+                              itemBuilder: (user, index) => _AnimatedListItem(
+                                index: index,
+                                child: UserManagementCard(
+                                  user: user,
+                                  onDetails: () => _showUserDetailsSheet(
+                                    context: screenContext,
+                                    userId: user.id,
+                                  ),
+                                  onEdit: () => _showUpdateUserSheet(
+                                    context: screenContext,
+                                    user: user,
+                                  ),
+                                  onResetPassword: () => _showResetPasswordSheet(
+                                    context: screenContext,
+                                    userId: user.id,
+                                    userName:
+                                        '${user.firstName} ${user.lastName}',
+                                  ),
+                                  onDeactivate: user.isActive
+                                      ? () => _confirmDeactivateUser(
+                                          context: screenContext,
+                                          userId: user.id,
+                                          userName:
+                                              '${user.firstName} ${user.lastName}',
+                                        )
+                                      : null,
+                                ),
                               ),
-                              onResetPassword: () => _showResetPasswordSheet(
-                                context: screenContext,
-                                userId: user.id,
-                                userName: '${user.firstName} ${user.lastName}',
-                              ),
-                              onDeactivate: user.isActive
-                                  ? () => _confirmDeactivateUser(
-                                      context: screenContext,
-                                      userId: user.id,
-                                      userName:
-                                          '${user.firstName} ${user.lastName}',
-                                    )
-                                  : null,
                             ),
-                          ),
+                          ],
                         );
                       },
                     ),
@@ -381,6 +411,69 @@ class _UsersDataSection extends StatelessWidget {
   }
 }
 
+class _PendingRoleAssignmentBanner extends StatelessWidget {
+  final PendingRoleAssignment pending;
+  final VoidCallback onRetry;
+
+  const _PendingRoleAssignmentBanner({
+    required this.pending,
+    required this.onRetry,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(14.r),
+      decoration: BoxDecoration(
+        color: AppColors.secondaryColor.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(8.r),
+        border: Border.all(
+          color: AppColors.secondaryColor.withValues(alpha: 0.22),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Role assignment pending',
+            style: TextStyle(
+              color: AppColors.primaryColor9,
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          verticalSpace(6),
+          Text(
+            'User ${pending.userId} was ${pending.operationLabel}, but ${pending.roleName} was not assigned.',
+            style: TextStyle(
+              color: AppColors.tertiaryColor7,
+              fontSize: 11.sp,
+              height: 1.4,
+            ),
+          ),
+          verticalSpace(10),
+          Align(
+            alignment: Alignment.centerRight,
+            child: OutlinedButton.icon(
+              onPressed: onRetry,
+              icon: const Icon(Icons.refresh_rounded),
+              label: const Text('Retry role'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.secondaryColor7,
+                side: BorderSide(color: AppColors.secondaryColor7),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _SectionSkeleton extends StatelessWidget {
   final int itemCount;
 
@@ -433,6 +526,7 @@ class _ActionProgressBanner extends StatelessWidget {
     final message = state.maybeWhen(
       createUserLoading: () => 'Creating user...',
       inviteUserLoading: () => 'Sending invitation...',
+      roleAssignmentLoading: () => 'Assigning role...',
       deactivateUserLoading: () => 'Deactivating user...',
       resetPasswordLoading: () => 'Resetting password...',
       orElse: () => 'Working...',

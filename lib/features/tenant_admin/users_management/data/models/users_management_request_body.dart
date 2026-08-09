@@ -2,7 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'users_management_request_body.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull: false)
 class CreateUserRequestBody {
   final String email;
   final String password;
@@ -19,6 +19,15 @@ class CreateUserRequestBody {
   @JsonKey(name: 'user_type')
   final String userType;
 
+  @JsonKey(name: 'external_employee_id')
+  final String? externalEmployeeId;
+
+  @JsonKey(name: 'department_id')
+  final String? departmentId;
+
+  @JsonKey(name: 'user_attributes', fromJson: _nullableJsonMapFromJson)
+  final Map<String, dynamic>? userAttributes;
+
   CreateUserRequestBody({
     required this.email,
     required this.password,
@@ -26,6 +35,9 @@ class CreateUserRequestBody {
     required this.firstName,
     required this.lastName,
     required this.userType,
+    this.externalEmployeeId,
+    this.departmentId,
+    this.userAttributes,
   });
 
   factory CreateUserRequestBody.fromJson(Map<String, dynamic> json) =>
@@ -34,7 +46,7 @@ class CreateUserRequestBody {
   Map<String, dynamic> toJson() => _$CreateUserRequestBodyToJson(this);
 }
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull: false)
 class InviteUserRequestBody {
   final String email;
 
@@ -50,12 +62,20 @@ class InviteUserRequestBody {
   @JsonKey(name: 'external_employee_id')
   final String? externalEmployeeId;
 
+  @JsonKey(name: 'department_id')
+  final String? departmentId;
+
+  @JsonKey(name: 'user_attributes', fromJson: _nullableJsonMapFromJson)
+  final Map<String, dynamic>? userAttributes;
+
   InviteUserRequestBody({
     required this.email,
     required this.firstName,
     required this.lastName,
     required this.userType,
     this.externalEmployeeId,
+    this.departmentId,
+    this.userAttributes,
   });
 
   factory InviteUserRequestBody.fromJson(Map<String, dynamic> json) =>
@@ -100,7 +120,7 @@ class UpdateUserRequestBody {
   @JsonKey(name: 'department_id')
   final String? departmentId;
 
-  @JsonKey(name: 'user_attributes')
+  @JsonKey(name: 'user_attributes', fromJson: _nullableJsonMapFromJson)
   final Map<String, dynamic>? userAttributes;
 
   final String status;
@@ -123,4 +143,9 @@ class UpdateUserRequestBody {
       _$UpdateUserRequestBodyFromJson(json);
 
   Map<String, dynamic> toJson() => _$UpdateUserRequestBodyToJson(this);
+}
+
+Map<String, dynamic>? _nullableJsonMapFromJson(Object? json) {
+  if (json == null) return null;
+  return Map<String, dynamic>.from(json as Map);
 }

@@ -2,6 +2,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../core/networking/error/error_handler/network_exceptions.dart';
+import '../../../tenant_admin/result_publication/data/models/result_publication_request_body.dart';
+import '../../../tenant_admin/result_publication/data/models/result_publication_response.dart';
+import '../../../tenant_admin/result_publication/data/repos/result_publication_repo.dart';
 import '../data/models/exams_management_request_body.dart';
 import '../data/models/exams_management_response.dart';
 import '../data/repos/exams_management_repo.dart';
@@ -11,9 +14,12 @@ part 'exams_management_cubit.freezed.dart';
 
 class ExamsManagementCubit extends Cubit<ExamsManagementState> {
   final ExamsManagementRepo examsManagementRepo;
+  final ResultPublicationRepo? resultPublicationRepo;
 
-  ExamsManagementCubit({required this.examsManagementRepo})
-      : super(const ExamsManagementState.initial()) {
+  ExamsManagementCubit({
+    required this.examsManagementRepo,
+    this.resultPublicationRepo,
+  }) : super(const ExamsManagementState.initial()) {
     getExams();
   }
 
@@ -22,6 +28,7 @@ class ExamsManagementCubit extends Cubit<ExamsManagementState> {
   ExamSectionsResponse? examSectionsResponse;
   ExamBlueprintsResponse? examBlueprintsResponse;
   ExamResultsExportResponse? examResultsExportResponse;
+  ApprovalWorkflowActionResponse? examPublicationWorkflowResponse;
 
   Future<void> getExams() async {
     emit(const ExamsManagementState.examsLoading());
@@ -136,6 +143,88 @@ class ExamsManagementCubit extends Cubit<ExamsManagementState> {
     } catch (e) {
       emit(
         const ExamsManagementState.saveError(error: 'Failed to publish exam'),
+      );
+    }
+  }
+
+  Future<void> createExamPublicationWorkflow(String examId) async {
+    final repo = resultPublicationRepo;
+    if (repo == null) {
+      emit(
+        const ExamsManagementState.actionError(
+          error: 'Workflow integration is unavailable',
+        ),
+      );
+      return;
+    }
+
+    emit(const ExamsManagementState.actionLoading());
+
+    try {
+      final response = await repo.createApprovalWorkflow(
+        CreateApprovalWorkflowRequestBody(
+          resourceType: 'exam',
+          resourceId: examId,
+          workflowType: 'exam_publication',
+        ),
+      );
+      examPublicationWorkflowResponse = response;
+      emit(
+        ExamsManagementState.actionSuccess(
+          ExamActionResponse(
+            message: response.data?.workflowId ?? response.message,
+          ),
+        ),
+      );
+    } on NetworkExceptions catch (e) {
+      emit(
+        ExamsManagementState.actionError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
+    } catch (_) {
+      emit(
+        const ExamsManagementState.actionError(
+          error: 'Failed to create exam publication workflow',
+        ),
+      );
+    }
+  }
+
+  Future<void> getExamPublicationWorkflow(String workflowId) async {
+    final repo = resultPublicationRepo;
+    if (repo == null) {
+      emit(
+        const ExamsManagementState.actionError(
+          error: 'Workflow integration is unavailable',
+        ),
+      );
+      return;
+    }
+
+    emit(const ExamsManagementState.actionLoading());
+
+    try {
+      final response = await repo.getApprovalWorkflow(workflowId);
+      examPublicationWorkflowResponse = response;
+      emit(
+        ExamsManagementState.actionSuccess(
+          ExamActionResponse(
+            message: response.data?.currentWorkflowStatus ?? response.message,
+          ),
+        ),
+      );
+    } on NetworkExceptions catch (e) {
+      emit(
+        ExamsManagementState.actionError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
+    } catch (_) {
+      emit(
+        const ExamsManagementState.actionError(
+          error: 'Failed to load exam publication workflow',
+        ),
       );
     }
   }

@@ -45,7 +45,7 @@ InviteUserRequestBody inviteUserRequest() => InviteUserRequestBody(
   email: 'invite@example.com',
   firstName: 'Omar',
   lastName: 'Ali',
-  userType: 'candidate',
+  userType: 'examinee',
 );
 
 ResetUserPasswordRequestBody resetPasswordRequest() =>
@@ -146,7 +146,7 @@ void main() {
           userId: 'user_invited',
           tenantId: 'tenant_001',
           inviteToken: 'invite-token',
-          status: 'invited',
+          status: 'pending',
         ),
       );
       when(

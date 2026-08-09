@@ -20,6 +20,11 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
   Timer? _timer;
   final ImagePicker _imagePicker = ImagePicker();
   ExamSessionResponse? _sessionResponse;
+  CurrentQuestionResponse? _currentQuestionResponse;
+  DateTime? _sessionStartedAt;
+  DateTime? _questionLoadedAt;
+  bool _isSubmittingAnswer = false;
+  bool _isCompletingExam = false;
 
   AssessmentSessionCubit({
     required this.assessmentSessionRepo,
@@ -27,7 +32,7 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
   }) : super(const AssessmentSessionState.loading()) {
     final examId = initialExamId?.trim();
     if (examId == null || examId.isEmpty) {
-      _loadMockData();
+      emit(const AssessmentSessionState.error(error: 'Missing exam id'));
     } else {
       startExamSession(examId);
     }
@@ -40,15 +45,14 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
       final response = await assessmentSessionRepo.startExamSession(
         StartExamSessionRequestBody(examId: examId),
       );
-      _sessionResponse = response;
-      _loadMockData(sessionData: response.data);
+      await _acceptSessionAndLoadCurrentQuestion(response);
     } on NetworkExceptions catch (e) {
       emit(
         AssessmentSessionState.error(
           error: NetworkExceptions.getErrorMessage(e),
         ),
       );
-    } catch (e) {
+    } catch (_) {
       emit(
         const AssessmentSessionState.error(
           error: 'Failed to start exam session',
@@ -57,278 +61,248 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
     }
   }
 
-  void _loadMockData({ExamSessionData? sessionData}) {
-    final questions = _buildQuestions();
-    final viewData = AssessmentSessionViewData(
+  Future<void> resumeExamSession(String sessionId) async {
+    emit(const AssessmentSessionState.loading());
+
+    try {
+      final response = await assessmentSessionRepo.getExamSessionState(
+        sessionId,
+      );
+      await _acceptSessionAndLoadCurrentQuestion(response);
+    } on NetworkExceptions catch (e) {
+      emit(
+        AssessmentSessionState.error(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
+    } catch (_) {
+      emit(
+        const AssessmentSessionState.error(
+          error: 'Failed to resume exam session',
+        ),
+      );
+    }
+  }
+
+  Future<void> _acceptSessionAndLoadCurrentQuestion(
+    ExamSessionResponse response, {
+    String? statusMessage,
+  }) async {
+    _sessionResponse = response;
+    _sessionStartedAt =
+        _startedAtFromBackend(response.data.timestamps.startedAt) ??
+        _sessionStartedAt ??
+        DateTime.now();
+
+    if (response.data.current.sessionItemId == null) {
+      _currentQuestionResponse = null;
+      emit(
+        AssessmentSessionState.ready(
+          viewData: _buildViewData(
+            isEndOfQuestions: response.data.state != 'completed',
+            isSubmitted: response.data.state == 'completed',
+            statusMessage: statusMessage,
+          ),
+        ),
+      );
+      _startTimer();
+      return;
+    }
+
+    try {
+      _currentQuestionResponse = await assessmentSessionRepo.getCurrentQuestion(
+        response.data.sessionId,
+      );
+      _questionLoadedAt = DateTime.now();
+      emit(
+        AssessmentSessionState.ready(
+          viewData: _buildViewData(statusMessage: statusMessage),
+        ),
+      );
+      _startTimer();
+    } on NetworkExceptions catch (e) {
+      final error = NetworkExceptions.getErrorMessage(e);
+      if (error.toLowerCase().contains('no_current_question')) {
+        emit(
+          AssessmentSessionState.ready(
+            viewData: _buildViewData(
+              isEndOfQuestions: true,
+              statusMessage: 'No active question is available right now.',
+            ),
+          ),
+        );
+        return;
+      }
+
+      emit(AssessmentSessionState.error(error: error));
+    } catch (_) {
+      emit(
+        const AssessmentSessionState.error(
+          error: 'Failed to load current question',
+        ),
+      );
+    }
+  }
+
+  AssessmentSessionViewData _buildViewData({
+    bool isSubmittingAnswer = false,
+    bool isCompletingExam = false,
+    bool isEndOfQuestions = false,
+    bool isSubmitted = false,
+    bool autoSubmitted = false,
+    String? statusMessage,
+  }) {
+    final session = _sessionResponse?.data;
+    final question = _currentQuestionResponse?.data;
+    final questions = question == null
+        ? <AssessmentSessionQuestion>[]
+        : [_mapQuestion(question, session?.current.sectionId)];
+    const verifiedDuration = 0;
+    final elapsed = _secondsSince(_sessionStartedAt);
+
+    return AssessmentSessionViewData(
       headerTitle: AppStrings.enterpriseAssessmentTitle,
-      title: 'Risk Mitigation Analysis',
-      description:
-          'Answer the questions below using the correct control, policy, or response pattern for each scenario.',
+      title: question?.questionText ?? 'Exam review',
+      description: question?.questionStem ?? '',
       badgeLabel: AppStrings.encryptedMediaSandboxActive,
-      sessionId: sessionData?.sessionId ?? '8829-XQA-991',
-      recordingTime: formatAssessmentSessionDuration(165),
+      sessionId: session?.sessionId ?? '',
+      recordingTime: formatAssessmentSessionDuration(elapsed),
       resolutionLabel: '1080P | 60FPS',
       isoLabel: 'ISO 400',
-      actions: const [
-        AssessmentSessionAction(
-          type: AssessmentSessionActionType.setup,
-          label: 'Setup',
-          isPrimary: false,
-        ),
-        AssessmentSessionAction(
-          type: AssessmentSessionActionType.retake,
-          label: 'Retake',
-          isPrimary: false,
-        ),
-        AssessmentSessionAction(
-          type: AssessmentSessionActionType.record,
-          label: 'Record',
-          isPrimary: true,
-        ),
-        AssessmentSessionAction(
-          type: AssessmentSessionActionType.submit,
-          label: 'Submit Task',
-          isPrimary: false,
-        ),
-      ],
+      actions: const [],
       syncStatus: const SyncStatusData(
         title: 'Sync Status',
         statusLabel: 'Active',
-        statusValue: 'SECURELY UPLOADING...',
-        progressLabel: '64%',
-        progress: 0.64,
-        noteTitle: 'Integrity Verified',
-        noteBody:
-            'Media stream is being hashed and signed in real-time to prevent tampering during the submission process.',
+        statusValue: 'CONNECTED',
+        progressLabel: '100%',
+        progress: 1,
+        noteTitle: 'Backend session active',
+        noteBody: 'Answers are submitted to the active exam session.',
       ),
-      rules: SubmissionRulesData(
-        title: 'Submission Rules',
-        rules: const [
-          AssessmentSessionRuleItem(
-            text: 'Maintain eye contact with the camera.',
-            status: AssessmentSessionRuleStatus.complete,
-          ),
-          AssessmentSessionRuleItem(
-            text: 'Speak clearly at a moderate pace.',
-            status: AssessmentSessionRuleStatus.complete,
-          ),
-          AssessmentSessionRuleItem(
-            text: 'Ensure no background noise is present.',
-            status: AssessmentSessionRuleStatus.pending,
-          ),
-          AssessmentSessionRuleItem(
-            text: 'Limit response to under 5 minutes.',
-            status: AssessmentSessionRuleStatus.pending,
-          ),
-        ],
-      ),
+      rules: const SubmissionRulesData(title: 'Submission Rules', rules: []),
       questions: questions,
       currentQuestionIndex: 0,
-      totalDurationSeconds: 5 * 60,
-      remainingSeconds: 5 * 60,
+      totalDurationSeconds: verifiedDuration,
+      remainingSeconds: verifiedDuration,
       isFlaggedForReview: false,
-      isSubmitted: false,
-      autoSubmitted: false,
+      isSubmitted: isSubmitted,
+      autoSubmitted: autoSubmitted,
+      isSubmittingAnswer: isSubmittingAnswer,
+      isCompletingExam: isCompletingExam,
+      isEndOfQuestions: isEndOfQuestions,
+      statusMessage: statusMessage,
     );
-
-    emit(AssessmentSessionState.ready(viewData: viewData));
-    _startTimer();
   }
 
-  List<AssessmentSessionQuestion> _buildQuestions() {
-    return List.generate(20, (index) {
-      switch (index % 7) {
-        case 0:
-          return AssessmentSessionQuestion(
-            id: 'q-${index + 1}',
-            sectionLabel: 'Core Controls',
-            title: 'Risk Mitigation Analysis',
-            prompt:
-                'Based on the fiscal disclosure, which control best preserves audit trail immutability during synchronization?',
-            type: AssessmentSessionQuestionType.singleChoice,
-            options: const [
-              AssessmentSessionQuestionOption(
-                label: 'Distributed Ledger Hashing',
-                description:
-                    'Utilizes chained cryptographic signatures to block retrospective modification.',
-                badgeLabel: 'Recommended',
-              ),
-              AssessmentSessionQuestionOption(
-                label: 'Point-in-Time Snapshotting',
-                description:
-                    'Creates isolated read-only copies at defined intervals.',
-              ),
-              AssessmentSessionQuestionOption(
-                label: 'Ephemeral Symmetric Encryption',
-                description:
-                    'Rotating session keys that render data unreadable after expiry.',
-              ),
-            ],
-            selectedOptionIndexes: const [],
-            responseText: '',
-            canAttachEvidence: true,
-            evidenceHint: 'Attach supporting documentation if available.',
-            isFlaggedForReview: false,
-            placeholder: null,
-          );
-        case 1:
-          return AssessmentSessionQuestion(
-            id: 'q-${index + 1}',
-            sectionLabel: 'Multi-Select Response',
-            title: 'Select All Applicable Safeguards',
-            prompt:
-                'Which of the following safeguards should be enabled before approving a regulated transfer?',
-            type: AssessmentSessionQuestionType.multipleChoice,
-            options: const [
-              AssessmentSessionQuestionOption(
-                label: 'MFA Enforcement',
-                description:
-                    'All administrators must complete second-factor verification.',
-              ),
-              AssessmentSessionQuestionOption(
-                label: 'Device Attestation',
-                description:
-                    'Only trusted devices can initiate the transfer flow.',
-              ),
-              AssessmentSessionQuestionOption(
-                label: 'Public Routing',
-                description: 'Send the payload through open relay nodes.',
-              ),
-              AssessmentSessionQuestionOption(
-                label: 'Immutable Logging',
-                description: 'Write every action to append-only audit storage.',
-              ),
-            ],
-            selectedOptionIndexes: const [],
-            responseText: '',
-            canAttachEvidence: true,
-            evidenceHint: 'Upload evidence of the approved control stack.',
-            isFlaggedForReview: false,
-            placeholder: null,
-          );
-        case 2:
-          return AssessmentSessionQuestion(
-            id: 'q-${index + 1}',
-            sectionLabel: 'Binary Judgment',
-            title: 'Policy Verification',
-            prompt:
-                'True or false: an incident can be closed before the root cause is documented if the service is restored.',
-            type: AssessmentSessionQuestionType.trueFalse,
-            options: const [
-              AssessmentSessionQuestionOption(
-                label: 'True',
-                description: 'The issue may be closed without documentation.',
-              ),
-              AssessmentSessionQuestionOption(
-                label: 'False',
-                description: 'Root cause documentation remains mandatory.',
-              ),
-            ],
-            selectedOptionIndexes: const [],
-            responseText: '',
-            canAttachEvidence: false,
-            evidenceHint: '',
-            isFlaggedForReview: false,
-            placeholder: null,
-          );
-        case 3:
-          return AssessmentSessionQuestion(
-            id: 'q-${index + 1}',
-            sectionLabel: 'Essay Response',
-            title: 'Written Analysis',
-            prompt:
-                'Explain how you would reduce operational exposure while maintaining compliance in a distributed control environment.',
-            type: AssessmentSessionQuestionType.essay,
-            options: const [],
-            selectedOptionIndexes: const [],
-            responseText: '',
-            canAttachEvidence: true,
-            evidenceHint: 'Optional: include references or supporting files.',
-            isFlaggedForReview: false,
-            placeholder: 'Write a concise but complete analysis...',
-          );
-        case 4:
-          return AssessmentSessionQuestion(
-            id: 'q-${index + 1}',
-            sectionLabel: 'Short Answer',
-            title: 'One-Line Explanation',
-            prompt:
-                'In one sentence, describe the purpose of a compensating control.',
-            type: AssessmentSessionQuestionType.shortAnswer,
-            options: const [],
-            selectedOptionIndexes: const [],
-            responseText: '',
-            canAttachEvidence: false,
-            evidenceHint: '',
-            isFlaggedForReview: false,
-            placeholder: 'Type your answer here...',
-          );
-        case 5:
-          return AssessmentSessionQuestion(
-            id: 'q-${index + 1}',
-            sectionLabel: 'Video Response',
-            title: 'Record Your Explanation',
-            prompt:
-                'Record a short video explaining how you would handle this case while keeping the response professional and concise.',
-            type: AssessmentSessionQuestionType.videoResponse,
-            options: const [],
-            selectedOptionIndexes: const [],
-            responseText: '',
-            canAttachEvidence: true,
-            evidenceHint:
-                'Use the camera to record yourself answering the question. Keep the clip under 2 minutes.',
-            isFlaggedForReview: false,
-            placeholder: null,
-          );
-        default:
-          return AssessmentSessionQuestion(
-            id: 'q-${index + 1}',
-            sectionLabel: 'Evidence Upload',
-            title: 'Attach Supporting Documentation',
-            prompt:
-                'Select the file that best substantiates the response you are submitting.',
-            type: AssessmentSessionQuestionType.fileUpload,
-            options: const [],
-            selectedOptionIndexes: const [],
-            responseText: '',
-            canAttachEvidence: true,
-            evidenceHint: 'PDF, XLSX, or image evidence up to 10MB.',
-            isFlaggedForReview: false,
-            placeholder: null,
-          );
-      }
-    });
+  AssessmentSessionQuestion _mapQuestion(
+    CandidateQuestion question,
+    String? sectionId,
+  ) {
+    final type = _questionTypeFromBackend(question.questionType);
+    final prompt = [
+      question.questionText,
+      if ((question.questionStem ?? '').trim().isNotEmpty)
+        question.questionStem,
+    ].whereType<String>().join('\n\n');
+
+    return AssessmentSessionQuestion(
+      id: question.questionVersionId,
+      sectionLabel: sectionId ?? 'Current section',
+      title: _titleForType(question.questionType),
+      prompt: prompt,
+      type: type,
+      options: question.choices
+          .map(
+            (choice) => AssessmentSessionQuestionOption(
+              optionId: choice.optionId,
+              label: choice.optionText,
+              description: '',
+              optionSequence: choice.optionSequence,
+            ),
+          )
+          .toList(),
+      selectedOptionIndexes: const [],
+      responseText: '',
+      canAttachEvidence: type == AssessmentSessionQuestionType.fileUpload,
+      evidenceHint: type == AssessmentSessionQuestionType.fileUpload
+          ? 'Upload the answer file URL after it is available.'
+          : '',
+      isFlaggedForReview: false,
+      placeholder: _placeholderForType(type),
+    );
+  }
+
+  AssessmentSessionQuestionType _questionTypeFromBackend(String questionType) {
+    switch (questionType.trim().toLowerCase()) {
+      case 'mcq':
+        return AssessmentSessionQuestionType.singleChoice;
+      case 'true_false':
+        return AssessmentSessionQuestionType.trueFalse;
+      case 'short_answer':
+        return AssessmentSessionQuestionType.shortAnswer;
+      case 'essay':
+      case 'text':
+      case 'long_text':
+      case 'code':
+      case 'oral':
+      case 'practical':
+        return AssessmentSessionQuestionType.essay;
+      case 'file_upload':
+        return AssessmentSessionQuestionType.fileUpload;
+      default:
+        return AssessmentSessionQuestionType.essay;
+    }
+  }
+
+  String _titleForType(String questionType) {
+    final normalized = questionType.trim().replaceAll('_', ' ');
+    if (normalized.isEmpty) return 'Question';
+    return normalized
+        .split(' ')
+        .map(
+          (part) => part.isEmpty
+              ? part
+              : '${part[0].toUpperCase()}${part.substring(1)}',
+        )
+        .join(' ');
+  }
+
+  String? _placeholderForType(AssessmentSessionQuestionType type) {
+    switch (type) {
+      case AssessmentSessionQuestionType.essay:
+        return 'Write your answer here...';
+      case AssessmentSessionQuestionType.shortAnswer:
+        return 'Type your answer here...';
+      default:
+        return null;
+    }
   }
 
   void _startTimer() {
     _timer?.cancel();
+    final sessionId = _sessionResponse?.data.sessionId;
+    if (sessionId == null || sessionId.isEmpty) return;
+
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       final currentState = state;
       currentState.maybeWhen(
         ready: (viewData) {
-          if (viewData.isSubmitted) {
-            timer.cancel();
+          if (viewData.isSubmitted || viewData.isSubmittingAnswer) {
             return;
           }
 
-          if (viewData.remainingSeconds <= 0) {
-            timer.cancel();
-            unawaited(submitExam(autoSubmitted: true));
-            return;
-          }
+          final elapsed = _secondsSince(_sessionStartedAt);
 
           emit(
             AssessmentSessionState.ready(
               viewData: viewData.copyWith(
-                remainingSeconds: viewData.remainingSeconds - 1,
+                recordingTime: formatAssessmentSessionDuration(elapsed),
+                statusMessage: null,
               ),
             ),
           );
 
-          final sessionId = _sessionResponse?.data.sessionId;
-          if (sessionId != null &&
-              sessionId.isNotEmpty &&
-              viewData.remainingSeconds % 30 == 0) {
+          if (elapsed > 0 && elapsed % 30 == 0) {
             unawaited(_sendHeartbeat(sessionId));
           }
         },
@@ -339,116 +313,299 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
 
   Future<void> _sendHeartbeat(String sessionId) async {
     try {
-      _sessionResponse = await assessmentSessionRepo.heartbeat(sessionId);
+      final heartbeatResponse = await assessmentSessionRepo.heartbeat(
+        sessionId,
+      );
+      final currentVersion = _sessionResponse?.data.versionLock ?? -1;
+      if (heartbeatResponse.data.versionLock >= currentVersion) {
+        _sessionResponse = heartbeatResponse;
+      }
     } catch (_) {
       // Heartbeat failures should not interrupt local answer entry.
     }
   }
 
-  void goToQuestion(int index) {
-    state.maybeWhen(
-      ready: (viewData) {
-        if (index < 0 || index >= viewData.questions.length) {
-          return;
-        }
+  void goToQuestion(int index) {}
 
-        emit(
-          AssessmentSessionState.ready(
-            viewData: viewData.copyWith(currentQuestionIndex: index),
-          ),
-        );
-      },
-      orElse: () {},
-    );
-  }
-
-  Future<void> submitExam({bool autoSubmitted = false}) async {
+  Future<void> completeExam({bool autoSubmitted = false}) async {
     await state.maybeWhen<Future<void>>(
       ready: (viewData) async {
-        if (viewData.isSubmitted) {
-          return;
-        }
-
+        if (viewData.isSubmitted || _isCompletingExam) return;
+        _isCompletingExam = true;
         _timer?.cancel();
-
-        final sessionId = _sessionResponse?.data.sessionId;
-        if (sessionId != null && sessionId.isNotEmpty) {
-          try {
-            _sessionResponse = await assessmentSessionRepo.completeExamSession(
-              sessionId,
-            );
-          } on NetworkExceptions catch (e) {
-            emit(
-              AssessmentSessionState.error(
-                error: NetworkExceptions.getErrorMessage(e),
-              ),
-            );
-            return;
-          } catch (e) {
-            emit(
-              const AssessmentSessionState.error(
-                error: 'Failed to complete exam session',
-              ),
-            );
-            return;
-          }
-        }
-
         emit(
           AssessmentSessionState.ready(
             viewData: viewData.copyWith(
-              isSubmitted: true,
-              autoSubmitted: autoSubmitted,
+              isCompletingExam: true,
+              statusMessage: null,
             ),
           ),
         );
+
+        final sessionId = _sessionResponse?.data.sessionId;
+        if (sessionId == null || sessionId.isEmpty) {
+          _isCompletingExam = false;
+          emit(const AssessmentSessionState.error(error: 'Missing session id'));
+          return;
+        }
+
+        try {
+          _sessionResponse = await assessmentSessionRepo.completeExamSession(
+            sessionId,
+          );
+          _isCompletingExam = false;
+          emit(
+            AssessmentSessionState.ready(
+              viewData: _buildViewData(
+                isSubmitted: true,
+                autoSubmitted: autoSubmitted,
+              ),
+            ),
+          );
+        } on NetworkExceptions catch (e) {
+          _isCompletingExam = false;
+          emit(
+            AssessmentSessionState.ready(
+              viewData: viewData.copyWith(
+                isCompletingExam: false,
+                statusMessage: NetworkExceptions.getErrorMessage(e),
+              ),
+            ),
+          );
+          _startTimer();
+        } catch (_) {
+          _isCompletingExam = false;
+          emit(
+            AssessmentSessionState.ready(
+              viewData: viewData.copyWith(
+                isCompletingExam: false,
+                statusMessage: 'Failed to complete exam session',
+              ),
+            ),
+          );
+          _startTimer();
+        }
       },
       orElse: () async {},
     );
   }
 
+  Future<void> submitExam({bool autoSubmitted = false}) =>
+      completeExam(autoSubmitted: autoSubmitted);
+
+  Future<void> submitCurrentAnswer() async {
+    await state.maybeWhen<Future<void>>(
+      ready: (viewData) async {
+        if (_isSubmittingAnswer ||
+            viewData.isSubmittingAnswer ||
+            viewData.isEndOfQuestions ||
+            viewData.questions.isEmpty) {
+          return;
+        }
+
+        final session = _sessionResponse?.data;
+        final sessionItemId = session?.current.sessionItemId;
+        if (session == null || sessionItemId == null || sessionItemId.isEmpty) {
+          emit(
+            AssessmentSessionState.ready(
+              viewData: viewData.copyWith(
+                statusMessage: 'No active question is available to submit.',
+              ),
+            ),
+          );
+          return;
+        }
+
+        if (_isUnsupportedFileUploadAnswer(viewData.currentQuestion)) {
+          emit(
+            AssessmentSessionState.ready(
+              viewData: viewData.copyWith(
+                statusMessage:
+                    'File-upload answers require a backend-accessible file URL. No verified upload API is available in this app yet.',
+              ),
+            ),
+          );
+          return;
+        }
+
+        _isSubmittingAnswer = true;
+        emit(
+          AssessmentSessionState.ready(
+            viewData: viewData.copyWith(
+              isSubmittingAnswer: true,
+              statusMessage: null,
+            ),
+          ),
+        );
+
+        try {
+          final requestBody = _buildSubmitRequest(viewData.currentQuestion);
+          final response = await assessmentSessionRepo.submitExamAnswer(
+            session.sessionId,
+            requestBody,
+          );
+          _isSubmittingAnswer = false;
+          _currentQuestionResponse = null;
+          await _acceptSessionAndLoadCurrentQuestion(response);
+        } on NetworkExceptions catch (e) {
+          _isSubmittingAnswer = false;
+          if (e is Conflict) {
+            await _refreshAfterStaleVersionLock(session.sessionId);
+            return;
+          }
+
+          emit(
+            AssessmentSessionState.ready(
+              viewData: viewData.copyWith(
+                isSubmittingAnswer: false,
+                statusMessage: NetworkExceptions.getErrorMessage(e),
+              ),
+            ),
+          );
+        } catch (_) {
+          _isSubmittingAnswer = false;
+          emit(
+            AssessmentSessionState.ready(
+              viewData: viewData.copyWith(
+                isSubmittingAnswer: false,
+                statusMessage: 'Failed to submit answer',
+              ),
+            ),
+          );
+        }
+      },
+      orElse: () async {},
+    );
+  }
+
+  SubmitExamAnswerRequestBody _buildSubmitRequest(
+    AssessmentSessionQuestion question,
+  ) {
+    final session = _sessionResponse!.data;
+    final sessionItemId = session.current.sessionItemId!;
+    final questionType =
+        _currentQuestionResponse?.data.questionType.trim().toLowerCase() ?? '';
+    final timeSpent = _secondsSince(_questionLoadedAt);
+    final elapsed = _secondsSince(_sessionStartedAt);
+    final selectedOptions = question.selectedOptionIndexes
+        .where((index) => index >= 0 && index < question.options.length)
+        .map((index) => question.options[index].optionId)
+        .toList();
+
+    return SubmitExamAnswerRequestBody(
+      sessionItemId: sessionItemId,
+      responseType: _responseTypeForBackendQuestion(questionType),
+      selectedOptions: questionType == 'mcq' || questionType == 'true_false'
+          ? selectedOptions
+          : null,
+      responseText: _usesTextResponse(questionType)
+          ? question.responseText.trim()
+          : null,
+      fileUploadUrl: questionType == 'file_upload'
+          ? _backendAccessibleUrlOrNull(question.responseText)
+          : null,
+      timeSpentSeconds: timeSpent,
+      timeElapsedFromStartSeconds: elapsed,
+      isFlaggedForReview: question.isFlaggedForReview,
+      expectedItemVersionLock: session.versionLock,
+    );
+  }
+
+  String _responseTypeForBackendQuestion(String questionType) {
+    if (questionType == 'mcq') return 'single_choice';
+    return questionType.isEmpty ? 'text' : questionType;
+  }
+
+  bool _usesTextResponse(String questionType) {
+    return const {
+      'short_answer',
+      'essay',
+      'text',
+      'long_text',
+      'code',
+      'oral',
+      'practical',
+    }.contains(questionType);
+  }
+
+  int _secondsSince(DateTime? startedAt) {
+    if (startedAt == null) return 0;
+    return DateTime.now()
+        .difference(startedAt)
+        .inSeconds
+        .clamp(0, 1 << 31)
+        .toInt();
+  }
+
+  DateTime? _startedAtFromBackend(String? startedAt) {
+    if (startedAt == null || startedAt.trim().isEmpty) return null;
+    return DateTime.tryParse(startedAt);
+  }
+
+  bool _isUnsupportedFileUploadAnswer(AssessmentSessionQuestion question) {
+    final questionType =
+        _currentQuestionResponse?.data.questionType.trim().toLowerCase() ?? '';
+    if (questionType != 'file_upload') return false;
+    return _backendAccessibleUrlOrNull(question.responseText) == null;
+  }
+
+  String? _backendAccessibleUrlOrNull(String value) {
+    final trimmed = value.trim();
+    if (trimmed.isEmpty) return null;
+    final uri = Uri.tryParse(trimmed);
+    if (uri == null || uri.host.isEmpty) return null;
+    return uri.scheme == 'https' || uri.scheme == 'http' ? trimmed : null;
+  }
+
+  Future<void> _refreshAfterStaleVersionLock(String sessionId) async {
+    try {
+      final response = await assessmentSessionRepo.getExamSessionState(
+        sessionId,
+      );
+      await _acceptSessionAndLoadCurrentQuestion(
+        response,
+        statusMessage:
+            'Exam state was refreshed. Please review the current question.',
+      );
+    } on NetworkExceptions catch (e) {
+      emit(
+        AssessmentSessionState.error(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
+    } catch (_) {
+      emit(
+        const AssessmentSessionState.error(
+          error: 'Failed to refresh exam state',
+        ),
+      );
+    }
+  }
+
   void nextQuestion() {
-    state.maybeWhen(
-      ready: (viewData) {
-        if (!viewData.canGoNext) {
-          return;
-        }
-
-        goToQuestion(viewData.currentQuestionIndex + 1);
-      },
-      orElse: () {},
-    );
+    unawaited(submitCurrentAnswer());
   }
 
-  void previousQuestion() {
-    state.maybeWhen(
-      ready: (viewData) {
-        if (!viewData.canGoPrevious) {
-          return;
-        }
-
-        goToQuestion(viewData.currentQuestionIndex - 1);
-      },
-      orElse: () {},
-    );
-  }
+  void previousQuestion() {}
 
   void toggleFlagForCurrentQuestion() {
     state.maybeWhen(
       ready: (viewData) {
-        final index = viewData.currentQuestionIndex;
+        if (viewData.questions.isEmpty || viewData.isSubmittingAnswer) return;
         final questions = List<AssessmentSessionQuestion>.from(
           viewData.questions,
         );
-        questions[index] = questions[index].copyWith(
-          isFlaggedForReview: !questions[index].isFlaggedForReview,
+        final question = questions.first;
+        questions[0] = question.copyWith(
+          isFlaggedForReview: !question.isFlaggedForReview,
         );
 
         emit(
           AssessmentSessionState.ready(
             viewData: viewData.copyWith(
               questions: questions,
-              isFlaggedForReview: questions[index].isFlaggedForReview,
+              isFlaggedForReview: questions[0].isFlaggedForReview,
+              statusMessage: null,
             ),
           ),
         );
@@ -460,20 +617,26 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
   void selectSingleOption(int optionIndex) {
     state.maybeWhen(
       ready: (viewData) {
-        final index = viewData.currentQuestionIndex;
+        if (viewData.questions.isEmpty || viewData.isSubmittingAnswer) return;
         final questions = List<AssessmentSessionQuestion>.from(
           viewData.questions,
         );
-        final question = questions[index];
+        final question = questions.first;
+        if (optionIndex < 0 || optionIndex >= question.options.length) return;
 
-        questions[index] = question.copyWith(
+        // TODO: Backend currently does not expose single-vs-multiple MCQ semantics.
+        // Keep answer state list-based so this can become multi-select when the API adds it.
+        questions[0] = question.copyWith(
           selectedOptionIndexes: [optionIndex],
           responseText: question.options[optionIndex].label,
         );
 
         emit(
           AssessmentSessionState.ready(
-            viewData: viewData.copyWith(questions: questions),
+            viewData: viewData.copyWith(
+              questions: questions,
+              statusMessage: null,
+            ),
           ),
         );
       },
@@ -484,11 +647,11 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
   void toggleMultiSelectOption(int optionIndex) {
     state.maybeWhen(
       ready: (viewData) {
-        final index = viewData.currentQuestionIndex;
+        if (viewData.questions.isEmpty || viewData.isSubmittingAnswer) return;
         final questions = List<AssessmentSessionQuestion>.from(
           viewData.questions,
         );
-        final question = questions[index];
+        final question = questions.first;
         final selected = List<int>.from(question.selectedOptionIndexes);
 
         if (selected.contains(optionIndex)) {
@@ -497,11 +660,14 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
           selected.add(optionIndex);
         }
 
-        questions[index] = question.copyWith(selectedOptionIndexes: selected);
+        questions[0] = question.copyWith(selectedOptionIndexes: selected);
 
         emit(
           AssessmentSessionState.ready(
-            viewData: viewData.copyWith(questions: questions),
+            viewData: viewData.copyWith(
+              questions: questions,
+              statusMessage: null,
+            ),
           ),
         );
       },
@@ -512,15 +678,18 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
   void updateResponseText(String value) {
     state.maybeWhen(
       ready: (viewData) {
-        final index = viewData.currentQuestionIndex;
+        if (viewData.questions.isEmpty || viewData.isSubmittingAnswer) return;
         final questions = List<AssessmentSessionQuestion>.from(
           viewData.questions,
         );
-        questions[index] = questions[index].copyWith(responseText: value);
+        questions[0] = questions[0].copyWith(responseText: value);
 
         emit(
           AssessmentSessionState.ready(
-            viewData: viewData.copyWith(questions: questions),
+            viewData: viewData.copyWith(
+              questions: questions,
+              statusMessage: null,
+            ),
           ),
         );
       },
@@ -532,6 +701,7 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
     final currentState = state;
     await currentState.maybeWhen(
       ready: (viewData) async {
+        if (viewData.questions.isEmpty || viewData.isSubmittingAnswer) return;
         final question = viewData.currentQuestion;
         if (question.type != AssessmentSessionQuestionType.fileUpload &&
             !question.canAttachEvidence) {
@@ -544,22 +714,23 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
         );
 
         final file = result?.files.first;
-        if (file == null) {
-          return;
-        }
+        if (file == null) return;
 
         final questions = List<AssessmentSessionQuestion>.from(
           viewData.questions,
         );
-        questions[viewData.currentQuestionIndex] = question.copyWith(
+        questions[0] = question.copyWith(
           uploadedFileName: file.name,
-          uploadedFilePath: file.path,
-          responseText: file.name,
+          uploadedFilePath: null,
         );
 
         emit(
           AssessmentSessionState.ready(
-            viewData: viewData.copyWith(questions: questions),
+            viewData: viewData.copyWith(
+              questions: questions,
+              statusMessage:
+                  'File selected locally. A backend-accessible upload URL is required before this answer can be submitted.',
+            ),
           ),
         );
       },
@@ -571,6 +742,7 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
     final currentState = state;
     await currentState.maybeWhen(
       ready: (viewData) async {
+        if (viewData.questions.isEmpty || viewData.isSubmittingAnswer) return;
         final question = viewData.currentQuestion;
         if (question.type != AssessmentSessionQuestionType.videoResponse) {
           return;
@@ -589,9 +761,7 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
             maxDuration: const Duration(minutes: 2),
           );
 
-          if (video == null) {
-            return;
-          }
+          if (video == null) return;
 
           videoName = video.name;
           videoPath = video.path;
@@ -602,9 +772,7 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
           );
 
           final file = result?.files.first;
-          if (file == null) {
-            return;
-          }
+          if (file == null) return;
 
           videoName = file.name;
           videoPath = file.path;
@@ -613,7 +781,7 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
         final questions = List<AssessmentSessionQuestion>.from(
           viewData.questions,
         );
-        questions[viewData.currentQuestionIndex] = question.copyWith(
+        questions[0] = question.copyWith(
           recordedVideoName: videoName,
           recordedVideoPath: videoPath,
           responseText: videoName,
@@ -621,7 +789,10 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
 
         emit(
           AssessmentSessionState.ready(
-            viewData: viewData.copyWith(questions: questions),
+            viewData: viewData.copyWith(
+              questions: questions,
+              statusMessage: null,
+            ),
           ),
         );
       },

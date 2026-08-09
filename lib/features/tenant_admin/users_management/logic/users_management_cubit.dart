@@ -2,6 +2,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../core/networking/error/error_handler/network_exceptions.dart';
+import '../../roles_and_security/data/models/roles_and_security_response.dart';
+import '../../roles_and_security/data/repos/roles_and_security_repo.dart';
+import '../data/models/role_user_type_mapper.dart';
 import '../data/models/users_management_request_body.dart';
 import '../data/models/users_management_response.dart';
 import '../data/repos/users_management_repo.dart';
@@ -11,11 +14,18 @@ part 'users_management_cubit.freezed.dart';
 
 class UsersManagementCubit extends Cubit<UsersManagementState> {
   final UsersManagementRepo usersManagementRepo;
+  final RolesAndSecurityRepo rolesAndSecurityRepo;
 
-  UsersManagementCubit({required this.usersManagementRepo})
-    : super(const UsersManagementState.initial()) {
+  UsersManagementCubit({
+    required this.usersManagementRepo,
+    required this.rolesAndSecurityRepo,
+  }) : super(const UsersManagementState.initial()) {
     getUsers();
+    loadRolesForAssignment();
   }
+
+  RolesResponse? rolesResponse;
+  PendingRoleAssignment? pendingRoleAssignment;
 
   Future<void> getUsers() async {
     emit(const UsersManagementState.usersLoading());
@@ -59,11 +69,59 @@ class UsersManagementCubit extends Cubit<UsersManagementState> {
     }
   }
 
-  Future<void> createUser(CreateUserRequestBody requestBody) async {
+  Future<void> createUser(
+    CreateUserRequestBody requestBody, {
+    required String selectedRoleName,
+  }) async {
     emit(const UsersManagementState.createUserLoading());
 
     try {
+      final role = await _resolveRequiredRole(selectedRoleName);
+      if (role == null) {
+        emit(
+          UsersManagementState.createUserError(
+            error:
+                'Selected backend role "$selectedRoleName" could not be resolved. User was not created.',
+          ),
+        );
+        return;
+      }
+
       final response = await usersManagementRepo.createUser(requestBody);
+      try {
+        await rolesAndSecurityRepo.assignRoleToUser(
+          role.roleId,
+          response.data.userId,
+        );
+        pendingRoleAssignment = null;
+      } on NetworkExceptions catch (e) {
+        pendingRoleAssignment = PendingRoleAssignment(
+          userId: response.data.userId,
+          roleId: role.roleId,
+          roleName: role.roleName,
+          operationLabel: 'created',
+        );
+        emit(
+          UsersManagementState.createUserError(
+            error:
+                'User created successfully, but role assignment failed: ${NetworkExceptions.getErrorMessage(e)}',
+          ),
+        );
+        return;
+      } catch (_) {
+        pendingRoleAssignment = PendingRoleAssignment(
+          userId: response.data.userId,
+          roleId: role.roleId,
+          roleName: role.roleName,
+          operationLabel: 'created',
+        );
+        emit(
+          const UsersManagementState.createUserError(
+            error: 'User created successfully, but role assignment failed.',
+          ),
+        );
+        return;
+      }
       emit(UsersManagementState.createSuccess(response));
     } on NetworkExceptions catch (e) {
       emit(
@@ -80,11 +138,59 @@ class UsersManagementCubit extends Cubit<UsersManagementState> {
     }
   }
 
-  Future<void> inviteUser(InviteUserRequestBody requestBody) async {
+  Future<void> inviteUser(
+    InviteUserRequestBody requestBody, {
+    required String selectedRoleName,
+  }) async {
     emit(const UsersManagementState.inviteUserLoading());
 
     try {
+      final role = await _resolveRequiredRole(selectedRoleName);
+      if (role == null) {
+        emit(
+          UsersManagementState.inviteUserError(
+            error:
+                'Selected backend role "$selectedRoleName" could not be resolved. User was not invited.',
+          ),
+        );
+        return;
+      }
+
       final response = await usersManagementRepo.inviteUser(requestBody);
+      try {
+        await rolesAndSecurityRepo.assignRoleToUser(
+          role.roleId,
+          response.data.userId,
+        );
+        pendingRoleAssignment = null;
+      } on NetworkExceptions catch (e) {
+        pendingRoleAssignment = PendingRoleAssignment(
+          userId: response.data.userId,
+          roleId: role.roleId,
+          roleName: role.roleName,
+          operationLabel: 'invited',
+        );
+        emit(
+          UsersManagementState.inviteUserError(
+            error:
+                'User invited successfully, but role assignment failed: ${NetworkExceptions.getErrorMessage(e)}',
+          ),
+        );
+        return;
+      } catch (_) {
+        pendingRoleAssignment = PendingRoleAssignment(
+          userId: response.data.userId,
+          roleId: role.roleId,
+          roleName: role.roleName,
+          operationLabel: 'invited',
+        );
+        emit(
+          const UsersManagementState.inviteUserError(
+            error: 'User invited successfully, but role assignment failed.',
+          ),
+        );
+        return;
+      }
       emit(UsersManagementState.inviteSuccess(response));
     } on NetworkExceptions catch (e) {
       emit(
@@ -175,4 +281,76 @@ class UsersManagementCubit extends Cubit<UsersManagementState> {
       );
     }
   }
+
+  Future<void> loadRolesForAssignment() async {
+    try {
+      rolesResponse = await rolesAndSecurityRepo.rolesAndSecurity();
+    } catch (_) {
+      rolesResponse = null;
+    }
+  }
+
+  Future<RoleItem?> _resolveRequiredRole(String roleName) async {
+    var role = roleByName(roleName);
+    if (role != null) return role;
+
+    await loadRolesForAssignment();
+    role = roleByName(roleName);
+    return role;
+  }
+
+  RoleItem? roleByName(String roleName) {
+    final normalized = roleName.trim().toLowerCase();
+    for (final role in rolesResponse?.data ?? const <RoleItem>[]) {
+      if (role.roleName.trim().toLowerCase() == normalized) {
+        return role;
+      }
+    }
+    return null;
+  }
+
+  Future<void> retryPendingRoleAssignment() async {
+    final pending = pendingRoleAssignment;
+    if (pending == null) return;
+
+    emit(const UsersManagementState.roleAssignmentLoading());
+    try {
+      final response = await rolesAndSecurityRepo.assignRoleToUser(
+        pending.roleId,
+        pending.userId,
+      );
+      pendingRoleAssignment = null;
+      emit(UsersManagementState.roleAssignmentSuccess(response));
+      await getUsers();
+    } on NetworkExceptions catch (e) {
+      emit(
+        UsersManagementState.roleAssignmentError(
+          error: NetworkExceptions.getErrorMessage(e),
+        ),
+      );
+    } catch (_) {
+      emit(
+        const UsersManagementState.roleAssignmentError(
+          error: 'Role assignment failed',
+        ),
+      );
+    }
+  }
+
+  String? userTypeForSelectedRole(String roleName) =>
+      userTypeForRoleName(roleName);
+}
+
+class PendingRoleAssignment {
+  final String userId;
+  final String roleId;
+  final String roleName;
+  final String operationLabel;
+
+  const PendingRoleAssignment({
+    required this.userId,
+    required this.roleId,
+    required this.roleName,
+    required this.operationLabel,
+  });
 }

@@ -29,7 +29,7 @@ class AssessmentSessionRepo {
     }
   }
 
-  Future<Map<String, dynamic>> getExamSessionState(String sessionId) async {
+  Future<ExamSessionResponse> getExamSessionState(String sessionId) async {
     if (await networkInfo.isConnected) {
       try {
         return await assessmentSessionRemoteDataSource.getExamSessionState(
@@ -43,7 +43,7 @@ class AssessmentSessionRepo {
     }
   }
 
-  Future<Map<String, dynamic>> getCurrentQuestion(String sessionId) async {
+  Future<CurrentQuestionResponse> getCurrentQuestion(String sessionId) async {
     if (await networkInfo.isConnected) {
       try {
         return await assessmentSessionRemoteDataSource.getCurrentQuestion(

@@ -49,14 +49,16 @@ CreateUserRequestBody createUserRequest() => CreateUserRequestBody(
   firstName: 'Sara',
   lastName: 'Ahmed',
   userType: 'tenant_admin',
+  userAttributes: const {},
 );
 
 InviteUserRequestBody inviteUserRequest() => InviteUserRequestBody(
   email: 'invite@example.com',
   firstName: 'Omar',
   lastName: 'Ali',
-  userType: 'candidate',
+  userType: 'examinee',
   externalEmployeeId: 'EMP-002',
+  userAttributes: const {},
 );
 
 ResetUserPasswordRequestBody resetPasswordRequest() =>
@@ -131,7 +133,7 @@ void main() {
             'user_id': 'user_invited',
             'tenant_id': 'tenant_001',
             'invite_token': 'invite-token',
-            'status': 'invited',
+            'status': 'pending',
           },
         },
       );
@@ -176,7 +178,7 @@ void main() {
       );
       expect(
         (await remoteDataSource.inviteUser(inviteUserRequest())).data.status,
-        'invited',
+        'pending',
       );
       expect(
         (await remoteDataSource.deactivateUser('user_001')).message,
@@ -220,6 +222,7 @@ void main() {
         'first_name': 'Sara',
         'last_name': 'Ahmed',
         'user_type': 'tenant_admin',
+        'user_attributes': {},
       });
       expect(createCapture[1], 'access-token');
       final inviteCapture = verify(
@@ -233,8 +236,9 @@ void main() {
         'email': 'invite@example.com',
         'first_name': 'Omar',
         'last_name': 'Ali',
-        'user_type': 'candidate',
+        'user_type': 'examinee',
         'external_employee_id': 'EMP-002',
+        'user_attributes': {},
       });
       expect(inviteCapture[1], 'access-token');
       verify(

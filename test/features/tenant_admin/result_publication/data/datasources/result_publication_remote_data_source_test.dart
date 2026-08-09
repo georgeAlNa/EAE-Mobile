@@ -143,7 +143,17 @@ void main() {
         ).thenAnswer(
           (_) async => {
             'message': 'loaded',
-            'data': {'id': 'workflow_001'},
+            'data': {
+              'workflow_id': 'workflow_001',
+              'resource_type': 'assessment_result',
+              'resource_id': 'result_001',
+              'workflow_type': 'result_publication',
+              'current_workflow_status': 'pending',
+              'current_stage_key': null,
+              'workflow_initiated_at': '2026-07-21T03:00:00Z',
+              'workflow_completed_at': null,
+              'workflow_metadata': [],
+            },
           },
         );
         when(
@@ -166,7 +176,8 @@ void main() {
         final approved = await remoteDataSource.approveWorkflow('workflow_001');
 
         expect(created.message, 'created');
-        expect(loaded.data, {'id': 'workflow_001'});
+        expect(loaded.data?.workflowId, 'workflow_001');
+        expect(loaded.data?.currentWorkflowStatus, 'pending');
         expect(approved.message, 'approved');
         final captured = verify(
           () => apiServicesImpl.post(

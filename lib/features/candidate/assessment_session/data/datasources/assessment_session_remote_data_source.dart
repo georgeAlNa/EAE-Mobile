@@ -13,9 +13,9 @@ abstract class AssessmentSessionRemoteDataSource {
     StartExamSessionRequestBody startExamSessionRequestBody,
   );
 
-  Future<Map<String, dynamic>> getExamSessionState(String sessionId);
+  Future<ExamSessionResponse> getExamSessionState(String sessionId);
 
-  Future<Map<String, dynamic>> getCurrentQuestion(String sessionId);
+  Future<CurrentQuestionResponse> getCurrentQuestion(String sessionId);
 
   Future<ExamSessionResponse> submitExamAnswer(
     String sessionId,
@@ -58,14 +58,14 @@ class AssessmentSessionRemoteDataSourceImpl
   }
 
   @override
-  Future<Map<String, dynamic>> getExamSessionState(String sessionId) async {
+  Future<ExamSessionResponse> getExamSessionState(String sessionId) async {
     try {
       final request = await apiServicesImpl.get(
         AppLinkUrl.examSession(sessionId),
         token: _token,
       );
 
-      return Map<String, dynamic>.from(request as Map);
+      return ExamSessionResponse.fromJson(request);
     } on DioException catch (e) {
       throw NetworkExceptions.getException(e);
     } catch (e) {
@@ -74,14 +74,14 @@ class AssessmentSessionRemoteDataSourceImpl
   }
 
   @override
-  Future<Map<String, dynamic>> getCurrentQuestion(String sessionId) async {
+  Future<CurrentQuestionResponse> getCurrentQuestion(String sessionId) async {
     try {
       final request = await apiServicesImpl.get(
         AppLinkUrl.examSessionCurrentQuestion(sessionId),
         token: _token,
       );
 
-      return Map<String, dynamic>.from(request as Map);
+      return CurrentQuestionResponse.fromJson(request);
     } on DioException catch (e) {
       throw NetworkExceptions.getException(e);
     } catch (e) {

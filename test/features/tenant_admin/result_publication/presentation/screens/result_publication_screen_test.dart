@@ -1,3 +1,4 @@
+import 'package:eae_mobile/features/evaluator/exams_management/data/repos/exams_management_repo.dart';
 import 'package:eae_mobile/features/tenant_admin/result_publication/data/models/result_publication_request_body.dart';
 import 'package:eae_mobile/features/tenant_admin/result_publication/data/models/result_publication_response.dart';
 import 'package:eae_mobile/features/tenant_admin/result_publication/data/repos/result_publication_repo.dart';
@@ -11,6 +12,8 @@ import 'package:mocktail/mocktail.dart';
 import '../../../../../helpers/widget_test_helpers.dart';
 
 class MockResultPublicationRepo extends Mock implements ResultPublicationRepo {}
+
+class MockExamsManagementRepo extends Mock implements ExamsManagementRepo {}
 
 ResultPublicationStatusResponse statusResponse({
   String publicationStatus = 'unpublished',
@@ -73,11 +76,16 @@ Future<void> pumpScreen(WidgetTester tester, ResultPublicationCubit cubit) {
 
 void main() {
   late MockResultPublicationRepo repo;
+  late MockExamsManagementRepo examsRepo;
   late ResultPublicationCubit cubit;
 
   setUp(() async {
     repo = MockResultPublicationRepo();
-    cubit = ResultPublicationCubit(resultPublicationRepo: repo);
+    examsRepo = MockExamsManagementRepo();
+    cubit = ResultPublicationCubit(
+      resultPublicationRepo: repo,
+      examsManagementRepo: examsRepo,
+    );
     addTearDown(cubit.close);
     await resetWidgetTestPreferences();
   });
@@ -97,13 +105,20 @@ void main() {
     await pumpScreen(tester, cubit);
 
     expect(find.text('Result publication'), findsOneWidget);
-    expect(find.text('No session loaded'), findsOneWidget);
     expect(find.text('Status'), findsOneWidget);
     expect(find.text('Publish'), findsOneWidget);
     expect(find.text('Approval workflow'), findsOneWidget);
-    expect(find.text('Create'), findsOneWidget);
-    expect(find.text('Get'), findsOneWidget);
-    expect(find.text('Approve'), findsOneWidget);
+    expect(find.text('Exam publication workflow'), findsOneWidget);
+    expect(find.text('Create'), findsNWidgets(2));
+    expect(find.text('Get'), findsNWidgets(2));
+    expect(find.text('Approve'), findsNWidgets(2));
+
+    await tester.scrollUntilVisible(
+      find.text('No session loaded'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('No session loaded'), findsOneWidget);
   });
 
   testWidgets('validates missing session id before status request', (
@@ -129,6 +144,8 @@ void main() {
     await tester.tap(find.text('Status'));
     await tester.pumpAndSettle();
 
+    await tester.drag(find.byType(Scrollable).first, const Offset(0, -900));
+    await tester.pumpAndSettle();
     expect(find.text('Publication status'), findsWidgets);
     expect(find.text('unpublished'), findsWidgets);
     verify(() => repo.getResultPublicationStatus('session_001')).called(1);
@@ -167,7 +184,7 @@ void main() {
 
     cubit.workflowResourceIdController.text = 'result_001';
     await tester.pump();
-    await tester.tap(find.text('Create'));
+    await tester.tap(find.text('Create').first);
     await tester.pumpAndSettle();
 
     expect(find.text('Workflow updated'), findsOneWidget);

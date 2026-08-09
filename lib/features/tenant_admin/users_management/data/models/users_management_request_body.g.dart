@@ -15,6 +15,9 @@ CreateUserRequestBody _$CreateUserRequestBodyFromJson(
   firstName: json['first_name'] as String,
   lastName: json['last_name'] as String,
   userType: json['user_type'] as String,
+  externalEmployeeId: json['external_employee_id'] as String?,
+  departmentId: json['department_id'] as String?,
+  userAttributes: _nullableJsonMapFromJson(json['user_attributes']),
 );
 
 Map<String, dynamic> _$CreateUserRequestBodyToJson(
@@ -26,6 +29,9 @@ Map<String, dynamic> _$CreateUserRequestBodyToJson(
   'first_name': instance.firstName,
   'last_name': instance.lastName,
   'user_type': instance.userType,
+  'external_employee_id': ?instance.externalEmployeeId,
+  'department_id': ?instance.departmentId,
+  'user_attributes': ?instance.userAttributes,
 };
 
 InviteUserRequestBody _$InviteUserRequestBodyFromJson(
@@ -36,6 +42,8 @@ InviteUserRequestBody _$InviteUserRequestBodyFromJson(
   lastName: json['last_name'] as String,
   userType: json['user_type'] as String,
   externalEmployeeId: json['external_employee_id'] as String?,
+  departmentId: json['department_id'] as String?,
+  userAttributes: _nullableJsonMapFromJson(json['user_attributes']),
 );
 
 Map<String, dynamic> _$InviteUserRequestBodyToJson(
@@ -45,7 +53,9 @@ Map<String, dynamic> _$InviteUserRequestBodyToJson(
   'first_name': instance.firstName,
   'last_name': instance.lastName,
   'user_type': instance.userType,
-  'external_employee_id': instance.externalEmployeeId,
+  'external_employee_id': ?instance.externalEmployeeId,
+  'department_id': ?instance.departmentId,
+  'user_attributes': ?instance.userAttributes,
 };
 
 ResetUserPasswordRequestBody _$ResetUserPasswordRequestBodyFromJson(
@@ -70,7 +80,7 @@ UpdateUserRequestBody _$UpdateUserRequestBodyFromJson(
   externalEmployeeId: json['external_employee_id'] as String?,
   userType: json['user_type'] as String,
   departmentId: json['department_id'] as String?,
-  userAttributes: json['user_attributes'] as Map<String, dynamic>?,
+  userAttributes: _nullableJsonMapFromJson(json['user_attributes']),
   status: json['status'] as String,
   isActive: json['is_active'] as bool,
 );

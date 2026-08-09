@@ -22,12 +22,15 @@ SubmitExamAnswerRequestBody _$SubmitExamAnswerRequestBodyFromJson(
   selectedOptions: (json['selected_options'] as List<dynamic>?)
       ?.map((e) => e as String)
       .toList(),
-  textResponse: json['text_response'] as String?,
-  fileUrl: json['file_url'] as String?,
-  videoUrl: json['video_url'] as String?,
+  responseData: json['response_data'] as List<dynamic>?,
+  responseText: json['response_text'] as String?,
+  fileUploadUrl: json['file_upload_url'] as String?,
   timeSpentSeconds: (json['time_spent_seconds'] as num).toInt(),
   timeElapsedFromStartSeconds: (json['time_elapsed_from_start_seconds'] as num)
       .toInt(),
+  isFlaggedForReview: json['is_flagged_for_review'] as bool?,
+  expectedItemVersionLock: (json['expected_item_version_lock'] as num?)
+      ?.toInt(),
 );
 
 Map<String, dynamic> _$SubmitExamAnswerRequestBodyToJson(
@@ -36,9 +39,11 @@ Map<String, dynamic> _$SubmitExamAnswerRequestBodyToJson(
   'session_item_id': instance.sessionItemId,
   'response_type': instance.responseType,
   'selected_options': ?instance.selectedOptions,
-  'text_response': ?instance.textResponse,
-  'file_url': ?instance.fileUrl,
-  'video_url': ?instance.videoUrl,
+  'response_data': ?instance.responseData,
+  'response_text': ?instance.responseText,
+  'file_upload_url': ?instance.fileUploadUrl,
   'time_spent_seconds': instance.timeSpentSeconds,
   'time_elapsed_from_start_seconds': instance.timeElapsedFromStartSeconds,
+  'is_flagged_for_review': ?instance.isFlaggedForReview,
+  'expected_item_version_lock': ?instance.expectedItemVersionLock,
 };

@@ -31,6 +31,10 @@ class AssessmentSessionViewData {
   final bool isFlaggedForReview;
   final bool isSubmitted;
   final bool autoSubmitted;
+  final bool isSubmittingAnswer;
+  final bool isCompletingExam;
+  final bool isEndOfQuestions;
+  final String? statusMessage;
 
   const AssessmentSessionViewData({
     required this.headerTitle,
@@ -51,23 +55,31 @@ class AssessmentSessionViewData {
     required this.isFlaggedForReview,
     required this.isSubmitted,
     required this.autoSubmitted,
+    this.isSubmittingAnswer = false,
+    this.isCompletingExam = false,
+    this.isEndOfQuestions = false,
+    this.statusMessage,
   });
 
   int get totalQuestions => questions.length;
 
-  int get currentQuestionNumber => currentQuestionIndex + 1;
+  int get currentQuestionNumber =>
+      questions.isEmpty ? 0 : currentQuestionIndex + 1;
 
-  double get completionProgress =>
-      questions.isEmpty ? 0 : currentQuestionNumber / questions.length;
+  double get completionProgress => questions.isEmpty
+      ? (isEndOfQuestions || isSubmitted ? 1 : 0)
+      : currentQuestionNumber / questions.length;
 
   String get questionCounterLabel =>
-      '$currentQuestionNumber/${questions.length}';
+      questions.isEmpty ? 'End' : '$currentQuestionNumber/${questions.length}';
 
-  String get remainingTimeLabel =>
-      formatAssessmentSessionDuration(remainingSeconds);
+  String get remainingTimeLabel => totalDurationSeconds <= 0
+      ? 'No verified time limit'
+      : formatAssessmentSessionDuration(remainingSeconds);
 
-  AssessmentSessionQuestion get currentQuestion =>
-      questions[currentQuestionIndex];
+  AssessmentSessionQuestion get currentQuestion => questions.isEmpty
+      ? AssessmentSessionQuestion.empty()
+      : questions[currentQuestionIndex];
 
   bool get canGoPrevious => currentQuestionIndex > 0;
 
@@ -93,7 +105,8 @@ class AssessmentSessionViewData {
 
   bool get hasFlaggedQuestions => flaggedQuestionCount > 0;
 
-  bool get isLastQuestion => currentQuestionIndex == questions.length - 1;
+  bool get isLastQuestion =>
+      questions.isEmpty || currentQuestionIndex == questions.length - 1;
 
   AssessmentSessionViewData copyWith({
     String? headerTitle,
@@ -114,6 +127,10 @@ class AssessmentSessionViewData {
     bool? isFlaggedForReview,
     bool? isSubmitted,
     bool? autoSubmitted,
+    bool? isSubmittingAnswer,
+    bool? isCompletingExam,
+    bool? isEndOfQuestions,
+    String? statusMessage,
   }) {
     return AssessmentSessionViewData(
       headerTitle: headerTitle ?? this.headerTitle,
@@ -134,6 +151,10 @@ class AssessmentSessionViewData {
       isFlaggedForReview: isFlaggedForReview ?? this.isFlaggedForReview,
       isSubmitted: isSubmitted ?? this.isSubmitted,
       autoSubmitted: autoSubmitted ?? this.autoSubmitted,
+      isSubmittingAnswer: isSubmittingAnswer ?? this.isSubmittingAnswer,
+      isCompletingExam: isCompletingExam ?? this.isCompletingExam,
+      isEndOfQuestions: isEndOfQuestions ?? this.isEndOfQuestions,
+      statusMessage: statusMessage,
     );
   }
 }
@@ -221,6 +242,22 @@ class AssessmentSessionQuestion {
     this.recordedVideoPath,
   });
 
+  factory AssessmentSessionQuestion.empty() {
+    return const AssessmentSessionQuestion(
+      id: '',
+      sectionLabel: '',
+      title: '',
+      prompt: '',
+      type: AssessmentSessionQuestionType.shortAnswer,
+      options: [],
+      selectedOptionIndexes: [],
+      responseText: '',
+      canAttachEvidence: false,
+      evidenceHint: '',
+      isFlaggedForReview: false,
+    );
+  }
+
   bool get hasResponse {
     switch (type) {
       case AssessmentSessionQuestionType.singleChoice:
@@ -298,13 +335,17 @@ class AssessmentSessionQuestion {
 }
 
 class AssessmentSessionQuestionOption {
+  final String optionId;
   final String label;
   final String description;
+  final int? optionSequence;
   final String? badgeLabel;
 
   const AssessmentSessionQuestionOption({
+    required this.optionId,
     required this.label,
     required this.description,
+    this.optionSequence,
     this.badgeLabel,
   });
 }
