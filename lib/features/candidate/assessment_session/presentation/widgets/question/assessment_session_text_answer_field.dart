@@ -53,6 +53,8 @@ class _AssessmentSessionTextAnswerFieldState
     return TextField(
       controller: controller,
       onChanged: widget.onChanged,
+      enableInteractiveSelection: false,
+      contextMenuBuilder: (_, _) => const SizedBox.shrink(),
       maxLines: isEssay ? 7 : 1,
       minLines: isEssay ? 6 : 1,
       textInputAction: TextInputAction.newline,

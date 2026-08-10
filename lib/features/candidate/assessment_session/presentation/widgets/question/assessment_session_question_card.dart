@@ -76,11 +76,13 @@ class AssessmentSessionQuestionCard extends StatelessWidget {
             ],
           ),
           verticalSpace(14),
-          Text(
-            question.prompt,
-            style: AppTextStyles.font14DarkGreyRegular.copyWith(
-              color: AppColors.primaryColor9,
-              height: 1.65,
+          SelectionContainer.disabled(
+            child: Text(
+              question.prompt,
+              style: AppTextStyles.font14DarkGreyRegular.copyWith(
+                color: AppColors.primaryColor9,
+                height: 1.65,
+              ),
             ),
           ),
           verticalSpace(18),

@@ -11,13 +11,17 @@ import '../data/models/assessment_session_models.dart';
 import '../data/models/assessment_session_request_body.dart';
 import '../data/models/assessment_session_response.dart';
 import '../data/repos/assessment_session_repo.dart';
+import '../data/services/candidate_proctoring_manager.dart';
+import '../data/services/exam_security_service.dart';
 
 part 'assessment_session_state.dart';
 
 class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
   final AssessmentSessionRepo assessmentSessionRepo;
+  final CandidateProctoringManager? candidateProctoringManager;
   final String? initialExamId;
   Timer? _timer;
+  StreamSubscription<CandidateProctoringState>? _proctoringSubscription;
   final ImagePicker _imagePicker = ImagePicker();
   ExamSessionResponse? _sessionResponse;
   CurrentQuestionResponse? _currentQuestionResponse;
@@ -28,14 +32,40 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
 
   AssessmentSessionCubit({
     required this.assessmentSessionRepo,
+    this.candidateProctoringManager,
     this.initialExamId,
   }) : super(const AssessmentSessionState.loading()) {
+    _listenToProctoring();
     final examId = initialExamId?.trim();
     if (examId == null || examId.isEmpty) {
       emit(const AssessmentSessionState.error(error: 'Missing exam id'));
     } else {
       startExamSession(examId);
     }
+  }
+
+  void _listenToProctoring() {
+    final manager = candidateProctoringManager;
+    if (manager == null) return;
+
+    _proctoringSubscription = manager.stream.listen((proctoringState) {
+      state.maybeWhen(
+        ready: (viewData) {
+          emit(
+            AssessmentSessionState.ready(
+              viewData: viewData.copyWith(
+                isInteractionPaused: proctoringState.isInteractionPaused,
+                appExitCount: proctoringState.appExitCount,
+                lastBackgroundDurationSeconds:
+                    proctoringState.lastBackgroundDuration.inSeconds,
+                proctoringWarning: proctoringState.warningMessage,
+              ),
+            ),
+          );
+        },
+        orElse: () {},
+      );
+    });
   }
 
   Future<void> startExamSession(String examId) async {
@@ -89,6 +119,7 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
     String? statusMessage,
   }) async {
     _sessionResponse = response;
+    await _startProctoring(response.data.sessionId);
     _sessionStartedAt =
         _startedAtFromBackend(response.data.timestamps.startedAt) ??
         _sessionStartedAt ??
@@ -190,8 +221,29 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
       isSubmittingAnswer: isSubmittingAnswer,
       isCompletingExam: isCompletingExam,
       isEndOfQuestions: isEndOfQuestions,
+      isInteractionPaused:
+          candidateProctoringManager?.state.isInteractionPaused ?? false,
+      appExitCount: candidateProctoringManager?.state.appExitCount ?? 0,
+      lastBackgroundDurationSeconds:
+          candidateProctoringManager?.state.lastBackgroundDuration.inSeconds ??
+          0,
+      proctoringWarning: candidateProctoringManager?.state.warningMessage,
       statusMessage: statusMessage,
     );
+  }
+
+  Future<void> _startProctoring(String sessionId) async {
+    await candidateProctoringManager?.start(
+      sessionId: sessionId,
+      config: const ExamProctoringConfig(),
+    );
+  }
+
+  bool _isInteractionBlocked(AssessmentSessionViewData viewData) {
+    return viewData.isInteractionPaused ||
+        viewData.isSubmittingAnswer ||
+        viewData.isCompletingExam ||
+        viewData.isSubmitted;
   }
 
   AssessmentSessionQuestion _mapQuestion(
@@ -330,7 +382,11 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
   Future<void> completeExam({bool autoSubmitted = false}) async {
     await state.maybeWhen<Future<void>>(
       ready: (viewData) async {
-        if (viewData.isSubmitted || _isCompletingExam) return;
+        if (viewData.isSubmitted ||
+            viewData.isInteractionPaused ||
+            _isCompletingExam) {
+          return;
+        }
         _isCompletingExam = true;
         _timer?.cancel();
         emit(
@@ -353,6 +409,7 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
           _sessionResponse = await assessmentSessionRepo.completeExamSession(
             sessionId,
           );
+          await candidateProctoringManager?.stop();
           _isCompletingExam = false;
           emit(
             AssessmentSessionState.ready(
@@ -397,7 +454,7 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
     await state.maybeWhen<Future<void>>(
       ready: (viewData) async {
         if (_isSubmittingAnswer ||
-            viewData.isSubmittingAnswer ||
+            _isInteractionBlocked(viewData) ||
             viewData.isEndOfQuestions ||
             viewData.questions.isEmpty) {
           return;
@@ -583,7 +640,14 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
   }
 
   void nextQuestion() {
-    unawaited(submitCurrentAnswer());
+    state.maybeWhen(
+      ready: (viewData) {
+        if (!_isInteractionBlocked(viewData)) {
+          unawaited(submitCurrentAnswer());
+        }
+      },
+      orElse: () {},
+    );
   }
 
   void previousQuestion() {}
@@ -591,7 +655,9 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
   void toggleFlagForCurrentQuestion() {
     state.maybeWhen(
       ready: (viewData) {
-        if (viewData.questions.isEmpty || viewData.isSubmittingAnswer) return;
+        if (viewData.questions.isEmpty || _isInteractionBlocked(viewData)) {
+          return;
+        }
         final questions = List<AssessmentSessionQuestion>.from(
           viewData.questions,
         );
@@ -617,7 +683,9 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
   void selectSingleOption(int optionIndex) {
     state.maybeWhen(
       ready: (viewData) {
-        if (viewData.questions.isEmpty || viewData.isSubmittingAnswer) return;
+        if (viewData.questions.isEmpty || _isInteractionBlocked(viewData)) {
+          return;
+        }
         final questions = List<AssessmentSessionQuestion>.from(
           viewData.questions,
         );
@@ -647,7 +715,9 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
   void toggleMultiSelectOption(int optionIndex) {
     state.maybeWhen(
       ready: (viewData) {
-        if (viewData.questions.isEmpty || viewData.isSubmittingAnswer) return;
+        if (viewData.questions.isEmpty || _isInteractionBlocked(viewData)) {
+          return;
+        }
         final questions = List<AssessmentSessionQuestion>.from(
           viewData.questions,
         );
@@ -678,7 +748,9 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
   void updateResponseText(String value) {
     state.maybeWhen(
       ready: (viewData) {
-        if (viewData.questions.isEmpty || viewData.isSubmittingAnswer) return;
+        if (viewData.questions.isEmpty || _isInteractionBlocked(viewData)) {
+          return;
+        }
         final questions = List<AssessmentSessionQuestion>.from(
           viewData.questions,
         );
@@ -701,7 +773,9 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
     final currentState = state;
     await currentState.maybeWhen(
       ready: (viewData) async {
-        if (viewData.questions.isEmpty || viewData.isSubmittingAnswer) return;
+        if (viewData.questions.isEmpty || _isInteractionBlocked(viewData)) {
+          return;
+        }
         final question = viewData.currentQuestion;
         if (question.type != AssessmentSessionQuestionType.fileUpload &&
             !question.canAttachEvidence) {
@@ -742,7 +816,9 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
     final currentState = state;
     await currentState.maybeWhen(
       ready: (viewData) async {
-        if (viewData.questions.isEmpty || viewData.isSubmittingAnswer) return;
+        if (viewData.questions.isEmpty || _isInteractionBlocked(viewData)) {
+          return;
+        }
         final question = viewData.currentQuestion;
         if (question.type != AssessmentSessionQuestionType.videoResponse) {
           return;
@@ -803,6 +879,11 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
   @override
   Future<void> close() {
     _timer?.cancel();
+    _proctoringSubscription?.cancel();
+    final manager = candidateProctoringManager;
+    if (manager != null) {
+      unawaited(manager.stop());
+    }
     return super.close();
   }
 }

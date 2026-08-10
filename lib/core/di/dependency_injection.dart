@@ -10,6 +10,8 @@ import '../../features/candidate/assessment_results/data/repos/assessment_result
 import '../../features/candidate/assessment_results/logic/assessment_results_cubit.dart';
 import '../../features/candidate/assessment_session/data/datasources/assessment_session_remote_data_source.dart';
 import '../../features/candidate/assessment_session/data/repos/assessment_session_repo.dart';
+import '../../features/candidate/assessment_session/data/services/candidate_proctoring_manager.dart';
+import '../../features/candidate/assessment_session/data/services/exam_security_service.dart';
 import '../../features/certificates/data/datasources/certificates_remote_data_source.dart';
 import '../../features/certificates/data/repos/certificates_repo.dart';
 import '../../features/certificates/logic/certificates_cubit.dart';
@@ -151,6 +153,7 @@ Future<void> setupGetit() async {
       networkInfo: getIt(),
     ),
   );
+  getIt.registerLazySingleton<ExamSecurityService>(() => ExamSecurityService());
 
   // //! feature - users management
   // datasource
@@ -388,13 +391,22 @@ Future<void> setupGetit() async {
 
   // //! feature - assessment setup
   // cubit
-  getIt.registerFactory<AssessmentSetupCubit>(() => AssessmentSetupCubit());
+  getIt.registerFactory<AssessmentSetupCubit>(
+    () => AssessmentSetupCubit(examSecurityService: getIt()),
+  );
 
   // //! feature - competency task
+  getIt.registerFactory<CandidateProctoringManager>(
+    () => CandidateProctoringManager(
+      examSecurityService: getIt(),
+      proctorSessionRepo: getIt(),
+    ),
+  );
   // cubit
   getIt.registerFactoryParam<AssessmentSessionCubit, String?, void>(
     (examId, _) => AssessmentSessionCubit(
       assessmentSessionRepo: getIt(),
+      candidateProctoringManager: getIt(),
       initialExamId: examId,
     ),
   );

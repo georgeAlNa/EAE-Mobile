@@ -16,6 +16,7 @@ import '../widgets/assessment_requirements_section.dart';
 import '../widgets/assessment_security_card.dart';
 import '../widgets/assessment_setup_footer.dart';
 import '../widgets/assessment_setup_header.dart';
+import '../widgets/security_check/assessment_security_check_card.dart';
 
 class AssessmentSetupScreen extends StatelessWidget {
   final String? examId;
@@ -90,6 +91,10 @@ class _AssessmentSetupView extends StatelessWidget {
                     items: viewData.securityItems,
                   ),
                   verticalSpace(16),
+                  AssessmentSecurityCheckCard(
+                    items: viewData.securityCheckItems,
+                  ),
+                  verticalSpace(16),
                   AssessmentPrecheckCard(
                     label: viewData.precheckLabel,
                     statusLabel: viewData.precheckStatusLabel,
@@ -103,7 +108,8 @@ class _AssessmentSetupView extends StatelessWidget {
                   verticalSpace(14),
                   _ActionButton(
                     label: viewData.actionLabel,
-                    enabled: isAcknowledged,
+                    enabled:
+                        isAcknowledged && !viewData.hasBlockingSecurityFailure,
                     onTap: () => context.pushReplacementNamed(
                       Routes.assessmentSessionScreen,
                       arguments: examId,

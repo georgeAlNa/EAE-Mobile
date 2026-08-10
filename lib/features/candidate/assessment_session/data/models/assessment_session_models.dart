@@ -34,6 +34,10 @@ class AssessmentSessionViewData {
   final bool isSubmittingAnswer;
   final bool isCompletingExam;
   final bool isEndOfQuestions;
+  final bool isInteractionPaused;
+  final int appExitCount;
+  final int lastBackgroundDurationSeconds;
+  final String? proctoringWarning;
   final String? statusMessage;
 
   const AssessmentSessionViewData({
@@ -58,6 +62,10 @@ class AssessmentSessionViewData {
     this.isSubmittingAnswer = false,
     this.isCompletingExam = false,
     this.isEndOfQuestions = false,
+    this.isInteractionPaused = false,
+    this.appExitCount = 0,
+    this.lastBackgroundDurationSeconds = 0,
+    this.proctoringWarning,
     this.statusMessage,
   });
 
@@ -130,6 +138,11 @@ class AssessmentSessionViewData {
     bool? isSubmittingAnswer,
     bool? isCompletingExam,
     bool? isEndOfQuestions,
+    bool? isInteractionPaused,
+    int? appExitCount,
+    int? lastBackgroundDurationSeconds,
+    String? proctoringWarning,
+    bool clearProctoringWarning = false,
     String? statusMessage,
   }) {
     return AssessmentSessionViewData(
@@ -154,6 +167,13 @@ class AssessmentSessionViewData {
       isSubmittingAnswer: isSubmittingAnswer ?? this.isSubmittingAnswer,
       isCompletingExam: isCompletingExam ?? this.isCompletingExam,
       isEndOfQuestions: isEndOfQuestions ?? this.isEndOfQuestions,
+      isInteractionPaused: isInteractionPaused ?? this.isInteractionPaused,
+      appExitCount: appExitCount ?? this.appExitCount,
+      lastBackgroundDurationSeconds:
+          lastBackgroundDurationSeconds ?? this.lastBackgroundDurationSeconds,
+      proctoringWarning: clearProctoringWarning
+          ? null
+          : proctoringWarning ?? this.proctoringWarning,
       statusMessage: statusMessage,
     );
   }

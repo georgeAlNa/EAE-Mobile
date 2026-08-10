@@ -13,6 +13,7 @@ import 'assessment_session_exam_navigation.dart';
 import 'assessment_session_exam_timer_chip.dart';
 import 'assessment_session_header.dart';
 import '../question/assessment_session_question_card.dart';
+import '../proctoring/proctoring_warning_banner.dart';
 import '../../screens/assessment_session_submission_screen.dart';
 
 class AssessmentSessionExamContent extends StatefulWidget {
@@ -427,32 +428,37 @@ class _AssessmentSessionExamContentState
             onNext: () => context.read<AssessmentSessionCubit>().nextQuestion(),
           ),
           verticalSpace(16),
+          ProctoringWarningBanner(viewData: viewData),
+          if (viewData.proctoringWarning != null) verticalSpace(16),
           if (viewData.isEndOfQuestions)
             _EndOfQuestionsCard(viewData: viewData)
           else
-            AssessmentSessionQuestionCard(
-              question: viewData.currentQuestion,
-              onSingleChoiceSelected: (optionIndex) => context
-                  .read<AssessmentSessionCubit>()
-                  .selectSingleOption(optionIndex),
-              onMultiSelectToggled: (optionIndex) => context
-                  .read<AssessmentSessionCubit>()
-                  .toggleMultiSelectOption(optionIndex),
-              onTextChanged: (value) => context
-                  .read<AssessmentSessionCubit>()
-                  .updateResponseText(value),
-              onToggleFlag: () => context
-                  .read<AssessmentSessionCubit>()
-                  .toggleFlagForCurrentQuestion(),
-              onPickFile: () => context
-                  .read<AssessmentSessionCubit>()
-                  .pickFileForCurrentQuestion(),
-              onRecordVideo: () => context
-                  .read<AssessmentSessionCubit>()
-                  .recordVideoForCurrentQuestion(),
-              recordingTime: viewData.recordingTime,
-              resolutionLabel: viewData.resolutionLabel,
-              isoLabel: viewData.isoLabel,
+            AbsorbPointer(
+              absorbing: viewData.isInteractionPaused,
+              child: AssessmentSessionQuestionCard(
+                question: viewData.currentQuestion,
+                onSingleChoiceSelected: (optionIndex) => context
+                    .read<AssessmentSessionCubit>()
+                    .selectSingleOption(optionIndex),
+                onMultiSelectToggled: (optionIndex) => context
+                    .read<AssessmentSessionCubit>()
+                    .toggleMultiSelectOption(optionIndex),
+                onTextChanged: (value) => context
+                    .read<AssessmentSessionCubit>()
+                    .updateResponseText(value),
+                onToggleFlag: () => context
+                    .read<AssessmentSessionCubit>()
+                    .toggleFlagForCurrentQuestion(),
+                onPickFile: () => context
+                    .read<AssessmentSessionCubit>()
+                    .pickFileForCurrentQuestion(),
+                onRecordVideo: () => context
+                    .read<AssessmentSessionCubit>()
+                    .recordVideoForCurrentQuestion(),
+                recordingTime: viewData.recordingTime,
+                resolutionLabel: viewData.resolutionLabel,
+                isoLabel: viewData.isoLabel,
+              ),
             ),
           verticalSpace(16),
           AssessmentSessionExamFooter(

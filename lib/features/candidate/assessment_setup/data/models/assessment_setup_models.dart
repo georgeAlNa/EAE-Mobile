@@ -1,5 +1,7 @@
 enum AssessmentSetupIconType { browser, network, webcam, microphone, security }
 
+enum AssessmentSecurityCheckStatus { passed, warning, failed, skipped }
+
 class AssessmentSetupViewData {
   final String badgeLabel;
   final String title;
@@ -18,6 +20,8 @@ class AssessmentSetupViewData {
   final String precheckLabel;
   final String precheckStatusLabel;
   final String precheckStatus;
+  final List<AssessmentSecurityCheckItem> securityCheckItems;
+  final bool hasBlockingSecurityFailure;
   final String acknowledgeText;
   final String actionLabel;
   final String timerNotice;
@@ -42,11 +46,27 @@ class AssessmentSetupViewData {
     required this.precheckLabel,
     required this.precheckStatusLabel,
     required this.precheckStatus,
+    required this.securityCheckItems,
+    required this.hasBlockingSecurityFailure,
     required this.acknowledgeText,
     required this.actionLabel,
     required this.timerNotice,
     required this.supportLabel,
     required this.supportAction,
+  });
+}
+
+class AssessmentSecurityCheckItem {
+  final String label;
+  final AssessmentSecurityCheckStatus status;
+  final String detail;
+  final bool isRequired;
+
+  const AssessmentSecurityCheckItem({
+    required this.label,
+    required this.status,
+    required this.detail,
+    required this.isRequired,
   });
 }
 

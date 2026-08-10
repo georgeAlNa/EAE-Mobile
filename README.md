@@ -12,6 +12,7 @@ The codebase uses a feature-first structure. Each backend-connected feature foll
   - Assessment inventory and dashboard.
   - Assessment details and candidate assessment flow.
   - Assessment setup, session screens, uploads, navigation, submission, and forensic checkpoints.
+  - Mobile proctoring during active exam sessions.
 - Evaluator workflows:
   - Competencies management.
   - Exams management.
@@ -27,6 +28,26 @@ The codebase uses a feature-first structure. Each backend-connected feature foll
   - Light/dark theme persistence.
   - Arabic/English language direction handling.
   - Shared networking, dependency injection, routing, and reusable widgets.
+
+## Candidate Mobile Proctoring
+
+Candidate exam sessions include Secure Exam Mode while an exam session is active. It is enabled when the candidate starts the exam and is stopped after the exam ends or the session screen is closed.
+
+Secure Exam Mode includes:
+
+- Android `FLAG_SECURE` to prevent screenshots and screen recording as much as the platform allows.
+- Immersive fullscreen during the exam.
+- App background and return monitoring.
+- Split-screen and multi-window detection.
+- Temporary interaction blocking when multi-window mode is detected.
+- Question text selection restrictions.
+- Device integrity signals such as rooted device, emulator, and debugger detection.
+- Security Check before starting the exam.
+- Proctoring events sent through the existing proctoring API integration.
+
+Camera and microphone checks are not required by default. They depend on `ExamProctoringConfig`.
+
+`FLAG_SECURE`, multi-window detection, and some device checks are Android-specific. Device integrity checks are heuristic signals and are not conclusive proof of cheating.
 
 ## Tech Stack
 
@@ -122,12 +143,15 @@ The project includes unit tests for the core Cubits and the backend-connected fe
 - Remote data source endpoint, token, and request body behavior.
 - Repository online/offline/error paths.
 - Cubit loading/success/error state emissions.
+- Candidate Mobile Proctoring service, manager, Cubit integration, security check, and related widgets.
 
 Tested feature areas include:
 
 - `auth`
 - `settings`
 - `candidate/assessment_inventory`
+- `candidate/assessment_session`
+- `candidate/assessment_setup`
 - `evaluator/competencies`
 - `evaluator/exams_management`
 - `evaluator/question_bank_and_categories`
@@ -147,6 +171,7 @@ Run a specific feature test group:
 ```bash
 flutter test test/features/tenant_admin/cohorts
 flutter test test/features/evaluator/exams_management
+flutter test test/features/candidate/assessment_session
 ```
 
 ## Development Commands

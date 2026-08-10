@@ -38,7 +38,8 @@ class AssessmentSessionExamFooter extends StatelessWidget {
             onPressed:
                 viewData.isSubmitted ||
                     viewData.isSubmittingAnswer ||
-                    viewData.isCompletingExam
+                    viewData.isCompletingExam ||
+                    viewData.isInteractionPaused
                 ? null
                 : onPrimaryAction,
             icon: Icon(
