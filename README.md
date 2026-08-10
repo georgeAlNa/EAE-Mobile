@@ -1,6 +1,6 @@
 # EAE Mobile
 
-EAE Mobile is a Flutter application for an assessment platform with role-based workflows for candidates, evaluators, and tenant administrators. The app connects to backend APIs through a layered networking architecture and includes authentication, account settings, assessment inventory, exam/session flows, evaluator management tools, and tenant administration tools.
+EAE Mobile is a Flutter application for an assessment platform with role-based workflows for candidates, evaluators, proctors, and tenant administrators. The app connects to backend APIs through a layered networking architecture and includes authentication, account settings, assessment inventory, exam/session flows, evaluator management tools, proctoring tools, and tenant administration tools.
 
 The codebase uses a feature-first structure. Each backend-connected feature follows the same flow: JSON models, remote data source, repository, Cubit state management, and presentation widgets/screens.
 
@@ -17,6 +17,10 @@ The codebase uses a feature-first structure. Each backend-connected feature foll
   - Competencies management.
   - Exams management.
   - Question bank and categories management.
+- Proctor workflows:
+  - Proctor navigation shell.
+  - Session monitoring.
+  - Proctoring events and sanctions review.
 - Tenant admin workflows:
   - Users management.
   - Roles and security policy management.
@@ -89,6 +93,9 @@ lib/
       exams_management/
       question_bank_and_categories/
       bottom_nav/
+    proctor/
+      bottom_nav/
+      session_monitoring/
     settings/
     splash/
     tenant_admin/
@@ -155,6 +162,7 @@ Tested feature areas include:
 - `evaluator/competencies`
 - `evaluator/exams_management`
 - `evaluator/question_bank_and_categories`
+- `proctor/session_monitoring`
 - `tenant_admin/users_management`
 - `tenant_admin/roles_and_security`
 - `tenant_admin/live_sessions_and_enrollment_management`
