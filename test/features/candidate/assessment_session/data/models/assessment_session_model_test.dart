@@ -76,6 +76,15 @@ void main() {
       expect(response.data.versionLock, 1);
     });
 
+    test('fromJson accepts empty progress_data list from backend', () {
+      final json = sessionJson();
+      json['data']['progress']['progress_data'] = [];
+
+      final response = ExamSessionResponse.fromJson(json);
+
+      expect(response.data.progress.progressData, isEmpty);
+    });
+
     test('fromJson parses current question and choices', () {
       final response = CurrentQuestionResponse.fromJson({
         'data': {

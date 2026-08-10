@@ -512,7 +512,7 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
   }
 
   String _responseTypeForBackendQuestion(String questionType) {
-    if (questionType == 'mcq') return 'single_choice';
+    if (questionType == 'mcq') return 'mcq';
     return questionType.isEmpty ? 'text' : questionType;
   }
 

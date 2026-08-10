@@ -67,42 +67,27 @@ class AnalyticsAiRecommendationCard extends StatelessWidget {
             ],
           ),
           verticalSpace(14),
-          Text.rich(
-            TextSpan(
+          if (body.trim().isNotEmpty)
+            Text(
+              body,
               style: AppTextStyles.font14DarkGreyRegular.copyWith(
                 color: AppColors.tertiaryColor6,
                 height: 1.6,
               ),
-              children: _buildBodySpans(body),
             ),
-          ),
-          verticalSpace(16),
-          Text(
-            actionLabel,
-            style: AppTextStyles.font12DarkGreySemiBold.copyWith(
-              color: AppColors.secondaryColor8,
-              fontWeight: FontWeight.w800,
-              letterSpacing: 0.5,
+          if (actionLabel.trim().isNotEmpty) ...[
+            verticalSpace(16),
+            Text(
+              actionLabel,
+              style: AppTextStyles.font12DarkGreySemiBold.copyWith(
+                color: AppColors.secondaryColor8,
+                fontWeight: FontWeight.w800,
+                letterSpacing: 0.5,
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );
-  }
-
-  List<TextSpan> _buildBodySpans(String value) {
-    return [
-      const TextSpan(text: 'Candidate exhibits high variance in '),
-      const TextSpan(
-        text: 'Strategic Oversight',
-        style: TextStyle(color: Color(0xFFB91C1C), fontWeight: FontWeight.w700),
-      ),
-      const TextSpan(text: ' but excels in '),
-      const TextSpan(
-        text: 'Risk Management',
-        style: TextStyle(color: Color(0xFF0F766E), fontWeight: FontWeight.w700),
-      ),
-      TextSpan(text: '. ${value.split('. ').last}'),
-    ];
   }
 }

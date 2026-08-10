@@ -207,5 +207,7 @@ class ExamSessionTimestamps {
 
 Map<String, dynamic> _jsonMapFromJson(Object? json) {
   if (json == null) return const {};
-  return Map<String, dynamic>.from(json as Map);
+  if (json is List) return const {};
+  if (json is! Map) return const {};
+  return Map<String, dynamic>.from(json);
 }

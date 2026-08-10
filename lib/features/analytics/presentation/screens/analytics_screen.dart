@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/helpers/spacing.dart';
+import '../../../../core/public_widgets/app_state_widgets.dart';
 import '../../logic/analytics_cubit.dart';
 import '../widgets/analytics_ai_recommendation_card.dart';
 import '../widgets/analytics_assessment_status_card.dart';
@@ -35,6 +36,18 @@ class _AnalyticsView extends StatelessWidget {
             orElse: () => null,
           );
 
+          final error = state.maybeWhen(
+            error: (error) => error,
+            orElse: () => null,
+          );
+          if (error != null) {
+            return AppRetryErrorView(
+              title: 'Unable to load analytics',
+              message: error,
+              onRetry: context.read<AnalyticsCubit>().getAnalyticsDashboard,
+            );
+          }
+
           if (viewData == null) {
             return const Center(child: CircularProgressIndicator());
           }
@@ -63,34 +76,40 @@ class _AnalyticsView extends StatelessWidget {
                   ),
                 ),
                 verticalSpace(18),
-                AnalyticsCompetencyCard(
-                  title: viewData.competencyTitle,
-                  secureProfileLabel: viewData.secureProfileLabel,
-                  radarLabelTop: viewData.radarLabelTop,
-                  radarLabelBottom: viewData.radarLabelBottom,
-                  metrics: viewData.metrics,
-                  chartValues: viewData.chartValues,
-                ),
-                verticalSpace(20),
+                if (viewData.metrics.isNotEmpty) ...[
+                  AnalyticsCompetencyCard(
+                    title: viewData.competencyTitle,
+                    secureProfileLabel: viewData.secureProfileLabel,
+                    radarLabelTop: viewData.radarLabelTop,
+                    radarLabelBottom: viewData.radarLabelBottom,
+                    metrics: viewData.metrics,
+                    chartValues: viewData.chartValues,
+                  ),
+                  verticalSpace(20),
+                ],
                 AnalyticsBenchmarkingCard(
                   title: viewData.benchmarkingTitle,
                   subtitle: viewData.benchmarkingSubtitle,
                   benchmarks: viewData.benchmarks,
                 ),
                 verticalSpace(20),
-                AnalyticsAiRecommendationCard(
-                  title: viewData.recommendationTitle,
-                  subtitle: viewData.recommendationSubtitle,
-                  body: viewData.recommendationBody,
-                  actionLabel: viewData.recommendationActionLabel,
-                ),
-                verticalSpace(20),
-                AnalyticsCredentialsCard(
-                  title: viewData.credentialsTitle,
-                  exportLabel: viewData.exportCertificateLabel,
-                  credentials: viewData.credentials,
-                ),
-                verticalSpace(20),
+                if (viewData.recommendationBody.trim().isNotEmpty) ...[
+                  AnalyticsAiRecommendationCard(
+                    title: viewData.recommendationTitle,
+                    subtitle: viewData.recommendationSubtitle,
+                    body: viewData.recommendationBody,
+                    actionLabel: viewData.recommendationActionLabel,
+                  ),
+                  verticalSpace(20),
+                ],
+                if (viewData.credentials.isNotEmpty) ...[
+                  AnalyticsCredentialsCard(
+                    title: viewData.credentialsTitle,
+                    exportLabel: viewData.exportCertificateLabel,
+                    credentials: viewData.credentials,
+                  ),
+                  verticalSpace(20),
+                ],
                 AnalyticsAssessmentStatusCard(
                   title: viewData.assessmentStatusTitle,
                   sessionLabel: viewData.sessionLabel,

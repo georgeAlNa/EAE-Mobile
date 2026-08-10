@@ -46,6 +46,8 @@ import '../../features/tenant_admin/cohorts/logic/cohorts_cubit.dart';
 import '../../features/tenant_admin/live_sessions_and_enrollment_management/data/datasources/live_sessions_and_enrollment_management_remote_data_source.dart';
 import '../../features/tenant_admin/live_sessions_and_enrollment_management/data/repos/live_sessions_and_enrollment_management_repo.dart';
 import '../../features/tenant_admin/live_sessions_and_enrollment_management/logic/live_sessions_and_enrollment_management_cubit.dart';
+import '../../features/analytics/data/datasources/analytics_remote_data_source.dart';
+import '../../features/analytics/data/repos/analytics_repo.dart';
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
 import '../../features/auth/data/repos/auth_repo.dart';
 import '../../features/auth/logic/forgot_password/forgot_password_cubit.dart';
@@ -350,8 +352,19 @@ Future<void> setupGetit() async {
   );
 
   // //! feature - analytics
+  // datasource
+  getIt.registerLazySingleton<AnalyticsRemoteDataSource>(
+    () => AnalyticsRemoteDataSourceImpl(apiServicesImpl: getIt()),
+  );
+  // repo
+  getIt.registerLazySingleton<AnalyticsRepo>(
+    () =>
+        AnalyticsRepo(analyticsRemoteDataSource: getIt(), networkInfo: getIt()),
+  );
   // cubit
-  getIt.registerFactory<AnalyticsCubit>(() => AnalyticsCubit());
+  getIt.registerFactory<AnalyticsCubit>(
+    () => AnalyticsCubit(analyticsRepo: getIt()),
+  );
 
   // //! feature - settings
   // datasource

@@ -55,12 +55,13 @@ extension AnalyticsStatePatterns on AnalyticsState {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Loading value)?  loading,TResult Function( _Ready value)?  ready,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Loading value)?  loading,TResult Function( _Ready value)?  ready,TResult Function( _Error value)?  error,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case _Loading() when loading != null:
 return loading(_that);case _Ready() when ready != null:
-return ready(_that);case _:
+return ready(_that);case _Error() when error != null:
+return error(_that);case _:
   return orElse();
 
 }
@@ -78,12 +79,13 @@ return ready(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Loading value)  loading,required TResult Function( _Ready value)  ready,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Loading value)  loading,required TResult Function( _Ready value)  ready,required TResult Function( _Error value)  error,}){
 final _that = this;
 switch (_that) {
 case _Loading():
 return loading(_that);case _Ready():
-return ready(_that);case _:
+return ready(_that);case _Error():
+return error(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -100,12 +102,13 @@ return ready(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Loading value)?  loading,TResult? Function( _Ready value)?  ready,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Loading value)?  loading,TResult? Function( _Ready value)?  ready,TResult? Function( _Error value)?  error,}){
 final _that = this;
 switch (_that) {
 case _Loading() when loading != null:
 return loading(_that);case _Ready() when ready != null:
-return ready(_that);case _:
+return ready(_that);case _Error() when error != null:
+return error(_that);case _:
   return null;
 
 }
@@ -122,11 +125,12 @@ return ready(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loading,TResult Function( AnalyticsViewData viewData)?  ready,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  loading,TResult Function( AnalyticsViewData viewData)?  ready,TResult Function( String error)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Loading() when loading != null:
 return loading();case _Ready() when ready != null:
-return ready(_that.viewData);case _:
+return ready(_that.viewData);case _Error() when error != null:
+return error(_that.error);case _:
   return orElse();
 
 }
@@ -144,11 +148,12 @@ return ready(_that.viewData);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loading,required TResult Function( AnalyticsViewData viewData)  ready,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  loading,required TResult Function( AnalyticsViewData viewData)  ready,required TResult Function( String error)  error,}) {final _that = this;
 switch (_that) {
 case _Loading():
 return loading();case _Ready():
-return ready(_that.viewData);case _:
+return ready(_that.viewData);case _Error():
+return error(_that.error);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -165,11 +170,12 @@ return ready(_that.viewData);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loading,TResult? Function( AnalyticsViewData viewData)?  ready,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  loading,TResult? Function( AnalyticsViewData viewData)?  ready,TResult? Function( String error)?  error,}) {final _that = this;
 switch (_that) {
 case _Loading() when loading != null:
 return loading();case _Ready() when ready != null:
-return ready(_that.viewData);case _:
+return ready(_that.viewData);case _Error() when error != null:
+return error(_that.error);case _:
   return null;
 
 }
@@ -269,6 +275,72 @@ class __$ReadyCopyWithImpl<$Res>
   return _then(_Ready(
 viewData: null == viewData ? _self.viewData : viewData // ignore: cast_nullable_to_non_nullable
 as AnalyticsViewData,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class _Error implements AnalyticsState {
+  const _Error({required this.error});
+  
+
+ final  String error;
+
+/// Create a copy of AnalyticsState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ErrorCopyWith<_Error> get copyWith => __$ErrorCopyWithImpl<_Error>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Error&&(identical(other.error, error) || other.error == error));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,error);
+
+@override
+String toString() {
+  return 'AnalyticsState.error(error: $error)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ErrorCopyWith<$Res> implements $AnalyticsStateCopyWith<$Res> {
+  factory _$ErrorCopyWith(_Error value, $Res Function(_Error) _then) = __$ErrorCopyWithImpl;
+@useResult
+$Res call({
+ String error
+});
+
+
+
+
+}
+/// @nodoc
+class __$ErrorCopyWithImpl<$Res>
+    implements _$ErrorCopyWith<$Res> {
+  __$ErrorCopyWithImpl(this._self, this._then);
+
+  final _Error _self;
+  final $Res Function(_Error) _then;
+
+/// Create a copy of AnalyticsState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? error = null,}) {
+  return _then(_Error(
+error: null == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
+as String,
   ));
 }
 

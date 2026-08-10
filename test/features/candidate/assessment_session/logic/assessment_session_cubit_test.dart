@@ -181,6 +181,7 @@ void main() {
               ).captured.single
               as SubmitExamAnswerRequestBody;
       expect(request.sessionItemId, 'session_item_001');
+      expect(request.responseType, 'mcq');
       expect(request.selectedOptions, ['option_001']);
       expect(request.expectedItemVersionLock, 3);
       expect(
