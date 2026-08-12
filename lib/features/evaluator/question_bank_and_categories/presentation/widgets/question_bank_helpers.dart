@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../data/models/question_bank_and_categories_response.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 enum QuestionBankViewMode { categories, questions }
 
@@ -96,11 +97,11 @@ Future<void> confirmQuestionBankDelete({
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, false),
-          child: const Text('Cancel'),
+          child: Text(AppStrings.tr('Cancel')),
         ),
         FilledButton(
           onPressed: () => Navigator.pop(context, true),
-          child: const Text('Delete'),
+          child: Text(AppStrings.tr('Delete')),
         ),
       ],
     ),

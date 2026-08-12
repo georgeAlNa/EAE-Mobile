@@ -11,6 +11,7 @@ import '../../../../../core/public_widgets/text_field_widget.dart';
 import '../../../users_management/presentation/widgets/users_management_sheet_scaffold.dart';
 import '../../data/models/live_sessions_and_enrollment_management_request_body.dart';
 import '../../logic/live_sessions_and_enrollment_management_cubit.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class CreateEnrollmentSheet extends StatefulWidget {
   final String examId;
@@ -46,44 +47,44 @@ class _CreateEnrollmentSheetState extends State<CreateEnrollmentSheet> {
   @override
   Widget build(BuildContext context) {
     return UsersManagementSheetScaffold(
-      title: 'Create enrollment',
-      subtitle: 'Enroll a candidate into the selected exam.',
+      title: AppStrings.tr('Create enrollment'),
+      subtitle: AppStrings.tr('Enroll a candidate into the selected exam.'),
       child: Form(
         key: _formKey,
         child: Column(
           children: [
             TextFieldWidget(
               controller: _candidateUserIdController,
-              hintText: 'candidate user UUID',
-              labelText: 'Candidate user ID',
+              hintText: AppStrings.tr('candidate user UUID'),
+              labelText: AppStrings.tr('Candidate user ID'),
               obscureText: false,
             ),
             verticalSpace(12),
             TextFieldWidget(
               controller: _cohortIdController,
-              hintText: 'cohort UUID',
-              labelText: 'Cohort ID',
+              hintText: AppStrings.tr('cohort UUID'),
+              labelText: AppStrings.tr('Cohort ID'),
               obscureText: false,
             ),
             verticalSpace(12),
             TextFieldWidget(
               controller: _startWindowDateController,
               hintText: '2026-06-25T14:03:03',
-              labelText: 'Start window date',
+              labelText: AppStrings.tr('Start window date'),
               obscureText: false,
             ),
             verticalSpace(12),
             TextFieldWidget(
               controller: _endWindowDateController,
               hintText: '2052-07-18',
-              labelText: 'End window date',
+              labelText: AppStrings.tr('End window date'),
               obscureText: false,
             ),
             verticalSpace(12),
             TextFieldWidget(
               controller: _maxAttemptsAllowedController,
               hintText: '2',
-              labelText: 'Max attempts allowed',
+              labelText: AppStrings.tr('Max attempts allowed'),
               obscureText: false,
               keyboardType: TextInputType.number,
             ),
@@ -91,13 +92,13 @@ class _CreateEnrollmentSheetState extends State<CreateEnrollmentSheet> {
             TextFieldWidget(
               controller: _enrollmentNotesController,
               hintText: 'g',
-              labelText: 'Enrollment notes',
+              labelText: AppStrings.tr('Enrollment notes'),
               obscureText: false,
               maxLines: 2,
             ),
             verticalSpace(20),
             ButtonWidget(
-              title: 'Create Enrollment',
+              title: AppStrings.tr('Create Enrollment'),
               width: double.infinity,
               radius: 8.r,
               backgroundColor: AppColors.secondaryColor7,

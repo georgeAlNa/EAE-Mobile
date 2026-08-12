@@ -105,7 +105,7 @@ class _ForgotPasswordCard extends StatelessWidget {
                     horizontalSpace(8),
                     Expanded(
                       child: Text(
-                        'Reset Access',
+                        AppStrings.tr('Reset Access'),
                         style: AppTextStyles.font14DarkGreySemiBold.copyWith(
                           color: AppColors.primaryColor9,
                         ),
@@ -115,7 +115,9 @@ class _ForgotPasswordCard extends StatelessWidget {
                 ),
                 verticalSpace(10),
                 Text(
-                  'Enter your work email. If the account exists, a reset link will be sent.',
+                  AppStrings.tr(
+                    'Enter your work email. If the account exists, a reset link will be sent.',
+                  ),
                   style: AppTextStyles.font12DarkGreyRegular.copyWith(
                     color: AppColors.tertiaryColor6,
                     height: 1.45,
@@ -152,9 +154,9 @@ class _ForgotPasswordCard extends StatelessWidget {
                   width: double.infinity,
                   height: 52.h,
                   child: isSubmitting
-                      ? const _LoadingButton(label: 'Send Reset Link')
+                      ? _LoadingButton(label: AppStrings.tr('Send Reset Link'))
                       : ButtonWidget(
-                          title: 'Send Reset Link',
+                          title: AppStrings.tr('Send Reset Link'),
                           onTap: cubit.submit,
                           width: double.infinity,
                           height: 52.h,

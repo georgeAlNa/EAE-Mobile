@@ -14,6 +14,7 @@ import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
 import '../../data/models/result_publication_request_body.dart';
 import '../../data/models/result_publication_response.dart';
 import '../../logic/result_publication_cubit.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 part '../widgets/result_publication_widgets.dart';
 
@@ -50,7 +51,7 @@ class ResultPublicationScreen extends StatelessWidget {
                   ),
                   children: [
                     Text(
-                      'Result publication',
+                      AppStrings.tr('Result publication'),
                       style: AppTextStyles.font32DarkGreyMedium.copyWith(
                         color: AppColors.primaryColor9,
                         fontWeight: FontWeight.w700,
@@ -64,8 +65,8 @@ class ResultPublicationScreen extends StatelessWidget {
                         children: [
                           TextFieldWidget(
                             controller: cubit.sessionIdController,
-                            hintText: 'exam session id',
-                            labelText: 'Session ID',
+                            hintText: AppStrings.tr('exam session id'),
+                            labelText: AppStrings.tr('Session ID'),
                             obscureText: false,
                           ),
                           verticalSpace(12),
@@ -76,13 +77,13 @@ class ResultPublicationScreen extends StatelessWidget {
                               FilledButton.icon(
                                 onPressed: () => _checkStatus(context),
                                 icon: const Icon(Icons.verified_outlined),
-                                label: const Text('Status'),
+                                label: Text(AppStrings.tr('Status')),
                                 style: _filledActionButtonStyle(),
                               ),
                               OutlinedButton.icon(
                                 onPressed: () => _publishResult(context),
                                 icon: const Icon(Icons.publish_outlined),
-                                label: const Text('Publish'),
+                                label: Text(AppStrings.tr('Publish')),
                                 style: _outlinedActionButtonStyle(),
                               ),
                             ],
@@ -96,22 +97,24 @@ class ResultPublicationScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Approval workflow',
+                            AppStrings.tr('Approval workflow'),
                             style: AppTextStyles.font14DarkGreySemiBold
                                 .copyWith(color: AppColors.primaryColor9),
                           ),
                           verticalSpace(12),
                           TextFieldWidget(
                             controller: cubit.workflowResourceIdController,
-                            hintText: 'assessment result resource id',
-                            labelText: 'Resource ID',
+                            hintText: AppStrings.tr(
+                              'assessment result resource id',
+                            ),
+                            labelText: AppStrings.tr('Resource ID'),
                             obscureText: false,
                           ),
                           verticalSpace(12),
                           TextFieldWidget(
                             controller: cubit.workflowIdController,
-                            hintText: 'workflow id',
-                            labelText: 'Workflow ID',
+                            hintText: AppStrings.tr('workflow id'),
+                            labelText: AppStrings.tr('Workflow ID'),
                             obscureText: false,
                           ),
                           verticalSpace(12),
@@ -122,19 +125,19 @@ class ResultPublicationScreen extends StatelessWidget {
                               FilledButton.icon(
                                 onPressed: () => _createWorkflow(context),
                                 icon: const Icon(Icons.account_tree_outlined),
-                                label: const Text('Create'),
+                                label: Text(AppStrings.tr('Create')),
                                 style: _filledActionButtonStyle(),
                               ),
                               OutlinedButton.icon(
                                 onPressed: () => _getWorkflow(context),
                                 icon: const Icon(Icons.search_rounded),
-                                label: const Text('Get'),
+                                label: Text(AppStrings.tr('Get')),
                                 style: _outlinedActionButtonStyle(),
                               ),
                               OutlinedButton.icon(
                                 onPressed: () => _approveWorkflow(context),
                                 icon: const Icon(Icons.verified_outlined),
-                                label: const Text('Approve'),
+                                label: Text(AppStrings.tr('Approve')),
                                 style: _outlinedActionButtonStyle(),
                               ),
                             ],
@@ -148,13 +151,15 @@ class ResultPublicationScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Exam publication workflow',
+                            AppStrings.tr('Exam publication workflow'),
                             style: AppTextStyles.font14DarkGreySemiBold
                                 .copyWith(color: AppColors.primaryColor9),
                           ),
                           verticalSpace(8),
                           Text(
-                            'Approval and exam publish are separate backend calls.',
+                            AppStrings.tr(
+                              'Approval and exam publish are separate backend calls.',
+                            ),
                             style: AppTextStyles.font11DarkGreyLight.copyWith(
                               color: AppColors.tertiaryColor6,
                               height: 1.4,
@@ -163,15 +168,15 @@ class ResultPublicationScreen extends StatelessWidget {
                           verticalSpace(12),
                           TextFieldWidget(
                             controller: cubit.examWorkflowExamIdController,
-                            hintText: 'exam id',
-                            labelText: 'Exam ID',
+                            hintText: AppStrings.tr('exam id'),
+                            labelText: AppStrings.tr('Exam ID'),
                             obscureText: false,
                           ),
                           verticalSpace(12),
                           TextFieldWidget(
                             controller: cubit.examWorkflowIdController,
-                            hintText: 'workflow id',
-                            labelText: 'Workflow ID',
+                            hintText: AppStrings.tr('workflow id'),
+                            labelText: AppStrings.tr('Workflow ID'),
                             obscureText: false,
                           ),
                           verticalSpace(12),
@@ -182,25 +187,25 @@ class ResultPublicationScreen extends StatelessWidget {
                               FilledButton.icon(
                                 onPressed: () => _createExamWorkflow(context),
                                 icon: const Icon(Icons.account_tree_outlined),
-                                label: const Text('Create'),
+                                label: Text(AppStrings.tr('Create')),
                                 style: _filledActionButtonStyle(),
                               ),
                               OutlinedButton.icon(
                                 onPressed: () => _getExamWorkflow(context),
                                 icon: const Icon(Icons.search_rounded),
-                                label: const Text('Get'),
+                                label: Text(AppStrings.tr('Get')),
                                 style: _outlinedActionButtonStyle(),
                               ),
                               OutlinedButton.icon(
                                 onPressed: () => _approveExamWorkflow(context),
                                 icon: const Icon(Icons.verified_outlined),
-                                label: const Text('Approve'),
+                                label: Text(AppStrings.tr('Approve')),
                                 style: _outlinedActionButtonStyle(),
                               ),
                               OutlinedButton.icon(
                                 onPressed: () => _publishApprovedExam(context),
                                 icon: const Icon(Icons.publish_outlined),
-                                label: const Text('Publish exam'),
+                                label: Text(AppStrings.tr('Publish exam')),
                                 style: _outlinedActionButtonStyle(),
                               ),
                             ],
@@ -261,9 +266,10 @@ class ResultPublicationScreen extends StatelessWidget {
                         publishedExam == null) ...[
                       TenantAdminEmptyState(
                         icon: Icons.publish_outlined,
-                        title: 'No session loaded',
-                        message:
-                            'Enter a session id to check or publish a result.',
+                        title: AppStrings.tr('No session loaded'),
+                        message: AppStrings.tr(
+                          'Enter a session id to check or publish a result.',
+                        ),
                       ),
                     ],
                   ],

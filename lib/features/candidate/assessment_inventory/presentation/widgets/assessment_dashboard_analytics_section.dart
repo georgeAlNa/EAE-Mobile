@@ -5,6 +5,7 @@ import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../data/models/assessment_models.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class AssessmentDashboardAnalyticsSection extends StatelessWidget {
   final AssessmentInventoryDashboard dashboard;
@@ -30,7 +31,7 @@ class AssessmentDashboardAnalyticsSection extends StatelessWidget {
             ),
             horizontalSpace(8),
             Text(
-              'PERFORMANCE ANALYTICS',
+              AppStrings.tr('PERFORMANCE ANALYTICS'),
               style: AppTextStyles.font12DarkGreySemiBold.copyWith(
                 color: AppColors.tertiaryColor7,
                 letterSpacing: 2,
@@ -44,7 +45,7 @@ class AssessmentDashboardAnalyticsSection extends StatelessWidget {
             Expanded(
               child: _AnalyticsTile(
                 icon: Icons.verified_outlined,
-                label: 'Finalized Results',
+                label: AppStrings.tr('Finalized Results'),
                 value: '${dashboard.totalFinalizedResults}',
                 helper: 'Completed assessment outcomes',
               ),
@@ -53,7 +54,7 @@ class AssessmentDashboardAnalyticsSection extends StatelessWidget {
             Expanded(
               child: _AnalyticsTile(
                 icon: Icons.percent_outlined,
-                label: 'Average Score',
+                label: AppStrings.tr('Average Score'),
                 value: '${_formatPercentage(average)}%',
                 helper: 'Overall finalized performance',
               ),

@@ -12,6 +12,7 @@ import '../../../../core/routing/routes.dart';
 import '../widgets/login_footer.dart';
 import '../widgets/login_hero.dart';
 import '../widgets/login_status_bar.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class RoleSelectionScreen extends StatelessWidget {
   const RoleSelectionScreen({super.key});
@@ -72,7 +73,7 @@ class _RoleSelectionCard extends StatelessWidget {
               ),
               horizontalSpace(8),
               Text(
-                'Select Access Role',
+                AppStrings.tr('Select Access Role'),
                 style: AppTextStyles.font14DarkGreySemiBold.copyWith(
                   color: AppColors.primaryColor9,
                 ),
@@ -81,7 +82,9 @@ class _RoleSelectionCard extends StatelessWidget {
           ),
           verticalSpace(10),
           Text(
-            'Choose the portal you want to access before signing in.',
+            AppStrings.tr(
+              'Choose the portal you want to access before signing in.',
+            ),
             style: AppTextStyles.font12DarkGreyRegular.copyWith(
               color: AppColors.tertiaryColor6,
               height: 1.45,

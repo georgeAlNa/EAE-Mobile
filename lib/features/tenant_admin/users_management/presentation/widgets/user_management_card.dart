@@ -5,6 +5,7 @@ import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../data/models/users_management_response.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class UserManagementCard extends StatelessWidget {
   final UserManagementUser user;
@@ -74,7 +75,7 @@ class UserManagementCard extends StatelessWidget {
               ),
               _StatusChip(status: user.status, isActive: user.isActive),
               PopupMenuButton<_UserAction>(
-                tooltip: 'User actions',
+                tooltip: AppStrings.tr('User actions'),
                 onSelected: (action) {
                   switch (action) {
                     case _UserAction.details:
@@ -88,22 +89,22 @@ class UserManagementCard extends StatelessWidget {
                   }
                 },
                 itemBuilder: (_) => [
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: _UserAction.details,
-                    child: Text('Details'),
+                    child: Text(AppStrings.tr('Details')),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: _UserAction.edit,
-                    child: Text('Edit'),
+                    child: Text(AppStrings.tr('Edit')),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: _UserAction.resetPassword,
-                    child: Text('Reset password'),
+                    child: Text(AppStrings.tr('Reset password')),
                   ),
                   PopupMenuItem(
                     value: _UserAction.deactivate,
                     enabled: onDeactivate != null,
-                    child: const Text('Deactivate'),
+                    child: Text(AppStrings.tr('Deactivate')),
                   ),
                 ],
               ),

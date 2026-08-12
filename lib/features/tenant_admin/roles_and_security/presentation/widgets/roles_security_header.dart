@@ -4,6 +4,7 @@ import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class RolesSecurityHeader extends StatelessWidget {
   final int selectedIndex;
@@ -34,7 +35,7 @@ class RolesSecurityHeader extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                'Roles & Security',
+                AppStrings.tr('Roles & Security'),
                 style: AppTextStyles.font32DarkGreyMedium.copyWith(
                   color: AppColors.primaryColor9,
                   fontWeight: FontWeight.w700,
@@ -59,7 +60,9 @@ class RolesSecurityHeader extends StatelessWidget {
         ),
         verticalSpace(8),
         Text(
-          'Manage tenant roles, user assignments, and security policy.',
+          AppStrings.tr(
+            'Manage tenant roles, user assignments, and security policy.',
+          ),
           style: AppTextStyles.font14DarkGreyRegular.copyWith(
             color: AppColors.tertiaryColor6,
             height: 1.5,
@@ -67,16 +70,16 @@ class RolesSecurityHeader extends StatelessWidget {
         ),
         verticalSpace(16),
         SegmentedButton<int>(
-          segments: const [
+          segments: [
             ButtonSegment(
               value: 0,
               icon: Icon(Icons.badge_outlined),
-              label: Text('Roles'),
+              label: Text(AppStrings.tr('Roles')),
             ),
             ButtonSegment(
               value: 1,
               icon: Icon(Icons.policy_outlined),
-              label: Text('Policy'),
+              label: Text(AppStrings.tr('Policy')),
             ),
           ],
           selected: {selectedIndex},
@@ -96,7 +99,7 @@ class RolesSecurityHeader extends StatelessWidget {
                 child: TenantAdminMetricTile(
                   icon: Icons.badge_outlined,
                   value: totalRoles?.toString(),
-                  label: 'Total roles',
+                  label: AppStrings.tr('Total roles'),
                 ),
               ),
               horizontalSpace(10),
@@ -104,7 +107,7 @@ class RolesSecurityHeader extends StatelessWidget {
                 child: TenantAdminMetricTile(
                   icon: Icons.tune_outlined,
                   value: customRoles?.toString(),
-                  label: 'Custom roles',
+                  label: AppStrings.tr('Custom roles'),
                 ),
               ),
             ],
@@ -112,7 +115,9 @@ class RolesSecurityHeader extends StatelessWidget {
           verticalSpace(14),
           TenantAdminSearchField(
             controller: searchController,
-            hintText: 'Search roles by name, category, or description',
+            hintText: AppStrings.tr(
+              'Search roles by name, category, or description',
+            ),
           ),
         ],
       ],

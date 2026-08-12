@@ -85,7 +85,7 @@ class _AssessmentSelectionView extends StatelessWidget {
                         verticalSpace(24),
                         if (assessments.isEmpty)
                           Text(
-                            'No assessments available',
+                            AppStrings.tr('No assessments available'),
                             style: AppTextStyles.font14DarkGreyRegular.copyWith(
                               color: AppColors.tertiaryColor6,
                             ),

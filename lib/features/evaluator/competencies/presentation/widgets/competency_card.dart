@@ -6,6 +6,7 @@ import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../shared/presentation/widgets/evaluator_copy_widgets.dart';
 import '../../data/models/competencies_response.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class CompetencyCard extends StatelessWidget {
   final Competency competency;
@@ -76,11 +77,11 @@ class CompetencyCard extends StatelessWidget {
                   ),
                 ),
                 EvaluatorCopyIconButton(
-                  label: 'Competency name',
+                  label: AppStrings.tr('Competency name'),
                   value: competency.name,
                 ),
                 PopupMenuButton<_CompetencyAction>(
-                  tooltip: 'Competency actions',
+                  tooltip: AppStrings.tr('Competency actions'),
                   onSelected: (action) {
                     switch (action) {
                       case _CompetencyAction.move:
@@ -89,14 +90,14 @@ class CompetencyCard extends StatelessWidget {
                         onDelete();
                     }
                   },
-                  itemBuilder: (_) => const [
+                  itemBuilder: (_) => [
                     PopupMenuItem(
                       value: _CompetencyAction.move,
-                      child: Text('Move'),
+                      child: Text(AppStrings.tr('Move')),
                     ),
                     PopupMenuItem(
                       value: _CompetencyAction.delete,
-                      child: Text('Delete'),
+                      child: Text(AppStrings.tr('Delete')),
                     ),
                   ],
                 ),
@@ -119,15 +120,21 @@ class CompetencyCard extends StatelessWidget {
               spacing: 8.w,
               runSpacing: 8.h,
               children: [
-                _CompetencyChip(label: 'Level ${competency.hierarchyLevel}'),
                 _CompetencyChip(
-                  label: competency.isActive ? 'Active' : 'Inactive',
+                  label: AppStrings.level(competency.hierarchyLevel),
+                ),
+                _CompetencyChip(
+                  label: AppStrings.displayValue(
+                    competency.isActive ? 'active' : 'inactive',
+                  ),
                   icon: competency.isActive
                       ? Icons.check_circle_outline
                       : Icons.pause_circle_outline,
                 ),
                 _CompetencyChip(
-                  label: '${(competency.children ?? []).length} children',
+                  label: AppStrings.childrenCount(
+                    (competency.children ?? []).length,
+                  ),
                   icon: Icons.account_tree_outlined,
                 ),
               ],

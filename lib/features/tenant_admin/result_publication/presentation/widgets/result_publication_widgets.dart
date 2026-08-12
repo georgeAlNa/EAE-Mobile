@@ -11,26 +11,29 @@ class _PublicationStatusCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Publication status', style: AppTextStyles.font16DarkGreyBold),
+          Text(
+            AppStrings.tr('Publication status'),
+            style: AppTextStyles.font16DarkGreyBold,
+          ),
           verticalSpace(10),
           TenantAdminCopyableValueRow(
-            label: 'Result ID',
+            label: AppStrings.tr('Result ID'),
             value: status.resultId ?? '-',
           ),
           TenantAdminCopyableValueRow(
-            label: 'Result status',
+            label: AppStrings.tr('Result status'),
             value: status.resultStatus,
           ),
           TenantAdminCopyableValueRow(
-            label: 'Publication status',
+            label: AppStrings.tr('Publication status'),
             value: status.publicationStatus,
           ),
           TenantAdminCopyableValueRow(
-            label: 'Published at',
+            label: AppStrings.tr('Published at'),
             value: status.publishedAt ?? '-',
           ),
           TenantAdminCopyableValueRow(
-            label: 'Calculated at',
+            label: AppStrings.tr('Calculated at'),
             value: status.resultCalculatedAt ?? '-',
           ),
         ],
@@ -52,29 +55,35 @@ class _PublishedResultCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Published result', style: AppTextStyles.font16DarkGreyBold),
+          Text(
+            AppStrings.tr('Published result'),
+            style: AppTextStyles.font16DarkGreyBold,
+          ),
           verticalSpace(10),
           TenantAdminCopyableValueRow(
-            label: 'Result ID',
+            label: AppStrings.tr('Result ID'),
             value: result.resultId,
           ),
           TenantAdminCopyableValueRow(
-            label: 'Candidate ID',
+            label: AppStrings.tr('Candidate ID'),
             value: result.candidateId,
           ),
-          TenantAdminCopyableValueRow(label: 'Exam ID', value: result.examId),
           TenantAdminCopyableValueRow(
-            label: 'Status',
+            label: AppStrings.tr('Exam ID'),
+            value: result.examId,
+          ),
+          TenantAdminCopyableValueRow(
+            label: AppStrings.tr('Status'),
             value:
                 '${result.status.resultStatus} / ${result.status.publicationStatus}',
           ),
           TenantAdminCopyableValueRow(
-            label: 'Grade',
+            label: AppStrings.tr('Grade'),
             value:
                 '${summary.gradeLetter ?? '-'} - ${summary.percentage}% (${summary.rawScore}/${summary.maxScore})',
           ),
           TenantAdminCopyableValueRow(
-            label: 'Pending evaluations',
+            label: AppStrings.tr('Pending evaluations'),
             value: '${summary.totals.pendingEvaluations}',
           ),
         ],

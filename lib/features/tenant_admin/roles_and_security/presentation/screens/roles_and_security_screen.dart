@@ -14,6 +14,7 @@ import '../widgets/roles_list_section.dart';
 import '../widgets/roles_security_header.dart';
 import '../widgets/security_policy_section.dart';
 import '../widgets/security_policy_sheet.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class RolesAndSecurityScreen extends StatefulWidget {
   const RolesAndSecurityScreen({super.key});
@@ -349,16 +350,16 @@ class _RolesAndSecurityScreenState extends State<RolesAndSecurityScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Delete role'),
-        content: Text('Delete $roleName?'),
+        title: Text(AppStrings.tr('Delete role')),
+        content: Text(AppStrings.deleteItem(roleName)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(AppStrings.tr('Cancel')),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
+            child: Text(AppStrings.tr('Delete')),
           ),
         ],
       ),
@@ -406,7 +407,7 @@ class _RolesDataSection extends StatelessWidget {
         height: 260.h,
         child: AppRetryErrorView(
           title: loadError!,
-          message: 'Check the connection and try again.',
+          message: AppStrings.tr('Check the connection and try again.'),
           onRetry: onRetry,
         ),
       );
@@ -455,7 +456,7 @@ class _SecurityPolicyDataSection extends StatelessWidget {
         height: 260.h,
         child: AppRetryErrorView(
           title: loadError!,
-          message: 'Check the connection and try again.',
+          message: AppStrings.tr('Check the connection and try again.'),
           onRetry: onRetry,
         ),
       );

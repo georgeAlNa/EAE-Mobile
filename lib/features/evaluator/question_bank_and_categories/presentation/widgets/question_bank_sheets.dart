@@ -12,6 +12,7 @@ import '../../data/models/question_bank_and_categories_request_body.dart';
 import '../../data/models/question_bank_and_categories_response.dart';
 import '../../logic/question_bank_and_categories_cubit.dart';
 import 'question_bank_helpers.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 Future<void> showCategorySheet({
   required BuildContext context,
@@ -116,8 +117,8 @@ class _CategorySheetState extends State<CategorySheet> {
           children: [
             _SheetTextField(
               controller: _titleController,
-              label: 'Title',
-              hintText: 'General Knowledge',
+              label: AppStrings.tr('Title'),
+              hintText: AppStrings.tr('General Knowledge'),
               validator: _requiredValidator,
             ),
             verticalSpace(12),
@@ -125,9 +126,9 @@ class _CategorySheetState extends State<CategorySheet> {
               initialValue: _parentId,
               decoration: _fieldDecoration('Parent category'),
               items: [
-                const DropdownMenuItem<String?>(
+                DropdownMenuItem<String?>(
                   value: null,
-                  child: Text('Root category'),
+                  child: Text(AppStrings.tr('Root category')),
                 ),
                 ...parentChoices.map(
                   (category) => DropdownMenuItem<String?>(
@@ -143,8 +144,8 @@ class _CategorySheetState extends State<CategorySheet> {
             verticalSpace(12),
             _SheetTextField(
               controller: _descriptionController,
-              label: 'Description',
-              hintText: 'What this category contains',
+              label: AppStrings.tr('Description'),
+              hintText: AppStrings.tr('What this category contains'),
               maxLines: 3,
               enabled: !isEditing,
             ),
@@ -274,7 +275,9 @@ class _QuestionSheetState extends State<QuestionSheet> {
 
     return _SheetScaffold(
       title: isEditing ? 'Update question' : 'Create question',
-      subtitle: 'Fill the assessment content and answer configuration.',
+      subtitle: AppStrings.tr(
+        'Fill the assessment content and answer configuration.',
+      ),
       child: Form(
         key: _formKey,
         child: Column(
@@ -297,11 +300,14 @@ class _QuestionSheetState extends State<QuestionSheet> {
             DropdownButtonFormField<String>(
               initialValue: _selectedType,
               decoration: _fieldDecoration('Question type'),
-              items: const [
-                DropdownMenuItem(value: 'mcq', child: Text('MCQ')),
+              items: [
+                DropdownMenuItem(
+                  value: 'mcq',
+                  child: Text(AppStrings.tr('MCQ')),
+                ),
                 DropdownMenuItem(
                   value: 'short_answer',
-                  child: Text('Short answer'),
+                  child: Text(AppStrings.tr('Short answer')),
                 ),
               ],
               onChanged: isEditing
@@ -311,23 +317,23 @@ class _QuestionSheetState extends State<QuestionSheet> {
             verticalSpace(12),
             _SheetTextField(
               controller: _titleController,
-              label: 'Title',
-              hintText: 'Question title',
+              label: AppStrings.tr('Title'),
+              hintText: AppStrings.tr('Question title'),
               validator: _requiredValidator,
             ),
             verticalSpace(12),
             _SheetTextField(
               controller: _questionTextController,
-              label: 'Question text',
-              hintText: 'Write the full question',
+              label: AppStrings.tr('Question text'),
+              hintText: AppStrings.tr('Write the full question'),
               maxLines: 3,
               validator: _requiredValidator,
             ),
             verticalSpace(12),
             _SheetTextField(
               controller: _stemController,
-              label: 'Stem',
-              hintText: 'Question stem shown to candidate',
+              label: AppStrings.tr('Stem'),
+              hintText: AppStrings.tr('Question stem shown to candidate'),
               maxLines: 2,
               validator: _requiredValidator,
             ),
@@ -336,7 +342,7 @@ class _QuestionSheetState extends State<QuestionSheet> {
               children: [
                 Expanded(
                   child: _LevelDropdown(
-                    label: 'Bloom level',
+                    label: AppStrings.tr('Bloom level'),
                     value: _bloomLevel,
                     onChanged: (value) => setState(() => _bloomLevel = value),
                   ),
@@ -344,7 +350,7 @@ class _QuestionSheetState extends State<QuestionSheet> {
                 horizontalSpace(10),
                 Expanded(
                   child: _LevelDropdown(
-                    label: 'Difficulty',
+                    label: AppStrings.tr('Difficulty'),
                     value: _difficultyLevel,
                     onChanged: (value) =>
                         setState(() => _difficultyLevel = value),
@@ -364,8 +370,8 @@ class _QuestionSheetState extends State<QuestionSheet> {
             else
               _SheetTextField(
                 controller: _acceptedAnswersController,
-                label: 'Accepted answers',
-                hintText: 'Answer one, Answer two',
+                label: AppStrings.tr('Accepted answers'),
+                hintText: AppStrings.tr('Answer one, Answer two'),
                 maxLines: 2,
                 validator: _requiredValidator,
               ),
@@ -517,49 +523,63 @@ class QuestionDetailsSheet extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          EvaluatorCopyableValueRow(label: 'Question ID', value: question.id),
-          EvaluatorCopyableValueRow(label: 'Title', value: question.title),
-          EvaluatorCopyableValueRow(label: 'Category', value: categoryTitle),
           EvaluatorCopyableValueRow(
-            label: 'Category ID',
+            label: AppStrings.tr('Question ID'),
+            value: question.id,
+          ),
+          EvaluatorCopyableValueRow(
+            label: AppStrings.tr('Title'),
+            value: question.title,
+          ),
+          EvaluatorCopyableValueRow(
+            label: AppStrings.tr('Category'),
+            value: categoryTitle,
+          ),
+          EvaluatorCopyableValueRow(
+            label: AppStrings.tr('Category ID'),
             value: question.categoryId,
           ),
           verticalSpace(12),
           EvaluatorCopyableBlock(
-            title: 'Question text',
+            title: AppStrings.tr('Question text'),
             value: question.questionText,
           ),
           verticalSpace(12),
-          EvaluatorCopyableBlock(title: 'Stem', value: question.stem),
+          EvaluatorCopyableBlock(
+            title: AppStrings.tr('Stem'),
+            value: question.stem,
+          ),
           verticalSpace(12),
           Wrap(
             spacing: 8.w,
             runSpacing: 8.h,
             children: [
               _DetailsChip(label: questionTypeLabel(question.type)),
-              _DetailsChip(label: 'Bloom ${question.bloomLevel}'),
-              _DetailsChip(label: 'Difficulty ${question.difficultyLevel}'),
-              _DetailsChip(label: 'Used ${question.usageCount}'),
+              _DetailsChip(label: AppStrings.bloom(question.bloomLevel)),
+              _DetailsChip(
+                label: AppStrings.difficultyValue(question.difficultyLevel),
+              ),
+              _DetailsChip(label: AppStrings.usedCount(question.usageCount)),
             ],
           ),
           verticalSpace(14),
           EvaluatorCopyableBlock(
-            title: 'Correct answer',
+            title: AppStrings.tr('Correct answer'),
             value: correctAnswerText(question),
           ),
           verticalSpace(12),
           EvaluatorCopyableValueRow(
-            label: 'Created at',
+            label: AppStrings.tr('Created at'),
             value: question.createdAt,
           ),
           EvaluatorCopyableValueRow(
-            label: 'Updated at',
+            label: AppStrings.tr('Updated at'),
             value: question.updatedAt,
           ),
           if (question.choices.isNotEmpty) ...[
             verticalSpace(14),
             Text(
-              'Choices',
+              AppStrings.tr('Choices'),
               style: AppTextStyles.font14DarkGreySemiBold.copyWith(
                 color: AppColors.primaryColor9,
               ),
@@ -590,7 +610,7 @@ class QuestionDetailsSheet extends StatelessWidget {
                     ),
                     horizontalSpace(8),
                     EvaluatorCopyIconButton(
-                      label: 'Choice',
+                      label: AppStrings.tr('Choice'),
                       value: choice.optionText,
                     ),
                   ],
@@ -623,7 +643,7 @@ class _McqChoicesSection extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                'Answer choices',
+                AppStrings.tr('Answer choices'),
                 style: AppTextStyles.font14DarkGreySemiBold.copyWith(
                   color: AppColors.primaryColor9,
                 ),
@@ -635,7 +655,7 @@ class _McqChoicesSection extends StatelessWidget {
                 4,
                 (index) => DropdownMenuItem(
                   value: _optionLabel(index),
-                  child: Text('Correct ${_optionLabel(index)}'),
+                  child: Text(AppStrings.correctOption(_optionLabel(index))),
                 ),
               ),
               onChanged: (value) {
@@ -650,8 +670,8 @@ class _McqChoicesSection extends StatelessWidget {
             padding: EdgeInsets.only(bottom: 10.h),
             child: _SheetTextField(
               controller: choiceControllers[index],
-              label: 'Option ${_optionLabel(index)}',
-              hintText: 'Choice text',
+              label: AppStrings.optionLabel(_optionLabel(index)),
+              hintText: AppStrings.tr('Choice text'),
               prefixText: '${_optionLabel(index)}. ',
             ),
           );
@@ -678,7 +698,7 @@ class _PsychometricsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Psychometrics',
+          AppStrings.tr('Psychometrics'),
           style: AppTextStyles.font14DarkGreySemiBold.copyWith(
             color: AppColors.primaryColor9,
           ),
@@ -689,7 +709,7 @@ class _PsychometricsSection extends StatelessWidget {
             Expanded(
               child: _SheetTextField(
                 controller: pValueController,
-                label: 'P value',
+                label: AppStrings.tr('P value'),
                 hintText: '0',
                 keyboardType: TextInputType.number,
               ),
@@ -698,7 +718,7 @@ class _PsychometricsSection extends StatelessWidget {
             Expanded(
               child: _SheetTextField(
                 controller: discriminationController,
-                label: 'Discrimination',
+                label: AppStrings.tr('Discrimination'),
                 hintText: '0',
                 keyboardType: TextInputType.number,
               ),
@@ -708,7 +728,7 @@ class _PsychometricsSection extends StatelessWidget {
         verticalSpace(10),
         _SheetTextField(
           controller: usageCountController,
-          label: 'Usage count',
+          label: AppStrings.tr('Usage count'),
           hintText: '0',
           keyboardType: TextInputType.number,
         ),

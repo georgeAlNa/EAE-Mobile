@@ -8,6 +8,7 @@ import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../logic/proctor_session_cubit.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class ProctorSessionMonitoringScreen extends StatelessWidget {
   const ProctorSessionMonitoringScreen({super.key});
@@ -47,14 +48,16 @@ class ProctorSessionMonitoringScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Proctor Session Monitoring',
+                    AppStrings.tr('Proctor Session Monitoring'),
                     style: AppTextStyles.font20DarkGreyBold.copyWith(
                       color: AppColors.primaryColor9,
                     ),
                   ),
                   verticalSpace(6),
                   Text(
-                    'Control exam sessions and inspect sanctions or proctoring events.',
+                    AppStrings.tr(
+                      'Control exam sessions and inspect sanctions or proctoring events.',
+                    ),
                     style: AppTextStyles.font12DarkGreyRegular.copyWith(
                       color: AppColors.tertiaryColor6,
                       height: 1.4,
@@ -63,7 +66,7 @@ class ProctorSessionMonitoringScreen extends StatelessWidget {
                   verticalSpace(18),
                   _TextInput(
                     controller: cubit.sessionIdController,
-                    label: 'Session ID',
+                    label: AppStrings.tr('Session ID'),
                     icon: Icons.confirmation_number_outlined,
                   ),
                   verticalSpace(14),
@@ -71,27 +74,27 @@ class ProctorSessionMonitoringScreen extends StatelessWidget {
                     isLoading: isLoading,
                     actions: [
                       _ProctorAction(
-                        label: 'Suspend',
+                        label: AppStrings.tr('Suspend'),
                         icon: Icons.pause_circle_outline,
                         onTap: cubit.suspendExamSession,
                       ),
                       _ProctorAction(
-                        label: 'Resume',
+                        label: AppStrings.tr('Resume'),
                         icon: Icons.play_circle_outline,
                         onTap: cubit.resumeExamSession,
                       ),
                       _ProctorAction(
-                        label: 'Terminate',
+                        label: AppStrings.tr('Terminate'),
                         icon: Icons.stop_circle_outlined,
                         onTap: cubit.terminateExamSession,
                       ),
                       _ProctorAction(
-                        label: 'Sanctions',
+                        label: AppStrings.tr('Sanctions'),
                         icon: Icons.gavel_outlined,
                         onTap: cubit.getSessionSanctions,
                       ),
                       _ProctorAction(
-                        label: 'Events',
+                        label: AppStrings.tr('Events'),
                         icon: Icons.visibility_outlined,
                         onTap: cubit.getProctoringEvents,
                       ),
@@ -99,7 +102,7 @@ class ProctorSessionMonitoringScreen extends StatelessWidget {
                   ),
                   verticalSpace(18),
                   Text(
-                    'Void Sanction',
+                    AppStrings.tr('Void Sanction'),
                     style: AppTextStyles.font14DarkGreySemiBold.copyWith(
                       color: AppColors.primaryColor9,
                     ),
@@ -107,25 +110,25 @@ class ProctorSessionMonitoringScreen extends StatelessWidget {
                   verticalSpace(10),
                   _TextInput(
                     controller: cubit.sanctionIdController,
-                    label: 'Sanction ID',
+                    label: AppStrings.tr('Sanction ID'),
                     icon: Icons.rule_outlined,
                   ),
                   verticalSpace(10),
                   _TextInput(
                     controller: cubit.voidReasonController,
-                    label: 'Reason',
+                    label: AppStrings.tr('Reason'),
                     icon: Icons.edit_note_outlined,
                   ),
                   verticalSpace(10),
                   _WideButton(
-                    label: 'Void Sanction',
+                    label: AppStrings.tr('Void Sanction'),
                     icon: Icons.cancel_outlined,
                     enabled: !isLoading,
                     onTap: cubit.voidSanction,
                   ),
                   verticalSpace(18),
                   Text(
-                    'Submit Proctoring Event',
+                    AppStrings.tr('Submit Proctoring Event'),
                     style: AppTextStyles.font14DarkGreySemiBold.copyWith(
                       color: AppColors.primaryColor9,
                     ),
@@ -133,18 +136,18 @@ class ProctorSessionMonitoringScreen extends StatelessWidget {
                   verticalSpace(10),
                   _TextInput(
                     controller: cubit.eventTypeController,
-                    label: 'Event Type',
+                    label: AppStrings.tr('Event Type'),
                     icon: Icons.event_note_outlined,
                   ),
                   verticalSpace(10),
                   _TextInput(
                     controller: cubit.eventCategoryController,
-                    label: 'Event Category',
+                    label: AppStrings.tr('Event Category'),
                     icon: Icons.category_outlined,
                   ),
                   verticalSpace(10),
                   _WideButton(
-                    label: 'Submit Event',
+                    label: AppStrings.tr('Submit Event'),
                     icon: Icons.send_outlined,
                     enabled: !isLoading,
                     onTap: cubit.submitProctoringEvent,

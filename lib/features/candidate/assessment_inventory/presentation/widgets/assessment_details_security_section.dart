@@ -4,6 +4,7 @@ import '../../data/models/assessment_inventory/assessment_inventory_response.dar
 import 'assessment_details_formatters.dart';
 import 'assessment_details_rule_row.dart';
 import 'assessment_details_section.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class AssessmentDetailsSecuritySection extends StatelessWidget {
   final AssessmentExam exam;
@@ -13,11 +14,11 @@ class AssessmentDetailsSecuritySection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AssessmentDetailsSection(
-      title: 'Security Protocols',
+      title: AppStrings.tr('Security Protocols'),
       children: [
         AssessmentDetailsRuleRow(
           icon: Icons.videocam_outlined,
-          label: 'Webcam required',
+          label: AppStrings.tr('Webcam required'),
           value: formatAssessmentMapBool(
             exam.securityProtocols,
             'webcam_required',
@@ -25,7 +26,7 @@ class AssessmentDetailsSecuritySection extends StatelessWidget {
         ),
         AssessmentDetailsRuleRow(
           icon: Icons.lock_outline,
-          label: 'Lockdown browser',
+          label: AppStrings.tr('Lockdown browser'),
           value: formatAssessmentMapBool(
             exam.securityProtocols,
             'lockdown_browser',

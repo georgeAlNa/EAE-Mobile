@@ -101,7 +101,10 @@ void main() {
       expect(materialApp.debugShowCheckedModeBanner, isFalse);
       expect(materialApp.title, 'EAE Mobile ');
       expect(materialApp.initialRoute, Routes.splashScreen);
-      expect(materialApp.theme?.primaryColor, AppColors.neutralColor);
+      expect(materialApp.themeMode, ThemeMode.light);
+      expect(materialApp.locale, const Locale('en'));
+      expect(materialApp.supportedLocales, const [Locale('en'), Locale('ar')]);
+      expect(materialApp.theme?.scaffoldBackgroundColor, AppColors.background);
 
       final capturedRoutes = verify(
         () => mounted.appRouter.generateRoute(captureAny()),
@@ -146,13 +149,40 @@ void main() {
         Directionality.of(tester.element(find.byKey(homeKey))),
         TextDirection.rtl,
       );
+
+      final materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
+      expect(materialApp.locale, const Locale('ar'));
     });
 
-    testWidgets('can build with persisted dark theme value', (tester) async {
+    testWidgets('uses dark ThemeMode when persisted theme is dark', (
+      tester,
+    ) async {
       await pumpEaeApp(tester, isDarkMode: true);
 
+      final materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
+
+      expect(materialApp.themeMode, ThemeMode.dark);
       expect(AppColors.isDarkMode, isTrue);
       expect(find.byKey(homeKey), findsOneWidget);
+    });
+
+    testWidgets('rebuilds MaterialApp themeMode when ThemeCubit changes', (
+      tester,
+    ) async {
+      final mounted = await pumpEaeApp(tester, isDarkMode: false);
+
+      expect(
+        tester.widget<MaterialApp>(find.byType(MaterialApp)).themeMode,
+        ThemeMode.light,
+      );
+
+      mounted.themeCubit.toggleTheme();
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.widget<MaterialApp>(find.byType(MaterialApp)).themeMode,
+        ThemeMode.dark,
+      );
     });
   });
 }

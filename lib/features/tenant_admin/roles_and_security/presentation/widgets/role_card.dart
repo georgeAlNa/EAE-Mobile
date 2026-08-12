@@ -5,6 +5,7 @@ import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../data/models/roles_and_security_response.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class RoleCard extends StatelessWidget {
   final RoleItem role;
@@ -76,13 +77,15 @@ class RoleCard extends StatelessWidget {
                 ),
               ),
               _RoleChip(
-                label: role.isSystemRole ? 'system' : 'custom',
+                label: AppStrings.displayValue(
+                  role.isSystemRole ? 'system' : 'custom',
+                ),
                 color: role.isSystemRole
                     ? AppColors.primaryColor9
                     : AppColors.secondaryColor7,
               ),
               PopupMenuButton<_RoleAction>(
-                tooltip: 'Role actions',
+                tooltip: AppStrings.tr('Role actions'),
                 onSelected: (action) {
                   switch (action) {
                     case _RoleAction.edit:
@@ -96,22 +99,22 @@ class RoleCard extends StatelessWidget {
                   }
                 },
                 itemBuilder: (_) => [
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: _RoleAction.edit,
-                    child: Text('Edit'),
+                    child: Text(AppStrings.tr('Edit')),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: _RoleAction.assign,
-                    child: Text('Assign user'),
+                    child: Text(AppStrings.tr('Assign user')),
                   ),
-                  const PopupMenuItem(
+                  PopupMenuItem(
                     value: _RoleAction.remove,
-                    child: Text('Remove user'),
+                    child: Text(AppStrings.tr('Remove user')),
                   ),
                   PopupMenuItem(
                     value: _RoleAction.delete,
                     enabled: onDelete != null,
-                    child: const Text('Delete'),
+                    child: Text(AppStrings.tr('Delete')),
                   ),
                 ],
               ),
@@ -137,7 +140,9 @@ class RoleCard extends StatelessWidget {
                 color: AppColors.tertiaryColor7,
               ),
               _RoleChip(
-                label: role.isCustomRole ? 'editable' : 'protected',
+                label: AppStrings.displayValue(
+                  role.isCustomRole ? 'editable' : 'protected',
+                ),
                 color: role.isCustomRole
                     ? AppColors.secondaryColor7
                     : AppColors.tertiaryColor6,

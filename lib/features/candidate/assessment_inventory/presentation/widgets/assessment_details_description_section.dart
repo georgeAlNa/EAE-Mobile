@@ -7,6 +7,7 @@ import '../../data/models/assessment_inventory/assessment_inventory_response.dar
 import 'assessment_details_formatters.dart';
 import 'assessment_details_rule_row.dart';
 import 'assessment_details_section.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class AssessmentDetailsDescriptionSection extends StatelessWidget {
   final AssessmentExam exam;
@@ -16,7 +17,7 @@ class AssessmentDetailsDescriptionSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AssessmentDetailsSection(
-      title: 'Overview',
+      title: AppStrings.tr('Overview'),
       children: [
         Text(
           exam.examDescription,
@@ -28,12 +29,12 @@ class AssessmentDetailsDescriptionSection extends StatelessWidget {
         verticalSpace(14),
         AssessmentDetailsRuleRow(
           icon: Icons.auto_awesome_outlined,
-          label: 'Adaptive exam',
+          label: AppStrings.tr('Adaptive exam'),
           value: formatAssessmentBool(exam.isAdaptiveExam),
         ),
         AssessmentDetailsRuleRow(
           icon: Icons.shuffle_outlined,
-          label: 'Randomized',
+          label: AppStrings.tr('Randomized'),
           value: formatAssessmentBool(exam.isRandomized),
         ),
       ],

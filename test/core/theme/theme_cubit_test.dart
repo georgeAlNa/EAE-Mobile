@@ -75,5 +75,23 @@ void main() {
       expect(AppColors.isDarkMode, isTrue);
       expect(AppSharedPreferences().getBool(AppSharedPrefKeys.theme), isTrue);
     });
+
+    test(
+      'setThemeMode updates value and recreated cubit reads persistence',
+      () async {
+        final cubit = ThemeCubit();
+        addTearDown(cubit.close);
+
+        cubit.setThemeMode(true);
+        await Future<void>.delayed(Duration.zero);
+
+        final recreatedCubit = ThemeCubit();
+        addTearDown(recreatedCubit.close);
+
+        expect(cubit.state, isTrue);
+        expect(recreatedCubit.state, isTrue);
+        expect(AppSharedPreferences().getBool(AppSharedPrefKeys.theme), isTrue);
+      },
+    );
   });
 }

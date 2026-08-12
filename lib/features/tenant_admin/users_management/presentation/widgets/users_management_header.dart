@@ -4,6 +4,7 @@ import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class UsersManagementHeader extends StatelessWidget {
   final int? totalUsers;
@@ -30,7 +31,7 @@ class UsersManagementHeader extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                'Users Management',
+                AppStrings.tr('Users Management'),
                 style: AppTextStyles.font32DarkGreyMedium.copyWith(
                   color: AppColors.primaryColor9,
                   fontWeight: FontWeight.w700,
@@ -39,7 +40,7 @@ class UsersManagementHeader extends StatelessWidget {
               ),
             ),
             IconButton.filled(
-              tooltip: 'Create user',
+              tooltip: AppStrings.tr('Create user'),
               onPressed: onCreateUser,
               icon: const Icon(Icons.person_add_alt_1_outlined),
               style: IconButton.styleFrom(
@@ -49,7 +50,7 @@ class UsersManagementHeader extends StatelessWidget {
             ),
             horizontalSpace(8),
             IconButton.outlined(
-              tooltip: 'Invite user',
+              tooltip: AppStrings.tr('Invite user'),
               onPressed: onInviteUser,
               icon: const Icon(Icons.mail_outline),
               style: IconButton.styleFrom(
@@ -61,7 +62,7 @@ class UsersManagementHeader extends StatelessWidget {
         ),
         verticalSpace(8),
         Text(
-          'Manage tenant users and account access.',
+          AppStrings.tr('Manage tenant users and account access.'),
           style: AppTextStyles.font14DarkGreyRegular.copyWith(
             color: AppColors.tertiaryColor6,
             height: 1.5,
@@ -74,7 +75,7 @@ class UsersManagementHeader extends StatelessWidget {
               child: TenantAdminMetricTile(
                 icon: Icons.people_outline,
                 value: totalUsers?.toString(),
-                label: 'Total users',
+                label: AppStrings.tr('Total users'),
               ),
             ),
             horizontalSpace(10),
@@ -82,7 +83,7 @@ class UsersManagementHeader extends StatelessWidget {
               child: TenantAdminMetricTile(
                 icon: Icons.check_circle_outline,
                 value: activeUsers?.toString(),
-                label: 'Active users',
+                label: AppStrings.tr('Active users'),
               ),
             ),
           ],
@@ -90,7 +91,7 @@ class UsersManagementHeader extends StatelessWidget {
         verticalSpace(14),
         TenantAdminSearchField(
           controller: searchController,
-          hintText: 'Search users by name, email, or type',
+          hintText: AppStrings.tr('Search users by name, email, or type'),
         ),
       ],
     );

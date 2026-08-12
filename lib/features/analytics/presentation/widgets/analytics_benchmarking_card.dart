@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/colors.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/helpers/spacing.dart';
 import '../../data/models/analytics_models.dart';
@@ -47,7 +48,7 @@ class AnalyticsBenchmarkingCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      title,
+                      AppStrings.tr(title),
                       style: AppTextStyles.font20DarkGreyBold.copyWith(
                         color: AppColors.primaryColor9,
                         height: 1.15,
@@ -55,7 +56,7 @@ class AnalyticsBenchmarkingCard extends StatelessWidget {
                     ),
                     SizedBox(height: 4.h),
                     Text(
-                      subtitle,
+                      AppStrings.tr(subtitle),
                       style: AppTextStyles.font10DarkGreyRegular.copyWith(
                         color: AppColors.tertiaryColor6,
                       ),
@@ -73,7 +74,7 @@ class AnalyticsBenchmarkingCard extends StatelessWidget {
                 bottom: index == benchmarks.length - 1 ? 0 : 14.h,
               ),
               child: _BenchmarkRow(
-                label: benchmark.label,
+                label: AppStrings.tr(benchmark.label),
                 value: benchmark.value,
               ),
             );

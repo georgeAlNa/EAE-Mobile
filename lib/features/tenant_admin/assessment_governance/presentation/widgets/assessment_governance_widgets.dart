@@ -14,7 +14,10 @@ class _GovernanceHeader extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Assessment governance', style: AppTextStyles.font20DarkGreyBold),
+        Text(
+          AppStrings.tr('Assessment governance'),
+          style: AppTextStyles.font20DarkGreyBold,
+        ),
         verticalSpace(12),
         Row(
           children: [
@@ -22,7 +25,7 @@ class _GovernanceHeader extends StatelessWidget {
               child: TenantAdminMetricTile(
                 icon: Icons.gavel_outlined,
                 value: penaltyCount?.toString(),
-                label: 'Penalty rules',
+                label: AppStrings.tr('Penalty rules'),
               ),
             ),
             horizontalSpace(10),
@@ -30,7 +33,7 @@ class _GovernanceHeader extends StatelessWidget {
               child: TenantAdminMetricTile(
                 icon: Icons.account_tree_outlined,
                 value: eligibilityCount?.toString(),
-                label: 'Eligibility chains',
+                label: AppStrings.tr('Eligibility chains'),
               ),
             ),
           ],
@@ -96,22 +99,22 @@ class _PenaltyRulesView extends StatelessWidget {
               verticalSpace(12),
               TextFieldWidget(
                 controller: penaltyNameController,
-                hintText: 'test penalty',
-                labelText: 'Penalty name',
+                hintText: AppStrings.tr('test penalty'),
+                labelText: AppStrings.tr('Penalty name'),
                 obscureText: false,
               ),
               verticalSpace(10),
               TextFieldWidget(
                 controller: penaltyTypeController,
-                hintText: 'test penalty type',
-                labelText: 'Penalty type',
+                hintText: AppStrings.tr('test penalty type'),
+                labelText: AppStrings.tr('Penalty type'),
                 obscureText: false,
               ),
               verticalSpace(10),
               TextFieldWidget(
                 controller: triggerConditionController,
-                hintText: 'test',
-                labelText: 'Trigger condition',
+                hintText: AppStrings.tr('test'),
+                labelText: AppStrings.tr('Trigger condition'),
                 obscureText: false,
               ),
               verticalSpace(10),
@@ -121,7 +124,7 @@ class _PenaltyRulesView extends StatelessWidget {
                     child: TextFieldWidget(
                       controller: penaltyPointsController,
                       hintText: '12',
-                      labelText: 'Points',
+                      labelText: AppStrings.tr('Points'),
                       obscureText: false,
                       keyboardType: TextInputType.number,
                     ),
@@ -131,7 +134,7 @@ class _PenaltyRulesView extends StatelessWidget {
                     child: TextFieldWidget(
                       controller: penaltyPercentageController,
                       hintText: '17',
-                      labelText: 'Percentage',
+                      labelText: AppStrings.tr('Percentage'),
                       obscureText: false,
                       keyboardType: TextInputType.number,
                     ),
@@ -140,7 +143,7 @@ class _PenaltyRulesView extends StatelessWidget {
               ),
               SwitchListTile.adaptive(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Cumulative'),
+                title: Text(AppStrings.tr('Cumulative')),
                 value: isCumulative,
                 onChanged: onCumulativeChanged,
                 activeThumbColor: AppColors.secondaryColor7,
@@ -148,7 +151,7 @@ class _PenaltyRulesView extends StatelessWidget {
               ),
               SwitchListTile.adaptive(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Active'),
+                title: Text(AppStrings.tr('Active')),
                 value: isActive,
                 onChanged: onActiveChanged,
                 activeThumbColor: AppColors.secondaryColor7,
@@ -170,10 +173,12 @@ class _PenaltyRulesView extends StatelessWidget {
         if (isLoading)
           const AppSkeletonDataList(itemCount: 4, showActionButton: true)
         else if (rules == null || rules.isEmpty)
-          const TenantAdminEmptyState(
+          TenantAdminEmptyState(
             icon: Icons.gavel_outlined,
-            title: 'No penalty rules',
-            message: 'Create rules that define scoring penalties.',
+            title: AppStrings.tr('No penalty rules'),
+            message: AppStrings.tr(
+              'Create rules that define scoring penalties.',
+            ),
           )
         else
           ...rules.map(
@@ -239,14 +244,14 @@ class _EligibilityChainsView extends StatelessWidget {
               Expanded(
                 child: TextFieldWidget(
                   controller: examFilterController,
-                  hintText: 'exam id',
-                  labelText: 'Filter exam ID',
+                  hintText: AppStrings.tr('exam id'),
+                  labelText: AppStrings.tr('Filter exam ID'),
                   obscureText: false,
                 ),
               ),
               horizontalSpace(10),
               IconButton.filled(
-                tooltip: 'Load chains',
+                tooltip: AppStrings.tr('Load chains'),
                 onPressed: onFilter,
                 icon: const Icon(Icons.search),
                 style: IconButton.styleFrom(
@@ -271,8 +276,8 @@ class _EligibilityChainsView extends StatelessWidget {
               verticalSpace(12),
               TextFieldWidget(
                 controller: examIdController,
-                hintText: 'exam id',
-                labelText: 'Exam ID',
+                hintText: AppStrings.tr('exam id'),
+                labelText: AppStrings.tr('Exam ID'),
                 obscureText: false,
               ),
               verticalSpace(10),
@@ -282,7 +287,7 @@ class _EligibilityChainsView extends StatelessWidget {
                     child: TextFieldWidget(
                       controller: chainStepController,
                       hintText: '1',
-                      labelText: 'Step',
+                      labelText: AppStrings.tr('Step'),
                       obscureText: false,
                       keyboardType: TextInputType.number,
                     ),
@@ -292,7 +297,7 @@ class _EligibilityChainsView extends StatelessWidget {
                     child: TextFieldWidget(
                       controller: minScoreController,
                       hintText: '70',
-                      labelText: 'Min score',
+                      labelText: AppStrings.tr('Min score'),
                       obscureText: false,
                       keyboardType: TextInputType.number,
                     ),
@@ -302,8 +307,8 @@ class _EligibilityChainsView extends StatelessWidget {
               verticalSpace(10),
               TextFieldWidget(
                 controller: prerequisiteExamIdController,
-                hintText: 'optional prerequisite exam id',
-                labelText: 'Prerequisite exam ID',
+                hintText: AppStrings.tr('optional prerequisite exam id'),
+                labelText: AppStrings.tr('Prerequisite exam ID'),
                 obscureText: false,
               ),
               verticalSpace(10),
@@ -313,7 +318,7 @@ class _EligibilityChainsView extends StatelessWidget {
                     child: TextFieldWidget(
                       controller: conditionTypeController,
                       hintText: 'min_score',
-                      labelText: 'Condition',
+                      labelText: AppStrings.tr('Condition'),
                       obscureText: false,
                     ),
                   ),
@@ -322,7 +327,7 @@ class _EligibilityChainsView extends StatelessWidget {
                     child: TextFieldWidget(
                       controller: logicalOperatorController,
                       hintText: 'AND',
-                      labelText: 'Operator',
+                      labelText: AppStrings.tr('Operator'),
                       obscureText: false,
                     ),
                   ),
@@ -330,7 +335,7 @@ class _EligibilityChainsView extends StatelessWidget {
               ),
               SwitchListTile.adaptive(
                 contentPadding: EdgeInsets.zero,
-                title: const Text('Override available'),
+                title: Text(AppStrings.tr('Override available')),
                 value: overrideAvailable,
                 onChanged: onOverrideChanged,
                 activeThumbColor: AppColors.secondaryColor7,
@@ -352,10 +357,12 @@ class _EligibilityChainsView extends StatelessWidget {
         if (isLoading)
           const AppSkeletonDataList(itemCount: 4, showActionButton: true)
         else if (chains == null || chains.isEmpty)
-          const TenantAdminEmptyState(
+          TenantAdminEmptyState(
             icon: Icons.account_tree_outlined,
-            title: 'No eligibility chains',
-            message: 'Create prerequisite chains for exam eligibility.',
+            title: AppStrings.tr('No eligibility chains'),
+            message: AppStrings.tr(
+              'Create prerequisite chains for exam eligibility.',
+            ),
           )
         else
           ...chains.map(
@@ -403,7 +410,9 @@ class _PenaltyRuleCard extends StatelessWidget {
                 ),
               ),
               TenantAdminChip(
-                label: rule.isActive ? 'active' : 'inactive',
+                label: AppStrings.displayValue(
+                  rule.isActive ? 'active' : 'inactive',
+                ),
                 color: rule.isActive
                     ? AppColors.secondaryColor7
                     : AppColors.tertiaryColor6,
@@ -423,7 +432,7 @@ class _PenaltyRuleCard extends StatelessWidget {
             runSpacing: 8.h,
             children: [
               TenantAdminChip(
-                label: '${rule.penaltyPoints} pts',
+                label: AppStrings.pointsShort(rule.penaltyPoints),
                 color: AppColors.primaryColor9,
               ),
               TenantAdminChip(
@@ -431,7 +440,9 @@ class _PenaltyRuleCard extends StatelessWidget {
                 color: AppColors.primaryColor9,
               ),
               TenantAdminChip(
-                label: rule.isCumulative ? 'cumulative' : 'single',
+                label: AppStrings.displayValue(
+                  rule.isCumulative ? 'cumulative' : 'single',
+                ),
                 color: AppColors.secondaryColor7,
               ),
             ],
@@ -444,7 +455,7 @@ class _PenaltyRuleCard extends StatelessWidget {
               OutlinedButton.icon(
                 onPressed: onEdit,
                 icon: const Icon(Icons.edit_outlined),
-                label: const Text('Use values'),
+                label: Text(AppStrings.tr('Use values')),
                 style: _outlinedActionButtonStyle(),
               ),
               OutlinedButton.icon(
@@ -460,7 +471,7 @@ class _PenaltyRuleCard extends StatelessWidget {
               TextButton.icon(
                 onPressed: onDelete,
                 icon: const Icon(Icons.delete_outline),
-                label: const Text('Delete'),
+                label: Text(AppStrings.tr('Delete')),
                 style: _dangerTextButtonStyle(),
               ),
             ],
@@ -512,7 +523,7 @@ class _EligibilityChainCard extends StatelessWidget {
             runSpacing: 8.h,
             children: [
               TenantAdminChip(
-                label: 'step ${chain.chainStepNumber}',
+                label: AppStrings.stepNumber(chain.chainStepNumber),
                 color: AppColors.primaryColor9,
               ),
               TenantAdminChip(
@@ -520,7 +531,7 @@ class _EligibilityChainCard extends StatelessWidget {
                 color: AppColors.secondaryColor7,
               ),
               TenantAdminChip(
-                label: 'score ${chain.minScoreRequired ?? '-'}',
+                label: AppStrings.scoreValue(chain.minScoreRequired ?? '-'),
                 color: AppColors.primaryColor9,
               ),
             ],
@@ -533,13 +544,13 @@ class _EligibilityChainCard extends StatelessWidget {
               OutlinedButton.icon(
                 onPressed: onEdit,
                 icon: const Icon(Icons.edit_outlined),
-                label: const Text('Use values'),
+                label: Text(AppStrings.tr('Use values')),
                 style: _outlinedActionButtonStyle(),
               ),
               TextButton.icon(
                 onPressed: onDelete,
                 icon: const Icon(Icons.delete_outline),
-                label: const Text('Delete'),
+                label: Text(AppStrings.tr('Delete')),
                 style: _dangerTextButtonStyle(),
               ),
             ],

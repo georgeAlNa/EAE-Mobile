@@ -58,7 +58,7 @@ class _AssessmentInventoryView extends StatelessWidget {
                           .read<AssessmentInventoryCubit>()
                           .getAssessmentInventory,
                       child: Text(
-                        'Retry',
+                        AppStrings.tr('Retry'),
                         style: AppTextStyles.font14DarkGreySemiBold.copyWith(
                           color: AppColors.secondaryColor7,
                         ),
@@ -108,7 +108,7 @@ class _AssessmentInventoryView extends StatelessWidget {
                   )
                 else
                   Text(
-                    'No assessments available',
+                    AppStrings.tr('No assessments available'),
                     style: AppTextStyles.font14DarkGreyRegular.copyWith(
                       color: AppColors.tertiaryColor6,
                     ),

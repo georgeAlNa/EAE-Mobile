@@ -14,9 +14,18 @@ class LanguageCubit extends Cubit<String> {
   }
 
   void toggleLanguage() {
-    final newLang = state == 'en' ? 'ar' : 'en';
-    AppStrings.currentLanguage = newLang;
-    AppSharedPreferences().setString(AppSharedPrefKeys.language, newLang);
-    emit(newLang);
+    setLanguage(state == 'en' ? 'ar' : 'en');
+  }
+
+  void setLanguage(String languageCode) {
+    final normalizedLanguage = languageCode == 'ar' ? 'ar' : 'en';
+    AppStrings.currentLanguage = normalizedLanguage;
+    AppSharedPreferences().setString(
+      AppSharedPrefKeys.language,
+      normalizedLanguage,
+    );
+    if (state != normalizedLanguage) {
+      emit(normalizedLanguage);
+    }
   }
 }

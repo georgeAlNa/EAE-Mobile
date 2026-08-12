@@ -5,6 +5,7 @@ import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../data/models/cohorts_response.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class CohortCard extends StatelessWidget {
   final CohortItem cohort;
@@ -75,7 +76,7 @@ class CohortCard extends StatelessWidget {
               ),
               _StatusChip(isActive: cohort.isActive),
               PopupMenuButton<_CohortAction>(
-                tooltip: 'Cohort actions',
+                tooltip: AppStrings.tr('Cohort actions'),
                 onSelected: (action) {
                   switch (action) {
                     case _CohortAction.details:
@@ -88,19 +89,22 @@ class CohortCard extends StatelessWidget {
                       onDelete();
                   }
                 },
-                itemBuilder: (_) => const [
+                itemBuilder: (_) => [
                   PopupMenuItem(
                     value: _CohortAction.details,
-                    child: Text('Details'),
+                    child: Text(AppStrings.tr('Details')),
                   ),
-                  PopupMenuItem(value: _CohortAction.edit, child: Text('Edit')),
+                  PopupMenuItem(
+                    value: _CohortAction.edit,
+                    child: Text(AppStrings.tr('Edit')),
+                  ),
                   PopupMenuItem(
                     value: _CohortAction.members,
-                    child: Text('Members'),
+                    child: Text(AppStrings.tr('Members')),
                   ),
                   PopupMenuItem(
                     value: _CohortAction.delete,
-                    child: Text('Delete'),
+                    child: Text(AppStrings.tr('Delete')),
                   ),
                 ],
               ),
@@ -126,7 +130,7 @@ class CohortCard extends StatelessWidget {
                 icon: Icons.category_outlined,
               ),
               _CohortChip(
-                label: 'Level ${cohort.hierarchyLevel}',
+                label: AppStrings.level(cohort.hierarchyLevel),
                 icon: Icons.account_tree_outlined,
               ),
             ],
@@ -154,7 +158,7 @@ class _StatusChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(8.r),
       ),
       child: Text(
-        isActive ? 'active' : 'inactive',
+        AppStrings.displayValue(isActive ? 'active' : 'inactive'),
         style: AppTextStyles.font12DarkGreySemiBold.copyWith(color: color),
       ),
     );

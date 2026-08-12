@@ -5,6 +5,7 @@ import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../data/models/roles_and_security_response.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class SecurityPolicySection extends StatelessWidget {
   final SecurityPolicy policy;
@@ -23,39 +24,42 @@ class SecurityPolicySection extends StatelessWidget {
         _PolicySummaryCard(policy: policy, onUpdatePolicy: onUpdatePolicy),
         verticalSpace(12),
         _PolicyRow(
-          label: 'MFA',
+          label: AppStrings.tr('MFA'),
           value: policy.mfaEnabled ? 'Enabled' : 'Disabled',
         ),
-        _PolicyRow(label: 'MFA method', value: policy.mfaMethod ?? '-'),
         _PolicyRow(
-          label: 'Password min length',
+          label: AppStrings.tr('MFA method'),
+          value: policy.mfaMethod ?? '-',
+        ),
+        _PolicyRow(
+          label: AppStrings.tr('Password min length'),
           value: policy.passwordMinLength.toString(),
         ),
         _PolicyRow(
-          label: 'Password expiry days',
+          label: AppStrings.tr('Password expiry days'),
           value: policy.passwordExpiryDays?.toString() ?? '-',
         ),
         _PolicyRow(
-          label: 'Password history count',
+          label: AppStrings.tr('Password history count'),
           value: policy.passwordHistoryCount?.toString() ?? '-',
         ),
         _PolicyRow(
-          label: 'Session timeout',
+          label: AppStrings.tr('Session timeout'),
           value: '${policy.sessionTimeoutMinutes} minutes',
         ),
         _PolicyRow(
-          label: 'Absolute timeout',
+          label: AppStrings.tr('Absolute timeout'),
           value: '${policy.sessionAbsoluteTimeoutHours} hours',
         ),
         _PolicyRow(
-          label: 'IP whitelisting',
+          label: AppStrings.tr('IP whitelisting'),
           value: policy.ipWhitelistingEnabled ? 'Enabled' : 'Disabled',
         ),
         _PolicyRow(
-          label: 'Allowed IP ranges',
+          label: AppStrings.tr('Allowed IP ranges'),
           value: policy.allowedIpRanges?.join(', ') ?? '-',
         ),
-        _PolicyRow(label: 'Updated at', value: policy.updatedAt),
+        _PolicyRow(label: AppStrings.tr('Updated at'), value: policy.updatedAt),
       ],
     );
   }
@@ -100,7 +104,7 @@ class _PolicySummaryCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Security policy',
+                  AppStrings.tr('Security policy'),
                   style: AppTextStyles.font14DarkGreySemiBold.copyWith(
                     color: AppColors.primaryColor9,
                   ),
@@ -117,7 +121,7 @@ class _PolicySummaryCard extends StatelessWidget {
             ),
           ),
           IconButton.outlined(
-            tooltip: 'Update policy',
+            tooltip: AppStrings.tr('Update policy'),
             onPressed: onUpdatePolicy,
             icon: const Icon(Icons.edit_outlined),
           ),

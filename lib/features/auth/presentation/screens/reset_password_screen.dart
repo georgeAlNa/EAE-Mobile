@@ -104,7 +104,7 @@ class _ResetPasswordCard extends StatelessWidget {
                     horizontalSpace(8),
                     Expanded(
                       child: Text(
-                        'Create New Password',
+                        AppStrings.tr('Create New Password'),
                         style: AppTextStyles.font14DarkGreySemiBold.copyWith(
                           color: AppColors.primaryColor9,
                         ),
@@ -127,12 +127,12 @@ class _ResetPasswordCard extends StatelessWidget {
                   validationType: InputValidationType.email,
                 ),
                 verticalSpace(14),
-                const _FieldLabel(label: 'Reset Token'),
+                _FieldLabel(label: AppStrings.tr('Reset Token')),
                 verticalSpace(8),
                 TextFieldWidget(
                   controller: cubit.tokenController,
-                  hintText: 'Paste reset token',
-                  labelText: 'Reset Token',
+                  hintText: AppStrings.tr('Paste reset token'),
+                  labelText: AppStrings.tr('Reset Token'),
                   obscureText: false,
                   prefixIcon: Icons.key_outlined,
                   prefixIconColor: AppColors.tertiaryColor6,
@@ -177,9 +177,9 @@ class _ResetPasswordCard extends StatelessWidget {
                   width: double.infinity,
                   height: 52.h,
                   child: isSubmitting
-                      ? const _LoadingButton(label: 'Reset Password')
+                      ? _LoadingButton(label: AppStrings.tr('Reset Password'))
                       : ButtonWidget(
-                          title: 'Reset Password',
+                          title: AppStrings.tr('Reset Password'),
                           onTap: cubit.submit,
                           width: double.infinity,
                           height: 52.h,

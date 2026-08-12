@@ -6,6 +6,7 @@ import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../shared/presentation/widgets/evaluator_copy_widgets.dart';
 import '../../data/models/exams_management_response.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class ExamCard extends StatelessWidget {
   final ExamItem exam;
@@ -82,11 +83,11 @@ class ExamCard extends StatelessWidget {
                   ),
                 ),
                 EvaluatorCopyIconButton(
-                  label: 'Exam code',
+                  label: AppStrings.tr('Exam code'),
                   value: exam.examCode,
                 ),
                 PopupMenuButton<_ExamAction>(
-                  tooltip: 'Exam actions',
+                  tooltip: AppStrings.tr('Exam actions'),
                   onSelected: (action) {
                     switch (action) {
                       case _ExamAction.details:
@@ -104,30 +105,30 @@ class ExamCard extends StatelessWidget {
                     }
                   },
                   itemBuilder: (_) => [
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: _ExamAction.details,
-                      child: Text('Details'),
+                      child: Text(AppStrings.tr('Details')),
                     ),
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: _ExamAction.edit,
-                      child: Text('Edit'),
+                      child: Text(AppStrings.tr('Edit')),
                     ),
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: _ExamAction.createPublicationWorkflow,
-                      child: Text('Create publication workflow'),
+                      child: Text(AppStrings.tr('Create publication workflow')),
                     ),
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: _ExamAction.viewPublicationWorkflow,
-                      child: Text('View publication workflow'),
+                      child: Text(AppStrings.tr('View publication workflow')),
                     ),
                     if (exam.examStatus.toLowerCase() != 'archived')
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: _ExamAction.archive,
-                        child: Text('Archive'),
+                        child: Text(AppStrings.tr('Archive')),
                       ),
-                    const PopupMenuItem(
+                    PopupMenuItem(
                       value: _ExamAction.delete,
-                      child: Text('Delete'),
+                      child: Text(AppStrings.tr('Delete')),
                     ),
                   ],
                 ),
@@ -150,15 +151,15 @@ class ExamCard extends StatelessWidget {
               children: [
                 _ExamChip(label: exam.examStatus, icon: Icons.flag_outlined),
                 _ExamChip(
-                  label: '${exam.totalQuestions} questions',
+                  label: AppStrings.questionsCount(exam.totalQuestions),
                   icon: Icons.help_outline,
                 ),
                 _ExamChip(
-                  label: '${exam.totalDurationMinutes} min',
+                  label: AppStrings.minutesCount(exam.totalDurationMinutes),
                   icon: Icons.timer_outlined,
                 ),
                 _ExamChip(
-                  label: '${exam.passMarkPercentage}% pass',
+                  label: AppStrings.passPercent(exam.passMarkPercentage),
                   icon: Icons.check_circle_outline,
                 ),
               ],

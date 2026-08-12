@@ -8,6 +8,7 @@ import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
 import '../../../users_management/presentation/widgets/users_management_sheet_scaffold.dart';
 import '../../data/models/cohorts_response.dart';
 import '../../logic/cohorts_cubit.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class CohortDetailsSheet extends StatelessWidget {
   final String cohortId;
@@ -17,8 +18,8 @@ class CohortDetailsSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return UsersManagementSheetScaffold(
-      title: 'Cohort details',
-      subtitle: 'Review cohort identity and hierarchy.',
+      title: AppStrings.tr('Cohort details'),
+      subtitle: AppStrings.tr('Review cohort identity and hierarchy.'),
       child: BlocBuilder<CohortsCubit, CohortsState>(
         builder: (context, state) {
           final cohort = state.maybeWhen(
@@ -35,7 +36,7 @@ class CohortDetailsSheet extends StatelessWidget {
               height: 220.h,
               child: AppRetryErrorView(
                 title: error,
-                message: 'Unable to load cohort details.',
+                message: AppStrings.tr('Unable to load cohort details.'),
                 onRetry: () =>
                     context.read<CohortsCubit>().getCohortDetails(cohortId),
               ),
@@ -70,31 +71,40 @@ class _CohortDetailsContent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        TenantAdminCopyableValueRow(label: 'Name', value: cohort.cohortName),
-        TenantAdminCopyableValueRow(label: 'Code', value: cohort.cohortCode),
-        TenantAdminCopyableValueRow(label: 'Type', value: cohort.cohortType),
         TenantAdminCopyableValueRow(
-          label: 'Description',
+          label: AppStrings.tr('Name'),
+          value: cohort.cohortName,
+        ),
+        TenantAdminCopyableValueRow(
+          label: AppStrings.tr('Code'),
+          value: cohort.cohortCode,
+        ),
+        TenantAdminCopyableValueRow(
+          label: AppStrings.tr('Type'),
+          value: cohort.cohortType,
+        ),
+        TenantAdminCopyableValueRow(
+          label: AppStrings.tr('Description'),
           value: cohort.cohortDescription,
         ),
         TenantAdminCopyableValueRow(
-          label: 'Hierarchy level',
+          label: AppStrings.tr('Hierarchy level'),
           value: '${cohort.hierarchyLevel}',
         ),
         TenantAdminCopyableValueRow(
-          label: 'Parent cohort ID',
+          label: AppStrings.tr('Parent cohort ID'),
           value: cohort.parentCohortId ?? '-',
         ),
         TenantAdminCopyableValueRow(
-          label: 'Active',
+          label: AppStrings.tr('Active'),
           value: cohort.isActive ? 'Yes' : 'No',
         ),
         TenantAdminCopyableValueRow(
-          label: 'Created at',
+          label: AppStrings.tr('Created at'),
           value: cohort.createdAt,
         ),
         TenantAdminCopyableValueRow(
-          label: 'Updated at',
+          label: AppStrings.tr('Updated at'),
           value: cohort.updatedAt,
         ),
       ],

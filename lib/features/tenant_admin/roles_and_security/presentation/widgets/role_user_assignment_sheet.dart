@@ -10,6 +10,7 @@ import '../../../../../core/public_widgets/snack_bar_widget.dart';
 import '../../../../../core/public_widgets/text_field_widget.dart';
 import '../../../users_management/presentation/widgets/users_management_sheet_scaffold.dart';
 import '../../logic/roles_and_security_cubit.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class RoleUserAssignmentSheet extends StatefulWidget {
   final String roleId;
@@ -41,16 +42,18 @@ class _RoleUserAssignmentSheetState extends State<RoleUserAssignmentSheet> {
   @override
   Widget build(BuildContext context) {
     return UsersManagementSheetScaffold(
-      title: widget.isAssign ? 'Assign role' : 'Remove role',
-      subtitle: '${widget.roleName} requires a target user ID.',
+      title: widget.isAssign
+          ? AppStrings.tr('Assign role')
+          : AppStrings.tr('Remove role'),
+      subtitle: AppStrings.roleRequiresTargetUser(widget.roleName),
       child: Form(
         key: _formKey,
         child: Column(
           children: [
             TextFieldWidget(
               controller: _userIdController,
-              hintText: 'user UUID',
-              labelText: 'User ID',
+              hintText: AppStrings.tr('user UUID'),
+              labelText: AppStrings.tr('User ID'),
               obscureText: false,
             ),
             verticalSpace(20),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../data/models/competencies_response.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 List<Competency> flattenCompetencies(List<Competency> competencies) {
   final flattened = <Competency>[];
@@ -50,7 +51,7 @@ Future<void> confirmCompetencyDelete({
     await showDialog<void>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Cannot delete competency'),
+        title: Text(AppStrings.tr('Cannot delete competency')),
         content: Text(
           competency.hasChildren
               ? 'This competency still contains sub-competencies. Move or delete them first.'
@@ -59,7 +60,7 @@ Future<void> confirmCompetencyDelete({
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            child: Text(AppStrings.tr('OK')),
           ),
         ],
       ),
@@ -70,16 +71,16 @@ Future<void> confirmCompetencyDelete({
   final confirmed = await showDialog<bool>(
     context: context,
     builder: (_) => AlertDialog(
-      title: const Text('Delete competency'),
-      content: Text('Delete ${competency.name}?'),
+      title: Text(AppStrings.tr('Delete competency')),
+      content: Text(AppStrings.deleteItem(competency.name)),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context, false),
-          child: const Text('Cancel'),
+          child: Text(AppStrings.tr('Cancel')),
         ),
         FilledButton(
           onPressed: () => Navigator.pop(context, true),
-          child: const Text('Delete'),
+          child: Text(AppStrings.tr('Delete')),
         ),
       ],
     ),

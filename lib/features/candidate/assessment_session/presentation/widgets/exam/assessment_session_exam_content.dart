@@ -111,7 +111,7 @@ class _AssessmentSessionExamContentState
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              'Submit exam?',
+                              AppStrings.tr('Submit exam?'),
                               style: AppTextStyles.font32DarkGreyMedium
                                   .copyWith(
                                     color: AppColors.primaryColor9,
@@ -120,7 +120,9 @@ class _AssessmentSessionExamContentState
                             ),
                             verticalSpace(4),
                             Text(
-                              'Please review the warning details before ending the session.',
+                              AppStrings.tr(
+                                'Please review the warning details before ending the session.',
+                              ),
                               style: AppTextStyles.font10DarkGreyRegular
                                   .copyWith(
                                     color: AppColors.tertiaryColor6,
@@ -201,7 +203,9 @@ class _AssessmentSessionExamContentState
                               ),
                             ),
                             child: Text(
-                              'Submitting now will lock the answers and finish the exam.',
+                              AppStrings.tr(
+                                'Submitting now will lock the answers and finish the exam.',
+                              ),
                               style: AppTextStyles.font10DarkGreyRegular
                                   .copyWith(
                                     color: AppColors.secondaryColor8,
@@ -229,7 +233,7 @@ class _AssessmentSessionExamContentState
                             ),
                           ),
                           child: Text(
-                            'Cancel',
+                            AppStrings.tr('Cancel'),
                             style: AppTextStyles.font12DarkGreySemiBold
                                 .copyWith(color: AppColors.primaryColor9),
                           ),
@@ -249,7 +253,7 @@ class _AssessmentSessionExamContentState
                             ),
                           ),
                           child: Text(
-                            'Submit Exam',
+                            AppStrings.tr('Submit Exam'),
                             style: AppTextStyles.font12DarkGreySemiBold
                                 .copyWith(color: AppColors.neutralColor),
                           ),
@@ -306,8 +310,8 @@ class _AssessmentSessionExamContentState
         if (viewData.remainingSeconds == 60 && !_hasShownOneMinuteWarning) {
           _hasShownOneMinuteWarning = true;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('One minute remaining in the exam.'),
+            SnackBar(
+              content: Text(AppStrings.tr('One minute remaining in the exam.')),
               duration: Duration(seconds: 4),
             ),
           );
@@ -548,7 +552,7 @@ class _EndOfQuestionsCard extends StatelessWidget {
               horizontalSpace(10),
               Expanded(
                 child: Text(
-                  'End of questions',
+                  AppStrings.tr('End of questions'),
                   style: AppTextStyles.font16DarkGreyBold.copyWith(
                     color: AppColors.primaryColor9,
                   ),
@@ -558,7 +562,9 @@ class _EndOfQuestionsCard extends StatelessWidget {
           ),
           verticalSpace(10),
           Text(
-            'You have reached the end of the exam. Complete the exam to submit the session.',
+            AppStrings.tr(
+              'You have reached the end of the exam. Complete the exam to submit the session.',
+            ),
             style: AppTextStyles.font12DarkGreyRegular.copyWith(
               color: AppColors.tertiaryColor7,
               height: 1.45,

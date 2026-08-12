@@ -9,6 +9,7 @@ import '../../../../../core/public_widgets/button_widget.dart';
 import '../../data/models/competencies_request_body.dart';
 import '../../data/models/competencies_response.dart';
 import '../../logic/competencies_cubit.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 Future<void> showCompetencyFormSheet({
   required BuildContext context,
@@ -73,16 +74,18 @@ class _CompetencyFormSheetState extends State<CompetencyFormSheet> {
   @override
   Widget build(BuildContext context) {
     return _SheetScaffold(
-      title: 'Create competency',
-      subtitle: 'Add a root competency or place it under an existing one.',
+      title: AppStrings.tr('Create competency'),
+      subtitle: AppStrings.tr(
+        'Add a root competency or place it under an existing one.',
+      ),
       child: Form(
         key: _formKey,
         child: Column(
           children: [
             _SheetTextField(
               controller: _nameController,
-              label: 'Name',
-              hintText: 'Analytical Reasoning',
+              label: AppStrings.tr('Name'),
+              hintText: AppStrings.tr('Analytical Reasoning'),
               validator: _requiredValidator,
             ),
             verticalSpace(12),
@@ -90,9 +93,9 @@ class _CompetencyFormSheetState extends State<CompetencyFormSheet> {
               initialValue: _parentId,
               decoration: _fieldDecoration('Parent competency'),
               items: [
-                const DropdownMenuItem<String?>(
+                DropdownMenuItem<String?>(
                   value: null,
-                  child: Text('Root competency'),
+                  child: Text(AppStrings.tr('Root competency')),
                 ),
                 ...widget.competencies.map(
                   (competency) => DropdownMenuItem<String?>(
@@ -106,13 +109,13 @@ class _CompetencyFormSheetState extends State<CompetencyFormSheet> {
             verticalSpace(12),
             _SheetTextField(
               controller: _descriptionController,
-              label: 'Description',
-              hintText: 'What this competency measures',
+              label: AppStrings.tr('Description'),
+              hintText: AppStrings.tr('What this competency measures'),
               maxLines: 3,
             ),
             verticalSpace(20),
             ButtonWidget(
-              title: 'Create Competency',
+              title: AppStrings.tr('Create Competency'),
               width: double.infinity,
               radius: 8.r,
               backgroundColor: AppColors.secondaryColor7,
@@ -173,17 +176,19 @@ class _MoveCompetencySheetState extends State<MoveCompetencySheet> {
         .toList();
 
     return _SheetScaffold(
-      title: 'Move competency',
-      subtitle: 'Change where this competency sits in the evaluator map.',
+      title: AppStrings.tr('Move competency'),
+      subtitle: AppStrings.tr(
+        'Change where this competency sits in the evaluator map.',
+      ),
       child: Column(
         children: [
           DropdownButtonFormField<String?>(
             initialValue: _parentId,
             decoration: _fieldDecoration('New parent'),
             items: [
-              const DropdownMenuItem<String?>(
+              DropdownMenuItem<String?>(
                 value: null,
-                child: Text('Root competency'),
+                child: Text(AppStrings.tr('Root competency')),
               ),
               ...parentChoices.map(
                 (competency) => DropdownMenuItem<String?>(
@@ -198,7 +203,7 @@ class _MoveCompetencySheetState extends State<MoveCompetencySheet> {
           _MoveNotice(competency: widget.competency),
           verticalSpace(20),
           ButtonWidget(
-            title: 'Move Competency',
+            title: AppStrings.tr('Move Competency'),
             width: double.infinity,
             radius: 8.r,
             backgroundColor: AppColors.secondaryColor7,

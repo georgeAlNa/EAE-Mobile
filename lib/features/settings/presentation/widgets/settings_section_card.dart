@@ -19,9 +19,9 @@ class SettingsSectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.neutralColor,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: AppColors.tertiaryColor2),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,7 +43,7 @@ class SettingsSectionCard extends StatelessWidget {
               ],
             ),
           ),
-          Divider(height: 1.h, thickness: 1, color: AppColors.tertiaryColor2),
+          Divider(height: 1.h, thickness: 1, color: AppColors.divider),
           Padding(padding: EdgeInsets.all(18.r), child: child),
         ],
       ),

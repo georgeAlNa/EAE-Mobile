@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/colors.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/text_styles.dart';
 
 class AnalyticsTopBar extends StatelessWidget {
@@ -27,7 +28,7 @@ class AnalyticsTopBar extends StatelessWidget {
         SizedBox(width: 10.w),
         Expanded(
           child: Text(
-            'Enterprise\nAssessment',
+            AppStrings.tr('Enterprise\nAssessment'),
             style: AppTextStyles.font12DarkGreySemiBold.copyWith(
               color: AppColors.primaryColor9,
               fontWeight: FontWeight.w700,
@@ -61,7 +62,7 @@ class AnalyticsTopBar extends StatelessWidget {
             ),
             SizedBox(height: 2.h),
             Text(
-              'Analyst',
+              AppStrings.tr('Analyst'),
               style: AppTextStyles.font10DarkGreyRegular.copyWith(
                 color: AppColors.tertiaryColor6,
               ),

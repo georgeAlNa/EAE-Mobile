@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/di/dependency_injection.dart';
 import '../../../../../core/public_widgets/app_bottom_nav_bar.dart';
@@ -35,14 +36,35 @@ class _TenantAdminNavigationShellState
   late final List<Widget?> _pages;
   final PageStorageBucket _pageStorageBucket = PageStorageBucket();
 
-  static const List<AppBottomNavItem> _navItems = [
-    AppBottomNavItem(label: 'USERS', icon: Icons.manage_accounts_outlined),
-    AppBottomNavItem(label: 'ROLES', icon: Icons.admin_panel_settings_outlined),
-    AppBottomNavItem(label: 'COHORTS', icon: Icons.groups_outlined),
-    AppBottomNavItem(label: 'LIVE', icon: Icons.video_camera_front_outlined),
-    AppBottomNavItem(label: 'RULES', icon: Icons.rule_folder_outlined),
-    AppBottomNavItem(label: 'RESULTS', icon: Icons.publish_outlined),
-    AppBottomNavItem(label: 'ACCOUNT', icon: Icons.person_outline_rounded),
+  List<AppBottomNavItem> get _navItems => [
+    AppBottomNavItem(
+      label: AppStrings.tr('USERS'),
+      icon: Icons.manage_accounts_outlined,
+    ),
+    AppBottomNavItem(
+      label: AppStrings.tr('ROLES'),
+      icon: Icons.admin_panel_settings_outlined,
+    ),
+    AppBottomNavItem(
+      label: AppStrings.tr('COHORTS'),
+      icon: Icons.groups_outlined,
+    ),
+    AppBottomNavItem(
+      label: AppStrings.tr('LIVE'),
+      icon: Icons.video_camera_front_outlined,
+    ),
+    AppBottomNavItem(
+      label: AppStrings.tr('RULES'),
+      icon: Icons.rule_folder_outlined,
+    ),
+    AppBottomNavItem(
+      label: AppStrings.tr('RESULTS'),
+      icon: Icons.publish_outlined,
+    ),
+    AppBottomNavItem(
+      label: AppStrings.tr('ACCOUNT'),
+      icon: Icons.person_outline_rounded,
+    ),
   ];
 
   @override

@@ -63,6 +63,8 @@ void stubUsersLoading(MockUsersManagementRepo repo) {
 Future<TestUsersManagementCubit> pumpUsersManagement(
   WidgetTester tester, {
   required MockUsersManagementRepo repo,
+  Locale locale = const Locale('en'),
+  TextDirection textDirection = TextDirection.ltr,
 }) async {
   final rolesRepo = MockRolesAndSecurityRepo();
   when(() => rolesRepo.rolesAndSecurity()).thenAnswer(
@@ -76,6 +78,8 @@ Future<TestUsersManagementCubit> pumpUsersManagement(
 
   await pumpTestApp(
     tester,
+    locale: locale,
+    textDirection: textDirection,
     child: BlocProvider<UsersManagementCubit>.value(
       value: cubit,
       child: const UsersManagementScreen(),
@@ -101,6 +105,25 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('No users yet'), findsNothing);
+    });
+
+    testWidgets('shows localized Arabic header', (tester) async {
+      final repo = MockUsersManagementRepo();
+      stubUsersLoading(repo);
+
+      await pumpUsersManagement(
+        tester,
+        repo: repo,
+        locale: const Locale('ar'),
+        textDirection: TextDirection.rtl,
+      );
+
+      expect(find.text('إدارة المستخدمين'), findsOneWidget);
+      expect(
+        find.text('إدارة مستخدمي المستأجر والوصول إلى الحسابات.'),
+        findsOneWidget,
+      );
+      expect(find.text('Users Management'), findsNothing);
     });
 
     testWidgets('renders loaded users and metrics', (tester) async {

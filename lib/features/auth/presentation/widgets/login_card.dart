@@ -261,7 +261,7 @@ class LoginCard extends StatelessWidget {
                             predicate: (_) => false,
                           ),
                     child: Text(
-                      'Change access role',
+                      AppStrings.tr('Change access role'),
                       style: AppTextStyles.font12DarkGreySemiBold.copyWith(
                         color: AppColors.tertiaryColor7,
                       ),

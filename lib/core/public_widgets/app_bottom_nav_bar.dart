@@ -21,15 +21,15 @@ class AppBottomNavBar extends StatelessWidget {
     return SafeArea(
       top: false,
       child: Material(
-        color: AppColors.neutralColor,
+        color: AppColors.surface,
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
           decoration: BoxDecoration(
-            color: AppColors.neutralColor,
-            border: Border(top: BorderSide(color: AppColors.tertiaryColor2)),
+            color: AppColors.surface,
+            border: Border(top: BorderSide(color: AppColors.border)),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.04),
+                color: AppColors.shadow,
                 blurRadius: 18,
                 offset: Offset(0, -6.h),
               ),

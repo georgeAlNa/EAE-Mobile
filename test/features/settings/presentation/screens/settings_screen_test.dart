@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:eae_mobile/core/constants/shared_pref_keys.dart';
 import 'package:eae_mobile/core/helpers/app_shared_preferences.dart';
+import 'package:eae_mobile/core/language/language_cubit.dart';
+import 'package:eae_mobile/core/theme/theme_cubit.dart';
 import 'package:eae_mobile/features/auth/data/models/logout/logout_request_body.dart';
 import 'package:eae_mobile/features/auth/data/repos/auth_repo.dart';
 import 'package:eae_mobile/features/settings/data/models/settings_request_body.dart';
@@ -88,13 +90,30 @@ Future<SettingsCubit> pumpSettings(
   );
 
   final cubit = SettingsCubit(settingsRepo: settingsRepo, authRepo: authRepo);
+  final themeCubit = ThemeCubit();
+  final languageCubit = LanguageCubit();
   addTearDown(cubit.close);
+  addTearDown(themeCubit.close);
+  addTearDown(languageCubit.close);
 
   await pumpTestApp(
     tester,
-    child: BlocProvider<SettingsCubit>.value(
-      value: cubit,
-      child: const Scaffold(body: SettingsScreen()),
+    child: MultiBlocProvider(
+      providers: [
+        BlocProvider<SettingsCubit>.value(value: cubit),
+        BlocProvider<ThemeCubit>.value(value: themeCubit),
+        BlocProvider<LanguageCubit>.value(value: languageCubit),
+      ],
+      child: BlocBuilder<LanguageCubit, String>(
+        builder: (context, language) {
+          return Directionality(
+            textDirection: language == 'ar'
+                ? TextDirection.rtl
+                : TextDirection.ltr,
+            child: const Scaffold(body: SettingsScreen()),
+          );
+        },
+      ),
     ),
   );
   await tester.pump();
@@ -189,6 +208,44 @@ void main() {
         expect(find.text('Refresh System Status'), findsOneWidget);
       },
     );
+
+    testWidgets('appearance controls update theme and language persistence', (
+      tester,
+    ) async {
+      final settingsRepo = MockSettingsRepo();
+      final authRepo = MockAuthRepo();
+      stubSettingsLoad(settingsRepo);
+
+      await pumpSettings(
+        tester,
+        settingsRepo: settingsRepo,
+        authRepo: authRepo,
+      );
+      await tester.pump();
+
+      expect(AppSharedPreferences().getBool(AppSharedPrefKeys.theme), isNull);
+      expect(
+        AppSharedPreferences().getString(AppSharedPrefKeys.language),
+        isNull,
+      );
+
+      await tester.tap(find.byType(Switch).first);
+      await tester.pumpAndSettle();
+
+      expect(AppSharedPreferences().getBool(AppSharedPrefKeys.theme), isTrue);
+
+      await tester.tap(find.text('العربية'));
+      await tester.pumpAndSettle();
+
+      expect(
+        AppSharedPreferences().getString(AppSharedPrefKeys.language),
+        'ar',
+      );
+      expect(
+        Directionality.of(tester.element(find.byType(SettingsScreen))),
+        TextDirection.rtl,
+      );
+    });
 
     testWidgets('renders empty sessions state without session tiles', (
       tester,

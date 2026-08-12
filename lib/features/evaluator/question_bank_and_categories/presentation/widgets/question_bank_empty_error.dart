@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class QuestionBankEmptyState extends StatelessWidget {
   final IconData icon;
@@ -73,7 +74,7 @@ class QuestionBankErrorView extends StatelessWidget {
             ),
             verticalSpace(12),
             Text(
-              'Unable to load question bank',
+              AppStrings.tr('Unable to load question bank'),
               textAlign: TextAlign.center,
               style: AppTextStyles.font14DarkGreySemiBold.copyWith(
                 color: AppColors.primaryColor9,
@@ -81,7 +82,7 @@ class QuestionBankErrorView extends StatelessWidget {
             ),
             verticalSpace(6),
             Text(
-              'Check the connection and try again.',
+              AppStrings.tr('Check the connection and try again.'),
               textAlign: TextAlign.center,
               style: AppTextStyles.font12DarkGreyRegular.copyWith(
                 color: AppColors.tertiaryColor6,
@@ -91,7 +92,7 @@ class QuestionBankErrorView extends StatelessWidget {
             FilledButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
+              label: Text(AppStrings.tr('Retry')),
             ),
           ],
         ),

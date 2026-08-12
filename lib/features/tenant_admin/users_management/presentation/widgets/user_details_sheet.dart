@@ -8,6 +8,7 @@ import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
 import '../../data/models/users_management_response.dart';
 import '../../logic/users_management_cubit.dart';
 import 'users_management_sheet_scaffold.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class UserDetailsSheet extends StatelessWidget {
   final String userId;
@@ -17,8 +18,8 @@ class UserDetailsSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return UsersManagementSheetScaffold(
-      title: 'User details',
-      subtitle: 'Review account profile and tenant status.',
+      title: AppStrings.tr('User details'),
+      subtitle: AppStrings.tr('Review account profile and tenant status.'),
       child: BlocBuilder<UsersManagementCubit, UsersManagementState>(
         builder: (context, state) {
           final user = state.maybeWhen(
@@ -34,7 +35,7 @@ class UserDetailsSheet extends StatelessWidget {
             return SizedBox(
               height: 220.h,
               child: AppRetryErrorView(
-                title: 'Unable to load user details',
+                title: AppStrings.tr('Unable to load user details'),
                 message: error,
                 onRetry: () =>
                     context.read<UsersManagementCubit>().getUserDetails(userId),
@@ -90,27 +91,45 @@ class _UserDetailsContent extends StatelessWidget {
     return Column(
       children: [
         TenantAdminCopyableValueRow(
-          label: 'Name',
+          label: AppStrings.tr('Name'),
           value: '${user.firstName} ${user.lastName}',
         ),
-        TenantAdminCopyableValueRow(label: 'Email', value: user.email),
-        TenantAdminCopyableValueRow(label: 'User type', value: user.userType),
-        TenantAdminCopyableValueRow(label: 'Status', value: user.status),
-        TenantAdminCopyableValueRow(label: 'Tenant ID', value: user.tenantId),
         TenantAdminCopyableValueRow(
-          label: 'External employee ID',
+          label: AppStrings.tr('Email'),
+          value: user.email,
+        ),
+        TenantAdminCopyableValueRow(
+          label: AppStrings.tr('User type'),
+          value: user.userType,
+        ),
+        TenantAdminCopyableValueRow(
+          label: AppStrings.tr('Status'),
+          value: user.status,
+        ),
+        TenantAdminCopyableValueRow(
+          label: AppStrings.tr('Tenant ID'),
+          value: user.tenantId,
+        ),
+        TenantAdminCopyableValueRow(
+          label: AppStrings.tr('External employee ID'),
           value: user.externalEmployeeId ?? '-',
         ),
         TenantAdminCopyableValueRow(
-          label: 'Department ID',
+          label: AppStrings.tr('Department ID'),
           value: user.departmentId ?? '-',
         ),
         TenantAdminCopyableValueRow(
-          label: 'Last login',
+          label: AppStrings.tr('Last login'),
           value: user.lastLoginAt ?? '-',
         ),
-        TenantAdminCopyableValueRow(label: 'Created at', value: user.createdAt),
-        TenantAdminCopyableValueRow(label: 'Updated at', value: user.updatedAt),
+        TenantAdminCopyableValueRow(
+          label: AppStrings.tr('Created at'),
+          value: user.createdAt,
+        ),
+        TenantAdminCopyableValueRow(
+          label: AppStrings.tr('Updated at'),
+          value: user.updatedAt,
+        ),
       ],
     );
   }

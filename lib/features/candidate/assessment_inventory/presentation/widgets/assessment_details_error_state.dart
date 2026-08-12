@@ -5,6 +5,7 @@ import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/extentions.dart';
 import '../../../../../core/helpers/spacing.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class AssessmentDetailsErrorState extends StatelessWidget {
   final String errorMessage;
@@ -30,7 +31,7 @@ class AssessmentDetailsErrorState extends StatelessWidget {
             TextButton(
               onPressed: context.pop,
               child: Text(
-                'Back',
+                AppStrings.tr('Back'),
                 style: AppTextStyles.font14DarkGreySemiBold.copyWith(
                   color: AppColors.secondaryColor7,
                 ),

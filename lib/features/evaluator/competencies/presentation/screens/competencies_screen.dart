@@ -13,6 +13,7 @@ import '../widgets/competencies_header.dart';
 import '../widgets/competencies_helpers.dart';
 import '../widgets/competencies_sheets.dart';
 import '../widgets/competency_card.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class CompetenciesScreen extends StatefulWidget {
   const CompetenciesScreen({super.key});
@@ -213,7 +214,7 @@ class _CompetenciesDataSection extends StatelessWidget {
         height: 260.h,
         child: AppRetryErrorView(
           title: loadError!,
-          message: 'Check the connection and try again.',
+          message: AppStrings.tr('Check the connection and try again.'),
           onRetry: onRetry,
         ),
       );

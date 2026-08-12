@@ -7,6 +7,7 @@ import '../../../../../core/helpers/spacing.dart';
 import '../../../shared/presentation/widgets/evaluator_copy_widgets.dart';
 import '../../data/models/question_bank_and_categories_response.dart';
 import 'question_bank_helpers.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class QuestionCard extends StatelessWidget {
   final QuestionBankItem question;
@@ -56,11 +57,11 @@ class QuestionCard extends StatelessWidget {
                       ),
                     ),
                     EvaluatorCopyIconButton(
-                      label: 'Question title',
+                      label: AppStrings.tr('Question title'),
                       value: question.title,
                     ),
                     PopupMenuButton<_QuestionAction>(
-                      tooltip: 'Question actions',
+                      tooltip: AppStrings.tr('Question actions'),
                       onSelected: (action) {
                         switch (action) {
                           case _QuestionAction.details:
@@ -71,18 +72,18 @@ class QuestionCard extends StatelessWidget {
                             onDelete();
                         }
                       },
-                      itemBuilder: (_) => const [
+                      itemBuilder: (_) => [
                         PopupMenuItem(
                           value: _QuestionAction.details,
-                          child: Text('Details'),
+                          child: Text(AppStrings.tr('Details')),
                         ),
                         PopupMenuItem(
                           value: _QuestionAction.edit,
-                          child: Text('Edit'),
+                          child: Text(AppStrings.tr('Edit')),
                         ),
                         PopupMenuItem(
                           value: _QuestionAction.delete,
-                          child: Text('Delete'),
+                          child: Text(AppStrings.tr('Delete')),
                         ),
                       ],
                     ),
@@ -113,11 +114,15 @@ class QuestionCard extends StatelessWidget {
                   runSpacing: 8.h,
                   children: [
                     _QuestionChip(label: questionTypeLabel(question.type)),
-                    _QuestionChip(label: 'Bloom ${question.bloomLevel}'),
+                    _QuestionChip(label: AppStrings.bloom(question.bloomLevel)),
                     _QuestionChip(
-                      label: 'Difficulty ${question.difficultyLevel}',
+                      label: AppStrings.difficultyValue(
+                        question.difficultyLevel,
+                      ),
                     ),
-                    _QuestionChip(label: 'Used ${question.usageCount}'),
+                    _QuestionChip(
+                      label: AppStrings.usedCount(question.usageCount),
+                    ),
                   ],
                 ),
               ],

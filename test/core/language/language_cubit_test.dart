@@ -81,5 +81,26 @@ void main() {
         'ar',
       );
     });
+
+    test(
+      'setLanguage updates value and recreated cubit reads persistence',
+      () async {
+        final cubit = LanguageCubit();
+        addTearDown(cubit.close);
+
+        cubit.setLanguage('ar');
+        await Future<void>.delayed(Duration.zero);
+
+        final recreatedCubit = LanguageCubit();
+        addTearDown(recreatedCubit.close);
+
+        expect(cubit.state, 'ar');
+        expect(recreatedCubit.state, 'ar');
+        expect(
+          AppSharedPreferences().getString(AppSharedPrefKeys.language),
+          'ar',
+        );
+      },
+    );
   });
 }

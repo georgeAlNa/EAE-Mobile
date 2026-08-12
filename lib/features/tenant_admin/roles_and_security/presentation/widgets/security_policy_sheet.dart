@@ -13,6 +13,7 @@ import '../../../users_management/presentation/widgets/users_management_sheet_sc
 import '../../data/models/roles_and_security_request_body.dart';
 import '../../data/models/roles_and_security_response.dart';
 import '../../logic/roles_and_security_cubit.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class SecurityPolicySheet extends StatefulWidget {
   final SecurityPolicy policy;
@@ -95,21 +96,23 @@ class _SecurityPolicySheetState extends State<SecurityPolicySheet> {
   @override
   Widget build(BuildContext context) {
     return UsersManagementSheetScaffold(
-      title: 'Update security policy',
-      subtitle: 'Adjust authentication, password, session, and IP controls.',
+      title: AppStrings.tr('Update security policy'),
+      subtitle: AppStrings.tr(
+        'Adjust authentication, password, session, and IP controls.',
+      ),
       child: Form(
         key: _formKey,
         child: Column(
           children: [
             _PolicySwitch(
-              title: 'MFA enabled',
+              title: AppStrings.tr('MFA enabled'),
               value: _mfaEnabled,
               onChanged: (value) => setState(() => _mfaEnabled = value),
             ),
             CustomDropdown(
               items: _dropdownItems(_mfaMethod, _mfaMethodOptions),
               value: _mfaMethod,
-              hintText: 'MFA method',
+              hintText: AppStrings.tr('MFA method'),
               onChanged: _mfaEnabled
                   ? (value) => setState(() => _mfaMethod = value)
                   : (_) {},
@@ -118,7 +121,7 @@ class _SecurityPolicySheetState extends State<SecurityPolicySheet> {
             TextFieldWidget(
               controller: _passwordMinLengthController,
               hintText: '22',
-              labelText: 'Password min length',
+              labelText: AppStrings.tr('Password min length'),
               obscureText: false,
               keyboardType: TextInputType.number,
             ),
@@ -126,7 +129,7 @@ class _SecurityPolicySheetState extends State<SecurityPolicySheet> {
             TextFieldWidget(
               controller: _passwordExpiryDaysController,
               hintText: '7',
-              labelText: 'Password expiry days',
+              labelText: AppStrings.tr('Password expiry days'),
               obscureText: false,
               keyboardType: TextInputType.number,
             ),
@@ -134,7 +137,7 @@ class _SecurityPolicySheetState extends State<SecurityPolicySheet> {
             TextFieldWidget(
               controller: _passwordHistoryCountController,
               hintText: '6',
-              labelText: 'Password history count',
+              labelText: AppStrings.tr('Password history count'),
               obscureText: false,
               keyboardType: TextInputType.number,
             ),
@@ -142,7 +145,7 @@ class _SecurityPolicySheetState extends State<SecurityPolicySheet> {
             TextFieldWidget(
               controller: _sessionTimeoutMinutesController,
               hintText: '17',
-              labelText: 'Session timeout minutes',
+              labelText: AppStrings.tr('Session timeout minutes'),
               obscureText: false,
               keyboardType: TextInputType.number,
             ),
@@ -150,7 +153,7 @@ class _SecurityPolicySheetState extends State<SecurityPolicySheet> {
             TextFieldWidget(
               controller: _sessionAbsoluteTimeoutHoursController,
               hintText: '15',
-              labelText: 'Session absolute timeout hours',
+              labelText: AppStrings.tr('Session absolute timeout hours'),
               obscureText: false,
               keyboardType: TextInputType.number,
             ),
@@ -158,67 +161,67 @@ class _SecurityPolicySheetState extends State<SecurityPolicySheet> {
             TextFieldWidget(
               controller: _allowedIpRangesController,
               hintText: '10.0.0.0/24, 192.168.1.1',
-              labelText: 'Allowed IP ranges',
+              labelText: AppStrings.tr('Allowed IP ranges'),
               obscureText: false,
               maxLines: 2,
             ),
             verticalSpace(12),
             _PolicySwitch(
-              title: 'Require uppercase',
+              title: AppStrings.tr('Require uppercase'),
               value: _passwordRequireUppercase,
               onChanged: (value) =>
                   setState(() => _passwordRequireUppercase = value),
             ),
             _PolicySwitch(
-              title: 'Require lowercase',
+              title: AppStrings.tr('Require lowercase'),
               value: _passwordRequireLowercase,
               onChanged: (value) =>
                   setState(() => _passwordRequireLowercase = value),
             ),
             _PolicySwitch(
-              title: 'Require numbers',
+              title: AppStrings.tr('Require numbers'),
               value: _passwordRequireNumbers,
               onChanged: (value) =>
                   setState(() => _passwordRequireNumbers = value),
             ),
             _PolicySwitch(
-              title: 'Require special chars',
+              title: AppStrings.tr('Require special chars'),
               value: _passwordRequireSpecialChars,
               onChanged: (value) =>
                   setState(() => _passwordRequireSpecialChars = value),
             ),
             _PolicySwitch(
-              title: 'Force reauth on privilege change',
+              title: AppStrings.tr('Force reauth on privilege change'),
               value: _sessionForceReauthOnPrivilegeChange,
               onChanged: (value) =>
                   setState(() => _sessionForceReauthOnPrivilegeChange = value),
             ),
             _PolicySwitch(
-              title: 'IP whitelisting',
+              title: AppStrings.tr('IP whitelisting'),
               value: _ipWhitelistingEnabled,
               onChanged: (value) =>
                   setState(() => _ipWhitelistingEnabled = value),
             ),
             _PolicySwitch(
-              title: 'Biometric auth',
+              title: AppStrings.tr('Biometric auth'),
               value: _enableBiometricAuth,
               onChanged: (value) =>
                   setState(() => _enableBiometricAuth = value),
             ),
             _PolicySwitch(
-              title: 'Enforce TLS 1.3 minimum',
+              title: AppStrings.tr('Enforce TLS 1.3 minimum'),
               value: _enforceTls13Minimum,
               onChanged: (value) =>
                   setState(() => _enforceTls13Minimum = value),
             ),
             _PolicySwitch(
-              title: 'Disable weak ciphers',
+              title: AppStrings.tr('Disable weak ciphers'),
               value: _disableWeakCiphers,
               onChanged: (value) => setState(() => _disableWeakCiphers = value),
             ),
             verticalSpace(20),
             ButtonWidget(
-              title: 'Update Policy',
+              title: AppStrings.tr('Update Policy'),
               width: double.infinity,
               radius: 8.r,
               backgroundColor: AppColors.secondaryColor7,

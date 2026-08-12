@@ -12,6 +12,7 @@ import '../../../../../core/public_widgets/text_field_widget.dart';
 import '../../../users_management/presentation/widgets/users_management_sheet_scaffold.dart';
 import '../../data/models/cohorts_request_body.dart';
 import '../../logic/cohorts_cubit.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class CohortFormSheet extends StatefulWidget {
   final String? cohortId;
@@ -86,21 +87,21 @@ class _CohortFormSheetState extends State<CohortFormSheet> {
             TextFieldWidget(
               controller: _nameController,
               hintText: 'Q2 Engineering Batch',
-              labelText: 'Cohort name',
+              labelText: AppStrings.tr('Cohort name'),
               obscureText: false,
             ),
             verticalSpace(12),
             TextFieldWidget(
               controller: _codeController,
               hintText: 'COH-Q2-ENG',
-              labelText: 'Cohort code',
+              labelText: AppStrings.tr('Cohort code'),
               obscureText: false,
             ),
             verticalSpace(12),
             CustomDropdown(
               items: _dropdownItems(_cohortType, _cohortTypeOptions),
               value: _cohortType,
-              hintText: 'Cohort type',
+              hintText: AppStrings.tr('Cohort type'),
               onChanged: (value) => setState(() => _cohortType = value),
               validator: (value) =>
                   value == null || value.isEmpty ? 'Required' : null,
@@ -108,8 +109,8 @@ class _CohortFormSheetState extends State<CohortFormSheet> {
             verticalSpace(12),
             TextFieldWidget(
               controller: _descriptionController,
-              hintText: 'Cohort description',
-              labelText: 'Description',
+              hintText: AppStrings.tr('Cohort description'),
+              labelText: AppStrings.tr('Description'),
               obscureText: false,
               maxLines: 3,
             ),
@@ -117,8 +118,8 @@ class _CohortFormSheetState extends State<CohortFormSheet> {
               verticalSpace(12),
               TextFieldWidget(
                 controller: _parentCohortIdController,
-                hintText: 'optional parent cohort UUID',
-                labelText: 'Parent cohort ID',
+                hintText: AppStrings.tr('optional parent cohort UUID'),
+                labelText: AppStrings.tr('Parent cohort ID'),
                 obscureText: false,
               ),
             ],

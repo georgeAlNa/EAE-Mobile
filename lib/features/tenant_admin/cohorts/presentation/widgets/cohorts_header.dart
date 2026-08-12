@@ -4,6 +4,7 @@ import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class CohortsHeader extends StatelessWidget {
   final int? totalCohorts;
@@ -28,7 +29,7 @@ class CohortsHeader extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                'Cohorts',
+                AppStrings.tr('Cohorts'),
                 style: AppTextStyles.font32DarkGreyMedium.copyWith(
                   color: AppColors.primaryColor9,
                   fontWeight: FontWeight.w700,
@@ -37,7 +38,7 @@ class CohortsHeader extends StatelessWidget {
               ),
             ),
             IconButton.filled(
-              tooltip: 'Create cohort',
+              tooltip: AppStrings.tr('Create cohort'),
               onPressed: onCreateCohort,
               icon: const Icon(Icons.add_circle_outline),
               style: IconButton.styleFrom(
@@ -49,7 +50,7 @@ class CohortsHeader extends StatelessWidget {
         ),
         verticalSpace(8),
         Text(
-          'Manage tenant cohorts and membership.',
+          AppStrings.tr('Manage tenant cohorts and membership.'),
           style: AppTextStyles.font14DarkGreyRegular.copyWith(
             color: AppColors.tertiaryColor6,
             height: 1.5,
@@ -62,7 +63,7 @@ class CohortsHeader extends StatelessWidget {
               child: TenantAdminMetricTile(
                 icon: Icons.groups_outlined,
                 value: totalCohorts?.toString(),
-                label: 'Total cohorts',
+                label: AppStrings.tr('Total cohorts'),
               ),
             ),
             horizontalSpace(10),
@@ -70,7 +71,7 @@ class CohortsHeader extends StatelessWidget {
               child: TenantAdminMetricTile(
                 icon: Icons.check_circle_outline,
                 value: activeCohorts?.toString(),
-                label: 'Active cohorts',
+                label: AppStrings.tr('Active cohorts'),
               ),
             ),
           ],
@@ -78,7 +79,7 @@ class CohortsHeader extends StatelessWidget {
         verticalSpace(14),
         TenantAdminSearchField(
           controller: searchController,
-          hintText: 'Search cohorts by name, code, or type',
+          hintText: AppStrings.tr('Search cohorts by name, code, or type'),
         ),
       ],
     );

@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/colors.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/helpers/spacing.dart';
 import '../../../../core/public_widgets/app_state_widgets.dart';
@@ -42,7 +43,7 @@ class _AnalyticsView extends StatelessWidget {
           );
           if (error != null) {
             return AppRetryErrorView(
-              title: 'Unable to load analytics',
+              title: AppStrings.tr('Unable to load analytics'),
               message: error,
               onRetry: context.read<AnalyticsCubit>().getAnalyticsDashboard,
             );
@@ -60,7 +61,7 @@ class _AnalyticsView extends StatelessWidget {
                 const AnalyticsTopBar(),
                 verticalSpace(14),
                 Text(
-                  viewData.title,
+                  AppStrings.tr(viewData.title),
                   style: AppTextStyles.font32DarkGreyMedium.copyWith(
                     color: AppColors.primaryColor9,
                     fontWeight: FontWeight.w800,
@@ -69,7 +70,12 @@ class _AnalyticsView extends StatelessWidget {
                 ),
                 verticalSpace(10),
                 Text(
-                  viewData.subtitle,
+                  AppStrings.analyticsSummary(
+                    viewData.benchmarks.isEmpty
+                        ? '-'
+                        : viewData.benchmarks.first.value,
+                    viewData.syncedLabel,
+                  ),
                   style: AppTextStyles.font14DarkGreyRegular.copyWith(
                     color: AppColors.tertiaryColor6,
                     height: 1.5,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/di/dependency_injection.dart';
 import '../../../../../core/public_widgets/app_bottom_nav_bar.dart';
@@ -41,13 +42,13 @@ class _ProctorNavigationShellState extends State<ProctorNavigationShell> {
             currentIndex = index;
           });
         },
-        items: const [
+        items: [
           AppBottomNavItem(
-            label: 'SESSIONS',
+            label: AppStrings.tr('SESSIONS'),
             icon: Icons.monitor_heart_outlined,
           ),
           AppBottomNavItem(
-            label: 'ACCOUNT',
+            label: AppStrings.tr('ACCOUNT'),
             icon: Icons.person_outline_rounded,
           ),
         ],

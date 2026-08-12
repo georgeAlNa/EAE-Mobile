@@ -5,6 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class EvaluatorCopyableValueRow extends StatelessWidget {
   final String label;
@@ -129,7 +130,9 @@ class EvaluatorCopyIconButton extends StatelessWidget {
               if (!context.mounted) return;
               ScaffoldMessenger.of(context)
                 ..hideCurrentSnackBar()
-                ..showSnackBar(SnackBar(content: Text('$label copied')));
+                ..showSnackBar(
+                  SnackBar(content: Text(AppStrings.copied(label))),
+                );
             }
           : null,
       icon: const Icon(Icons.copy_outlined),

@@ -5,6 +5,7 @@ import '../../../../../../core/constants/colors.dart';
 import '../../../../../../core/constants/text_styles.dart';
 import '../../../../../../core/helpers/spacing.dart';
 import '../../../data/models/assessment_session_models.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class AssessmentSessionSubmissionLiveCard extends StatelessWidget {
   final AssessmentSessionViewData viewData;
@@ -79,47 +80,47 @@ class AssessmentSessionSubmissionLiveCard extends StatelessWidget {
             padding: EdgeInsets.all(18.w),
             child: Column(
               children: [
-                const AssessmentSessionSubmissionCircularProgress(
+                AssessmentSessionSubmissionCircularProgress(
                   progress: 0.75,
                   label: '75%',
-                  subtitle: 'SYNCHRONIZED',
+                  subtitle: AppStrings.tr('SYNCHRONIZED'),
                 ),
                 verticalSpace(18),
-                const Row(
+                Row(
                   children: [
                     Expanded(
                       child: AssessmentSessionSubmissionMetricCard(
-                        label: 'UPLOAD SPEED',
+                        label: AppStrings.tr('UPLOAD SPEED'),
                         value: '45.2 Mb/s',
                       ),
                     ),
                     SizedBox(width: 10),
                     Expanded(
                       child: AssessmentSessionSubmissionMetricCard(
-                        label: 'LATENCY',
+                        label: AppStrings.tr('LATENCY'),
                         value: '12ms (Secure)',
                       ),
                     ),
                   ],
                 ),
                 verticalSpace(18),
-                const AssessmentSessionSubmissionProgressRow(
-                  title: 'Global Payload Progress',
+                AssessmentSessionSubmissionProgressRow(
+                  title: AppStrings.tr('Global Payload Progress'),
                   value: '1.2 GB / 1.6 GB',
                 ),
                 verticalSpace(18),
                 AssessmentSessionSubmissionStatusTile(
                   icon: Icons.verified_rounded,
-                  title: 'Question Data',
-                  subtitle: '142 Entries Reconciled',
+                  title: AppStrings.tr('Question Data'),
+                  subtitle: AppStrings.tr('142 Entries Reconciled'),
                   trailingLabel: 'SECURE',
                   trailingColor: AppColors.secondaryColor7,
                 ),
                 verticalSpace(10),
                 AssessmentSessionSubmissionStatusTile(
                   icon: Icons.sync_rounded,
-                  title: 'Media Payloads (HD Video)',
-                  subtitle: '3 of 4 Files Uploaded...',
+                  title: AppStrings.tr('Media Payloads (HD Video)'),
+                  subtitle: AppStrings.tr('3 of 4 Files Uploaded...'),
                   trailingLabel: 'SYNCING',
                   trailingColor: AppColors.primaryColor9,
                   highlighted: true,
@@ -127,8 +128,8 @@ class AssessmentSessionSubmissionLiveCard extends StatelessWidget {
                 verticalSpace(10),
                 AssessmentSessionSubmissionStatusTile(
                   icon: Icons.circle_outlined,
-                  title: 'Telemetry & Metadata',
-                  subtitle: 'Awaiting Final Handshake',
+                  title: AppStrings.tr('Telemetry & Metadata'),
+                  subtitle: AppStrings.tr('Awaiting Final Handshake'),
                   trailingLabel: 'PENDING',
                   trailingColor: AppColors.tertiaryColor5,
                 ),

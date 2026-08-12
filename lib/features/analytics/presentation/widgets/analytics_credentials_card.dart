@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/colors.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/helpers/spacing.dart';
 import '../../data/models/analytics_models.dart';
@@ -62,7 +63,7 @@ class AnalyticsCredentialsCard extends StatelessWidget {
                   ),
                   SizedBox(width: 8.w),
                   Text(
-                    title,
+                    AppStrings.tr(title),
                     style: AppTextStyles.font20DarkGreyBold.copyWith(
                       color: AppColors.neutralColor,
                       fontWeight: FontWeight.w800,
@@ -91,7 +92,7 @@ class AnalyticsCredentialsCard extends StatelessWidget {
                   ),
                   child: Center(
                     child: Text(
-                      exportLabel,
+                      AppStrings.tr(exportLabel),
                       style: AppTextStyles.font12DarkGreySemiBold.copyWith(
                         color: AppColors.neutralColor,
                         fontWeight: FontWeight.w800,
@@ -146,7 +147,7 @@ class _CredentialTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  credential.title,
+                  AppStrings.tr(credential.title),
                   style: AppTextStyles.font12WhiteSemiBold.copyWith(
                     fontWeight: FontWeight.w800,
                     letterSpacing: 0.5,
@@ -154,7 +155,7 @@ class _CredentialTile extends StatelessWidget {
                 ),
                 SizedBox(height: 2.h),
                 Text(
-                  credential.subtitle,
+                  AppStrings.tr(credential.subtitle),
                   style: AppTextStyles.font10DarkGreyRegular.copyWith(
                     color: AppColors.neutralColor.withValues(alpha: 0.72),
                   ),

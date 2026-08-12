@@ -23,7 +23,7 @@ class AssessmentDetailsMetricGrid extends StatelessWidget {
       children: [
         _MetricTile(
           icon: Icons.quiz_outlined,
-          label: 'Questions',
+          label: AppStrings.tr('Questions'),
           value: '${exam.totalQuestions}',
         ),
         _MetricTile(

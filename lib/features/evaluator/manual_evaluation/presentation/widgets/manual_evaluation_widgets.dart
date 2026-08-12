@@ -40,7 +40,7 @@ class _ManualEvaluationHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Manual evaluation',
+                  AppStrings.tr('Manual evaluation'),
                   style: AppTextStyles.font20DarkGreyBold.copyWith(
                     color: AppColors.primaryColor9,
                   ),
@@ -80,12 +80,15 @@ class _SessionActionsCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Session', style: AppTextStyles.font16DarkGreyBold),
+          Text(
+            AppStrings.tr('Session'),
+            style: AppTextStyles.font16DarkGreyBold,
+          ),
           verticalSpace(12),
           TextFieldWidget(
             controller: sessionIdController,
-            hintText: 'exam session id',
-            labelText: 'Session ID',
+            hintText: AppStrings.tr('exam session id'),
+            labelText: AppStrings.tr('Session ID'),
             obscureText: false,
           ),
           verticalSpace(12),
@@ -96,19 +99,19 @@ class _SessionActionsCard extends StatelessWidget {
               FilledButton.icon(
                 onPressed: onLoadPending,
                 icon: const Icon(Icons.pending_actions_outlined),
-                label: const Text('Pending'),
+                label: Text(AppStrings.tr('Pending')),
                 style: _filledActionButtonStyle(),
               ),
               OutlinedButton.icon(
                 onPressed: onCheckStatus,
                 icon: const Icon(Icons.verified_outlined),
-                label: const Text('Status'),
+                label: Text(AppStrings.tr('Status')),
                 style: _outlinedActionButtonStyle(),
               ),
               FilledButton.icon(
                 onPressed: onPublish,
                 icon: const Icon(Icons.publish_outlined),
-                label: const Text('Publish'),
+                label: Text(AppStrings.tr('Publish')),
                 style: _filledActionButtonStyle(),
               ),
             ],
@@ -140,12 +143,15 @@ class _ScoreFormCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Score evaluation', style: AppTextStyles.font16DarkGreyBold),
+          Text(
+            AppStrings.tr('Score evaluation'),
+            style: AppTextStyles.font16DarkGreyBold,
+          ),
           verticalSpace(12),
           TextFieldWidget(
             controller: evaluationIdController,
-            hintText: 'answer evaluation id',
-            labelText: 'Evaluation ID',
+            hintText: AppStrings.tr('answer evaluation id'),
+            labelText: AppStrings.tr('Evaluation ID'),
             obscureText: false,
           ),
           verticalSpace(10),
@@ -155,7 +161,7 @@ class _ScoreFormCard extends StatelessWidget {
                 child: TextFieldWidget(
                   controller: scoreController,
                   hintText: '1',
-                  labelText: 'Score',
+                  labelText: AppStrings.tr('Score'),
                   obscureText: false,
                   keyboardType: TextInputType.number,
                 ),
@@ -165,7 +171,7 @@ class _ScoreFormCard extends StatelessWidget {
                 child: TextFieldWidget(
                   controller: maxScoreController,
                   hintText: '1',
-                  labelText: 'Max score',
+                  labelText: AppStrings.tr('Max score'),
                   obscureText: false,
                   keyboardType: TextInputType.number,
                 ),
@@ -175,8 +181,8 @@ class _ScoreFormCard extends StatelessWidget {
           verticalSpace(10),
           TextFieldWidget(
             controller: commentsController,
-            hintText: 'One comment per line',
-            labelText: 'Evaluator comments',
+            hintText: AppStrings.tr('One comment per line'),
+            labelText: AppStrings.tr('Evaluator comments'),
             obscureText: false,
             maxLines: 3,
           ),
@@ -186,7 +192,7 @@ class _ScoreFormCard extends StatelessWidget {
             child: FilledButton.icon(
               onPressed: onSubmit,
               icon: const Icon(Icons.check_circle_outline),
-              label: const Text('Submit score'),
+              label: Text(AppStrings.tr('Submit score')),
               style: _filledActionButtonStyle(),
             ),
           ),
@@ -227,7 +233,7 @@ class _PendingEvaluationsSection extends StatelessWidget {
         height: 240.h,
         child: AppRetryErrorView(
           title: loadError!,
-          message: 'Check the session id and try again.',
+          message: AppStrings.tr('Check the session id and try again.'),
           onRetry: onRetry,
         ),
       );
@@ -236,15 +242,19 @@ class _PendingEvaluationsSection extends StatelessWidget {
     final items = response?.data;
     if (items == null) {
       return _EmptyEvaluationState(
-        title: 'Load a session',
-        message: 'Enter a session id to fetch pending manual evaluations.',
+        title: AppStrings.tr('Load a session'),
+        message: AppStrings.tr(
+          'Enter a session id to fetch pending manual evaluations.',
+        ),
       );
     }
 
     if (items.isEmpty) {
       return _EmptyEvaluationState(
-        title: 'No pending evaluations',
-        message: 'This session has no pending manual grading items.',
+        title: AppStrings.tr('No pending evaluations'),
+        message: AppStrings.tr(
+          'This session has no pending manual grading items.',
+        ),
       );
     }
 
@@ -293,26 +303,39 @@ class _PendingEvaluationCard extends StatelessWidget {
                 ),
               ),
               horizontalSpace(8),
-              _StatusChip(label: evaluation.evaluationStatus ?? 'pending'),
+              _StatusChip(
+                label: AppStrings.displayValue(
+                  evaluation.evaluationStatus ?? 'pending',
+                ),
+              ),
             ],
           ),
           verticalSpace(10),
-          _InfoLine(label: 'Question', value: evaluation.questionId ?? '-'),
-          _InfoLine(label: 'Type', value: evaluation.evaluationType ?? '-'),
           _InfoLine(
-            label: 'Score',
+            label: AppStrings.tr('Question'),
+            value: evaluation.questionId ?? '-',
+          ),
+          _InfoLine(
+            label: AppStrings.tr('Type'),
+            value: evaluation.evaluationType ?? '-',
+          ),
+          _InfoLine(
+            label: AppStrings.tr('Score'),
             value:
                 '${evaluation.scoreAwarded ?? '-'} / ${evaluation.maxScorePossible ?? '-'}',
           ),
           if (metadata != null && metadata.isNotEmpty)
-            _InfoLine(label: 'Metadata', value: _prettyJson(metadata)),
+            _InfoLine(
+              label: AppStrings.tr('Metadata'),
+              value: _prettyJson(metadata),
+            ),
           verticalSpace(10),
           SizedBox(
             width: double.infinity,
             child: OutlinedButton.icon(
               onPressed: onSelect,
               icon: const Icon(Icons.edit_note_outlined),
-              label: const Text('Use for scoring'),
+              label: Text(AppStrings.tr('Use for scoring')),
               style: _outlinedActionButtonStyle(),
             ),
           ),
@@ -333,14 +356,26 @@ class _PublicationStatusCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Publication status', style: AppTextStyles.font16DarkGreyBold),
+          Text(
+            AppStrings.tr('Publication status'),
+            style: AppTextStyles.font16DarkGreyBold,
+          ),
           verticalSpace(10),
-          _InfoLine(label: 'Result ID', value: status.resultId ?? '-'),
-          _InfoLine(label: 'Result', value: status.resultStatus),
-          _InfoLine(label: 'Publication', value: status.publicationStatus),
-          _InfoLine(label: 'Published at', value: status.publishedAt ?? '-'),
           _InfoLine(
-            label: 'Calculated at',
+            label: AppStrings.tr('Result ID'),
+            value: status.resultId ?? '-',
+          ),
+          _InfoLine(label: AppStrings.tr('Result'), value: status.resultStatus),
+          _InfoLine(
+            label: AppStrings.tr('Publication'),
+            value: status.publicationStatus,
+          ),
+          _InfoLine(
+            label: AppStrings.tr('Published at'),
+            value: status.publishedAt ?? '-',
+          ),
+          _InfoLine(
+            label: AppStrings.tr('Calculated at'),
             value: status.resultCalculatedAt ?? '-',
           ),
         ],
@@ -362,25 +397,28 @@ class _PublishedResultCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Published result', style: AppTextStyles.font16DarkGreyBold),
+          Text(
+            AppStrings.tr('Published result'),
+            style: AppTextStyles.font16DarkGreyBold,
+          ),
           verticalSpace(10),
-          _InfoLine(label: 'Result ID', value: result.resultId),
+          _InfoLine(label: AppStrings.tr('Result ID'), value: result.resultId),
           _InfoLine(
-            label: 'Status',
+            label: AppStrings.tr('Status'),
             value:
                 '${result.status.resultStatus} / ${result.status.publicationStatus}',
           ),
           _InfoLine(
-            label: 'Grade',
+            label: AppStrings.tr('Grade'),
             value:
                 '${summary.gradeLetter ?? '-'} - ${summary.percentage}% (${summary.rawScore}/${summary.maxScore})',
           ),
           _InfoLine(
-            label: 'Pending evaluations',
+            label: AppStrings.tr('Pending evaluations'),
             value: '${summary.totals.pendingEvaluations}',
           ),
           _InfoLine(
-            label: 'Published at',
+            label: AppStrings.tr('Published at'),
             value: result.timestamps.publishedAt ?? '-',
           ),
         ],

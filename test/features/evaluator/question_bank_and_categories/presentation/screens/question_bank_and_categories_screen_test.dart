@@ -77,10 +77,14 @@ Future<QuestionBankAndCategoriesCubit> createCubit(
 
 Future<void> pumpScreen(
   WidgetTester tester,
-  QuestionBankAndCategoriesCubit cubit,
-) {
+  QuestionBankAndCategoriesCubit cubit, {
+  Locale locale = const Locale('en'),
+  TextDirection textDirection = TextDirection.ltr,
+}) {
   return pumpTestApp(
     tester,
+    locale: locale,
+    textDirection: textDirection,
     child: BlocProvider<QuestionBankAndCategoriesCubit>.value(
       value: cubit,
       child: const QuestionBankAndCategoriesScreen(),
@@ -109,6 +113,25 @@ void main() {
     expect(find.text('Mobile'), findsWidgets);
     expect(find.text('MOBILE'), findsWidgets);
     expect(find.text('Categories'), findsWidgets);
+  });
+
+  testWidgets('renders localized Arabic evaluator header', (tester) async {
+    final cubit = await createCubit(
+      repo,
+      loadCategories: () async => CategoriesTreeResponse(data: [category()]),
+      loadQuestions: () async => QuestionsResponse(data: [question()]),
+    );
+
+    await pumpScreen(
+      tester,
+      cubit,
+      locale: const Locale('ar'),
+      textDirection: TextDirection.rtl,
+    );
+
+    expect(find.text('بنك الأسئلة'), findsOneWidget);
+    expect(find.text('الفئات'), findsWidgets);
+    expect(find.text('Question Bank'), findsNothing);
   });
 
   testWidgets('switches to questions view and renders questions', (

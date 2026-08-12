@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/helpers/spacing.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class SplashSystemStatus extends StatelessWidget {
   const SplashSystemStatus({super.key});
@@ -12,10 +13,19 @@ class SplashSystemStatus extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: const [
-        _StatusItem(title: 'SYSTEM STATUS', value: 'NODES\nONLINE'),
-        _StatusItem(title: 'SECURITY', value: 'VAULT\nSECURE'),
-        _StatusItem(title: 'VERSION\nCONTROL', value: 'v4.2.0-STABLE'),
+      children: [
+        _StatusItem(
+          title: AppStrings.tr('SYSTEM STATUS'),
+          value: AppStrings.tr('NODES\nONLINE'),
+        ),
+        _StatusItem(
+          title: AppStrings.tr('SECURITY'),
+          value: AppStrings.tr('VAULT\nSECURE'),
+        ),
+        _StatusItem(
+          title: AppStrings.tr('VERSION\nCONTROL'),
+          value: 'v4.2.0-STABLE',
+        ),
       ],
     );
   }

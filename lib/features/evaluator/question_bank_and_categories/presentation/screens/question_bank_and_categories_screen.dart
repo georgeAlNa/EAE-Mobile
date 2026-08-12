@@ -14,6 +14,7 @@ import '../widgets/question_bank_helpers.dart';
 import '../widgets/question_bank_sheets.dart';
 import '../widgets/question_card.dart';
 import '../widgets/question_category_card.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class QuestionBankAndCategoriesScreen extends StatefulWidget {
   const QuestionBankAndCategoriesScreen({super.key});
@@ -252,7 +253,7 @@ class _QuestionBankDataSection extends StatelessWidget {
         height: 260.h,
         child: AppRetryErrorView(
           title: loadError!,
-          message: 'Check the connection and try again.',
+          message: AppStrings.tr('Check the connection and try again.'),
           onRetry: onRetry,
         ),
       );
@@ -313,8 +314,8 @@ class _CategoriesSection extends StatelessWidget {
                 ),
                 onDelete: () => confirmQuestionBankDelete(
                   context: context,
-                  title: 'Delete category',
-                  message: 'Delete ${entry.value.title}?',
+                  title: AppStrings.tr('Delete category'),
+                  message: AppStrings.deleteItem(entry.value.title),
                   onConfirmed: () => context
                       .read<QuestionBankAndCategoriesCubit>()
                       .deleteCategory(entry.value.id),
@@ -378,8 +379,8 @@ class _QuestionsSection extends StatelessWidget {
                 ),
                 onDelete: () => confirmQuestionBankDelete(
                   context: context,
-                  title: 'Delete question',
-                  message: 'Delete ${entry.value.title}?',
+                  title: AppStrings.tr('Delete question'),
+                  message: AppStrings.deleteItem(entry.value.title),
                   onConfirmed: () => context
                       .read<QuestionBankAndCategoriesCubit>()
                       .deleteQuestion(entry.value.id),

@@ -14,6 +14,7 @@ import '../../data/models/role_user_type_mapper.dart';
 import '../../data/models/users_management_request_body.dart';
 import '../../logic/users_management_cubit.dart';
 import 'users_management_sheet_scaffold.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class CreateUserSheet extends StatefulWidget {
   const CreateUserSheet({super.key});
@@ -48,8 +49,10 @@ class _CreateUserSheetState extends State<CreateUserSheet> {
   @override
   Widget build(BuildContext context) {
     return UsersManagementSheetScaffold(
-      title: 'Create user',
-      subtitle: 'Create an account with a password for direct access.',
+      title: AppStrings.tr('Create user'),
+      subtitle: AppStrings.tr(
+        'Create an account with a password for direct access.',
+      ),
       child: Form(
         key: _formKey,
         child: Column(
@@ -57,7 +60,7 @@ class _CreateUserSheetState extends State<CreateUserSheet> {
             TextFieldWidget(
               controller: _emailController,
               hintText: 'new.candidate1@alpha-engine.example',
-              labelText: 'Email',
+              labelText: AppStrings.tr('Email'),
               obscureText: false,
               keyboardType: TextInputType.emailAddress,
               validationType: InputValidationType.email,
@@ -65,15 +68,15 @@ class _CreateUserSheetState extends State<CreateUserSheet> {
             verticalSpace(12),
             TextFieldWidget(
               controller: _firstNameController,
-              hintText: 'First name',
-              labelText: 'First name',
+              hintText: AppStrings.tr('First name'),
+              labelText: AppStrings.tr('First name'),
               obscureText: false,
             ),
             verticalSpace(12),
             TextFieldWidget(
               controller: _lastNameController,
-              hintText: 'Last name',
-              labelText: 'Last name',
+              hintText: AppStrings.tr('Last name'),
+              labelText: AppStrings.tr('Last name'),
               obscureText: false,
             ),
             verticalSpace(12),
@@ -91,7 +94,7 @@ class _CreateUserSheetState extends State<CreateUserSheet> {
                 return CustomDropdown(
                   items: roleNames,
                   value: _selectedRoleName,
-                  hintText: 'Selected role',
+                  hintText: AppStrings.tr('Selected role'),
                   onChanged: (value) =>
                       setState(() => _selectedRoleName = value),
                   validator: (value) =>
@@ -103,21 +106,21 @@ class _CreateUserSheetState extends State<CreateUserSheet> {
             TextFieldWidget(
               controller: _externalEmployeeIdController,
               hintText: 'EMP-123',
-              labelText: 'External employee ID',
+              labelText: AppStrings.tr('External employee ID'),
               obscureText: false,
             ),
             verticalSpace(12),
             TextFieldWidget(
               controller: _departmentIdController,
-              hintText: 'optional department id',
-              labelText: 'Department ID',
+              hintText: AppStrings.tr('optional department id'),
+              labelText: AppStrings.tr('Department ID'),
               obscureText: false,
             ),
             verticalSpace(12),
             TextFieldWidget(
               controller: _passwordController,
-              hintText: 'Password',
-              labelText: 'Password',
+              hintText: AppStrings.tr('Password'),
+              labelText: AppStrings.tr('Password'),
               obscureText: true,
               validationType: InputValidationType.password,
               customPattern:
@@ -126,8 +129,8 @@ class _CreateUserSheetState extends State<CreateUserSheet> {
             verticalSpace(12),
             TextFieldWidget(
               controller: _passwordConfirmationController,
-              hintText: 'Confirm password',
-              labelText: 'Confirm password',
+              hintText: AppStrings.tr('Confirm password'),
+              labelText: AppStrings.tr('Confirm password'),
               obscureText: true,
               validationType: InputValidationType.password,
               customPattern:
@@ -135,7 +138,7 @@ class _CreateUserSheetState extends State<CreateUserSheet> {
             ),
             verticalSpace(20),
             ButtonWidget(
-              title: 'Create User',
+              title: AppStrings.tr('Create User'),
               width: double.infinity,
               radius: 8.r,
               backgroundColor: AppColors.secondaryColor7,

@@ -1,8 +1,11 @@
+import 'package:eae_mobile/core/constants/app_strings.dart';
 import 'package:eae_mobile/core/constants/colors.dart';
 import 'package:eae_mobile/core/constants/text_styles.dart';
 import 'package:eae_mobile/core/helpers/spacing.dart';
+import 'package:eae_mobile/core/language/language_cubit.dart';
 import 'package:eae_mobile/core/public_widgets/app_state_widgets.dart';
 import 'package:eae_mobile/core/routing/routes.dart';
+import 'package:eae_mobile/core/theme/theme_cubit.dart';
 import 'package:eae_mobile/features/settings/data/models/settings_response.dart';
 import 'package:eae_mobile/features/settings/logic/settings_cubit.dart';
 import 'package:eae_mobile/features/settings/presentation/widgets/settings_form_fields.dart';
@@ -84,6 +87,8 @@ class _SettingsView extends StatelessWidget {
                         verticalSpace(18),
                         _ProfileSummaryCard(profile: profile),
                         verticalSpace(18),
+                        const _AppearanceLanguageCard(),
+                        verticalSpace(18),
                         _ProfileFormCard(profile: profile, isSaving: isSaving),
                         verticalSpace(18),
                         _AccessCard(permissions: permissions),
@@ -118,21 +123,21 @@ class _SystemStatusCard extends StatelessWidget {
     final status = context.read<SettingsCubit>().systemStatus;
 
     return SettingsSectionCard(
-      title: 'System Status',
+      title: AppStrings.systemStatus,
       icon: Icons.health_and_safety_outlined,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (status == null)
             Text(
-              'No system status loaded.',
+              AppStrings.noSystemStatusLoaded,
               style: AppTextStyles.font12DarkGreyRegular.copyWith(
                 color: AppColors.tertiaryColor6,
               ),
             )
           else ...[
             _DetailPill(
-              label: 'Status',
+              label: AppStrings.status,
               value: status.status,
               icon: Icons.check_circle_outline,
               valueColor: status.status == 'ok'
@@ -141,14 +146,14 @@ class _SystemStatusCard extends StatelessWidget {
             ),
             verticalSpace(10),
             _DetailPill(
-              label: 'Database',
+              label: AppStrings.database,
               value: status.database,
               icon: Icons.storage_outlined,
               valueColor: AppColors.primaryColor9,
             ),
             verticalSpace(10),
             _DetailPill(
-              label: 'Timestamp',
+              label: AppStrings.timestamp,
               value: _formatDate(status.timestamp),
               icon: Icons.schedule_rounded,
               valueColor: AppColors.primaryColor9,
@@ -162,9 +167,9 @@ class _SystemStatusCard extends StatelessWidget {
                   ? null
                   : context.read<SettingsCubit>().loadSystemStatus,
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Refresh System Status'),
+              label: Text(AppStrings.refreshSystemStatus),
               style: OutlinedButton.styleFrom(
-                side: BorderSide(color: AppColors.tertiaryColor2),
+                side: BorderSide(color: AppColors.border),
                 foregroundColor: AppColors.primaryColor9,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.r),
@@ -219,7 +224,7 @@ class _AccountHeader extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                'Account',
+                AppStrings.account,
                 style: AppTextStyles.font32DarkGreyMedium.copyWith(
                   color: AppColors.primaryColor9,
                   fontWeight: FontWeight.w700,
@@ -228,7 +233,7 @@ class _AccountHeader extends StatelessWidget {
               ),
             ),
             IconButton.filled(
-              tooltip: 'Refresh account',
+              tooltip: AppStrings.refreshAccount,
               onPressed: () => context.read<SettingsCubit>().loadAccount(),
               icon: const Icon(Icons.refresh_rounded),
               style: IconButton.styleFrom(
@@ -240,13 +245,93 @@ class _AccountHeader extends StatelessWidget {
         ),
         verticalSpace(8),
         Text(
-          'Manage your profile, access permissions, and active sessions.',
+          AppStrings.accountDescription,
           style: AppTextStyles.font14DarkGreyRegular.copyWith(
             color: AppColors.tertiaryColor6,
             height: 1.5,
           ),
         ),
       ],
+    );
+  }
+}
+
+class _AppearanceLanguageCard extends StatelessWidget {
+  const _AppearanceLanguageCard();
+
+  @override
+  Widget build(BuildContext context) {
+    return SettingsSectionCard(
+      title: AppStrings.appearanceLanguage,
+      icon: Icons.palette_outlined,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          BlocBuilder<ThemeCubit, bool>(
+            builder: (context, isDarkMode) {
+              return SettingsSwitchTile(
+                title: AppStrings.darkMode,
+                description: AppStrings.darkModeDescription,
+                value: isDarkMode,
+                onChanged: context.read<ThemeCubit>().setThemeMode,
+              );
+            },
+          ),
+          verticalSpace(18),
+          Text(
+            AppStrings.language.toUpperCase(),
+            style: AppTextStyles.font10DarkGreyRegular.copyWith(
+              color: AppColors.primaryColor9,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.6,
+            ),
+          ),
+          verticalSpace(8),
+          BlocBuilder<LanguageCubit, String>(
+            builder: (context, language) {
+              return SegmentedButton<String>(
+                segments: [
+                  ButtonSegment<String>(
+                    value: 'en',
+                    label: Text(AppStrings.english),
+                  ),
+                  ButtonSegment<String>(
+                    value: 'ar',
+                    label: Text(AppStrings.arabic),
+                  ),
+                ],
+                selected: {language == 'ar' ? 'ar' : 'en'},
+                onSelectionChanged: (selection) {
+                  context.read<LanguageCubit>().setLanguage(selection.first);
+                },
+                showSelectedIcon: false,
+                style: ButtonStyle(
+                  backgroundColor: WidgetStateProperty.resolveWith((states) {
+                    if (states.contains(WidgetState.selected)) {
+                      return AppColors.secondaryColor2;
+                    }
+                    return AppColors.inputBackground;
+                  }),
+                  foregroundColor: WidgetStateProperty.resolveWith((states) {
+                    if (states.contains(WidgetState.selected)) {
+                      return AppColors.primaryColor9;
+                    }
+                    return AppColors.tertiaryColor6;
+                  }),
+                  side: WidgetStateProperty.all(
+                    BorderSide(color: AppColors.border),
+                  ),
+                  shape: WidgetStateProperty.all(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.r),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }
@@ -260,9 +345,9 @@ class _ProfileSummarySkeleton extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.all(18.r),
       decoration: BoxDecoration(
-        color: AppColors.neutralColor,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: AppColors.tertiaryColor2),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         children: [
@@ -296,9 +381,9 @@ class _ProfileSummaryCard extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.all(18.r),
       decoration: BoxDecoration(
-        color: AppColors.neutralColor,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: AppColors.tertiaryColor2),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         children: [
@@ -341,7 +426,7 @@ class _ProfileSummaryCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _DetailPill(
-                  label: 'Status',
+                  label: AppStrings.status,
                   value: profile.status,
                   icon: Icons.verified_user_outlined,
                   valueColor: profile.isActive
@@ -352,7 +437,7 @@ class _ProfileSummaryCard extends StatelessWidget {
               SizedBox(width: 12.w),
               Expanded(
                 child: _DetailPill(
-                  label: 'Last login',
+                  label: AppStrings.lastLogin,
                   value: _formatDate(profile.lastLoginAt),
                   icon: Icons.schedule_rounded,
                   valueColor: AppColors.primaryColor9,
@@ -372,7 +457,7 @@ class _ProfileFormSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SettingsSectionCard(
-      title: 'Profile',
+      title: AppStrings.profile,
       icon: Icons.badge_outlined,
       child: Column(
         children: [
@@ -408,12 +493,12 @@ class _ProfileFormCard extends StatelessWidget {
     final cubit = context.read<SettingsCubit>();
 
     return SettingsSectionCard(
-      title: 'Profile',
+      title: AppStrings.profile,
       icon: Icons.badge_outlined,
       child: Column(
         children: [
           SettingsFieldGroup(
-            label: 'First Name',
+            label: AppStrings.firstName,
             child: TextFormField(
               controller: cubit.firstNameController,
               textInputAction: TextInputAction.next,
@@ -422,7 +507,7 @@ class _ProfileFormCard extends StatelessWidget {
           ),
           verticalSpace(14),
           SettingsFieldGroup(
-            label: 'Last Name',
+            label: AppStrings.lastName,
             child: TextFormField(
               controller: cubit.lastNameController,
               textInputAction: TextInputAction.next,
@@ -431,7 +516,7 @@ class _ProfileFormCard extends StatelessWidget {
           ),
           verticalSpace(14),
           SettingsFieldGroup(
-            label: 'External Employee ID',
+            label: AppStrings.externalEmployeeId,
             child: TextFormField(
               controller: cubit.externalEmployeeIdController,
               textInputAction: TextInputAction.done,
@@ -440,7 +525,7 @@ class _ProfileFormCard extends StatelessWidget {
           ),
           verticalSpace(14),
           SettingsFieldGroup(
-            label: 'Corporate Email',
+            label: AppStrings.corporateEmail,
             child: SettingsReadOnlyField(value: profile.email),
           ),
           verticalSpace(16),
@@ -450,13 +535,13 @@ class _ProfileFormCard extends StatelessWidget {
                 child: OutlinedButton(
                   onPressed: isSaving ? null : cubit.resetProfileForm,
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: AppColors.tertiaryColor2),
+                    side: BorderSide(color: AppColors.border),
                     foregroundColor: AppColors.primaryColor9,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8.r),
                     ),
                   ),
-                  child: const Text('Discard'),
+                  child: Text(AppStrings.discard),
                 ),
               ),
               SizedBox(width: 12.w),
@@ -477,7 +562,7 @@ class _ProfileFormCard extends StatelessWidget {
                           height: 18.w,
                           child: AppSkeletonBox(height: 18.h, borderRadius: 9),
                         )
-                      : const Text('Save Profile'),
+                      : Text(AppStrings.saveProfile),
                 ),
               ),
             ],
@@ -494,7 +579,7 @@ class _AccessSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SettingsSectionCard(
-      title: 'Roles & Permissions',
+      title: AppStrings.rolesPermissions,
       icon: Icons.admin_panel_settings_outlined,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -535,21 +620,21 @@ class _AccessCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SettingsSectionCard(
-      title: 'Roles & Permissions',
+      title: AppStrings.rolesPermissions,
       icon: Icons.admin_panel_settings_outlined,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _ChipWrap(
-            title: 'Roles',
+            title: AppStrings.roles,
             values: permissions.roles,
-            emptyLabel: 'No roles assigned',
+            emptyLabel: AppStrings.noRolesAssigned,
           ),
           verticalSpace(16),
           _ChipWrap(
-            title: 'Permissions',
+            title: AppStrings.permissions,
             values: permissions.permissions,
-            emptyLabel: 'No permissions available',
+            emptyLabel: AppStrings.noPermissionsAvailable,
           ),
         ],
       ),
@@ -563,7 +648,7 @@ class _SessionsSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SettingsSectionCard(
-      title: 'Active Sessions',
+      title: AppStrings.activeSessions,
       icon: Icons.devices_other_rounded,
       child: Column(
         children: [
@@ -592,15 +677,15 @@ class _SessionsCard extends StatelessWidget {
     final currentSessionId = cubit.currentSessionId;
 
     return SettingsSectionCard(
-      title: 'Active Sessions',
+      title: AppStrings.activeSessions,
       icon: Icons.devices_other_rounded,
       child: Column(
         children: [
           if (sessions.isEmpty)
             Align(
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               child: Text(
-                'No active sessions were returned.',
+                AppStrings.noActiveSessions,
                 style: AppTextStyles.font12DarkGreyRegular.copyWith(
                   color: AppColors.tertiaryColor6,
                 ),
@@ -622,9 +707,9 @@ class _SessionsCard extends StatelessWidget {
             child: OutlinedButton.icon(
               onPressed: isActionLoading ? null : cubit.deleteAllSessions,
               icon: const Icon(Icons.logout_rounded),
-              label: const Text('Revoke All Sessions'),
+              label: Text(AppStrings.revokeAllSessions),
               style: OutlinedButton.styleFrom(
-                side: BorderSide(color: AppColors.tertiaryColor2),
+                side: BorderSide(color: AppColors.border),
                 foregroundColor: AppColors.primaryColor9,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.r),
@@ -654,9 +739,9 @@ class _SessionTile extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(12.r),
       decoration: BoxDecoration(
-        color: AppColors.neutralColor6,
+        color: AppColors.surfaceSoft,
         borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: AppColors.tertiaryColor2),
+        border: Border.all(color: AppColors.border),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -672,7 +757,7 @@ class _SessionTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  isCurrent ? 'Current session' : session.sessionState,
+                  isCurrent ? AppStrings.currentSession : session.sessionState,
                   style: AppTextStyles.font12DarkGreySemiBold.copyWith(
                     color: AppColors.primaryColor9,
                     fontWeight: FontWeight.w700,
@@ -690,7 +775,7 @@ class _SessionTile extends StatelessWidget {
                 ),
                 SizedBox(height: 4.h),
                 Text(
-                  'Last activity ${_formatDate(session.lastActivityAt)}',
+                  AppStrings.lastActivity(_formatDate(session.lastActivityAt)),
                   style: AppTextStyles.font10DarkGreyRegular.copyWith(
                     color: AppColors.tertiaryColor6,
                   ),
@@ -699,7 +784,7 @@ class _SessionTile extends StatelessWidget {
             ),
           ),
           IconButton(
-            tooltip: 'Revoke session',
+            tooltip: AppStrings.revokeSession,
             onPressed: isActionLoading
                 ? null
                 : () => context.read<SettingsCubit>().deleteSession(
@@ -723,7 +808,7 @@ class _AccountActionsSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SettingsSectionCard(
-      title: 'Session Actions',
+      title: AppStrings.sessionActions,
       icon: Icons.lock_clock_outlined,
       child: AppSkeletonBox(width: double.infinity, height: 42.h),
     );
@@ -740,7 +825,7 @@ class _AccountActionsCard extends StatelessWidget {
     final cubit = context.read<SettingsCubit>();
 
     return SettingsSectionCard(
-      title: 'Session Actions',
+      title: AppStrings.sessionActions,
       icon: Icons.lock_clock_outlined,
       child: Column(
         children: [
@@ -749,9 +834,9 @@ class _AccountActionsCard extends StatelessWidget {
             child: OutlinedButton.icon(
               onPressed: isActionLoading ? null : cubit.logout,
               icon: const Icon(Icons.exit_to_app_rounded),
-              label: const Text('Logout'),
+              label: Text(AppStrings.logout),
               style: OutlinedButton.styleFrom(
-                side: BorderSide(color: AppColors.tertiaryColor2),
+                side: BorderSide(color: AppColors.border),
                 foregroundColor: AppColors.primaryColor9,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8.r),
@@ -823,8 +908,8 @@ class _ChipWrap extends StatelessWidget {
                 .map(
                   (value) => Chip(
                     label: Text(value),
-                    backgroundColor: AppColors.neutralColor6,
-                    side: BorderSide(color: AppColors.tertiaryColor2),
+                    backgroundColor: AppColors.surfaceSoft,
+                    side: BorderSide(color: AppColors.border),
                     labelStyle: AppTextStyles.font10DarkGreyRegular.copyWith(
                       color: AppColors.primaryColor9,
                       fontWeight: FontWeight.w600,
@@ -856,9 +941,9 @@ class _DetailPill extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(14.r),
       decoration: BoxDecoration(
-        color: AppColors.neutralColor6,
+        color: AppColors.surfaceSoft,
         borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: AppColors.tertiaryColor2),
+        border: Border.all(color: AppColors.border),
       ),
       child: Row(
         children: [
@@ -911,7 +996,7 @@ class _SettingsErrorState extends StatelessWidget {
             height: 320.h,
             child: AppRetryErrorView(
               title: error,
-              message: 'Unable to load account data.',
+              message: AppStrings.unableToLoadAccountData,
               onRetry: () => context.read<SettingsCubit>().loadAccount(),
             ),
           ),

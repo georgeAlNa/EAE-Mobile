@@ -14,6 +14,7 @@ import '../../data/models/role_user_type_mapper.dart';
 import '../../data/models/users_management_request_body.dart';
 import '../../logic/users_management_cubit.dart';
 import 'users_management_sheet_scaffold.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class InviteUserSheet extends StatefulWidget {
   const InviteUserSheet({super.key});
@@ -44,8 +45,10 @@ class _InviteUserSheetState extends State<InviteUserSheet> {
   @override
   Widget build(BuildContext context) {
     return UsersManagementSheetScaffold(
-      title: 'Invite user',
-      subtitle: 'Send an invite and let the user complete account setup.',
+      title: AppStrings.tr('Invite user'),
+      subtitle: AppStrings.tr(
+        'Send an invite and let the user complete account setup.',
+      ),
       child: Form(
         key: _formKey,
         child: Column(
@@ -53,7 +56,7 @@ class _InviteUserSheetState extends State<InviteUserSheet> {
             TextFieldWidget(
               controller: _emailController,
               hintText: 'new.candidate@alpha-engine.example',
-              labelText: 'Email',
+              labelText: AppStrings.tr('Email'),
               obscureText: false,
               keyboardType: TextInputType.emailAddress,
               validationType: InputValidationType.email,
@@ -62,14 +65,14 @@ class _InviteUserSheetState extends State<InviteUserSheet> {
             TextFieldWidget(
               controller: _firstNameController,
               hintText: 'Lana',
-              labelText: 'First name',
+              labelText: AppStrings.tr('First name'),
               obscureText: false,
             ),
             verticalSpace(12),
             TextFieldWidget(
               controller: _lastNameController,
               hintText: 'Barakat',
-              labelText: 'Last name',
+              labelText: AppStrings.tr('Last name'),
               obscureText: false,
             ),
             verticalSpace(12),
@@ -87,7 +90,7 @@ class _InviteUserSheetState extends State<InviteUserSheet> {
                 return CustomDropdown(
                   items: roleNames,
                   value: _selectedRoleName,
-                  hintText: 'Selected role',
+                  hintText: AppStrings.tr('Selected role'),
                   onChanged: (value) =>
                       setState(() => _selectedRoleName = value),
                   validator: (value) =>
@@ -99,19 +102,19 @@ class _InviteUserSheetState extends State<InviteUserSheet> {
             TextFieldWidget(
               controller: _externalEmployeeIdController,
               hintText: 'EMP-999',
-              labelText: 'External employee ID',
+              labelText: AppStrings.tr('External employee ID'),
               obscureText: false,
             ),
             verticalSpace(12),
             TextFieldWidget(
               controller: _departmentIdController,
-              hintText: 'optional department id',
-              labelText: 'Department ID',
+              hintText: AppStrings.tr('optional department id'),
+              labelText: AppStrings.tr('Department ID'),
               obscureText: false,
             ),
             verticalSpace(20),
             ButtonWidget(
-              title: 'Send Invite',
+              title: AppStrings.tr('Send Invite'),
               width: double.infinity,
               radius: 8.r,
               backgroundColor: AppColors.secondaryColor7,

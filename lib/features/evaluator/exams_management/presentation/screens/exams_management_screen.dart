@@ -15,6 +15,7 @@ import '../widgets/exams_management_empty_error.dart';
 import '../widgets/exams_management_header.dart';
 import '../widgets/exams_management_helpers.dart';
 import '../widgets/exams_management_sheets.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class ExamsManagementScreen extends StatefulWidget {
   const ExamsManagementScreen({super.key});
@@ -180,8 +181,8 @@ class _ExamsManagementScreenState extends State<ExamsManagementScreen> {
   void _confirmDelete(BuildContext context, ExamItem exam) {
     confirmExamAction(
       context: context,
-      title: 'Delete exam',
-      message: 'Delete ${exam.examName}?',
+      title: AppStrings.tr('Delete exam'),
+      message: AppStrings.deleteItem(exam.examName),
       onConfirmed: () =>
           context.read<ExamsManagementCubit>().deleteExam(exam.id),
     );
@@ -209,23 +210,23 @@ class _ExamsManagementScreenState extends State<ExamsManagementScreen> {
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          title: Text('View workflow for ${exam.examName}'),
+          title: Text(AppStrings.viewWorkflowFor(exam.examName)),
           content: TextField(
             controller: controller,
-            decoration: const InputDecoration(
-              labelText: 'Workflow ID',
-              hintText: 'workflow id',
+            decoration: InputDecoration(
+              labelText: AppStrings.tr('Workflow ID'),
+              hintText: AppStrings.tr('workflow id'),
             ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
+              child: Text(AppStrings.tr('Cancel')),
             ),
             FilledButton(
               onPressed: () =>
                   Navigator.pop(dialogContext, controller.text.trim()),
-              child: const Text('View'),
+              child: Text(AppStrings.tr('View')),
             ),
           ],
         );
@@ -252,7 +253,7 @@ class _ExamsManagementScreenState extends State<ExamsManagementScreen> {
       context: context,
       builder: (_) {
         return AlertDialog(
-          title: const Text('Exam publication workflow'),
+          title: Text(AppStrings.tr('Exam publication workflow')),
           content: SingleChildScrollView(
             child: Text(
               const JsonEncoder.withIndent('  ').convert(workflowJson),
@@ -261,7 +262,7 @@ class _ExamsManagementScreenState extends State<ExamsManagementScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Close'),
+              child: Text(AppStrings.tr('Close')),
             ),
           ],
         );
@@ -272,8 +273,8 @@ class _ExamsManagementScreenState extends State<ExamsManagementScreen> {
   void _confirmArchive(BuildContext context, ExamItem exam) {
     confirmExamAction(
       context: context,
-      title: 'Archive exam',
-      message: 'Archive ${exam.examName}?',
+      title: AppStrings.tr('Archive exam'),
+      message: AppStrings.archiveItem(exam.examName),
       onConfirmed: () =>
           context.read<ExamsManagementCubit>().archiveExam(exam.id),
     );
@@ -323,7 +324,7 @@ class _ExamsDataSection extends StatelessWidget {
         height: 260.h,
         child: AppRetryErrorView(
           title: loadError!,
-          message: 'Check the connection and try again.',
+          message: AppStrings.tr('Check the connection and try again.'),
           onRetry: onRetry,
         ),
       );

@@ -12,6 +12,7 @@ import '../widgets/splash_logo.dart';
 import '../widgets/splash_progress_bar.dart';
 import '../widgets/splash_status_card.dart';
 import '../widgets/splash_system_status.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -111,7 +112,9 @@ class _SplashView extends StatelessWidget {
                     ),
                   ),
                   verticalSpace(24),
-                  const SplashStatusCard(title: 'Encrypted connection'),
+                  SplashStatusCard(
+                    title: AppStrings.tr('Encrypted connection'),
+                  ),
                   verticalSpace(20),
                   BlocBuilder<SplashCubit, SplashState>(
                     builder: (context, state) {

@@ -12,6 +12,7 @@ import '../../../../../core/public_widgets/text_field_widget.dart';
 import '../../../users_management/presentation/widgets/users_management_sheet_scaffold.dart';
 import '../../data/models/roles_and_security_request_body.dart';
 import '../../logic/roles_and_security_cubit.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class RoleFormSheet extends StatefulWidget {
   final String? roleId;
@@ -72,15 +73,17 @@ class _RoleFormSheetState extends State<RoleFormSheet> {
           children: [
             TextFieldWidget(
               controller: _roleNameController,
-              hintText: 'Proctor',
-              labelText: 'Role name',
+              hintText: AppStrings.tr('Proctor'),
+              labelText: AppStrings.tr('Role name'),
               obscureText: false,
             ),
             verticalSpace(12),
             TextFieldWidget(
               controller: _descriptionController,
-              hintText: 'Live session monitoring and integrity enforcement.',
-              labelText: 'Description',
+              hintText: AppStrings.tr(
+                'Live session monitoring and integrity enforcement.',
+              ),
+              labelText: AppStrings.tr('Description'),
               obscureText: false,
               maxLines: 3,
             ),
@@ -88,7 +91,7 @@ class _RoleFormSheetState extends State<RoleFormSheet> {
             CustomDropdown(
               items: _dropdownItems(_roleCategory, _roleCategoryOptions),
               value: _roleCategory,
-              hintText: 'Role category',
+              hintText: AppStrings.tr('Role category'),
               onChanged: (value) => setState(() => _roleCategory = value),
               validator: (value) =>
                   value == null || value.isEmpty ? 'Required' : null,

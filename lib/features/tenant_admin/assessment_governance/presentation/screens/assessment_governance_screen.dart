@@ -12,6 +12,7 @@ import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
 import '../../data/models/assessment_governance_request_body.dart';
 import '../../data/models/assessment_governance_response.dart';
 import '../../logic/assessment_governance_cubit.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 part '../widgets/assessment_governance_widgets.dart';
 
@@ -59,16 +60,16 @@ class AssessmentGovernanceScreen extends StatelessWidget {
                           ),
                           verticalSpace(14),
                           SegmentedButton<int>(
-                            segments: const [
+                            segments: [
                               ButtonSegment(
                                 value: 0,
                                 icon: Icon(Icons.gavel_outlined),
-                                label: Text('Penalties'),
+                                label: Text(AppStrings.tr('Penalties')),
                               ),
                               ButtonSegment(
                                 value: 1,
                                 icon: Icon(Icons.account_tree_outlined),
-                                label: Text('Eligibility'),
+                                label: Text(AppStrings.tr('Eligibility')),
                               ),
                             ],
                             selected: {cubit.tabIndex},
@@ -84,7 +85,9 @@ class AssessmentGovernanceScreen extends StatelessWidget {
                               height: 260.h,
                               child: TenantAdminErrorView(
                                 title: loadError,
-                                message: 'Check the connection and try again.',
+                                message: AppStrings.tr(
+                                  'Check the connection and try again.',
+                                ),
                                 onRetry: () => _reload(context),
                               ),
                             )

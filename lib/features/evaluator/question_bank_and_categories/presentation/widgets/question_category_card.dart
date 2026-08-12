@@ -6,6 +6,7 @@ import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../shared/presentation/widgets/evaluator_copy_widgets.dart';
 import '../../data/models/question_bank_and_categories_response.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class QuestionCategoryCard extends StatelessWidget {
   final QuestionCategory category;
@@ -74,11 +75,11 @@ class QuestionCategoryCard extends StatelessWidget {
                   ),
                 ),
                 EvaluatorCopyIconButton(
-                  label: 'Category code',
+                  label: AppStrings.tr('Category code'),
                   value: category.categoryCode,
                 ),
                 PopupMenuButton<_CategoryAction>(
-                  tooltip: 'Category actions',
+                  tooltip: AppStrings.tr('Category actions'),
                   onSelected: (action) {
                     switch (action) {
                       case _CategoryAction.edit:
@@ -87,14 +88,14 @@ class QuestionCategoryCard extends StatelessWidget {
                         onDelete();
                     }
                   },
-                  itemBuilder: (_) => const [
+                  itemBuilder: (_) => [
                     PopupMenuItem(
                       value: _CategoryAction.edit,
-                      child: Text('Edit'),
+                      child: Text(AppStrings.tr('Edit')),
                     ),
                     PopupMenuItem(
                       value: _CategoryAction.delete,
-                      child: Text('Delete'),
+                      child: Text(AppStrings.tr('Delete')),
                     ),
                   ],
                 ),
@@ -117,15 +118,19 @@ class QuestionCategoryCard extends StatelessWidget {
               spacing: 8.w,
               runSpacing: 8.h,
               children: [
-                _CategoryChip(label: 'Level ${category.hierarchyLevel}'),
+                _CategoryChip(label: AppStrings.level(category.hierarchyLevel)),
                 _CategoryChip(
-                  label: category.isActive ? 'Active' : 'Inactive',
+                  label: AppStrings.displayValue(
+                    category.isActive ? 'active' : 'inactive',
+                  ),
                   icon: category.isActive
                       ? Icons.check_circle_outline
                       : Icons.pause_circle_outline,
                 ),
                 _CategoryChip(
-                  label: '${(category.children ?? []).length} children',
+                  label: AppStrings.childrenCount(
+                    (category.children ?? []).length,
+                  ),
                   icon: Icons.account_tree_outlined,
                 ),
               ],

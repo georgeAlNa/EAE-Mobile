@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/di/dependency_injection.dart';
 import '../../../../../core/public_widgets/app_bottom_nav_bar.dart';
@@ -48,16 +49,25 @@ class _EvaluatorNavigationShellState extends State<EvaluatorNavigationShell> {
             currentIndex = index;
           });
         },
-        items: const [
-          AppBottomNavItem(label: 'BANK', icon: Icons.quiz_outlined),
+        items: [
           AppBottomNavItem(
-            label: 'SKILLS',
+            label: AppStrings.tr('BANK'),
+            icon: Icons.quiz_outlined,
+          ),
+          AppBottomNavItem(
+            label: AppStrings.tr('SKILLS'),
             icon: Icons.psychology_alt_outlined,
           ),
-          AppBottomNavItem(label: 'EXAMS', icon: Icons.assignment_outlined),
-          AppBottomNavItem(label: 'REVIEW', icon: Icons.fact_check_outlined),
           AppBottomNavItem(
-            label: 'ACCOUNT',
+            label: AppStrings.tr('EXAMS'),
+            icon: Icons.assignment_outlined,
+          ),
+          AppBottomNavItem(
+            label: AppStrings.tr('REVIEW'),
+            icon: Icons.fact_check_outlined,
+          ),
+          AppBottomNavItem(
+            label: AppStrings.tr('ACCOUNT'),
             icon: Icons.person_outline_rounded,
           ),
         ],

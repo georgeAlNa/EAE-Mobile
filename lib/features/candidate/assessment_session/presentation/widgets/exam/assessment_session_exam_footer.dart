@@ -9,6 +9,7 @@ import '../../../../../../core/helpers/spacing.dart';
 import '../../../data/models/assessment_session_models.dart';
 import '../../../logic/assessment_session_cubit.dart';
 import '../question/assessment_session_file_upload_card.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class AssessmentSessionExamFooter extends StatelessWidget {
   final AssessmentSessionViewData viewData;
@@ -82,18 +83,21 @@ class AssessmentSessionExamFooter extends StatelessWidget {
             children: [
               Expanded(
                 child: _SessionInfo(
-                  label: 'ASSESSMENT ID',
+                  label: AppStrings.tr('ASSESSMENT ID'),
                   value: viewData.sessionId,
                 ),
               ),
               Expanded(
                 child: _SessionInfo(
-                  label: 'SECURITY LEVEL',
+                  label: AppStrings.tr('SECURITY LEVEL'),
                   value: viewData.badgeLabel.toUpperCase(),
                 ),
               ),
-              const Expanded(
-                child: _SessionInfo(label: 'WORKSTATION', value: 'SECURE'),
+              Expanded(
+                child: _SessionInfo(
+                  label: AppStrings.tr('WORKSTATION'),
+                  value: 'SECURE',
+                ),
               ),
             ],
           ),

@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/helpers/spacing.dart';
@@ -37,7 +38,7 @@ class AnalyticsCompetencyCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  title,
+                  AppStrings.tr(title),
                   style: AppTextStyles.font20DarkGreyBold.copyWith(
                     color: AppColors.primaryColor9,
                     height: 1.15,
@@ -53,7 +54,7 @@ class AnalyticsCompetencyCard extends StatelessWidget {
                   border: Border.all(color: AppColors.secondaryColor4),
                 ),
                 child: Text(
-                  secureProfileLabel,
+                  AppStrings.tr(secureProfileLabel),
                   textAlign: TextAlign.center,
                   style: AppTextStyles.font10DarkGreyRegular.copyWith(
                     color: AppColors.secondaryColor8,
@@ -75,14 +76,14 @@ class AnalyticsCompetencyCard extends StatelessWidget {
                   Positioned(
                     top: 0,
                     child: _RadarLabel(
-                      label: radarLabelTop,
+                      label: AppStrings.tr(radarLabelTop),
                       borderColor: AppColors.tertiaryColor2,
                     ),
                   ),
                   Positioned(
                     bottom: 0,
                     child: _RadarLabel(
-                      label: radarLabelBottom,
+                      label: AppStrings.tr(radarLabelBottom),
                       borderColor: AppColors.tertiaryColor2,
                     ),
                   ),
@@ -137,7 +138,7 @@ class _MetricBar extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                metric.label,
+                AppStrings.tr(metric.label),
                 style: AppTextStyles.font12DarkGreyRegular.copyWith(
                   color: AppColors.primaryColor9,
                   fontWeight: FontWeight.w500,

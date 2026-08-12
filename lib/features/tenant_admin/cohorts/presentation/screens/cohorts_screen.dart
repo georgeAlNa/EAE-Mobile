@@ -13,6 +13,7 @@ import '../widgets/cohort_form_sheet.dart';
 import '../widgets/cohort_members_sheet.dart';
 import '../widgets/cohorts_header.dart';
 import '../widgets/cohorts_list_section.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class CohortsScreen extends StatefulWidget {
   const CohortsScreen({super.key});
@@ -295,16 +296,16 @@ class _CohortsScreenState extends State<CohortsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Delete cohort'),
-        content: Text('Delete $cohortName?'),
+        title: Text(AppStrings.tr('Delete cohort')),
+        content: Text(AppStrings.deleteItem(cohortName)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(AppStrings.tr('Cancel')),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
+            child: Text(AppStrings.tr('Delete')),
           ),
         ],
       ),
@@ -350,7 +351,7 @@ class _CohortsDataSection extends StatelessWidget {
         height: 260.h,
         child: AppRetryErrorView(
           title: loadError!,
-          message: 'Check the connection and try again.',
+          message: AppStrings.tr('Check the connection and try again.'),
           onRetry: onRetry,
         ),
       );

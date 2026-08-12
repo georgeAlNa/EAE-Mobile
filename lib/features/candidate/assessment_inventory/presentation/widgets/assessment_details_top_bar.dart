@@ -5,6 +5,7 @@ import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/extentions.dart';
 import '../../../../../core/helpers/spacing.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class AssessmentDetailsTopBar extends StatelessWidget {
   const AssessmentDetailsTopBar({super.key});
@@ -34,7 +35,7 @@ class AssessmentDetailsTopBar extends StatelessWidget {
         ),
         horizontalSpace(12),
         Text(
-          'Assessment Details',
+          AppStrings.tr('Assessment Details'),
           style: AppTextStyles.font20DarkGreyBold.copyWith(
             color: AppColors.primaryColor9,
           ),

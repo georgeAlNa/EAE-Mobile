@@ -8,6 +8,7 @@ import '../../../data/models/assessment_session_models.dart';
 import 'assessment_session_submission_finalizing_card.dart';
 import 'assessment_session_submission_live_card.dart';
 import 'assessment_session_submission_resource_card.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class AssessmentSessionSubmissionProcessSection extends StatelessWidget {
   final AssessmentSessionViewData viewData;
@@ -23,7 +24,7 @@ class AssessmentSessionSubmissionProcessSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'PROCESS INTEGRITY',
+          AppStrings.tr('PROCESS INTEGRITY'),
           style: AppTextStyles.font10DarkGreyRegular.copyWith(
             color: AppColors.secondaryColor7,
             fontWeight: FontWeight.w800,
@@ -79,7 +80,7 @@ class AssessmentSessionSubmissionTransactionPill extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'TRANSACTION ID',
+                  AppStrings.tr('TRANSACTION ID'),
                   style: AppTextStyles.font10DarkGreyLight.copyWith(
                     color: AppColors.tertiaryColor6,
                     fontWeight: FontWeight.w700,

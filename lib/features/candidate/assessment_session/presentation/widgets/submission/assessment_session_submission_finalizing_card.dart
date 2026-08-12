@@ -5,6 +5,7 @@ import '../../../../../../core/constants/colors.dart';
 import '../../../../../../core/constants/text_styles.dart';
 import '../../../../../../core/helpers/spacing.dart';
 import '../../../data/models/assessment_session_models.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class AssessmentSessionSubmissionFinalizingCard extends StatelessWidget {
   final AssessmentSessionViewData viewData;
@@ -35,7 +36,7 @@ class AssessmentSessionSubmissionFinalizingCard extends StatelessWidget {
               ),
               horizontalSpace(12),
               Text(
-                'Finalizing...',
+                AppStrings.tr('Finalizing...'),
                 style: AppTextStyles.font12DarkGreySemiBold.copyWith(
                   color: AppColors.neutralColor,
                   fontWeight: FontWeight.w800,
@@ -68,7 +69,7 @@ class AssessmentSessionSubmissionFinalizingCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12.r),
                 ),
               ),
-              child: const Text('Pause Submission'),
+              child: Text(AppStrings.tr('Pause Submission')),
             ),
           ),
           verticalSpace(10),
@@ -86,7 +87,7 @@ class AssessmentSessionSubmissionFinalizingCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12.r),
                 ),
               ),
-              child: const Text('View Log Details'),
+              child: Text(AppStrings.tr('View Log Details')),
             ),
           ),
         ],

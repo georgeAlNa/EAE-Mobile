@@ -12,6 +12,7 @@ import '../../logic/live_sessions_and_enrollment_management_cubit.dart';
 import '../widgets/create_enrollment_sheet.dart';
 import '../widgets/enrollments_list_section.dart';
 import '../widgets/live_sessions_enrollment_header.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class LiveSessionsAndEnrollmentManagementScreen extends StatefulWidget {
   const LiveSessionsAndEnrollmentManagementScreen({super.key});
@@ -254,16 +255,16 @@ class _LiveSessionsAndEnrollmentManagementScreenState
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Delete enrollment'),
-        content: const Text('Delete this enrollment?'),
+        title: Text(AppStrings.tr('Delete enrollment')),
+        content: Text(AppStrings.tr('Delete this enrollment?')),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(AppStrings.tr('Cancel')),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete'),
+            child: Text(AppStrings.tr('Delete')),
           ),
         ],
       ),
@@ -315,7 +316,7 @@ class _EnrollmentBody extends StatelessWidget {
         height: 260.h,
         child: AppRetryErrorView(
           title: loadError!,
-          message: 'Unable to load enrollments for this exam.',
+          message: AppStrings.tr('Unable to load enrollments for this exam.'),
           onRetry: onRetry,
         ),
       );

@@ -6,6 +6,7 @@ import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../../../core/public_widgets/text_field_widget.dart';
 import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class LiveSessionsEnrollmentHeader extends StatelessWidget {
   final TextEditingController examIdController;
@@ -32,7 +33,7 @@ class LiveSessionsEnrollmentHeader extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                'Live Sessions & Enrollment',
+                AppStrings.tr('Live Sessions & Enrollment'),
                 style: AppTextStyles.font32DarkGreyMedium.copyWith(
                   color: AppColors.primaryColor9,
                   fontWeight: FontWeight.w700,
@@ -41,7 +42,7 @@ class LiveSessionsEnrollmentHeader extends StatelessWidget {
               ),
             ),
             IconButton.filled(
-              tooltip: 'Create enrollment',
+              tooltip: AppStrings.tr('Create enrollment'),
               onPressed: onCreateEnrollment,
               icon: const Icon(Icons.person_add_alt_1_outlined),
               style: IconButton.styleFrom(
@@ -53,7 +54,9 @@ class LiveSessionsEnrollmentHeader extends StatelessWidget {
         ),
         verticalSpace(8),
         Text(
-          'Load exam enrollments and manage candidate access windows.',
+          AppStrings.tr(
+            'Load exam enrollments and manage candidate access windows.',
+          ),
           style: AppTextStyles.font14DarkGreyRegular.copyWith(
             color: AppColors.tertiaryColor6,
             height: 1.5,
@@ -62,8 +65,8 @@ class LiveSessionsEnrollmentHeader extends StatelessWidget {
         verticalSpace(16),
         TextFieldWidget(
           controller: examIdController,
-          hintText: 'exam UUID',
-          labelText: 'Exam ID',
+          hintText: AppStrings.tr('exam UUID'),
+          labelText: AppStrings.tr('Exam ID'),
           obscureText: false,
           suffixIcon: Icons.search_outlined,
           onPressedSuffixIcon: onLoadEnrollments,
@@ -74,7 +77,7 @@ class LiveSessionsEnrollmentHeader extends StatelessWidget {
           child: ElevatedButton.icon(
             onPressed: onLoadEnrollments,
             icon: const Icon(Icons.download_outlined),
-            label: const Text('Load Enrollments'),
+            label: Text(AppStrings.tr('Load Enrollments')),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryColor9,
               foregroundColor: AppColors.neutralColor,
@@ -90,12 +93,12 @@ class LiveSessionsEnrollmentHeader extends StatelessWidget {
           TenantAdminMetricTile(
             icon: Icons.fact_check_outlined,
             value: enrollmentsCount.toString(),
-            label: 'Loaded enrollments',
+            label: AppStrings.tr('Loaded enrollments'),
           ),
           verticalSpace(14),
           TenantAdminSearchField(
             controller: searchController,
-            hintText: 'Search by candidate, cohort, or status',
+            hintText: AppStrings.tr('Search by candidate, cohort, or status'),
           ),
         ],
       ],

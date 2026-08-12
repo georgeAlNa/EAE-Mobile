@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/colors.dart';
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/helpers/spacing.dart';
 import 'analytics_section_card.dart';
@@ -29,7 +30,7 @@ class AnalyticsAssessmentStatusCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            title,
+            AppStrings.tr(title),
             style: AppTextStyles.font10DarkGreyRegular.copyWith(
               color: AppColors.tertiaryColor5,
               fontWeight: FontWeight.w800,
@@ -50,7 +51,7 @@ class AnalyticsAssessmentStatusCard extends StatelessWidget {
               SizedBox(width: 8.w),
               Expanded(
                 child: Text(
-                  sessionLabel,
+                  AppStrings.tr(sessionLabel),
                   style: AppTextStyles.font14DarkGreySemiBold.copyWith(
                     color: AppColors.primaryColor9,
                     fontWeight: FontWeight.w700,
@@ -115,7 +116,7 @@ class AnalyticsAssessmentStatusCard extends StatelessWidget {
                 SizedBox(width: 10.w),
                 Expanded(
                   child: Text(
-                    notice,
+                    AppStrings.tr(notice),
                     style: AppTextStyles.font12DarkGreyRegular.copyWith(
                       color: AppColors.tertiaryColor6,
                       height: 1.55,

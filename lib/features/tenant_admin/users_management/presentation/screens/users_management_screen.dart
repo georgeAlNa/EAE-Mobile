@@ -16,6 +16,7 @@ import '../widgets/update_user_sheet.dart';
 import '../widgets/user_details_sheet.dart';
 import '../widgets/user_management_card.dart';
 import '../widgets/users_management_header.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class UsersManagementScreen extends StatefulWidget {
   const UsersManagementScreen({super.key});
@@ -329,16 +330,16 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        title: const Text('Deactivate user'),
-        content: Text('Deactivate $userName?'),
+        title: Text(AppStrings.tr('Deactivate user')),
+        content: Text(AppStrings.deactivateItem(userName)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(AppStrings.tr('Cancel')),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Deactivate'),
+            child: Text(AppStrings.tr('Deactivate')),
           ),
         ],
       ),
@@ -379,7 +380,7 @@ class _UsersDataSection extends StatelessWidget {
         height: 260.h,
         child: AppRetryErrorView(
           title: loadError!,
-          message: 'Check the connection and try again.',
+          message: AppStrings.tr('Check the connection and try again.'),
           onRetry: onRetry,
         ),
       );
@@ -436,7 +437,7 @@ class _PendingRoleAssignmentBanner extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Role assignment pending',
+            AppStrings.tr('Role assignment pending'),
             style: TextStyle(
               color: AppColors.primaryColor9,
               fontSize: 13.sp,
@@ -458,7 +459,7 @@ class _PendingRoleAssignmentBanner extends StatelessWidget {
             child: OutlinedButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh_rounded),
-              label: const Text('Retry role'),
+              label: Text(AppStrings.tr('Retry role')),
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.secondaryColor7,
                 side: BorderSide(color: AppColors.secondaryColor7),

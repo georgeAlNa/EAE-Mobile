@@ -1,4 +1,5 @@
 import 'package:eae_mobile/core/constants/colors.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 import 'package:eae_mobile/core/public_widgets/app_bottom_nav_bar.dart';
 import 'package:eae_mobile/features/analytics/presentation/screens/analytics_screen.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/presentation/screens/assessment_inventory_screen.dart';
@@ -29,7 +30,7 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
       backgroundColor: AppColors.neutralColor,
       body: IndexedStack(
         index: currentIndex,
-        children: const [
+        children: [
           AssessmentInventoryScreen(),
           AnalyticsScreen(),
           SettingsScreen(),
@@ -46,10 +47,19 @@ class _MainNavigationShellState extends State<MainNavigationShell> {
             currentIndex = index;
           });
         },
-        items: const [
-          AppBottomNavItem(label: 'DASHBOARD', icon: Icons.dashboard_outlined),
-          AppBottomNavItem(label: 'ANALYTICS', icon: Icons.analytics_outlined),
-          AppBottomNavItem(label: 'SETTINGS', icon: Icons.settings_outlined),
+        items: [
+          AppBottomNavItem(
+            label: AppStrings.tr('DASHBOARD'),
+            icon: Icons.dashboard_outlined,
+          ),
+          AppBottomNavItem(
+            label: AppStrings.tr('ANALYTICS'),
+            icon: Icons.analytics_outlined,
+          ),
+          AppBottomNavItem(
+            label: AppStrings.tr('SETTINGS'),
+            icon: Icons.settings_outlined,
+          ),
         ],
       ),
     );

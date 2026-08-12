@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class ExamsManagementHeader extends StatelessWidget {
   final int examsCount;
@@ -30,7 +31,7 @@ class ExamsManagementHeader extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                'Exams',
+                AppStrings.tr('Exams'),
                 style: AppTextStyles.font32DarkGreyMedium.copyWith(
                   color: AppColors.primaryColor9,
                   fontWeight: FontWeight.w700,
@@ -39,7 +40,7 @@ class ExamsManagementHeader extends StatelessWidget {
               ),
             ),
             IconButton.filled(
-              tooltip: 'Create exam',
+              tooltip: AppStrings.tr('Create exam'),
               onPressed: onCreateExam,
               icon: const Icon(Icons.add),
               style: IconButton.styleFrom(
@@ -51,7 +52,9 @@ class ExamsManagementHeader extends StatelessWidget {
         ),
         verticalSpace(8),
         Text(
-          'Build, archive, and manage publication workflows for evaluator exams.',
+          AppStrings.tr(
+            'Build, archive, and manage publication workflows for evaluator exams.',
+          ),
           style: AppTextStyles.font14DarkGreyRegular.copyWith(
             color: AppColors.tertiaryColor6,
             height: 1.5,
@@ -64,7 +67,7 @@ class ExamsManagementHeader extends StatelessWidget {
               child: _MetricTile(
                 icon: Icons.assignment_outlined,
                 value: examsCount.toString(),
-                label: 'Total',
+                label: AppStrings.tr('Total'),
               ),
             ),
             horizontalSpace(10),
@@ -72,7 +75,7 @@ class ExamsManagementHeader extends StatelessWidget {
               child: _MetricTile(
                 icon: Icons.verified_outlined,
                 value: publishedCount.toString(),
-                label: 'Published',
+                label: AppStrings.tr('Published'),
               ),
             ),
             horizontalSpace(10),
@@ -80,7 +83,7 @@ class ExamsManagementHeader extends StatelessWidget {
               child: _MetricTile(
                 icon: Icons.edit_note_outlined,
                 value: draftCount.toString(),
-                label: 'Draft',
+                label: AppStrings.tr('Draft'),
               ),
             ),
           ],
@@ -90,12 +93,12 @@ class ExamsManagementHeader extends StatelessWidget {
           controller: searchController,
           textInputAction: TextInputAction.search,
           decoration: InputDecoration(
-            hintText: 'Search exams',
+            hintText: AppStrings.tr('Search exams'),
             prefixIcon: const Icon(Icons.search),
             suffixIcon: searchController.text.isEmpty
                 ? null
                 : IconButton(
-                    tooltip: 'Clear search',
+                    tooltip: AppStrings.tr('Clear search'),
                     onPressed: searchController.clear,
                     icon: const Icon(Icons.close),
                   ),

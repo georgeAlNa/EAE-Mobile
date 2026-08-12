@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class CompetenciesHeader extends StatelessWidget {
   final int competenciesCount;
@@ -28,7 +29,7 @@ class CompetenciesHeader extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                'Competencies',
+                AppStrings.tr('Competencies'),
                 style: AppTextStyles.font32DarkGreyMedium.copyWith(
                   color: AppColors.primaryColor9,
                   fontWeight: FontWeight.w700,
@@ -37,7 +38,7 @@ class CompetenciesHeader extends StatelessWidget {
               ),
             ),
             IconButton.filled(
-              tooltip: 'Create competency',
+              tooltip: AppStrings.tr('Create competency'),
               onPressed: onCreateCompetency,
               icon: const Icon(Icons.add),
               style: IconButton.styleFrom(
@@ -49,7 +50,9 @@ class CompetenciesHeader extends StatelessWidget {
         ),
         verticalSpace(8),
         Text(
-          'Structure the skill map used to evaluate candidate performance.',
+          AppStrings.tr(
+            'Structure the skill map used to evaluate candidate performance.',
+          ),
           style: AppTextStyles.font14DarkGreyRegular.copyWith(
             color: AppColors.tertiaryColor6,
             height: 1.5,
@@ -62,7 +65,7 @@ class CompetenciesHeader extends StatelessWidget {
               child: _MetricTile(
                 icon: Icons.account_tree_outlined,
                 value: competenciesCount.toString(),
-                label: 'Total',
+                label: AppStrings.tr('Total'),
               ),
             ),
             horizontalSpace(10),
@@ -70,7 +73,7 @@ class CompetenciesHeader extends StatelessWidget {
               child: _MetricTile(
                 icon: Icons.hub_outlined,
                 value: rootCount.toString(),
-                label: 'Root',
+                label: AppStrings.tr('Root'),
               ),
             ),
           ],
@@ -80,12 +83,12 @@ class CompetenciesHeader extends StatelessWidget {
           controller: searchController,
           textInputAction: TextInputAction.search,
           decoration: InputDecoration(
-            hintText: 'Search competencies',
+            hintText: AppStrings.tr('Search competencies'),
             prefixIcon: const Icon(Icons.search),
             suffixIcon: searchController.text.isEmpty
                 ? null
                 : IconButton(
-                    tooltip: 'Clear search',
+                    tooltip: AppStrings.tr('Clear search'),
                     onPressed: searchController.clear,
                     icon: const Icon(Icons.close),
                   ),

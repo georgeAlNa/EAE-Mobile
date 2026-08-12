@@ -5,6 +5,7 @@ import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 import 'question_bank_helpers.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class QuestionBankHeader extends StatelessWidget {
   final int questionsCount;
@@ -35,7 +36,7 @@ class QuestionBankHeader extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                'Question Bank',
+                AppStrings.tr('Question Bank'),
                 style: AppTextStyles.font32DarkGreyMedium.copyWith(
                   color: AppColors.primaryColor9,
                   fontWeight: FontWeight.w700,
@@ -44,7 +45,7 @@ class QuestionBankHeader extends StatelessWidget {
               ),
             ),
             IconButton.filled(
-              tooltip: 'Create category',
+              tooltip: AppStrings.tr('Create category'),
               onPressed: onCreateCategory,
               icon: const Icon(Icons.create_new_folder_outlined),
               style: IconButton.styleFrom(
@@ -68,7 +69,9 @@ class QuestionBankHeader extends StatelessWidget {
         ),
         verticalSpace(8),
         Text(
-          'Build categories and manage reusable assessment questions.',
+          AppStrings.tr(
+            'Build categories and manage reusable assessment questions.',
+          ),
           style: AppTextStyles.font14DarkGreyRegular.copyWith(
             color: AppColors.tertiaryColor6,
             height: 1.5,
@@ -81,7 +84,7 @@ class QuestionBankHeader extends StatelessWidget {
               child: _MetricTile(
                 icon: Icons.folder_outlined,
                 value: categoriesCount.toString(),
-                label: 'Categories',
+                label: AppStrings.tr('Categories'),
               ),
             ),
             horizontalSpace(10),
@@ -89,7 +92,7 @@ class QuestionBankHeader extends StatelessWidget {
               child: _MetricTile(
                 icon: Icons.quiz_outlined,
                 value: questionsCount.toString(),
-                label: 'Questions',
+                label: AppStrings.tr('Questions'),
               ),
             ),
           ],
@@ -99,12 +102,12 @@ class QuestionBankHeader extends StatelessWidget {
           controller: searchController,
           textInputAction: TextInputAction.search,
           decoration: InputDecoration(
-            hintText: 'Search question bank',
+            hintText: AppStrings.tr('Search question bank'),
             prefixIcon: const Icon(Icons.search),
             suffixIcon: searchController.text.isEmpty
                 ? null
                 : IconButton(
-                    tooltip: 'Clear search',
+                    tooltip: AppStrings.tr('Clear search'),
                     onPressed: searchController.clear,
                     icon: const Icon(Icons.close),
                   ),
@@ -119,16 +122,16 @@ class QuestionBankHeader extends StatelessWidget {
         ),
         verticalSpace(12),
         SegmentedButton<QuestionBankViewMode>(
-          segments: const [
+          segments: [
             ButtonSegment(
               value: QuestionBankViewMode.categories,
               icon: Icon(Icons.account_tree_outlined),
-              label: Text('Categories'),
+              label: Text(AppStrings.tr('Categories')),
             ),
             ButtonSegment(
               value: QuestionBankViewMode.questions,
               icon: Icon(Icons.format_list_bulleted),
-              label: Text('Questions'),
+              label: Text(AppStrings.tr('Questions')),
             ),
           ],
           selected: {viewMode},

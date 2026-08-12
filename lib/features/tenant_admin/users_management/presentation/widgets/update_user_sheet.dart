@@ -10,6 +10,7 @@ import '../../data/models/users_management_request_body.dart';
 import '../../data/models/users_management_response.dart';
 import '../../logic/users_management_cubit.dart';
 import 'users_management_sheet_scaffold.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class UpdateUserSheet extends StatefulWidget {
   final UserManagementUser user;
@@ -77,49 +78,49 @@ class _UpdateUserSheetState extends State<UpdateUserSheet> {
         );
       },
       child: UsersManagementSheetScaffold(
-        title: 'Edit user',
-        subtitle: 'Update profile and account status fields.',
+        title: AppStrings.tr('Edit user'),
+        subtitle: AppStrings.tr('Update profile and account status fields.'),
         child: Column(
           children: [
             TextFieldWidget(
               controller: _firstNameController,
-              hintText: 'First name',
-              labelText: 'First name',
+              hintText: AppStrings.tr('First name'),
+              labelText: AppStrings.tr('First name'),
               obscureText: false,
             ),
             verticalSpace(10),
             TextFieldWidget(
               controller: _lastNameController,
-              hintText: 'Last name',
-              labelText: 'Last name',
+              hintText: AppStrings.tr('Last name'),
+              labelText: AppStrings.tr('Last name'),
               obscureText: false,
             ),
             verticalSpace(10),
             TextFieldWidget(
               controller: _externalIdController,
               hintText: 'EMP-000105',
-              labelText: 'External employee ID',
+              labelText: AppStrings.tr('External employee ID'),
               obscureText: false,
             ),
             verticalSpace(10),
             TextFieldWidget(
               controller: _userTypeController,
               hintText: 'examinee',
-              labelText: 'User type',
+              labelText: AppStrings.tr('User type'),
               obscureText: false,
             ),
             verticalSpace(10),
             TextFieldWidget(
               controller: _departmentIdController,
-              hintText: 'Department ID',
-              labelText: 'Department ID',
+              hintText: AppStrings.tr('Department ID'),
+              labelText: AppStrings.tr('Department ID'),
               obscureText: false,
             ),
             verticalSpace(10),
             TextFieldWidget(
               controller: _statusController,
-              hintText: 'active',
-              labelText: 'Status',
+              hintText: AppStrings.tr('active'),
+              labelText: AppStrings.tr('Status'),
               obscureText: false,
             ),
             verticalSpace(8),
@@ -140,7 +141,7 @@ class _UpdateUserSheetState extends State<UpdateUserSheet> {
               child: FilledButton.icon(
                 onPressed: _submit,
                 icon: const Icon(Icons.save_outlined),
-                label: const Text('Save changes'),
+                label: Text(AppStrings.tr('Save changes')),
               ),
             ),
           ],

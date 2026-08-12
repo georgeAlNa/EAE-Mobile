@@ -14,9 +14,14 @@ class ThemeCubit extends Cubit<bool> {
   }
 
   void toggleTheme() {
-    final newValue = !state;
-    AppColors.isDarkMode = newValue;
-    AppSharedPreferences().setBool(AppSharedPrefKeys.theme, newValue);
-    emit(newValue);
+    setThemeMode(!state);
+  }
+
+  void setThemeMode(bool isDarkMode) {
+    AppColors.isDarkMode = isDarkMode;
+    AppSharedPreferences().setBool(AppSharedPrefKeys.theme, isDarkMode);
+    if (state != isDarkMode) {
+      emit(isDarkMode);
+    }
   }
 }

@@ -6,6 +6,7 @@ import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
 import '../../data/models/live_sessions_and_enrollment_management_response.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class EnrollmentsListSection extends StatelessWidget {
   final List<EnrollmentItem> enrollments;
@@ -142,20 +143,32 @@ class _EnrollmentCard extends StatelessWidget {
             ],
           ),
           verticalSpace(12),
-          _InfoRow(label: 'Cohort ID', value: enrollment.cohortId),
-          _InfoRow(label: 'Start window', value: enrollment.startWindowDate),
-          _InfoRow(label: 'End window', value: enrollment.endWindowDate),
           _InfoRow(
-            label: 'Attempts remaining',
+            label: AppStrings.tr('Cohort ID'),
+            value: enrollment.cohortId,
+          ),
+          _InfoRow(
+            label: AppStrings.tr('Start window'),
+            value: enrollment.startWindowDate,
+          ),
+          _InfoRow(
+            label: AppStrings.tr('End window'),
+            value: enrollment.endWindowDate,
+          ),
+          _InfoRow(
+            label: AppStrings.tr('Attempts remaining'),
             value: '${enrollment.attemptsRemaining}',
           ),
           if (enrollment.enrollmentNotes != null)
-            _InfoRow(label: 'Notes', value: enrollment.enrollmentNotes!),
+            _InfoRow(
+              label: AppStrings.tr('Notes'),
+              value: enrollment.enrollmentNotes!,
+            ),
           verticalSpace(12),
           SizedBox(
             width: double.infinity,
             child: IconButton.outlined(
-              tooltip: 'Delete enrollment',
+              tooltip: AppStrings.tr('Delete enrollment'),
               onPressed: onDelete,
               icon: const Icon(Icons.delete_outline),
               style: IconButton.styleFrom(

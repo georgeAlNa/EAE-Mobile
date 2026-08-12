@@ -138,7 +138,7 @@ class SettingsSwitchTile extends StatelessWidget {
           onChanged: onChanged,
           activeThumbColor: AppColors.secondaryColor6,
           activeTrackColor: AppColors.secondaryColor3,
-          inactiveThumbColor: AppColors.neutralColor,
+          inactiveThumbColor: AppColors.surface,
           inactiveTrackColor: AppColors.tertiaryColor2,
         ),
       ],
@@ -204,15 +204,15 @@ class SettingsStatusTile extends StatelessWidget {
 InputDecoration settingsFieldDecoration() {
   return InputDecoration(
     filled: true,
-    fillColor: AppColors.neutralColor6,
+    fillColor: AppColors.inputBackground,
     contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(8.r),
-      borderSide: BorderSide(color: AppColors.tertiaryColor2),
+      borderSide: BorderSide(color: AppColors.border),
     ),
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(8.r),
-      borderSide: BorderSide(color: AppColors.tertiaryColor2),
+      borderSide: BorderSide(color: AppColors.border),
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(8.r),

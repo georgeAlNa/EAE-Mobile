@@ -1,29 +1,28 @@
 class AppStrings {
   static String currentLanguage = 'en';
   static bool get _isArabic => currentLanguage == 'ar';
-  static String get settingsTitle =>
-      _isArabic ? 'Ø§Ù„Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª' : 'Settings';
+  static String get settingsTitle => _isArabic ? 'الإعدادات' : 'Settings';
 
   // Secure Access Screen
   static String get enterpriseAssessmentTitle =>
-      _isArabic ? 'ØªÙ‚ÙŠÙŠÙ… Ø§Ù„Ù…Ø¤Ø³Ø³Ø©' : 'Enterprise Assessment';
+      _isArabic ? 'تقييم المؤسسة' : 'Enterprise Assessment';
   static String get institutionalGatewayTitle =>
-      _isArabic ? 'Ø§Ù„Ø¨ÙˆØ§Ø¨Ø© Ø§Ù„Ù…Ø¤Ø³Ø³ÙŠØ©' : 'INSTITUTIONAL GATEWAY';
+      _isArabic ? 'البوابة المؤسسية' : 'INSTITUTIONAL GATEWAY';
   static String get secureAccess =>
-      _isArabic ? 'Ø§Ù„Ø¯Ø®ÙˆÙ„ Ø§Ù„Ø¢Ù…Ù†' : 'Secure Access';
+      _isArabic ? 'الدخول الآمن' : 'Secure Access';
   static String get secureAccessDescription => _isArabic
-      ? 'ÙŠØ±Ø¬Ù‰ ØªÙ‚Ø¯ÙŠÙ… Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ø§Ø¹ØªÙ…Ø§Ø¯ Ø§Ù„Ù…Ø¤Ø³Ø³ÙŠØ© Ù„Ù„ØªØ­Ù‚Ù‚ Ù…Ù† Ù…Ù†Ø¸Ù…ØªÙƒ ÙˆØ§Ù„Ù…ØªØ§Ø¨Ø¹Ø© Ø¥Ù„Ù‰ Ø¨ÙˆØ§Ø¨Ø© Ø§Ù„ØªÙ‚ÙŠÙŠÙ….'
+      ? 'يرجى تقديم بيانات الاعتماد المؤسسية للتحقق من منظمتك والمتابعة إلى بوابة التقييم.'
       : 'Please provide your corporate credentials to\nverify your organization and proceed to the\nassessment portal.';
   static String get emailOrIdForm => _isArabic
-      ? 'name@company.com Ø§Ùˆ ORG-12345'
+      ? 'name@company.com او ORG-12345'
       : 'name@company.com or ORG-12345';
   static String get emailOrId => _isArabic
-      ? 'Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¥Ù„ÙƒØªØ±ÙˆÙ†ÙŠ Ø£Ùˆ Ø§Ù„Ù…Ø¹Ø±Ù'
+      ? 'البريد الإلكتروني أو المعرف'
       : 'Corporate Email or Organizational ID';
   static String get identifyingInstitution =>
-      _isArabic ? 'ØªØ­Ø¯ÙŠØ¯ Ø§Ù„Ù…Ø¤Ø³Ø³Ø©' : 'Identify Institution';
+      _isArabic ? 'تحديد المؤسسة' : 'Identify Institution';
   static String get encryptedMultiFactorAuthentication => _isArabic
-      ? 'Ø§Ù„Ù…ØµØ§Ø¯Ù‚Ø© Ù…ØªØ¹Ø¯Ø¯Ø© Ø§Ù„Ø¹ÙˆØ§Ù…Ù„ Ø§Ù„Ù…Ø´ÙØ±Ø© Ù†Ø´Ø·Ø©'
+      ? 'المصادقة متعددة العوامل المشفرة نشطة'
       : 'Encrypted multi-factor authentication active';
   static String get globalBankX =>
       _isArabic ? 'Global Bank X' : 'Global Bank X';
@@ -36,231 +35,884 @@ class AppStrings {
   static String get insuranceGroup =>
       _isArabic ? 'Insurance Group' : 'Insurance Group';
   static String get otherPartners =>
-      _isArabic ? 'Ø´Ø±ÙƒØ§Ø¡ Ø¢Ø®Ø±ÙˆÙ†' : 'Other Partners';
-  static String get institutionalSecurityNotice => _isArabic
-      ? 'Ø¥Ø´Ø¹Ø§Ø± Ø£Ù…Ù†ÙŠ Ù…Ø¤Ø³Ø³ÙŠ'
-      : 'Institutional Security Notice';
+      _isArabic ? 'شركاء آخرون' : 'Other Partners';
+  static String get institutionalSecurityNotice =>
+      _isArabic ? 'إشعار أمني مؤسسي' : 'Institutional Security Notice';
   static String get institutionalSecurityNoticeDescription => _isArabic
-      ? 'Ù‡Ø°Ø§ Ø§Ù„Ø¨ÙˆØ§Ø¨Ø© Ù…Ø®ØµØµØ© Ù„Ù„Ø£ÙØ±Ø§Ø¯ Ø§Ù„Ù…Ø®ÙˆÙ„ÙŠÙ†. ÙŠØªÙ… Ù…Ø±Ø§Ù‚Ø¨Ø© Ø§ØªØµØ§Ù„Ùƒ ÙˆØ­Ù…Ø§ÙŠØªÙ‡ Ø¨ÙˆØ§Ø³Ø·Ø© Ø¨Ø±ÙˆØªÙˆÙƒÙˆÙ„Ø§Øª ØªØ´ÙÙŠØ± Enterprise Vault.'
+      ? 'هذا البوابة مخصصة للأفراد المخولين. يتم مراقبة اتصالك وحمايته بواسطة بروتوكولات تشفير Enterprise Vault.'
       : 'This assessment portal is strictly for authorized personnel. Your connection is being monitored and protected by Enterprise Vault encryption protocols.';
   static String get allRightsReserved => _isArabic
-      ? 'Â© 2024 Enterprise Assessment Engine. Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø­Ù‚ÙˆÙ‚ Ù…Ø­ÙÙˆØ¸Ø©.'
-      : 'Â© 2024 Enterprise Assessment Engine. All rights reserved.';
+      ? '© 2024 Enterprise Assessment Engine. جميع الحقوق محفوظة.'
+      : '© 2024 Enterprise Assessment Engine. All rights reserved.';
   static String get privacyProtocol =>
-      _isArabic ? 'Ø¨Ø±ÙˆØªÙˆÙƒÙˆÙ„ Ø§Ù„Ø®ØµÙˆØµÙŠØ©' : 'PRIVACY PROTOCOL';
+      _isArabic ? 'بروتوكول الخصوصية' : 'PRIVACY PROTOCOL';
   static String get termsOfAccess =>
-      _isArabic ? 'Ø´Ø±ÙˆØ· Ø§Ù„ÙˆØµÙˆÙ„' : 'TERMS OF ACCESS';
+      _isArabic ? 'شروط الوصول' : 'TERMS OF ACCESS';
   static String get securityWhitepaper =>
-      _isArabic ? 'ÙˆØ±Ù‚Ø© Ø£Ù…Ù†ÙŠØ©' : 'SECURITY WHITEPAPER';
+      _isArabic ? 'ورقة أمنية' : 'SECURITY WHITEPAPER';
 
   // Login Screen
-  static String get secureIdentityGateway => _isArabic
-      ? 'Ø¨ÙˆØ§Ø¨Ø© Ø§Ù„Ù‡ÙˆÙŠØ© Ø§Ù„Ø¢Ù…Ù†Ø©'
-      : 'Secure Identity Gateway';
-  static String get signInWithBiometrics => _isArabic
-      ? 'ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„ Ø¨Ø§Ù„Ø¨ØµÙ…Ø©'
-      : 'Sign in with Biometrics';
-  static String get biometricSecurityActive => _isArabic
-      ? 'Ø§Ù„Ø£Ù…Ø§Ù† Ø§Ù„Ø¨ÙŠÙˆÙ…ØªØ±ÙŠ Ù†Ø´Ø·'
-      : 'Biometric security active';
+  static String get secureIdentityGateway =>
+      _isArabic ? 'بوابة الهوية الآمنة' : 'Secure Identity Gateway';
+  static String get signInWithBiometrics =>
+      _isArabic ? 'تسجيل الدخول بالبصمة' : 'Sign in with Biometrics';
+  static String get biometricSecurityActive =>
+      _isArabic ? 'الأمان البيومتري نشط' : 'Biometric security active';
   static String get enterpriseOidc =>
-      _isArabic ? 'OIDC Ù…Ø¤Ø³Ø³ÙŠ' : 'ENTERPRISE OIDC';
-  static String get workEmail =>
-      _isArabic ? 'Ø§Ù„Ø¨Ø±ÙŠØ¯ Ø§Ù„Ø¹Ù…Ù„ÙŠ' : 'Work Email';
+      _isArabic ? 'OIDC مؤسسي' : 'ENTERPRISE OIDC';
+  static String get workEmail => _isArabic ? 'البريد العملي' : 'Work Email';
   static String get workEmailHint =>
       _isArabic ? 'name@company.com' : 'name@company.com';
-  static String get password =>
-      _isArabic ? 'ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±' : 'Password';
+  static String get password => _isArabic ? 'كلمة المرور' : 'Password';
   static String get passwordHint =>
-      _isArabic ? 'Ø§Ø¯Ø®Ù„ ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±' : 'Enter password';
+      _isArabic ? 'ادخل كلمة المرور' : 'Enter password';
   static String get forgotPassword =>
-      _isArabic ? 'Ù†Ø³ÙŠØª ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±ØŸ' : 'Forgot password?';
+      _isArabic ? 'نسيت كلمة المرور؟' : 'Forgot password?';
   static String get enterpriseSignIn =>
-      _isArabic ? 'ØªØ³Ø¬ÙŠÙ„ Ø¯Ø®ÙˆÙ„ Ø§Ù„Ù…Ø¤Ø³Ø³Ø©' : 'Enterprise Sign In';
-  static String get acceptInvite =>
-      _isArabic ? 'Ù‚Ø¨ÙˆÙ„ Ø§Ù„Ø¯Ø¹ÙˆØ©' : 'Accept Invite';
-  static String get haveInvite =>
-      _isArabic ? 'Ù„Ø¯ÙŠÙƒ Ø¯Ø¹ÙˆØ©ØŸ' : 'Have an invite?';
-  static String get backToSignIn => _isArabic
-      ? 'Ø§Ù„Ø¹ÙˆØ¯Ø© Ø¥Ù„Ù‰ ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¯Ø®ÙˆÙ„'
-      : 'Back to Sign In';
-  static String get inviteToken =>
-      _isArabic ? 'Ø±Ù…Ø² Ø§Ù„Ø¯Ø¹ÙˆØ©' : 'Invite Token';
+      _isArabic ? 'تسجيل دخول المؤسسة' : 'Enterprise Sign In';
+  static String get acceptInvite => _isArabic ? 'قبول الدعوة' : 'Accept Invite';
+  static String get haveInvite => _isArabic ? 'لديك دعوة؟' : 'Have an invite?';
+  static String get backToSignIn =>
+      _isArabic ? 'العودة إلى تسجيل الدخول' : 'Back to Sign In';
+  static String get inviteToken => _isArabic ? 'رمز الدعوة' : 'Invite Token';
   static String get inviteTokenHint =>
-      _isArabic ? 'Ø§Ø¯Ø®Ù„ Ø±Ù…Ø² Ø§Ù„Ø¯Ø¹ÙˆØ©' : 'Enter invite token';
+      _isArabic ? 'ادخل رمز الدعوة' : 'Enter invite token';
   static String get confirmPassword =>
-      _isArabic ? 'ØªØ£ÙƒÙŠØ¯ ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±' : 'Confirm Password';
-  static String get confirmPasswordHint => _isArabic
-      ? 'Ø£Ø¹Ø¯ Ø¥Ø¯Ø®Ø§Ù„ ÙƒÙ„Ù…Ø© Ø§Ù„Ù…Ø±ÙˆØ±'
-      : 'Re-enter password';
+      _isArabic ? 'تأكيد كلمة المرور' : 'Confirm Password';
+  static String get confirmPasswordHint =>
+      _isArabic ? 'أعد إدخال كلمة المرور' : 'Re-enter password';
   static String get soc2Certified =>
-      _isArabic ? 'Ù…Ø¹ØªÙ…Ø¯ SOC2 Ø§Ù„Ù†ÙˆØ¹ II' : 'SOC2 TYPE II CERTIFIED';
+      _isArabic ? 'معتمد SOC2 النوع II' : 'SOC2 TYPE II CERTIFIED';
   static String get encryption256 =>
-      _isArabic ? 'ØªØ´ÙÙŠØ± 256 Ø¨Øª' : '256-BIT ENCRYPTION';
+      _isArabic ? 'تشفير 256 بت' : '256-BIT ENCRYPTION';
   static String get authorizedUseOnly => _isArabic
-      ? 'Ø§Ù„Ø§Ø³ØªØ®Ø¯Ø§Ù… Ù„Ù„Ù…Ø®ÙˆÙ„ÙŠÙ† ÙÙ‚Ø·. ØªØªÙ… Ù…Ø±Ø§Ù‚Ø¨Ø© Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª ÙˆØªØ´ÙÙŠØ±Ù‡Ø§.'
+      ? 'الاستخدام للمخولين فقط. تتم مراقبة جميع البيانات وتشفيرها.'
       : 'Authorized use only. All session data is monitored and encrypted.';
   static String get privacyPolicy =>
-      _isArabic ? 'Ø³ÙŠØ§Ø³Ø© Ø§Ù„Ø®ØµÙˆØµÙŠØ©' : 'Privacy Policy';
+      _isArabic ? 'سياسة الخصوصية' : 'Privacy Policy';
   static String get securityTerms =>
-      _isArabic ? 'Ø´Ø±ÙˆØ· Ø§Ù„Ø£Ù…Ø§Ù†' : 'Security Terms';
-  static String get statusLabel => _isArabic ? 'Ø§Ù„Ø­Ø§Ù„Ø©:' : 'STATUS:';
-  static String get allSystemsOperational => _isArabic
-      ? 'Ø¬Ù…ÙŠØ¹ Ø§Ù„Ø£Ù†Ø¸Ù…Ø© ØªØ¹Ù…Ù„'
-      : 'ALL SYSTEMS OPERATIONAL';
+      _isArabic ? 'شروط الأمان' : 'Security Terms';
+  static String get statusLabel => _isArabic ? 'الحالة:' : 'STATUS:';
+  static String get allSystemsOperational =>
+      _isArabic ? 'جميع الأنظمة تعمل' : 'ALL SYSTEMS OPERATIONAL';
   static String get regionLabel =>
-      _isArabic ? 'Ø§Ù„Ù…Ù†Ø·Ù‚Ø©: US-EAST-1' : 'Region: US-EAST-1';
+      _isArabic ? 'المنطقة: US-EAST-1' : 'Region: US-EAST-1';
   static String get nodeLabel =>
-      _isArabic ? 'Ø§Ù„Ø¹Ù‚Ø¯Ø©: 842.22.4' : 'Node: 842.22.4';
+      _isArabic ? 'العقدة: 842.22.4' : 'Node: 842.22.4';
 
   // Assessment Inventory
   static String get assessmentInventoryTitle =>
-      _isArabic ? 'Ø³Ø¬Ù„ Ø§Ù„ØªÙ‚ÙŠÙŠÙ…Ø§Øª' : 'Assessment Inventory';
+      _isArabic ? 'سجل التقييمات' : 'Assessment Inventory';
   static String get assessmentInventorySubtitle => _isArabic
-      ? 'Ø±Ø§Ø¬Ø¹ Ù…ØªØ·Ù„Ø¨Ø§ØªÙƒ Ø§Ù„Ø­Ø§Ù„ÙŠØ© ÙˆØ³Ø¬Ù„ Ø§Ù„Ø£Ø¯Ø§Ø¡.'
+      ? 'راجع متطلباتك الحالية وسجل الأداء.'
       : 'Review your current requirements and\nperformance history.';
   static String get assessmentSelectionTitle =>
-      _isArabic ? 'Ø§Ù„ØªÙ‚ÙŠÙŠÙ…Ø§Øª Ø§Ù„Ù…ØªØ§Ø­Ø©' : 'Available Assessments';
+      _isArabic ? 'التقييمات المتاحة' : 'Available Assessments';
   static String get assessmentSelectionSubtitle => _isArabic
-      ? 'Ø§Ø®ØªØ± Ø§Ù„ØªÙ‚ÙŠÙŠÙ… Ø§Ù„Ø°ÙŠ ØªØ±ÙŠØ¯ Ø§Ù„Ø¨Ø¯Ø¡ Ø¨Ù‡ Ù„Ù„Ø§Ù†ØªÙ‚Ø§Ù„ Ø¥Ù„Ù‰ Ù†Ù‚Ø·Ø© Ø§Ù„ØªØ­Ù‚Ù‚.'
+      ? 'اختر التقييم الذي تريد البدء به للانتقال إلى نقطة التحقق.'
       : 'Choose the assessment you want to begin and continue to the checkpoint.';
   static String get activeAssessments =>
-      _isArabic ? 'Ø§Ù„ØªÙ‚ÙŠÙŠÙ…Ø§Øª Ø§Ù„Ù†Ø´Ø·Ø©' : 'Active Assessments';
-  static String get readyToBegin =>
-      _isArabic ? 'Ø¬Ø§Ù‡Ø² Ù„Ù„Ø¨Ø¯Ø¡' : 'Ready to Begin';
-  static String get duration => _isArabic ? 'Ø§Ù„Ù…Ø¯Ø©' : 'Duration';
-  static String get minutes => _isArabic ? 'Ø¯Ù‚ÙŠÙ‚Ø©' : 'Minutes';
+      _isArabic ? 'التقييمات النشطة' : 'Active Assessments';
+  static String get readyToBegin => _isArabic ? 'جاهز للبدء' : 'Ready to Begin';
+  static String get duration => _isArabic ? 'المدة' : 'Duration';
+  static String get minutes => _isArabic ? 'دقيقة' : 'Minutes';
   static String get startAssessment =>
-      _isArabic ? 'Ø§Ø¨Ø¯Ø£ Ø§Ù„ØªÙ‚ÙŠÙŠÙ…' : 'Start Assessment';
-  static String get showMore =>
-      _isArabic ? 'Ø£Ø¸Ù‡Ø± Ø§Ù„Ù…Ø²ÙŠØ¯' : 'Show More';
+      _isArabic ? 'ابدأ التقييم' : 'Start Assessment';
+  static String get showMore => _isArabic ? 'أظهر المزيد' : 'Show More';
   static String get proctorsAvailable =>
-      _isArabic ? 'Ø§Ù„Ù…Ø±Ø§Ù‚Ø¨ÙˆÙ† Ù…ØªØ§Ø­ÙˆÙ†' : 'Proctors Available';
-  static String get resume => _isArabic ? 'Ø§Ø³ØªÙƒÙ…Ø§Ù„' : 'Resume';
-  static String expiresInDays(int days) => _isArabic
-      ? 'ØªÙ†ØªÙ‡ÙŠ Ø®Ù„Ø§Ù„ $days Ø£ÙŠØ§Ù…'
-      : 'Expires in $days days';
-  static String get upcoming => _isArabic ? 'Ø§Ù„Ù‚Ø§Ø¯Ù…' : 'Upcoming';
+      _isArabic ? 'المراقبون متاحون' : 'Proctors Available';
+  static String get resume => _isArabic ? 'استكمال' : 'Resume';
+  static String expiresInDays(int days) =>
+      _isArabic ? 'تنتهي خلال $days أيام' : 'Expires in $days days';
+  static String get upcoming => _isArabic ? 'القادم' : 'Upcoming';
   static String scheduledFor(String dateText) =>
-      _isArabic ? 'Ù…Ø¬Ø¯ÙˆÙ„Ø© Ù„Ù€ $dateText' : 'Scheduled for $dateText';
+      _isArabic ? 'مجدولة لـ $dateText' : 'Scheduled for $dateText';
   static String get addToCalendar =>
-      _isArabic ? 'Ø£Ø¶Ù Ø¥Ù„Ù‰ Ø§Ù„ØªÙ‚ÙˆÙŠÙ…' : 'Add to Calendar';
+      _isArabic ? 'أضف إلى التقويم' : 'Add to Calendar';
   static String get assessmentMetrics =>
-      _isArabic ? 'Ù…Ù‚Ø§ÙŠÙŠØ³ Ø§Ù„ØªÙ‚ÙŠÙŠÙ…' : 'Assessment Metrics';
-  static String get avgScore =>
-      _isArabic ? 'Ù…ØªÙˆØ³Ø· Ø§Ù„Ø¯Ø±Ø¬Ø©' : 'Avg. Score';
+      _isArabic ? 'مقاييس التقييم' : 'Assessment Metrics';
+  static String get avgScore => _isArabic ? 'متوسط الدرجة' : 'Avg. Score';
   static String get completionRate =>
-      _isArabic ? 'Ù…Ø¹Ø¯Ù„ Ø§Ù„Ø¥ÙƒÙ…Ø§Ù„' : 'Completion Rate';
+      _isArabic ? 'معدل الإكمال' : 'Completion Rate';
   static String get assessmentHistory =>
-      _isArabic ? 'Ø³Ø¬Ù„ Ø§Ù„ØªÙ‚ÙŠÙŠÙ…' : 'Assessment History';
+      _isArabic ? 'سجل التقييم' : 'Assessment History';
   static String get assessmentName =>
-      _isArabic ? 'Ø§Ø³Ù… Ø§Ù„ØªÙ‚ÙŠÙŠÙ…' : 'Assessment Name';
+      _isArabic ? 'اسم التقييم' : 'Assessment Name';
   static String get dateCompleted =>
-      _isArabic ? 'ØªØ§Ø±ÙŠØ® Ø§Ù„Ø¥ÙƒÙ…Ø§Ù„' : 'Date Completed';
+      _isArabic ? 'تاريخ الإكمال' : 'Date Completed';
 
   // Forensics Checkpoint
-  static String get securityProtocol => _isArabic
-      ? 'Ø¨Ø±ÙˆØªÙˆÙƒÙˆÙ„ Ø§Ù„Ø£Ù…Ø§Ù† V4.2'
-      : 'Security Protocol V4.2';
-  static String get forensicsCheckpointTitle => _isArabic
-      ? 'Ù†Ù‚Ø·Ø© ØªØ­Ù‚Ù‚ Ø§Ù„Ø·Ø¨ Ø§Ù„Ø´Ø±Ø¹ÙŠ'
-      : 'Forensics Checkpoint';
+  static String get securityProtocol =>
+      _isArabic ? 'بروتوكول الأمان V4.2' : 'Security Protocol V4.2';
+  static String get forensicsCheckpointTitle =>
+      _isArabic ? 'نقطة تحقق الطب الشرعي' : 'Forensics Checkpoint';
   static String get forensicsCheckpointSubtitle => _isArabic
-      ? 'Ù‚Ø¨Ù„ Ø§Ù„ÙˆØµÙˆÙ„ Ø¥Ù„Ù‰ Ø¨ÙŠØ¦Ø© ØªÙ‚ÙŠÙŠÙ… Ø§Ù„Ù…Ø¤Ø³Ø³Ø© ÙŠØ¬Ø¨ Ø§Ù„ØªØ­Ù‚Ù‚ Ù…Ù† Ø³Ù„Ø§Ù…Ø© Ø§Ù„Ø¬Ù‡Ø§Ø² ÙˆØ§Ù„Ù…ÙˆÙ‚Ø¹ Ø§Ù„ÙØ¹Ù„ÙŠ Ù„Ø¶Ù…Ø§Ù† Ø¨Ù‚Ø§Ø¡ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª Ø§Ù„Ù…Ø§Ù„ÙŠØ© Ø¯Ø§Ø®Ù„ Ø§Ù„Ø®Ø²Ù†Ø© Ø§Ù„Ø±Ù‚Ù…ÙŠØ©.'
+      ? 'قبل الوصول إلى بيئة تقييم المؤسسة يجب التحقق من سلامة الجهاز والموقع الفعلي لضمان بقاء البيانات المالية داخل الخزنة الرقمية.'
       : 'Before accessing the enterprise assessment environment, we must verify your hardware integrity and physical location. This ensures all financial data remains within the digital vault.';
   static String get hardwareIntegrity =>
-      _isArabic ? 'Ø³Ù„Ø§Ù…Ø© Ø§Ù„Ø¬Ù‡Ø§Ø²' : 'Hardware Integrity';
-  static String get validated => _isArabic ? 'ØªÙ… Ø§Ù„ØªØ­Ù‚Ù‚' : 'Validated';
-  static String get mandatoryAuditStatus => _isArabic
-      ? 'Ø­Ø§Ù„Ø© Ø§Ù„ØªØ¯Ù‚ÙŠÙ‚ Ø§Ù„Ø¥Ù„Ø²Ø§Ù…ÙŠ'
-      : 'Mandatory Audit Status';
-  static String checksComplete(int done, int total) => _isArabic
-      ? '$done Ù…Ù† $total Ù…ÙƒØªÙ…Ù„Ø©'
-      : '$done of $total checks complete';
+      _isArabic ? 'سلامة الجهاز' : 'Hardware Integrity';
+  static String get validated => _isArabic ? 'تم التحقق' : 'Validated';
+  static String get mandatoryAuditStatus =>
+      _isArabic ? 'حالة التدقيق الإلزامي' : 'Mandatory Audit Status';
+  static String checksComplete(int done, int total) =>
+      _isArabic ? '$done من $total مكتملة' : '$done of $total checks complete';
   static String get sessionRecordedNotice => _isArabic
-      ? 'ÙŠØªÙ… ØªØ³Ø¬ÙŠÙ„ Ø§Ù„Ø¬Ù„Ø³Ø© Ù„Ø£ØºØ±Ø§Ø¶ Ø§Ù„Ø§Ù…ØªØ«Ø§Ù„ ÙˆÙÙ‚ Ù‚Ø§Ø¹Ø¯Ø© SEC 17a-4.'
+      ? 'يتم تسجيل الجلسة لأغراض الامتثال وفق قاعدة SEC 17a-4.'
       : 'Your session is being recorded for compliance purposes under the SEC Rule 17a-4.';
   static String get unlockAssessment =>
-      _isArabic ? 'ÙØªØ­ Ø§Ù„ØªÙ‚ÙŠÙŠÙ…' : 'Unlock Assessment';
-  static String get deviceId =>
-      _isArabic ? 'Ù…Ø¹Ø±Ù Ø§Ù„Ø¬Ù‡Ø§Ø²' : 'Device ID';
-  static String get auditLatency =>
-      _isArabic ? 'Ø²Ù…Ù† Ø§Ù„ØªØ¯Ù‚ÙŠÙ‚' : 'Audit Latency';
+      _isArabic ? 'فتح التقييم' : 'Unlock Assessment';
+  static String get deviceId => _isArabic ? 'معرف الجهاز' : 'Device ID';
+  static String get auditLatency => _isArabic ? 'زمن التدقيق' : 'Audit Latency';
 
   // Assessment Setup
-  static String get levelCertifiedExecutive => _isArabic
-      ? 'ØªÙ†ÙÙŠØ°ÙŠ Ù…Ø¹ØªÙ…Ø¯ - Ø§Ù„Ù…Ø³ØªÙˆÙ‰ 4'
-      : 'Level 4 Certified Executive';
+  static String get levelCertifiedExecutive =>
+      _isArabic ? 'تنفيذي معتمد - المستوى 4' : 'Level 4 Certified Executive';
   static String get strategicFinancialRiskAnalysis => _isArabic
-      ? 'ØªØ­Ù„ÙŠÙ„ Ø§Ù„Ù…Ø®Ø§Ø·Ø± Ø§Ù„Ù…Ø§Ù„ÙŠØ© Ø§Ù„Ø§Ø³ØªØ±Ø§ØªÙŠØ¬ÙŠØ©'
+      ? 'تحليل المخاطر المالية الاستراتيجية'
       : 'Strategic Financial Risk Analysis';
   static String get assessmentOverviewDescription => _isArabic
-      ? 'Ù‡Ø°Ø§ Ø§Ù„ØªÙ‚ÙŠÙŠÙ… ÙŠÙ‚ÙŠØ³ Ù‚Ø¯Ø±Ø§Øª Ø§ØªØ®Ø§Ø° Ø§Ù„Ù‚Ø±Ø§Ø± Ø¹Ø§Ù„ÙŠØ© Ø§Ù„Ù…Ø³ØªÙˆÙ‰ Ø¶Ù…Ù† Ø£Ø·Ø± Ù…Ø®Ø§Ø·Ø± Ø§Ù„Ù…Ø¤Ø³Ø³Ø©. ÙŠÙØªÙˆÙ‚Ø¹ Ù…Ù† Ø§Ù„Ù…Ø±Ø´Ø­ÙŠÙ† Ø¯Ù…Ø¬ Ù…Ø¬Ù…ÙˆØ¹Ø§Øª Ø¨ÙŠØ§Ù†Ø§Øª Ù…ØªØ¹Ø¯Ø¯Ø© Ø§Ù„Ø£Ø¨Ø¹Ø§Ø¯ Ù„ØªÙ‚Ø¯ÙŠÙ… Ø¥Ø´Ø±Ø§Ù Ù…Ø§Ù„ÙŠ Ù‚Ø§Ø¨Ù„ Ù„Ù„ØªÙ†ÙÙŠØ°.'
+      ? 'هذا التقييم يقيس قدرات اتخاذ القرار عالية المستوى ضمن أطر مخاطر المؤسسة. يُتوقع من المرشحين دمج مجموعات بيانات متعددة الأبعاد لتقديم إشراف مالي قابل للتنفيذ.'
       : 'This assessment evaluates high-level decision-making capabilities within enterprise risk frameworks. Candidates are expected to synthesize multi-dimensional data sets to provide actionable financial oversight.';
-  static String get modulesLabel => _isArabic ? 'Ø§Ù„ÙˆØ­Ø¯Ø§Øª' : 'Modules';
-  static String get sectionsLabel => _isArabic ? 'Ø£Ù‚Ø³Ø§Ù…' : 'Sections';
-  static String get difficultyLabel =>
-      _isArabic ? 'Ø§Ù„ØµØ¹ÙˆØ¨Ø©' : 'Difficulty';
-  static String get difficultyAdvanced => _isArabic ? 'Ù…ØªÙ‚Ø¯Ù…' : 'Advanced';
-  static String get passMarkLabel =>
-      _isArabic ? 'Ø¯Ø±Ø¬Ø© Ø§Ù„Ù†Ø¬Ø§Ø­' : 'Pass Mark';
-  static String get aggregateLabel => _isArabic ? 'Ø¥Ø¬Ù…Ø§Ù„ÙŠ' : 'Aggregate';
+  static String get modulesLabel => _isArabic ? 'الوحدات' : 'Modules';
+  static String get sectionsLabel => _isArabic ? 'أقسام' : 'Sections';
+  static String get difficultyLabel => _isArabic ? 'الصعوبة' : 'Difficulty';
+  static String get difficultyAdvanced => _isArabic ? 'متقدم' : 'Advanced';
+  static String get passMarkLabel => _isArabic ? 'درجة النجاح' : 'Pass Mark';
+  static String get aggregateLabel => _isArabic ? 'إجمالي' : 'Aggregate';
   static String get systemRequirements =>
-      _isArabic ? 'Ù…ØªØ·Ù„Ø¨Ø§Øª Ø§Ù„Ù†Ø¸Ø§Ù…' : 'System Requirements';
+      _isArabic ? 'متطلبات النظام' : 'System Requirements';
   static String get hardwareSetup =>
-      _isArabic ? 'Ø¥Ø¹Ø¯Ø§Ø¯Ø§Øª Ø§Ù„Ø£Ø¬Ù‡Ø²Ø©' : 'Hardware Setup';
+      _isArabic ? 'إعدادات الأجهزة' : 'Hardware Setup';
   static String get preparingYourSpace =>
-      _isArabic ? 'ØªØ­Ø¶ÙŠØ± Ø§Ù„Ù…Ø³Ø§Ø­Ø©' : 'Preparing Your Space';
+      _isArabic ? 'تحضير المساحة' : 'Preparing Your Space';
   static String get preparingYourSpaceDescription => _isArabic
-      ? 'ØªØ£ÙƒØ¯ Ù…Ù† Ø£Ù†Ùƒ ÙÙŠ ØºØ±ÙØ© Ù‡Ø§Ø¯Ø¦Ø© ÙˆØ¬ÙŠØ¯Ø© Ø§Ù„Ø¥Ø¶Ø§Ø¡Ø©. ÙŠØ¬Ø¨ Ø£Ù† ÙŠÙƒÙˆÙ† ÙˆØ¬Ù‡Ùƒ Ù…Ø±Ø¦ÙŠØ§ Ø¨ÙˆØ¶ÙˆØ­ Ù„Ù…Ø­Ø±Ùƒ Ø§Ù„Ù…Ø±Ø§Ù‚Ø¨Ø© Ø·ÙˆØ§Ù„ Ø§Ù„Ø¬Ù„Ø³Ø©.'
+      ? 'تأكد من أنك في غرفة هادئة وجيدة الإضاءة. يجب أن يكون وجهك مرئيا بوضوح لمحرك المراقبة طوال الجلسة.'
       : 'Ensure you are in a quiet, well-lit room. Your face must be clearly visible to the proctoring engine throughout the session.';
   static String get securityProtocolLabel =>
-      _isArabic ? 'Ø¨Ø±ÙˆØªÙˆÙƒÙˆÙ„ Ø§Ù„Ø£Ù…Ø§Ù†' : 'Security Protocol';
-  static String get strictProctoredSession => _isArabic
-      ? 'Ø¬Ù„Ø³Ø© Ù…Ø±Ø§Ù‚Ø¨Ø© ØµØ§Ø±Ù…Ø©'
-      : 'Strict Proctored Session';
+      _isArabic ? 'بروتوكول الأمان' : 'Security Protocol';
+  static String get strictProctoredSession =>
+      _isArabic ? 'جلسة مراقبة صارمة' : 'Strict Proctored Session';
   static String get readyForDeployment =>
-      _isArabic ? 'Ø¬Ø§Ù‡Ø² Ù„Ù„Ù†Ø´Ø±' : 'Ready for Deployment';
+      _isArabic ? 'جاهز للنشر' : 'Ready for Deployment';
   static String get precheckStatus =>
-      _isArabic ? 'Ø­Ø§Ù„Ø© Ø§Ù„ÙØ­Øµ Ø§Ù„Ù…Ø³Ø¨Ù‚' : 'Pre-check Status';
-  static String get readyStatus => _isArabic ? 'Ø¬Ø§Ù‡Ø²' : 'Ready';
+      _isArabic ? 'حالة الفحص المسبق' : 'Pre-check Status';
+  static String get readyStatus => _isArabic ? 'جاهز' : 'Ready';
   static String get acknowledgeSetup => _isArabic
-      ? 'Ø£Ù‚Ø± Ø¨Ø£Ù†Ù†ÙŠ Ù‚Ø±Ø£Øª Ø¨Ø±ÙˆØªÙˆÙƒÙˆÙ„Ø§Øª Ø§Ù„Ø£Ù…Ø§Ù† ÙˆØ£ÙˆØ§ÙÙ‚ Ø¹Ù„Ù‰ Ø§Ù„Ù…Ø±Ø§Ù‚Ø¨Ø© Ø®Ù„Ø§Ù„ Ù‡Ø°Ù‡ Ø§Ù„Ø¬Ù„Ø³Ø© Ø§Ù„ØªÙŠ Ù…Ø¯ØªÙ‡Ø§ 120 Ø¯Ù‚ÙŠÙ‚Ø©.'
+      ? 'أقر بأنني قرأت بروتوكولات الأمان وأوافق على المراقبة خلال هذه الجلسة التي مدتها 120 دقيقة.'
       : 'I acknowledge that I have read the security protocols and agree to be proctored during this 120-minute session.';
-  static String get acknowledgeBeginSetup => _isArabic
-      ? 'Ø§Ù„Ø¥Ù‚Ø±Ø§Ø± ÙˆØ¨Ø¯Ø¡ Ø§Ù„Ø¥Ø¹Ø¯Ø§Ø¯'
-      : 'Acknowledge & Begin Setup';
+  static String get acknowledgeBeginSetup =>
+      _isArabic ? 'الإقرار وبدء الإعداد' : 'Acknowledge & Begin Setup';
   static String get timerCannotBePaused => _isArabic
-      ? 'Ø¨Ù…Ø¬Ø±Ø¯ Ø§Ù„Ø¨Ø¯Ø¡ØŒ Ù„Ø§ ÙŠÙ…ÙƒÙ† Ø¥ÙŠÙ‚Ø§Ù Ø§Ù„Ù…Ø¤Ù‚Øª Ù…Ø¤Ù‚ØªØ§.'
+      ? 'بمجرد البدء، لا يمكن إيقاف المؤقت مؤقتا.'
       : 'Once you begin, the timer cannot be paused.';
   static String get technicalSupport =>
-      _isArabic ? 'Ø§Ù„Ø¯Ø¹Ù… Ø§Ù„ØªÙ‚Ù†ÙŠ' : 'Technical Support';
-  static String get liveChat =>
-      _isArabic ? 'Ø¯Ø±Ø¯Ø´Ø© Ù…Ø¨Ø§Ø´Ø±Ø©' : 'Live Chat';
+      _isArabic ? 'الدعم التقني' : 'Technical Support';
+  static String get liveChat => _isArabic ? 'دردشة مباشرة' : 'Live Chat';
 
   // Competency Task
   static String get assessmentSessionTitle =>
-      _isArabic ? 'Ù…Ù‡Ù…Ø© Ø§Ù„ÙƒÙØ§Ø¡Ø© 04' : 'Competency Task 04';
+      _isArabic ? 'مهمة الكفاءة 04' : 'Competency Task 04';
   static String get assessmentSessionDescription => _isArabic
-      ? 'ÙŠØ±Ø¬Ù‰ ØªØ³Ø¬ÙŠÙ„ Ø±Ø¯ ÙÙŠØ¯ÙŠÙˆ ÙˆØ§Ø¶Ø­ ÙŠØ´Ø±Ø­ Ø§Ø³ØªØ±Ø§ØªÙŠØ¬ÙŠØ© ØªØ®ÙÙŠÙ Ø§Ù„Ù…Ø®Ø§Ø·Ø± ÙÙŠ Ø¨ÙŠØ¦Ø§Øª Ø¹Ø§Ù„ÙŠØ© Ø§Ù„ØªÙ‚Ù„Ø¨. ØªØ£ÙƒØ¯ Ù…Ù† Ø£Ù† ÙˆØ¬Ù‡Ùƒ Ø¸Ø§Ù‡Ø± Ø¨ÙˆØ¶ÙˆØ­.'
+      ? 'يرجى تسجيل رد فيديو واضح يشرح استراتيجية تخفيف المخاطر في بيئات عالية التقلب. تأكد من أن وجهك ظاهر بوضوح.'
       : 'Please record a clear video response explaining your strategy for risk mitigation in high-volatility environments. Ensure your face is clearly visible.';
-  static String get encryptedMediaSandboxActive => _isArabic
-      ? 'Ø¨ÙŠØ¦Ø© ÙˆØ³Ø§Ø¦Ø· Ù…Ø´ÙØ±Ø© Ù†Ø´Ø·Ø©'
-      : 'Encrypted Media Sandbox Active';
-  static String get questionLabel => _isArabic ? 'Ø§Ù„Ø³Ø¤Ø§Ù„' : 'Question';
-  static String get completeLabel => _isArabic ? 'Ù…ÙƒØªÙ…Ù„' : 'Complete';
+  static String get encryptedMediaSandboxActive =>
+      _isArabic ? 'بيئة وسائط مشفرة نشطة' : 'Encrypted Media Sandbox Active';
+  static String get questionLabel => _isArabic ? 'السؤال' : 'Question';
+  static String get completeLabel => _isArabic ? 'مكتمل' : 'Complete';
   static String get flagForReview =>
-      _isArabic ? 'ÙˆØ¶Ø¹ Ø¹Ù„Ø§Ù…Ø© Ù„Ù„Ù…Ø±Ø§Ø¬Ø¹Ø©' : 'Flag for Review';
-  static String get previousQuestion => _isArabic ? 'Ø§Ù„Ø³Ø§Ø¨Ù‚' : 'Previous';
-  static String get nextQuestion =>
-      _isArabic ? 'Ø§Ù„ØªØ§Ù„ÙŠ' : 'Next Question';
-  static String get submitTask =>
-      _isArabic ? 'Ø¥Ø±Ø³Ø§Ù„ Ø§Ù„Ù…Ù‡Ù…Ø©' : 'Submit Task';
+      _isArabic ? 'وضع علامة للمراجعة' : 'Flag for Review';
+  static String get previousQuestion => _isArabic ? 'السابق' : 'Previous';
+  static String get nextQuestion => _isArabic ? 'التالي' : 'Next Question';
+  static String get submitTask => _isArabic ? 'إرسال المهمة' : 'Submit Task';
   static String get supportingDocumentation =>
-      _isArabic ? 'Ø§Ù„ØªÙˆØ«ÙŠÙ‚ Ø§Ù„Ø¯Ø§Ø¹Ù…' : 'Supporting Documentation';
+      _isArabic ? 'التوثيق الداعم' : 'Supporting Documentation';
   static String get uploadPrompt => _isArabic
-      ? 'Ø§Ø³Ø­Ø¨ Ø§Ù„Ù…Ù„ÙØ§Øª Ø£Ùˆ Ø§Ù†Ù‚Ø± Ù„Ù„Ø±ÙØ¹'
+      ? 'اسحب الملفات أو انقر للرفع'
       : 'Drag files or click to upload';
   static String get uploadHint =>
-      _isArabic ? 'PDFØŒ XLSX Ø­ØªÙ‰ 10MB' : 'PDF, XLSX up to 10MB';
+      _isArabic ? 'PDF، XLSX حتى 10MB' : 'PDF, XLSX up to 10MB';
+
+  // Settings
+  static String get account => _isArabic ? 'الحساب' : 'Account';
+  static String get refreshAccount =>
+      _isArabic ? 'تحديث الحساب' : 'Refresh account';
+  static String get accountDescription => _isArabic
+      ? 'إدارة ملفك الشخصي وصلاحيات الوصول والجلسات النشطة.'
+      : 'Manage your profile, access permissions, and active sessions.';
+  static String get appearanceLanguage =>
+      _isArabic ? 'المظهر واللغة' : 'Appearance & Language';
+  static String get darkMode => _isArabic ? 'الوضع الداكن' : 'Dark Mode';
+  static String get darkModeDescription => _isArabic
+      ? 'استخدم ألوانا داكنة للخلفيات والبطاقات وعناصر التحكم.'
+      : 'Use dark colors for backgrounds, cards, and controls.';
+  static String get language => _isArabic ? 'اللغة' : 'Language';
+  static String get english => _isArabic ? 'English' : 'English';
+  static String get arabic => _isArabic ? 'العربية' : 'العربية';
+  static String get profile => _isArabic ? 'الملف الشخصي' : 'Profile';
+  static String get firstName => _isArabic ? 'الاسم الأول' : 'First Name';
+  static String get lastName => _isArabic ? 'اسم العائلة' : 'Last Name';
+  static String get externalEmployeeId =>
+      _isArabic ? 'معرف الموظف الخارجي' : 'External Employee ID';
+  static String get corporateEmail =>
+      _isArabic ? 'البريد المؤسسي' : 'Corporate Email';
+  static String get discard => _isArabic ? 'تجاهل' : 'Discard';
+  static String get saveProfile =>
+      _isArabic ? 'حفظ الملف الشخصي' : 'Save Profile';
+  static String get rolesPermissions =>
+      _isArabic ? 'الأدوار والصلاحيات' : 'Roles & Permissions';
+  static String get roles => _isArabic ? 'الأدوار' : 'Roles';
+  static String get permissions => _isArabic ? 'الصلاحيات' : 'Permissions';
+  static String get noRolesAssigned =>
+      _isArabic ? 'لا توجد أدوار معينة' : 'No roles assigned';
+  static String get noPermissionsAvailable =>
+      _isArabic ? 'لا توجد صلاحيات متاحة' : 'No permissions available';
+  static String get activeSessions =>
+      _isArabic ? 'الجلسات النشطة' : 'Active Sessions';
+  static String get noActiveSessions => _isArabic
+      ? 'لم يتم إرجاع أي جلسات نشطة.'
+      : 'No active sessions were returned.';
+  static String get currentSession =>
+      _isArabic ? 'الجلسة الحالية' : 'Current session';
+  static String lastActivity(String dateText) =>
+      _isArabic ? 'آخر نشاط $dateText' : 'Last activity $dateText';
+  static String get revokeSession =>
+      _isArabic ? 'إلغاء الجلسة' : 'Revoke session';
+  static String get revokeAllSessions =>
+      _isArabic ? 'إلغاء كل الجلسات' : 'Revoke All Sessions';
+  static String get sessionActions =>
+      _isArabic ? 'إجراءات الجلسة' : 'Session Actions';
+  static String get logout => _isArabic ? 'تسجيل الخروج' : 'Logout';
+  static String get systemStatus => _isArabic ? 'حالة النظام' : 'System Status';
+  static String get noSystemStatusLoaded =>
+      _isArabic ? 'لم يتم تحميل حالة النظام.' : 'No system status loaded.';
+  static String get status => _isArabic ? 'الحالة' : 'Status';
+  static String get lastLogin => _isArabic ? 'آخر تسجيل دخول' : 'Last login';
+  static String get database => _isArabic ? 'قاعدة البيانات' : 'Database';
+  static String get timestamp => _isArabic ? 'الطابع الزمني' : 'Timestamp';
+  static String get refreshSystemStatus =>
+      _isArabic ? 'تحديث حالة النظام' : 'Refresh System Status';
+  static String get unableToLoadAccountData =>
+      _isArabic ? 'تعذر تحميل بيانات الحساب.' : 'Unable to load account data.';
+  static String get retry => _isArabic ? 'إعادة المحاولة' : 'Retry';
+
+  static String tr(String text) =>
+      _isArabic ? (_localized[text] ?? text) : text;
+
+  static String copied(String label) =>
+      _isArabic ? 'تم نسخ $label' : '$label copied';
+
+  static String deleteItem(String name) =>
+      _isArabic ? 'حذف $name؟' : 'Delete $name?';
+
+  static String deactivateItem(String name) =>
+      _isArabic ? 'إلغاء تفعيل $name؟' : 'Deactivate $name?';
+
+  static String archiveItem(String name) =>
+      _isArabic ? 'أرشفة $name؟' : 'Archive $name?';
+
+  static String setNewPasswordFor(String name) => _isArabic
+      ? 'تعيين كلمة مرور جديدة لـ $name.'
+      : 'Set a new password for $name.';
+
+  static String roleRequiresTargetUser(String roleName) => _isArabic
+      ? 'يتطلب $roleName معرف مستخدم مستهدفاً.'
+      : '$roleName requires a target user ID.';
+
+  static String viewWorkflowFor(String examName) =>
+      _isArabic ? 'عرض سير العمل لـ $examName' : 'View workflow for $examName';
+
+  static String correctOption(String option) =>
+      _isArabic ? 'الإجابة الصحيحة $option' : 'Correct $option';
+
+  static String optionLabel(String option) =>
+      _isArabic ? 'الخيار $option' : 'Option $option';
+
+  static String level(Object value) =>
+      _isArabic ? 'المستوى $value' : 'Level $value';
+
+  static String childrenCount(int count) =>
+      _isArabic ? '$count عنصر فرعي' : '$count children';
+
+  static String bloom(Object value) =>
+      _isArabic ? 'بلوم $value' : 'Bloom $value';
+
+  static String difficultyValue(Object value) =>
+      _isArabic ? 'الصعوبة $value' : 'Difficulty $value';
+
+  static String usedCount(int count) =>
+      _isArabic ? 'استخدم $count' : 'Used $count';
+
+  static String questionsCount(int count) =>
+      _isArabic ? '$count سؤال' : '$count questions';
+
+  static String minutesCount(int count) =>
+      _isArabic ? '$count دقيقة' : '$count min';
+
+  static String passPercent(Object value) =>
+      _isArabic ? 'نجاح $value%' : '$value% pass';
+
+  static String pointsShort(Object value) =>
+      _isArabic ? '$value نقطة' : '$value pts';
+
+  static String stepNumber(Object value) =>
+      _isArabic ? 'الخطوة $value' : 'step $value';
+
+  static String scoreValue(Object value) =>
+      _isArabic ? 'الدرجة $value' : 'score $value';
+
+  static String analyticsSummary(
+    String finalizedResults,
+    String averageScore,
+  ) => _isArabic
+      ? 'النتائج النهائية: $finalizedResults | متوسط الدرجة: $averageScore'
+      : 'Finalized results: $finalizedResults | Average score: $averageScore';
+
+  static String securityDetail(String detail) {
+    if (!_isArabic) return detail;
+    final exact = _localized[detail];
+    if (exact != null) return exact;
+
+    const prefix = 'Detected signal: ';
+    if (!detail.startsWith(prefix) || !detail.endsWith('.')) return detail;
+
+    final signalsText = detail
+        .substring(prefix.length, detail.length - 1)
+        .split(', ')
+        .map((signal) => _localizedSecuritySignals[signal] ?? signal)
+        .join('، ');
+    return 'الإشارة المكتشفة: $signalsText.';
+  }
+
+  static String displayValue(String value) {
+    if (!_isArabic) return value;
+    return _localizedBackendDisplay[value.toLowerCase()] ?? value;
+  }
+
+  static const Map<String, String> _localizedBackendDisplay = {
+    'active': 'نشط',
+    'inactive': 'غير نشط',
+    'pending': 'قيد الانتظار',
+    'published': 'منشور',
+    'draft': 'مسودة',
+    'archived': 'مؤرشف',
+    'system': 'نظامي',
+    'custom': 'مخصص',
+    'editable': 'قابل للتعديل',
+    'protected': 'محمي',
+    'cumulative': 'تراكمي',
+    'single': 'مفرد',
+    'online': 'عبر الإنترنت',
+    'mcq': 'اختيار من متعدد',
+  };
+
+  static const Map<String, String> _localizedSecuritySignals = {
+    'rooted device': 'جهاز بصلاحيات الجذر',
+    'emulator': 'محاكي',
+    'debugger': 'مصحح أخطاء',
+  };
+
+  static const Map<String, String> _localized = {
+    'Active': 'نشط',
+    'Allowed IP ranges': 'نطاقات IP المسموحة',
+    'Analytical Reasoning': 'الاستدلال التحليلي',
+    'Answer one, Answer two': 'الإجابة الأولى، الإجابة الثانية',
+    'Approve': 'اعتماد',
+    'Archive': 'أرشفة',
+    'Assign user': 'تعيين مستخدم',
+    'Cancel': 'إلغاء',
+    'Candidate user ID': 'معرف المستخدم المرشح',
+    'Cannot delete competency': 'لا يمكن حذف الكفاءة',
+    'Categories': 'الفئات',
+    'Category actions': 'إجراءات الفئة',
+    'Certification': 'شهادة',
+    'Choice text': 'نص الخيار',
+    'Clear search': 'مسح البحث',
+    'Close': 'إغلاق',
+    'Cohort ID': 'معرف المجموعة',
+    'Cohort actions': 'إجراءات المجموعة',
+    'Cohort code': 'رمز المجموعة',
+    'Cohort description': 'وصف المجموعة',
+    'Cohort name': 'اسم المجموعة',
+    'Cohort type': 'نوع المجموعة',
+    'Competency actions': 'إجراءات الكفاءة',
+    'Condition': 'الشرط',
+    'Confirm': 'تأكيد',
+    'Confirm new password': 'تأكيد كلمة المرور الجديدة',
+    'Confirm password': 'تأكيد كلمة المرور',
+    'Create': 'إنشاء',
+    'Create category': 'إنشاء فئة',
+    'Create cohort': 'إنشاء مجموعة',
+    'Create competency': 'إنشاء كفاءة',
+    'Create enrollment': 'إنشاء تسجيل',
+    'Create exam': 'إنشاء اختبار',
+    'Create publication workflow': 'إنشاء سير نشر',
+    'Create user': 'إنشاء مستخدم',
+    'Cumulative': 'تراكمي',
+    'Deactivate': 'إلغاء التفعيل',
+    'Deactivate user': 'إلغاء تفعيل المستخدم',
+    'Delete': 'حذف',
+    'Delete cohort': 'حذف المجموعة',
+    'Delete competency': 'حذف الكفاءة',
+    'Delete enrollment': 'حذف التسجيل',
+    'Delete role': 'حذف الدور',
+    'Delete this enrollment?': 'هل تريد حذف هذا التسجيل؟',
+    'Department ID': 'معرف القسم',
+    'Description': 'الوصف',
+    'Details': 'التفاصيل',
+    'Edit': 'تعديل',
+    'Eligibility': 'الأهلية',
+    'Email': 'البريد الإلكتروني',
+    'End window date': 'تاريخ نهاية النافذة',
+    'Enrollment notes': 'ملاحظات التسجيل',
+    'Evaluation': 'تقييم',
+    'Evaluation ID': 'معرف التقييم',
+    'Evaluator comments': 'تعليقات المقيم',
+    'Exam ID': 'معرف الاختبار',
+    'Exam actions': 'إجراءات الاختبار',
+    'Exam publication workflow': 'سير نشر الاختبار',
+    'External employee ID': 'معرف الموظف الخارجي',
+    'Filter exam ID': 'تصفية حسب معرف الاختبار',
+    'First name': 'الاسم الأول',
+    'General Knowledge': 'معرفة عامة',
+    'Get': 'جلب',
+    'Invite user': 'دعوة مستخدم',
+    'Last name': 'اسم العائلة',
+    'Live session monitoring and integrity enforcement.':
+        'مراقبة الجلسات المباشرة وتطبيق النزاهة.',
+    'Load Enrollments': 'تحميل التسجيلات',
+    'Load chains': 'تحميل السلاسل',
+    'MCQ': 'اختيار من متعدد',
+    'MFA method': 'طريقة المصادقة متعددة العوامل',
+    'Max attempts allowed': 'الحد الأقصى للمحاولات',
+    'Max score': 'الدرجة العظمى',
+    'Members': 'الأعضاء',
+    'Membership role': 'دور العضوية',
+    'Min score': 'الحد الأدنى للدرجة',
+    'Move': 'نقل',
+    'New password': 'كلمة المرور الجديدة',
+    'OK': 'موافق',
+    'One comment per line': 'تعليق واحد في كل سطر',
+    'One minute remaining in the exam.': 'تبقت دقيقة واحدة في الاختبار.',
+    'Online': 'عبر الإنترنت',
+    'Operator': 'المعامل',
+    'Override available': 'يتوفر تجاوز',
+    'Parent cohort ID': 'معرف المجموعة الأصلية',
+    'Password': 'كلمة المرور',
+    'Password expiry days': 'أيام انتهاء كلمة المرور',
+    'Password history count': 'عدد كلمات المرور السابقة',
+    'Password min length': 'الحد الأدنى لطول كلمة المرور',
+    'Paste reset token': 'الصق رمز إعادة التعيين',
+    'Pause Submission': 'إيقاف الإرسال مؤقتا',
+    'Penalties': 'العقوبات',
+    'Penalty name': 'اسم العقوبة',
+    'Penalty type': 'نوع العقوبة',
+    'Pending': 'قيد الانتظار',
+    'Percentage': 'النسبة المئوية',
+    'Points': 'النقاط',
+    'Policy': 'السياسة',
+    'Prerequisite exam ID': 'معرف الاختبار السابق المطلوب',
+    'Proctor': 'مراقب',
+    'Publish': 'نشر',
+    'Publish exam': 'نشر الاختبار',
+    'Question actions': 'إجراءات السؤال',
+    'Question stem shown to candidate': 'نص السؤال المعروض للمرشح',
+    'Question title': 'عنوان السؤال',
+    'Questions': 'الأسئلة',
+    'Remove member': 'إزالة عضو',
+    'Remove user': 'إزالة مستخدم',
+    'Reset Token': 'رمز إعادة التعيين',
+    'Reset password': 'إعادة تعيين كلمة المرور',
+    'Resource ID': 'معرف المورد',
+    'Retry': 'إعادة المحاولة',
+    'Retry role': 'إعادة محاولة الدور',
+    'Role actions': 'إجراءات الدور',
+    'Role category': 'فئة الدور',
+    'Role name': 'اسم الدور',
+    'Roles': 'الأدوار',
+    'Root category': 'فئة جذرية',
+    'Root competency': 'كفاءة جذرية',
+    'Save changes': 'حفظ التغييرات',
+    'Score': 'الدرجة',
+    'Search by candidate, cohort, or status':
+        'البحث حسب المرشح أو المجموعة أو الحالة',
+    'Search cohorts by name, code, or type':
+        'البحث في المجموعات حسب الاسم أو الرمز أو النوع',
+    'Search competencies': 'البحث في الكفاءات',
+    'Search exams': 'البحث في الاختبارات',
+    'Search question bank': 'البحث في بنك الأسئلة',
+    'Search roles by name, category, or description':
+        'البحث في الأدوار حسب الاسم أو الفئة أو الوصف',
+    'Search users by name, email, or type':
+        'البحث في المستخدمين حسب الاسم أو البريد أو النوع',
+    'Selected role': 'الدور المحدد',
+    'Session ID': 'معرف الجلسة',
+    'Session absolute timeout hours': 'مهلة الجلسة المطلقة بالساعات',
+    'Session timeout minutes': 'مهلة الجلسة بالدقائق',
+    'Short answer': 'إجابة قصيرة',
+    'Start window date': 'تاريخ بداية النافذة',
+    'Status': 'الحالة',
+    'Step': 'الخطوة',
+    'Submit score': 'إرسال الدرجة',
+    'Trigger condition': 'شرط التشغيل',
+    'Update policy': 'تحديث السياسة',
+    'Use for scoring': 'استخدام للتقييم',
+    'Use values': 'استخدام القيم',
+    'User ID': 'معرف المستخدم',
+    'User actions': 'إجراءات المستخدم',
+    'User type': 'نوع المستخدم',
+    'View': 'عرض',
+    'View Log Details': 'عرض تفاصيل السجل',
+    'View publication workflow': 'عرض سير النشر',
+    'What this category contains': 'ما تحتويه هذه الفئة',
+    'What this competency measures': 'ما تقيسه هذه الكفاءة',
+    'What this exam covers': 'ما يغطيه هذا الاختبار',
+    'Workflow ID': 'معرف سير العمل',
+    'Write the full question': 'اكتب السؤال كاملا',
+    'answer evaluation id': 'معرف تقييم الإجابة',
+    'assessment result resource id': 'معرف مورد نتيجة التقييم',
+    'candidate user UUID': 'UUID المستخدم المرشح',
+    'cohort UUID': 'UUID المجموعة',
+    'exam UUID': 'UUID الاختبار',
+    'exam id': 'معرف الاختبار',
+    'exam session id': 'معرف جلسة الاختبار',
+    'optional department id': 'معرف القسم اختياري',
+    'optional parent cohort UUID': 'UUID المجموعة الأصلية اختياري',
+    'optional prerequisite exam id': 'معرف الاختبار السابق اختياري',
+    'test': 'اختبار',
+    'test penalty': 'عقوبة اختبار',
+    'test penalty type': 'نوع عقوبة الاختبار',
+    'user UUID': 'UUID المستخدم',
+    'workflow id': 'معرف سير العمل',
+    'Absolute timeout': 'المهلة المطلقة',
+    'ACCOUNT': 'الحساب',
+    'Accepted answers': 'الإجابات المقبولة',
+    'Active cohorts': 'المجموعات النشطة',
+    'Active users': 'المستخدمون النشطون',
+    'Adaptive exam': 'اختبار تكيفي',
+    'Analytics': 'التحليلات',
+    'ANALYTICS': 'التحليلات',
+    'Archived at': 'تاريخ الأرشفة',
+    'Assessment ID': 'معرف التقييم',
+    'ASSESSMENT ID': 'معرف التقييم',
+    'Attempts remaining': 'المحاولات المتبقية',
+    'Average Percentage': 'متوسط النسبة',
+    'Average Score': 'متوسط الدرجة',
+    'BANK': 'البنك',
+    'Bloom level': 'مستوى بلوم',
+    'Calculated at': 'تاريخ الحساب',
+    'Camera Permission': 'إذن الكاميرا',
+    'Candidate ID': 'معرف المرشح',
+    'Category': 'الفئة',
+    'Category ID': 'معرف الفئة',
+    'Category code': 'رمز الفئة',
+    'Choice': 'الخيار',
+    'Code': 'الرمز',
+    'COHORTS': 'المجموعات',
+    'Competency name': 'اسم الكفاءة',
+    'Custom roles': 'الأدوار المخصصة',
+    'Dashboard': 'لوحة التحكم',
+    'DASHBOARD': 'لوحة التحكم',
+    'Device Integrity': 'سلامة الجهاز',
+    'Difficulty': 'الصعوبة',
+    'Discrimination': 'التمييز',
+    'Draft': 'مسودة',
+    'Events': 'الأحداث',
+    'Event Category': 'فئة الحدث',
+    'Event Type': 'نوع الحدث',
+    'EXAMS': 'الاختبارات',
+    'Exam code': 'رمز الاختبار',
+    'Exam name': 'اسم الاختبار',
+    'Finalized Results': 'النتائج النهائية',
+    'Flagging for review': 'وضع علامة للمراجعة',
+    'Full Screen': 'ملء الشاشة',
+    'Grade': 'التقدير',
+    'Hierarchy level': 'مستوى التسلسل',
+    'IP whitelisting': 'السماح لعناوين IP',
+    'LATENCY': 'زمن الاستجابة',
+    'LIVE': 'المباشر',
+    'Loaded enrollments': 'التسجيلات المحملة',
+    'Lockdown browser': 'متصفح مؤمن',
+    'Metadata': 'البيانات الوصفية',
+    'Microphone Permission': 'إذن الميكروفون',
+    'Minutes': 'الدقائق',
+    'Mode': 'الوضع',
+    'Name': 'الاسم',
+    'Notes': 'الملاحظات',
+    'Notifications Permission': 'إذن الإشعارات',
+    'Option': 'الخيار',
+    'P value': 'قيمة P',
+    'Pass mark': 'درجة النجاح',
+    'Pass mark %': 'نسبة النجاح',
+    'Pending evaluations': 'التقييمات المعلقة',
+    'Penalty rules': 'قواعد العقوبات',
+    'Publication': 'النشر',
+    'Publication status': 'حالة النشر',
+    'Published': 'منشور',
+    'Published at': 'تاريخ النشر',
+    'Randomized': 'عشوائي',
+    'Reason': 'السبب',
+    'Result': 'النتيجة',
+    'Result ID': 'معرف النتيجة',
+    'Result status': 'حالة النتيجة',
+    'RESULTS': 'النتائج',
+    'REVIEW': 'المراجعة',
+    'Review after submit': 'المراجعة بعد الإرسال',
+    'Root': 'الجذر',
+    'ROLES': 'الأدوار',
+    'RULES': 'القواعد',
+    'Sanction ID': 'معرف الجزاء',
+    'Sanctions': 'الجزاءات',
+    'Screen Security': 'أمان الشاشة',
+    'SECURITY LEVEL': 'مستوى الأمان',
+    'SESSIONS': 'الجلسات',
+    'SETTINGS': 'الإعدادات',
+    'Show correct answers': 'إظهار الإجابات الصحيحة',
+    'SKILLS': 'المهارات',
+    'Stem': 'النص التمهيدي',
+    'Submit Event': 'إرسال الحدث',
+    'Suspend': 'تعليق',
+    'Terminate': 'إنهاء',
+    'Timer visible': 'المؤقت ظاهر',
+    'Title': 'العنوان',
+    'Total': 'الإجمالي',
+    'Total cohorts': 'إجمالي المجموعات',
+    'Total roles': 'إجمالي الأدوار',
+    'Total users': 'إجمالي المستخدمين',
+    'Type': 'النوع',
+    'Updated at': 'تاريخ التحديث',
+    'UPLOAD SPEED': 'سرعة الرفع',
+    'Usage count': 'عدد مرات الاستخدام',
+    'USERS': 'المستخدمون',
+    'Void Sanction': 'إلغاء الجزاء',
+    'Webcam required': 'الكاميرا مطلوبة',
+    'WORKSTATION': 'محطة العمل',
+    'Created at': 'تاريخ الإنشاء',
+    'Duration': 'المدة',
+    'Eligibility chains': 'سلاسل الأهلية',
+    'End window': 'نهاية النافذة',
+    'Last login': 'آخر تسجيل دخول',
+    'MFA': 'المصادقة متعددة العوامل',
+    'Question': 'السؤال',
+    'Question ID': 'معرف السؤال',
+    'Question text': 'نص السؤال',
+    'Reset Password': 'إعادة تعيين كلمة المرور',
+    'Resume': 'استئناف',
+    'Send Reset Link': 'إرسال رابط إعادة التعيين',
+    'Session timeout': 'مهلة الجلسة',
+    'Start window': 'بداية النافذة',
+    'Tenant ID': 'معرف المستأجر',
+    'Analytics Dashboard': 'لوحة التحليلات',
+    'Analyst': 'محلل',
+    'API\nSYNCED': 'مزامنة\nAPI',
+    'ASSESSMENT STATUS': 'حالة التقييم',
+    'AVERAGE': 'المتوسط',
+    'Average percentage': 'متوسط النسبة',
+    'Based on finalized assessment results from the backend.':
+        'استنادا إلى نتائج التقييم النهائية القادمة من الخادم.',
+    'Competency Metrics': 'مقاييس الكفاءة',
+    'Dashboard Summary': 'ملخص اللوحة',
+    'Earned Credentials': 'الشهادات المكتسبة',
+    'Enterprise\nAssessment': 'تقييم\nالمؤسسة',
+    'EXPORT CERTIFICATE': 'تصدير الشهادة',
+    'Unable to load analytics': 'تعذر تحميل التحليلات',
+    'Values returned by analytics dashboard': 'القيم المعادة من لوحة التحليلات',
+    'Security Check': 'فحص الأمان',
+    'PASSED': 'ناجح',
+    'WARNING': 'تحذير',
+    'FAILED': 'فشل',
+    'SKIPPED': 'تم التخطي',
+    'Not required for this exam.': 'غير مطلوب لهذا الاختبار.',
+    'Secure screen protection is available for exam mode.':
+        'حماية الشاشة الآمنة متاحة لوضع الاختبار.',
+    'Secure screen enforcement is Android-only in this build.':
+        'فرض الشاشة الآمنة متاح على أندرويد فقط في هذا الإصدار.',
+    'Exit split-screen before starting the exam.':
+        'اخرج من وضع تقسيم الشاشة قبل بدء الاختبار.',
+    'No split-screen or multi-window mode detected.':
+        'لم يتم اكتشاف تقسيم شاشة أو وضع نوافذ متعددة.',
+    'Permission is granted.': 'تم منح الإذن.',
+    'Permission is required before starting this exam.':
+        'الإذن مطلوب قبل بدء هذا الاختبار.',
+    'Device integrity checks are Android-only in this build.':
+        'فحوصات سلامة الجهاز متاحة على أندرويد فقط في هذا الإصدار.',
+    'No rooted, emulator, or debugger signals detected.':
+        'لم يتم اكتشاف مؤشرات جهاز بصلاحيات الجذر أو محاكي أو مصحح أخطاء.',
+    'User details': 'تفاصيل المستخدم',
+    'Review account profile and tenant status.':
+        'راجع ملف الحساب وحالة المستأجر.',
+    'Unable to load user details': 'تعذر تحميل تفاصيل المستخدم',
+    'Check the connection and try again.': 'تحقق من الاتصال وحاول مرة أخرى.',
+    'Cohort members': 'أعضاء المجموعة',
+    'Add Member': 'إضافة عضو',
+    'Add member': 'إضافة عضو',
+    'Attach a user to this cohort.': 'أرفق مستخدماً بهذه المجموعة.',
+    'No members available': 'لا يوجد أعضاء متاحون',
+    'SYNCHRONIZED': 'متزامن',
+    'Global Payload Progress': 'تقدم حزمة البيانات العام',
+    'Question Data': 'بيانات السؤال',
+    '142 Entries Reconciled': 'تمت مطابقة 142 إدخالاً',
+    'Media Payloads (HD Video)': 'حزم الوسائط (فيديو عالي الدقة)',
+    '3 of 4 Files Uploaded...': 'تم رفع 3 من 4 ملفات...',
+    'Telemetry & Metadata': 'بيانات القياس والبيانات الوصفية',
+    'Awaiting Final Handshake': 'بانتظار المصافحة النهائية',
+    'Fill the assessment content and answer configuration.':
+        'املأ محتوى التقييم وإعدادات الإجابة.',
+    'Correct answer': 'الإجابة الصحيحة',
+    'Answer choices': 'خيارات الإجابة',
+    'Choices': 'الخيارات',
+    'Psychometrics': 'القياسات النفسية',
+    'Cohort details': 'تفاصيل المجموعة',
+    'Review cohort identity and hierarchy.':
+        'راجع هوية المجموعة وتسلسلها الهرمي.',
+    'Unable to load cohort details.': 'تعذر تحميل تفاصيل المجموعة.',
+    'Edit user': 'تعديل المستخدم',
+    'Update profile and account status fields.':
+        'حدّث حقول الملف الشخصي وحالة الحساب.',
+    'Set a new password for': 'تعيين كلمة مرور جديدة لـ',
+    'Send an invite and let the user complete account setup.':
+        'أرسل دعوة ودع المستخدم يكمل إعداد الحساب.',
+    'Send Invite': 'إرسال الدعوة',
+    'Create User': 'إنشاء مستخدم',
+    'Create an account with a password for direct access.':
+        'أنشئ حساباً بكلمة مرور للوصول المباشر.',
+    'Create Competency': 'إنشاء كفاءة',
+    'Add a root competency or place it under an existing one.':
+        'أضف كفاءة جذرية أو ضعها تحت كفاءة موجودة.',
+    'Move competency': 'نقل الكفاءة',
+    'Move Competency': 'نقل الكفاءة',
+    'Change where this competency sits in the evaluator map.':
+        'غيّر موضع هذه الكفاءة في خريطة المقيّم.',
+    'Delete category': 'حذف الفئة',
+    'Delete question': 'حذف السؤال',
+    'Delete exam': 'حذف الاختبار',
+    'Archive exam': 'أرشفة الاختبار',
+    'Assessment governance': 'حوكمة التقييم',
+    'No penalty rules': 'لا توجد قواعد عقوبات',
+    'Create rules that define scoring penalties.':
+        'أنشئ قواعد تحدد عقوبات الدرجات.',
+    'No eligibility chains': 'لا توجد سلاسل أهلية',
+    'Create prerequisite chains for exam eligibility.':
+        'أنشئ سلاسل متطلبات مسبقة لأهلية الاختبار.',
+    'Randomize questions': 'عشوائية الأسئلة',
+    'Allow review after submit': 'السماح بالمراجعة بعد الإرسال',
+    'Allow flagging for review': 'السماح بوضع علامة للمراجعة',
+    'Show timer to candidate': 'إظهار المؤقت للمرشح',
+    'Show correct answers after': 'إظهار الإجابات الصحيحة بعد',
+    'Update security policy': 'تحديث سياسة الأمان',
+    'Adjust authentication, password, session, and IP controls.':
+        'اضبط عناصر المصادقة وكلمة المرور والجلسة وعناوين IP.',
+    'MFA enabled': 'المصادقة متعددة العوامل مفعلة',
+    'Require uppercase': 'يتطلب أحرفاً كبيرة',
+    'Require lowercase': 'يتطلب أحرفاً صغيرة',
+    'Require numbers': 'يتطلب أرقاماً',
+    'Require special chars': 'يتطلب رموزاً خاصة',
+    'Force reauth on privilege change':
+        'فرض إعادة المصادقة عند تغيير الصلاحيات',
+    'Biometric auth': 'مصادقة حيوية',
+    'Enforce TLS 1.3 minimum': 'فرض TLS 1.3 كحد أدنى',
+    'Disable weak ciphers': 'تعطيل الشفرات الضعيفة',
+    'Update Policy': 'تحديث السياسة',
+    'Create Enrollment': 'إنشاء تسجيل',
+    'Enroll a candidate into the selected exam.':
+        'سجّل مرشحاً في الاختبار المحدد.',
+    'Manual evaluation': 'التقييم اليدوي',
+    'Session': 'الجلسة',
+    'Score evaluation': 'تقييم الدرجة',
+    'Load a session': 'تحميل جلسة',
+    'Enter a session id to fetch pending manual evaluations.':
+        'أدخل معرف جلسة لجلب التقييمات اليدوية المعلقة.',
+    'No pending evaluations': 'لا توجد تقييمات معلقة',
+    'This session has no pending manual grading items.':
+        'لا تحتوي هذه الجلسة على عناصر تصحيح يدوي معلقة.',
+    'Check the session id and try again.':
+        'تحقق من معرف الجلسة وحاول مرة أخرى.',
+    'Published result': 'النتيجة المنشورة',
+    'No session loaded': 'لم يتم تحميل جلسة',
+    'Result publication': 'نشر النتيجة',
+    'Enter a session id to check or publish a result.':
+        'أدخل معرف جلسة للتحقق من نتيجة أو نشرها.',
+    'Approval workflow': 'سير عمل الموافقة',
+    'Approval and exam publish are separate backend calls.':
+        'الموافقة ونشر الاختبار طلبان منفصلان إلى الخلفية.',
+    'Unable to load enrollments for this exam.':
+        'تعذر تحميل التسجيلات لهذا الاختبار.',
+    'Users Management': 'إدارة المستخدمين',
+    'Manage tenant users and account access.':
+        'إدارة مستخدمي المستأجر والوصول إلى الحسابات.',
+    'Cohorts': 'المجموعات',
+    'Manage tenant cohorts and membership.': 'إدارة مجموعات المستأجر والعضوية.',
+    'Roles & Security': 'الأدوار والأمان',
+    'Manage tenant roles, user assignments, and security policy.':
+        'إدارة أدوار المستأجر وتعيينات المستخدمين وسياسة الأمان.',
+    'Security policy': 'سياسة الأمان',
+    'Live Sessions & Enrollment': 'الجلسات المباشرة والتسجيل',
+    'Load exam enrollments and manage candidate access windows.':
+        'حمّل تسجيلات الاختبار وأدر نوافذ وصول المرشحين.',
+    'Question Bank': 'بنك الأسئلة',
+    'Build categories and manage reusable assessment questions.':
+        'أنشئ الفئات وأدر أسئلة التقييم القابلة لإعادة الاستخدام.',
+    'Exams': 'الاختبارات',
+    'Build, archive, and manage publication workflows for evaluator exams.':
+        'أنشئ الاختبارات وأرشفها وأدر سير عمل نشرها للمقيّم.',
+    'Competencies': 'الكفاءات',
+    'Structure the skill map used to evaluate candidate performance.':
+        'نظّم خريطة المهارات المستخدمة لتقييم أداء المرشح.',
+    'Proctor Session Monitoring': 'مراقبة جلسات المراقب',
+    'Control exam sessions and inspect sanctions or proctoring events.':
+        'تحكم في جلسات الاختبار وافحص الجزاءات أو أحداث المراقبة.',
+    'Submit Proctoring Event': 'إرسال حدث مراقبة',
+    'Assessment Details': 'تفاصيل التقييم',
+    'Assessment Rules': 'قواعد التقييم',
+    'Security Protocols': 'بروتوكولات الأمان',
+    'Overview': 'نظرة عامة',
+    'No assessments available': 'لا توجد تقييمات متاحة',
+    'Back': 'رجوع',
+    'Reset Access': 'إعادة تعيين الوصول',
+    'Enter your work email. If the account exists, a reset link will be sent.':
+        'أدخل بريد العمل. إذا كان الحساب موجوداً فسيتم إرسال رابط إعادة التعيين.',
+    'Create New Password': 'إنشاء كلمة مرور جديدة',
+    'Select Access Role': 'اختيار دور الوصول',
+    'Choose the portal you want to access before signing in.':
+        'اختر البوابة التي تريد الوصول إليها قبل تسجيل الدخول.',
+    'Change access role': 'تغيير دور الوصول',
+    'Encrypted connection': 'اتصال مشفر',
+    'SYSTEM STATUS': 'حالة النظام',
+    'SECURITY': 'الأمان',
+    'VERSION\nCONTROL': 'التحكم\nبالإصدار',
+    'NODES\nONLINE': 'العقد\nمتصلة',
+    'VAULT\nSECURE': 'الخزنة\nآمنة',
+    'INSTITUTIONAL INTEGRITY.\nADAPTIVE EXCELLENCE.':
+        'نزاهة مؤسسية.\nتميّز تكيفي.',
+    'Powering high-stakes financial analysis through\nprecision data models and secure auditing\nframeworks.':
+        'تمكين التحليل المالي عالي الحساسية عبر\nنماذج بيانات دقيقة وأطر تدقيق\nآمنة.',
+    'Enterprise exam workspace': 'مساحة عمل اختبار المؤسسة',
+    'SYNCING HEARTBEAT': 'مزامنة النبض',
+    'Submit exam?': 'إرسال الاختبار؟',
+    'Submitting now will lock the answers and finish the exam.':
+        'سيؤدي الإرسال الآن إلى قفل الإجابات وإنهاء الاختبار.',
+    'Submit Exam': 'إرسال الاختبار',
+    'End of questions': 'نهاية الأسئلة',
+    'You have reached the end of the exam. Complete the exam to submit the session.':
+        'وصلت إلى نهاية الاختبار. أكمل الاختبار لإرسال الجلسة.',
+    'Please review the warning details before ending the session.':
+        'راجع تفاصيل التحذير قبل إنهاء الجلسة.',
+    'Finalizing...': 'جارٍ الإنهاء...',
+    'RESOURCE DISTRIBUTION': 'توزيع الموارد',
+    'Hash Verification': 'التحقق من التجزئة',
+    'Binary Accuracy': 'دقة الملفات الثنائية',
+    'Verified': 'تم التحقق',
+    'ACTIVE\nCONNECTION': 'اتصال\nنشط',
+    'Live\nReconciliation': 'مطابقة\nمباشرة',
+    'PROCESS INTEGRITY': 'نزاهة العملية',
+    'Syncing Local\nData...': 'مزامنة البيانات\nالمحلية...',
+    'TRANSACTION ID': 'معرف المعاملة',
+    'PERFORMANCE ANALYTICS': 'تحليلات الأداء',
+    'Role assignment pending': 'تعيين الدور معلق',
+    'Unable to load competencies': 'تعذر تحميل الكفاءات',
+    'Unable to load exams': 'تعذر تحميل الاختبارات',
+    'Unable to load question bank': 'تعذر تحميل بنك الأسئلة',
+    'Assign role': 'تعيين الدور',
+    'Remove role': 'إزالة الدور',
+    'Edit exam': 'تعديل الاختبار',
+  };
 }

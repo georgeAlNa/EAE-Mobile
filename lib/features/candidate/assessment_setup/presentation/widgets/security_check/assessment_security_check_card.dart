@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../../../core/constants/app_strings.dart';
 import '../../../../../../core/constants/colors.dart';
 import '../../../../../../core/constants/text_styles.dart';
 import '../../../../../../core/helpers/spacing.dart';
@@ -25,7 +26,7 @@ class AssessmentSecurityCheckCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Security Check',
+            AppStrings.tr('Security Check'),
             style: AppTextStyles.font14DarkGreySemiBold.copyWith(
               color: AppColors.primaryColor9,
             ),
@@ -62,7 +63,7 @@ class _SecurityCheckRow extends StatelessWidget {
                   children: [
                     Expanded(
                       child: Text(
-                        item.label,
+                        AppStrings.tr(item.label),
                         style: AppTextStyles.font12DarkGreySemiBold.copyWith(
                           color: AppColors.primaryColor9,
                         ),
@@ -80,7 +81,7 @@ class _SecurityCheckRow extends StatelessWidget {
                 ),
                 verticalSpace(3),
                 Text(
-                  item.detail,
+                  AppStrings.securityDetail(item.detail),
                   style: AppTextStyles.font11DarkGreyLight.copyWith(
                     color: AppColors.tertiaryColor6,
                     height: 1.35,
@@ -122,13 +123,13 @@ class _SecurityCheckRow extends StatelessWidget {
   String _statusLabel(AssessmentSecurityCheckStatus status) {
     switch (status) {
       case AssessmentSecurityCheckStatus.passed:
-        return 'PASSED';
+        return AppStrings.tr('PASSED');
       case AssessmentSecurityCheckStatus.warning:
-        return 'WARNING';
+        return AppStrings.tr('WARNING');
       case AssessmentSecurityCheckStatus.failed:
-        return 'FAILED';
+        return AppStrings.tr('FAILED');
       case AssessmentSecurityCheckStatus.skipped:
-        return 'SKIPPED';
+        return AppStrings.tr('SKIPPED');
     }
   }
 }

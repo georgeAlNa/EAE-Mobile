@@ -11,6 +11,7 @@ import '../../data/models/exams_management_request_body.dart';
 import '../../data/models/exams_management_response.dart';
 import '../../logic/exams_management_cubit.dart';
 import 'exams_management_helpers.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 Future<void> showExamFormSheet({
   required BuildContext context,
@@ -60,14 +61,14 @@ Future<void> confirmExamAction({
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(AppStrings.tr('Cancel')),
         ),
         FilledButton(
           onPressed: () {
             Navigator.pop(context);
             onConfirmed();
           },
-          child: const Text('Confirm'),
+          child: Text(AppStrings.tr('Confirm')),
         ),
       ],
     ),
@@ -149,7 +150,9 @@ class _ExamFormSheetState extends State<ExamFormSheet> {
     final isEditing = widget.exam != null;
 
     return _SheetScaffold(
-      title: isEditing ? 'Edit exam' : 'Create exam',
+      title: isEditing
+          ? AppStrings.tr('Edit exam')
+          : AppStrings.tr('Create exam'),
       subtitle:
           'Configure the exam details, scoring, timing, and candidate options.',
       child: Form(
@@ -158,22 +161,22 @@ class _ExamFormSheetState extends State<ExamFormSheet> {
           children: [
             _SheetTextField(
               controller: _nameController,
-              label: 'Exam name',
+              label: AppStrings.tr('Exam name'),
               hintText: 'Alpha Foundational Adaptive Exam',
               validator: _requiredValidator,
             ),
             verticalSpace(12),
             _SheetTextField(
               controller: _codeController,
-              label: 'Exam code',
+              label: AppStrings.tr('Exam code'),
               hintText: 'EXAM-ALPHA-001',
               validator: _requiredValidator,
             ),
             verticalSpace(12),
             _SheetTextField(
               controller: _descriptionController,
-              label: 'Description',
-              hintText: 'What this exam covers',
+              label: AppStrings.tr('Description'),
+              hintText: AppStrings.tr('What this exam covers'),
               maxLines: 3,
               validator: _requiredValidator,
             ),
@@ -184,14 +187,14 @@ class _ExamFormSheetState extends State<ExamFormSheet> {
                   child: DropdownButtonFormField<String>(
                     initialValue: _examType,
                     decoration: _fieldDecoration('Type'),
-                    items: const [
+                    items: [
                       DropdownMenuItem(
                         value: 'certification',
-                        child: Text('Certification'),
+                        child: Text(AppStrings.tr('Certification')),
                       ),
                       DropdownMenuItem(
                         value: 'evaluation',
-                        child: Text('Evaluation'),
+                        child: Text(AppStrings.tr('Evaluation')),
                       ),
                     ],
                     onChanged: (value) {
@@ -204,8 +207,11 @@ class _ExamFormSheetState extends State<ExamFormSheet> {
                   child: DropdownButtonFormField<String>(
                     initialValue: _assessmentMode,
                     decoration: _fieldDecoration('Mode'),
-                    items: const [
-                      DropdownMenuItem(value: 'online', child: Text('Online')),
+                    items: [
+                      DropdownMenuItem(
+                        value: 'online',
+                        child: Text(AppStrings.tr('Online')),
+                      ),
                     ],
                     onChanged: (value) {
                       if (value != null) {
@@ -222,7 +228,7 @@ class _ExamFormSheetState extends State<ExamFormSheet> {
                 Expanded(
                   child: _SheetTextField(
                     controller: _questionsController,
-                    label: 'Questions',
+                    label: AppStrings.tr('Questions'),
                     hintText: '10',
                     keyboardType: TextInputType.number,
                     validator: _positiveIntValidator,
@@ -232,7 +238,7 @@ class _ExamFormSheetState extends State<ExamFormSheet> {
                 Expanded(
                   child: _SheetTextField(
                     controller: _durationController,
-                    label: 'Minutes',
+                    label: AppStrings.tr('Minutes'),
                     hintText: '30',
                     keyboardType: TextInputType.number,
                     validator: _positiveIntValidator,
@@ -246,7 +252,7 @@ class _ExamFormSheetState extends State<ExamFormSheet> {
                 Expanded(
                   child: _SheetTextField(
                     controller: _passMarkController,
-                    label: 'Pass mark %',
+                    label: AppStrings.tr('Pass mark %'),
                     hintText: '60',
                     keyboardType: TextInputType.number,
                     validator: _percentageValidator,
@@ -256,7 +262,7 @@ class _ExamFormSheetState extends State<ExamFormSheet> {
                 Expanded(
                   child: _SheetTextField(
                     controller: _difficultyController,
-                    label: 'Difficulty',
+                    label: AppStrings.tr('Difficulty'),
                     hintText: '3',
                     keyboardType: TextInputType.number,
                     validator: _positiveIntValidator,
@@ -266,35 +272,35 @@ class _ExamFormSheetState extends State<ExamFormSheet> {
             ),
             verticalSpace(12),
             _SwitchTile(
-              title: 'Adaptive exam',
+              title: AppStrings.tr('Adaptive exam'),
               value: _isAdaptiveExam,
               onChanged: (value) => setState(() => _isAdaptiveExam = value),
             ),
             _SwitchTile(
-              title: 'Randomize questions',
+              title: AppStrings.tr('Randomize questions'),
               value: _isRandomized,
               onChanged: (value) => setState(() => _isRandomized = value),
             ),
             _SwitchTile(
-              title: 'Allow review after submit',
+              title: AppStrings.tr('Allow review after submit'),
               value: _allowReviewAfterSubmit,
               onChanged: (value) =>
                   setState(() => _allowReviewAfterSubmit = value),
             ),
             _SwitchTile(
-              title: 'Allow flagging for review',
+              title: AppStrings.tr('Allow flagging for review'),
               value: _allowFlaggingForReview,
               onChanged: (value) =>
                   setState(() => _allowFlaggingForReview = value),
             ),
             _SwitchTile(
-              title: 'Show timer to candidate',
+              title: AppStrings.tr('Show timer to candidate'),
               value: _timerVisibleToCandidate,
               onChanged: (value) =>
                   setState(() => _timerVisibleToCandidate = value),
             ),
             _SwitchTile(
-              title: 'Show correct answers after',
+              title: AppStrings.tr('Show correct answers after'),
               value: _showCorrectAnswersAfter,
               onChanged: (value) =>
                   setState(() => _showCorrectAnswersAfter = value),
@@ -358,54 +364,73 @@ class ExamDetailsSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return _SheetScaffold(
       title: exam.examName,
-      subtitle: '${exam.examCode} - ${exam.examStatus}',
+      subtitle:
+          '${exam.examCode} - ${AppStrings.displayValue(exam.examStatus)}',
       child: Column(
         children: [
-          EvaluatorCopyableValueRow(label: 'Exam ID', value: exam.id),
-          EvaluatorCopyableValueRow(label: 'Exam name', value: exam.examName),
-          EvaluatorCopyableValueRow(label: 'Exam code', value: exam.examCode),
-          EvaluatorCopyableValueRow(label: 'Status', value: exam.examStatus),
-          EvaluatorCopyableValueRow(label: 'Type', value: exam.examType),
-          EvaluatorCopyableValueRow(label: 'Mode', value: exam.assessmentMode),
           EvaluatorCopyableValueRow(
-            label: 'Questions',
+            label: AppStrings.tr('Exam ID'),
+            value: exam.id,
+          ),
+          EvaluatorCopyableValueRow(
+            label: AppStrings.tr('Exam name'),
+            value: exam.examName,
+          ),
+          EvaluatorCopyableValueRow(
+            label: AppStrings.tr('Exam code'),
+            value: exam.examCode,
+          ),
+          EvaluatorCopyableValueRow(
+            label: AppStrings.tr('Status'),
+            value: AppStrings.displayValue(exam.examStatus),
+          ),
+          EvaluatorCopyableValueRow(
+            label: AppStrings.tr('Type'),
+            value: AppStrings.displayValue(exam.examType),
+          ),
+          EvaluatorCopyableValueRow(
+            label: AppStrings.tr('Mode'),
+            value: AppStrings.displayValue(exam.assessmentMode),
+          ),
+          EvaluatorCopyableValueRow(
+            label: AppStrings.tr('Questions'),
             value: exam.totalQuestions.toString(),
           ),
           EvaluatorCopyableValueRow(
-            label: 'Duration',
+            label: AppStrings.tr('Duration'),
             value: '${exam.totalDurationMinutes} minutes',
           ),
           EvaluatorCopyableValueRow(
-            label: 'Pass mark',
+            label: AppStrings.tr('Pass mark'),
             value: '${exam.passMarkPercentage}%',
           ),
           EvaluatorCopyableValueRow(
-            label: 'Difficulty',
+            label: AppStrings.tr('Difficulty'),
             value: exam.difficultyTierLevel.toString(),
           ),
           EvaluatorCopyableValueRow(
-            label: 'Published',
+            label: AppStrings.tr('Published'),
             value: exam.isPublished ? 'Yes' : 'No',
           ),
           EvaluatorCopyableValueRow(
-            label: 'Published at',
+            label: AppStrings.tr('Published at'),
             value: formatExamDate(exam.publishedAt),
           ),
           EvaluatorCopyableValueRow(
-            label: 'Archived at',
+            label: AppStrings.tr('Archived at'),
             value: formatExamDate(exam.archivedAt),
           ),
           EvaluatorCopyableValueRow(
-            label: 'Created at',
+            label: AppStrings.tr('Created at'),
             value: formatExamDate(exam.createdAt),
           ),
           EvaluatorCopyableValueRow(
-            label: 'Updated at',
+            label: AppStrings.tr('Updated at'),
             value: formatExamDate(exam.updatedAt),
           ),
           verticalSpace(8),
           EvaluatorCopyableBlock(
-            title: 'Description',
+            title: AppStrings.tr('Description'),
             value: exam.examDescription,
           ),
         ],

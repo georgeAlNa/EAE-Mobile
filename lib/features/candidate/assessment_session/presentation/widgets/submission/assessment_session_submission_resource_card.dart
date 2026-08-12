@@ -5,6 +5,7 @@ import '../../../../../../core/constants/colors.dart';
 import '../../../../../../core/constants/text_styles.dart';
 import '../../../../../../core/helpers/spacing.dart';
 import '../../../data/models/assessment_session_models.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class AssessmentSessionSubmissionResourceCard extends StatelessWidget {
   final AssessmentSessionViewData viewData;
@@ -28,7 +29,7 @@ class AssessmentSessionSubmissionResourceCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'RESOURCE DISTRIBUTION',
+              AppStrings.tr('RESOURCE DISTRIBUTION'),
               style: AppTextStyles.font10DarkGreyRegular.copyWith(
                 color: AppColors.secondaryColor7,
                 fontWeight: FontWeight.w800,
@@ -42,7 +43,7 @@ class AssessmentSessionSubmissionResourceCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    'Binary Accuracy',
+                    AppStrings.tr('Binary Accuracy'),
                     style: AppTextStyles.font10DarkGreyLight.copyWith(
                       color: AppColors.tertiaryColor6,
                     ),
@@ -62,14 +63,14 @@ class AssessmentSessionSubmissionResourceCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: Text(
-                    'Hash Verification',
+                    AppStrings.tr('Hash Verification'),
                     style: AppTextStyles.font10DarkGreyLight.copyWith(
                       color: AppColors.tertiaryColor6,
                     ),
                   ),
                 ),
                 Text(
-                  'Verified',
+                  AppStrings.tr('Verified'),
                   style: AppTextStyles.font11DarkGreyLight.copyWith(
                     color: AppColors.secondaryColor7,
                     fontWeight: FontWeight.w700,

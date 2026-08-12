@@ -6,6 +6,7 @@ import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../../../core/public_widgets/app_state_widgets.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class TenantAdminSearchField extends StatelessWidget {
   final TextEditingController controller;
@@ -28,7 +29,7 @@ class TenantAdminSearchField extends StatelessWidget {
         suffixIcon: controller.text.isEmpty
             ? null
             : IconButton(
-                tooltip: 'Clear search',
+                tooltip: AppStrings.tr('Clear search'),
                 onPressed: controller.clear,
                 icon: const Icon(Icons.close),
               ),
@@ -216,7 +217,9 @@ class TenantAdminCopyableValueRow extends StatelessWidget {
                     if (!context.mounted) return;
                     ScaffoldMessenger.of(context)
                       ..hideCurrentSnackBar()
-                      ..showSnackBar(SnackBar(content: Text('$label copied')));
+                      ..showSnackBar(
+                        SnackBar(content: Text(AppStrings.copied(label))),
+                      );
                   }
                 : null,
             icon: const Icon(Icons.copy_outlined),

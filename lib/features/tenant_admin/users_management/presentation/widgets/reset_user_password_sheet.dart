@@ -11,6 +11,7 @@ import '../../../../../core/public_widgets/text_field_widget.dart';
 import '../../data/models/users_management_request_body.dart';
 import '../../logic/users_management_cubit.dart';
 import 'users_management_sheet_scaffold.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class ResetUserPasswordSheet extends StatefulWidget {
   final String userId;
@@ -41,8 +42,8 @@ class _ResetUserPasswordSheetState extends State<ResetUserPasswordSheet> {
   @override
   Widget build(BuildContext context) {
     return UsersManagementSheetScaffold(
-      title: 'Reset password',
-      subtitle: 'Set a new password for ${widget.userName}.',
+      title: AppStrings.tr('Reset password'),
+      subtitle: AppStrings.setNewPasswordFor(widget.userName),
       child: Form(
         key: _formKey,
         child: Column(
@@ -50,19 +51,19 @@ class _ResetUserPasswordSheetState extends State<ResetUserPasswordSheet> {
             TextFieldWidget(
               controller: _passwordController,
               hintText: 'NewPassword@lana1',
-              labelText: 'New password',
+              labelText: AppStrings.tr('New password'),
               obscureText: true,
             ),
             verticalSpace(12),
             TextFieldWidget(
               controller: _passwordConfirmationController,
               hintText: 'NewPassword@lana1',
-              labelText: 'Confirm new password',
+              labelText: AppStrings.tr('Confirm new password'),
               obscureText: true,
             ),
             verticalSpace(20),
             ButtonWidget(
-              title: 'Reset Password',
+              title: AppStrings.tr('Reset Password'),
               width: double.infinity,
               radius: 8.r,
               backgroundColor: AppColors.secondaryColor7,

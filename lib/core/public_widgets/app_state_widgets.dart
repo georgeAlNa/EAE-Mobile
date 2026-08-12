@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../constants/app_strings.dart';
 import '../constants/colors.dart';
 import '../constants/text_styles.dart';
 import '../helpers/spacing.dart';
@@ -61,7 +62,7 @@ class _AppSkeletonBoxState extends State<AppSkeletonBox>
               stops: const [0.15, 0.45, 0.75],
               colors: [
                 AppColors.tertiaryColor2.withValues(alpha: 0.45),
-                AppColors.neutralColor,
+                AppColors.surface,
                 AppColors.tertiaryColor2.withValues(alpha: 0.45),
               ],
               transform: _SlidingGradientTransform(alignment.x),
@@ -182,9 +183,9 @@ class AppSkeletonDataCard extends StatelessWidget {
       margin: margin,
       padding: EdgeInsets.all(14.r),
       decoration: BoxDecoration(
-        color: AppColors.neutralColor,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(8.r),
-        border: Border.all(color: AppColors.tertiaryColor2),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -271,7 +272,7 @@ class AppSkeletonDetailRows extends StatelessWidget {
           width: double.infinity,
           padding: EdgeInsets.symmetric(vertical: 10.h),
           decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: AppColors.tertiaryColor2)),
+            border: Border(bottom: BorderSide(color: AppColors.divider)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -331,7 +332,7 @@ class AppRetryErrorView extends StatelessWidget {
             FilledButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
+              label: Text(AppStrings.retry),
             ),
           ],
         ),

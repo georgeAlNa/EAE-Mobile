@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../../core/constants/colors.dart';
 import '../../../../../../core/constants/text_styles.dart';
 import '../../../../../../core/helpers/spacing.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class AssessmentSessionHeader extends StatelessWidget {
   final String title;
@@ -50,7 +51,7 @@ class AssessmentSessionHeader extends StatelessWidget {
                   ),
                   verticalSpace(2),
                   Text(
-                    'Enterprise exam workspace',
+                    AppStrings.tr('Enterprise exam workspace'),
                     style: AppTextStyles.font10DarkGreyRegular.copyWith(
                       color: AppColors.tertiaryColor6,
                       letterSpacing: 0.4,
@@ -82,7 +83,7 @@ class AssessmentSessionHeader extends StatelessWidget {
                   ),
                   horizontalSpace(8),
                   Text(
-                    'SYNCING HEARTBEAT',
+                    AppStrings.tr('SYNCING HEARTBEAT'),
                     style: AppTextStyles.font10DarkGreyRegular.copyWith(
                       color: AppColors.secondaryColor7,
                       fontWeight: FontWeight.w700,

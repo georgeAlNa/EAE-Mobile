@@ -15,6 +15,7 @@ import '../../../users_management/presentation/widgets/users_management_sheet_sc
 import '../../data/models/cohorts_request_body.dart';
 import '../../data/models/cohorts_response.dart';
 import '../../logic/cohorts_cubit.dart';
+import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class CohortMembersSheet extends StatefulWidget {
   final String cohortId;
@@ -36,7 +37,7 @@ class _CohortMembersSheetState extends State<CohortMembersSheet> {
   @override
   Widget build(BuildContext context) {
     return UsersManagementSheetScaffold(
-      title: 'Cohort members',
+      title: AppStrings.tr('Cohort members'),
       subtitle: widget.cohortName,
       child: BlocConsumer<CohortsCubit, CohortsState>(
         listener: (context, state) {
@@ -94,7 +95,7 @@ class _CohortMembersSheetState extends State<CohortMembersSheet> {
               height: 220.h,
               child: AppRetryErrorView(
                 title: loadError ?? 'Unable to load cohort members',
-                message: 'Check the connection and try again.',
+                message: AppStrings.tr('Check the connection and try again.'),
                 onRetry: () => context.read<CohortsCubit>().getCohortMembers(
                   widget.cohortId,
                 ),
@@ -141,7 +142,7 @@ class _MembersContent extends StatelessWidget {
     return Column(
       children: [
         ButtonWidget(
-          title: 'Add Member',
+          title: AppStrings.tr('Add Member'),
           width: double.infinity,
           radius: 8.r,
           backgroundColor: AppColors.secondaryColor7,
@@ -153,7 +154,7 @@ class _MembersContent extends StatelessWidget {
         verticalSpace(16),
         if (members.isEmpty)
           Text(
-            'No members available',
+            AppStrings.tr('No members available'),
             style: AppTextStyles.font14DarkGreyRegular.copyWith(
               color: AppColors.tertiaryColor6,
             ),
@@ -219,11 +220,11 @@ class _MemberTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 TenantAdminCopyableValueRow(
-                  label: 'User ID',
+                  label: AppStrings.tr('User ID'),
                   value: member.userId,
                 ),
                 TenantAdminCopyableValueRow(
-                  label: 'Membership role',
+                  label: AppStrings.tr('Membership role'),
                   value: member.membershipRole,
                 ),
               ],
@@ -231,7 +232,7 @@ class _MemberTile extends StatelessWidget {
           ),
           horizontalSpace(8),
           IconButton.outlined(
-            tooltip: 'Remove member',
+            tooltip: AppStrings.tr('Remove member'),
             onPressed: enabled
                 ? () {
                     context.read<CohortsCubit>().removeCohortMember(
@@ -299,30 +300,30 @@ class _AddCohortMemberSheetState extends State<AddCohortMemberSheet> {
   @override
   Widget build(BuildContext context) {
     return UsersManagementSheetScaffold(
-      title: 'Add member',
-      subtitle: 'Attach a user to this cohort.',
+      title: AppStrings.tr('Add member'),
+      subtitle: AppStrings.tr('Attach a user to this cohort.'),
       child: Form(
         key: _formKey,
         child: Column(
           children: [
             TextFieldWidget(
               controller: _userIdController,
-              hintText: 'user UUID',
-              labelText: 'User ID',
+              hintText: AppStrings.tr('user UUID'),
+              labelText: AppStrings.tr('User ID'),
               obscureText: false,
             ),
             verticalSpace(12),
             CustomDropdown(
-              items: const ['member', 'leader', 'manager', 'observer'],
+              items: ['member', 'leader', 'manager', 'observer'],
               value: _membershipRole,
-              hintText: 'Membership role',
+              hintText: AppStrings.tr('Membership role'),
               onChanged: (value) => setState(() => _membershipRole = value),
               validator: (value) =>
                   value == null || value.isEmpty ? 'Required' : null,
             ),
             verticalSpace(20),
             ButtonWidget(
-              title: 'Add Member',
+              title: AppStrings.tr('Add Member'),
               width: double.infinity,
               radius: 8.r,
               backgroundColor: AppColors.secondaryColor7,
