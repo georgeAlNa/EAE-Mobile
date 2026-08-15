@@ -10,7 +10,7 @@ class AssessmentResultsCubit extends Cubit<AssessmentResultsState> {
   final AssessmentResultsRepo assessmentResultsRepo;
 
   AssessmentResultsCubit({required this.assessmentResultsRepo})
-      : super(const AssessmentResultsState.initial());
+    : super(const AssessmentResultsState.initial());
 
   AssessmentResultsResponse? assessmentResultsResponse;
 

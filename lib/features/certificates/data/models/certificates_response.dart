@@ -42,9 +42,7 @@ class CertificateVerificationResponse {
     this.issuedAt,
   });
 
-  factory CertificateVerificationResponse.fromJson(
-    Map<String, dynamic> json,
-  ) =>
+  factory CertificateVerificationResponse.fromJson(Map<String, dynamic> json) =>
       _$CertificateVerificationResponseFromJson(json);
 
   Map<String, dynamic> toJson() =>

@@ -10,9 +10,7 @@ void main() {
 
       expect(response.data.totalFinalizedResults, 7);
       expect(response.data.averagePercentage, 82.5);
-      expect(response.toJson(), {
-        'data': response.data,
-      });
+      expect(response.toJson(), {'data': response.data});
     });
   });
 }

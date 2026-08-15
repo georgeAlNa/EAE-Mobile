@@ -7,7 +7,9 @@ import '../../../../../core/di/dependency_injection.dart';
 import '../../../../../core/public_widgets/app_bottom_nav_bar.dart';
 import '../../../../settings/logic/settings_cubit.dart';
 import '../../../../settings/presentation/screens/settings_screen.dart';
+import '../../../../exam_sessions/logic/exam_sessions_cubit.dart';
 import '../../../session_monitoring/logic/proctor_session_cubit.dart';
+import '../../../session_monitoring/presentation/screens/proctor_exam_sessions_screen.dart';
 import '../../../session_monitoring/presentation/screens/proctor_session_monitoring_screen.dart';
 
 class ProctorNavigationShell extends StatefulWidget {
@@ -60,9 +62,10 @@ class _ProctorNavigationShellState extends State<ProctorNavigationShell> {
     switch (currentIndex) {
       case 0:
         return BlocProvider(
-          key: const ValueKey('proctor-session-monitoring'),
-          create: (_) => getIt<ProctorSessionCubit>(),
-          child: const ProctorSessionMonitoringScreen(),
+          key: const ValueKey('proctor-exam-sessions'),
+          create: (_) =>
+              getIt<ExamSessionsCubit>(param1: ExamSessionsRole.proctor),
+          child: const ProctorExamSessionsScreen(),
         );
       case 1:
         return BlocProvider(

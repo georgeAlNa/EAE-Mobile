@@ -11,8 +11,7 @@ import '../../../assessment_governance/logic/assessment_governance_cubit.dart';
 import '../../../assessment_governance/presentation/screens/assessment_governance_screen.dart';
 import '../../../cohorts/logic/cohorts_cubit.dart';
 import '../../../cohorts/presentation/screens/cohorts_screen.dart';
-import '../../../live_sessions_and_enrollment_management/logic/live_sessions_and_enrollment_management_cubit.dart';
-import '../../../live_sessions_and_enrollment_management/presentation/screens/live_sessions_and_enrollment_management_screen.dart';
+import '../../../live_sessions_and_enrollment_management/presentation/screens/live_management_screen.dart';
 import '../../../result_publication/logic/result_publication_cubit.dart';
 import '../../../result_publication/presentation/screens/result_publication_screen.dart';
 import '../../../roles_and_security/logic/roles_and_security_cubit.dart';
@@ -132,11 +131,7 @@ class _TenantAdminNavigationShellState
           child: const CohortsScreen(),
         );
       case 3:
-        return BlocProvider(
-          key: const ValueKey('tenant-admin-live-enrollments'),
-          create: (_) => getIt<LiveSessionsAndEnrollmentManagementCubit>(),
-          child: const LiveSessionsAndEnrollmentManagementScreen(),
-        );
+        return const LiveManagementScreen(key: ValueKey('tenant-admin-live'));
       case 4:
         return BlocProvider(
           key: const ValueKey('tenant-admin-assessment-governance'),

@@ -18,7 +18,9 @@ import '../../logic/manual_evaluation_cubit.dart';
 part '../widgets/manual_evaluation_widgets.dart';
 
 class ManualEvaluationScreen extends StatelessWidget {
-  const ManualEvaluationScreen({super.key});
+  final String? initialSessionId;
+
+  const ManualEvaluationScreen({super.key, this.initialSessionId});
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +31,11 @@ class ManualEvaluationScreen extends StatelessWidget {
           listener: _listenToState,
           builder: (context, state) {
             final cubit = context.read<ManualEvaluationCubit>();
+            if (initialSessionId != null &&
+                initialSessionId!.isNotEmpty &&
+                cubit.sessionIdController.text != initialSessionId) {
+              cubit.sessionIdController.text = initialSessionId!;
+            }
             final pending = cubit.pendingEvaluationsResponse;
             final status = cubit.resultPublicationStatusResponse;
             final published = cubit.resultPublicationResponse;

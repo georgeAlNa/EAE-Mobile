@@ -121,8 +121,7 @@ class QuestionVersionPsychometricsResponse {
 
   factory QuestionVersionPsychometricsResponse.fromJson(
     Map<String, dynamic> json,
-  ) =>
-      _$QuestionVersionPsychometricsResponseFromJson(json);
+  ) => _$QuestionVersionPsychometricsResponseFromJson(json);
 
   Map<String, dynamic> toJson() =>
       _$QuestionVersionPsychometricsResponseToJson(this);

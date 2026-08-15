@@ -27,6 +27,9 @@ import '../../features/evaluator/manual_evaluation/logic/manual_evaluation_cubit
 import '../../features/evaluator/question_bank_and_categories/data/datasources/question_bank_and_categories_remote_data_source.dart';
 import '../../features/evaluator/question_bank_and_categories/data/repos/question_bank_and_categories_repo.dart';
 import '../../features/evaluator/question_bank_and_categories/logic/question_bank_and_categories_cubit.dart';
+import '../../features/exam_sessions/data/datasources/exam_sessions_remote_data_source.dart';
+import '../../features/exam_sessions/data/repos/exam_sessions_repo.dart';
+import '../../features/exam_sessions/logic/exam_sessions_cubit.dart';
 import '../../features/proctor/session_monitoring/data/datasources/proctor_session_remote_data_source.dart';
 import '../../features/proctor/session_monitoring/data/repos/proctor_session_repo.dart';
 import '../../features/proctor/session_monitoring/logic/proctor_session_cubit.dart';
@@ -227,6 +230,23 @@ Future<void> setupGetit() async {
   // cubit
   getIt.registerFactory<CertificatesCubit>(
     () => CertificatesCubit(certificatesRepo: getIt()),
+  );
+
+  // //! feature - exam sessions listing
+  // datasource
+  getIt.registerLazySingleton<ExamSessionsRemoteDataSource>(
+    () => ExamSessionsRemoteDataSourceImpl(apiServicesImpl: getIt()),
+  );
+  // repo
+  getIt.registerLazySingleton<ExamSessionsRepo>(
+    () => ExamSessionsRepo(
+      examSessionsRemoteDataSource: getIt(),
+      networkInfo: getIt(),
+    ),
+  );
+  // cubit
+  getIt.registerFactoryParam<ExamSessionsCubit, ExamSessionsRole, void>(
+    (role, _) => ExamSessionsCubit(examSessionsRepo: getIt(), role: role),
   );
 
   // //! feature - roles and security

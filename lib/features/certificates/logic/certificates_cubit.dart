@@ -11,7 +11,7 @@ class CertificatesCubit extends Cubit<CertificatesState> {
   final CertificatesRepo certificatesRepo;
 
   CertificatesCubit({required this.certificatesRepo})
-      : super(const CertificatesState.initial());
+    : super(const CertificatesState.initial());
 
   CertificatesResponse? certificatesResponse;
   CertificateResponse? certificateResponse;

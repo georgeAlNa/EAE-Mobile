@@ -11,7 +11,9 @@ import '../../logic/proctor_session_cubit.dart';
 import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class ProctorSessionMonitoringScreen extends StatelessWidget {
-  const ProctorSessionMonitoringScreen({super.key});
+  final String? initialSessionId;
+
+  const ProctorSessionMonitoringScreen({super.key, this.initialSessionId});
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +30,11 @@ class ProctorSessionMonitoringScreen extends StatelessWidget {
           },
           builder: (context, state) {
             final cubit = context.read<ProctorSessionCubit>();
+            if (initialSessionId != null &&
+                initialSessionId!.isNotEmpty &&
+                cubit.sessionIdController.text != initialSessionId) {
+              cubit.sessionIdController.text = initialSessionId!;
+            }
             final isLoading = state.maybeWhen(
               loading: () => true,
               orElse: () => false,

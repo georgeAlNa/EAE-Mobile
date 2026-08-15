@@ -7,12 +7,12 @@ import '../../../../../core/di/dependency_injection.dart';
 import '../../../../../core/public_widgets/app_bottom_nav_bar.dart';
 import '../../../../settings/logic/settings_cubit.dart';
 import '../../../../settings/presentation/screens/settings_screen.dart';
+import '../../../../exam_sessions/logic/exam_sessions_cubit.dart';
 import '../../../competencies/logic/competencies_cubit.dart';
 import '../../../competencies/presentation/screens/competencies_screen.dart';
 import '../../../exams_management/logic/exams_management_cubit.dart';
 import '../../../exams_management/presentation/screens/exams_management_screen.dart';
-import '../../../manual_evaluation/logic/manual_evaluation_cubit.dart';
-import '../../../manual_evaluation/presentation/screens/manual_evaluation_screen.dart';
+import '../../../manual_evaluation/presentation/screens/evaluator_completed_sessions_screen.dart';
 import '../../../question_bank_and_categories/logic/question_bank_and_categories_cubit.dart';
 import '../../../question_bank_and_categories/presentation/screens/question_bank_and_categories_screen.dart';
 
@@ -97,9 +97,10 @@ class _EvaluatorNavigationShellState extends State<EvaluatorNavigationShell> {
         );
       case 3:
         return BlocProvider(
-          key: const ValueKey('evaluator-manual-evaluation'),
-          create: (_) => getIt<ManualEvaluationCubit>(),
-          child: const ManualEvaluationScreen(),
+          key: const ValueKey('evaluator-completed-sessions'),
+          create: (_) =>
+              getIt<ExamSessionsCubit>(param1: ExamSessionsRole.evaluator),
+          child: const EvaluatorCompletedSessionsScreen(),
         );
       case 4:
         return BlocProvider(
