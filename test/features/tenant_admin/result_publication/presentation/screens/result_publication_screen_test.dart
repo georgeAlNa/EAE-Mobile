@@ -1,9 +1,9 @@
-import 'package:eae_mobile/features/evaluator/exams_management/data/repos/exams_management_repo.dart';
 import 'package:eae_mobile/features/tenant_admin/result_publication/data/models/result_publication_request_body.dart';
 import 'package:eae_mobile/features/tenant_admin/result_publication/data/models/result_publication_response.dart';
 import 'package:eae_mobile/features/tenant_admin/result_publication/data/repos/result_publication_repo.dart';
 import 'package:eae_mobile/features/tenant_admin/result_publication/logic/result_publication_cubit.dart';
 import 'package:eae_mobile/features/tenant_admin/result_publication/presentation/screens/result_publication_screen.dart';
+import 'package:eae_mobile/features/workflows/data/repos/workflow_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -13,7 +13,7 @@ import '../../../../../helpers/widget_test_helpers.dart';
 
 class MockResultPublicationRepo extends Mock implements ResultPublicationRepo {}
 
-class MockExamsManagementRepo extends Mock implements ExamsManagementRepo {}
+class MockWorkflowRepo extends Mock implements WorkflowRepo {}
 
 ResultPublicationStatusResponse statusResponse({
   String publicationStatus = 'unpublished',
@@ -76,15 +76,15 @@ Future<void> pumpScreen(WidgetTester tester, ResultPublicationCubit cubit) {
 
 void main() {
   late MockResultPublicationRepo repo;
-  late MockExamsManagementRepo examsRepo;
+  late MockWorkflowRepo workflowRepo;
   late ResultPublicationCubit cubit;
 
   setUp(() async {
     repo = MockResultPublicationRepo();
-    examsRepo = MockExamsManagementRepo();
+    workflowRepo = MockWorkflowRepo();
     cubit = ResultPublicationCubit(
       resultPublicationRepo: repo,
-      examsManagementRepo: examsRepo,
+      workflowRepo: workflowRepo,
     );
     addTearDown(cubit.close);
     await resetWidgetTestPreferences();
@@ -108,10 +108,10 @@ void main() {
     expect(find.text('Status'), findsOneWidget);
     expect(find.text('Publish'), findsOneWidget);
     expect(find.text('Approval workflow'), findsOneWidget);
-    expect(find.text('Exam publication workflow'), findsOneWidget);
-    expect(find.text('Create'), findsNWidgets(2));
-    expect(find.text('Get'), findsNWidgets(2));
-    expect(find.text('Approve'), findsNWidgets(2));
+    expect(find.text('Exam publication workflow'), findsNothing);
+    expect(find.text('Create'), findsOneWidget);
+    expect(find.text('Get'), findsNothing);
+    expect(find.text('Approve'), findsNothing);
 
     await tester.scrollUntilVisible(
       find.text('No session loaded'),
@@ -177,7 +177,7 @@ void main() {
   });
 
   testWidgets('creates approval workflow through cubit', (tester) async {
-    when(() => repo.createApprovalWorkflow(any())).thenAnswer(
+    when(() => workflowRepo.createWorkflow(any())).thenAnswer(
       (_) async => ApprovalWorkflowActionResponse(message: 'created'),
     );
     await pumpScreen(tester, cubit);
@@ -189,7 +189,7 @@ void main() {
 
     expect(find.text('Workflow updated'), findsOneWidget);
     final captured =
-        verify(() => repo.createApprovalWorkflow(captureAny())).captured.single
+        verify(() => workflowRepo.createWorkflow(captureAny())).captured.single
             as CreateApprovalWorkflowRequestBody;
     expect(captured.resourceType, 'assessment_result');
     expect(captured.resourceId, 'result_001');

@@ -119,7 +119,7 @@ class ExamCard extends StatelessWidget {
                     ),
                     PopupMenuItem(
                       value: _ExamAction.viewPublicationWorkflow,
-                      child: Text(AppStrings.tr('View publication workflow')),
+                      child: Text(AppStrings.tr('My Workflows')),
                     ),
                     if (exam.examStatus.toLowerCase() != 'archived')
                       PopupMenuItem(

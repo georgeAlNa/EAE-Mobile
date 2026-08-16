@@ -12,8 +12,7 @@ import '../../../assessment_governance/presentation/screens/assessment_governanc
 import '../../../cohorts/logic/cohorts_cubit.dart';
 import '../../../cohorts/presentation/screens/cohorts_screen.dart';
 import '../../../live_sessions_and_enrollment_management/presentation/screens/live_management_screen.dart';
-import '../../../result_publication/logic/result_publication_cubit.dart';
-import '../../../result_publication/presentation/screens/result_publication_screen.dart';
+import '../../../result_publication/presentation/screens/results_management_screen.dart';
 import '../../../roles_and_security/logic/roles_and_security_cubit.dart';
 import '../../../roles_and_security/presentation/screens/roles_and_security_screen.dart';
 import '../../../users_management/logic/users_management_cubit.dart';
@@ -139,10 +138,8 @@ class _TenantAdminNavigationShellState
           child: const AssessmentGovernanceScreen(),
         );
       case 5:
-        return BlocProvider(
-          key: const ValueKey('tenant-admin-result-publication'),
-          create: (_) => getIt<ResultPublicationCubit>(),
-          child: const ResultPublicationScreen(),
+        return const ResultsManagementScreen(
+          key: ValueKey('tenant-admin-results-management'),
         );
       case 6:
         return BlocProvider(

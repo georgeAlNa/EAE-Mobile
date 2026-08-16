@@ -1,5 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
 
+export '../../../../workflows/data/models/workflow_response.dart'
+    show ApprovalWorkflowActionResponse, ApprovalWorkflowData;
+
 part 'result_publication_response.g.dart';
 
 @JsonSerializable()
@@ -25,68 +28,6 @@ class ResultPublicationStatusResponse {
 
   Map<String, dynamic> toJson() =>
       _$ResultPublicationStatusResponseToJson(this);
-}
-
-@JsonSerializable()
-class ApprovalWorkflowActionResponse {
-  @JsonKey(defaultValue: '')
-  final String message;
-
-  final ApprovalWorkflowData? data;
-
-  ApprovalWorkflowActionResponse({required this.message, this.data});
-
-  factory ApprovalWorkflowActionResponse.fromJson(Map<String, dynamic> json) =>
-      _$ApprovalWorkflowActionResponseFromJson(json);
-
-  Map<String, dynamic> toJson() => _$ApprovalWorkflowActionResponseToJson(this);
-}
-
-@JsonSerializable()
-class ApprovalWorkflowData {
-  @JsonKey(name: 'workflow_id')
-  final String workflowId;
-
-  @JsonKey(name: 'resource_type')
-  final String resourceType;
-
-  @JsonKey(name: 'resource_id')
-  final String resourceId;
-
-  @JsonKey(name: 'workflow_type')
-  final String workflowType;
-
-  @JsonKey(name: 'current_workflow_status')
-  final String currentWorkflowStatus;
-
-  @JsonKey(name: 'current_stage_key')
-  final String? currentStageKey;
-
-  @JsonKey(name: 'workflow_initiated_at')
-  final String? workflowInitiatedAt;
-
-  @JsonKey(name: 'workflow_completed_at')
-  final String? workflowCompletedAt;
-
-  @JsonKey(name: 'workflow_metadata')
-  final dynamic workflowMetadata;
-
-  ApprovalWorkflowData({
-    required this.workflowId,
-    required this.resourceType,
-    required this.resourceId,
-    required this.workflowType,
-    required this.currentWorkflowStatus,
-    this.currentStageKey,
-    this.workflowInitiatedAt,
-    this.workflowCompletedAt,
-    this.workflowMetadata,
-  });
-
-  factory ApprovalWorkflowData.fromJson(Map<String, dynamic> json) =>
-      _$ApprovalWorkflowDataFromJson(json);
-
-  Map<String, dynamic> toJson() => _$ApprovalWorkflowDataToJson(this);
 }
 
 @JsonSerializable()

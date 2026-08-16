@@ -112,7 +112,7 @@ void main() {
 
     expect(find.text('Publish'), findsNothing);
     expect(find.text('Create publication workflow'), findsOneWidget);
-    expect(find.text('View publication workflow'), findsOneWidget);
+    expect(find.text('My Workflows'), findsOneWidget);
   });
 
   testWidgets('filters exams from search input', (tester) async {

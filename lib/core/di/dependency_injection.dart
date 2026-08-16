@@ -30,6 +30,9 @@ import '../../features/evaluator/question_bank_and_categories/logic/question_ban
 import '../../features/exam_sessions/data/datasources/exam_sessions_remote_data_source.dart';
 import '../../features/exam_sessions/data/repos/exam_sessions_repo.dart';
 import '../../features/exam_sessions/logic/exam_sessions_cubit.dart';
+import '../../features/workflows/data/datasources/workflow_remote_data_source.dart';
+import '../../features/workflows/data/repos/workflow_repo.dart';
+import '../../features/workflows/logic/workflow_cubit.dart';
 import '../../features/proctor/session_monitoring/data/datasources/proctor_session_remote_data_source.dart';
 import '../../features/proctor/session_monitoring/data/repos/proctor_session_repo.dart';
 import '../../features/proctor/session_monitoring/logic/proctor_session_cubit.dart';
@@ -211,8 +214,22 @@ Future<void> setupGetit() async {
   getIt.registerFactory<ResultPublicationCubit>(
     () => ResultPublicationCubit(
       resultPublicationRepo: getIt(),
-      examsManagementRepo: getIt(),
+      workflowRepo: getIt(),
     ),
+  );
+
+  // //! feature - workflows
+  // datasource
+  getIt.registerLazySingleton<WorkflowRemoteDataSource>(
+    () => WorkflowRemoteDataSourceImpl(apiServicesImpl: getIt()),
+  );
+  // repo
+  getIt.registerLazySingleton<WorkflowRepo>(
+    () => WorkflowRepo(workflowRemoteDataSource: getIt(), networkInfo: getIt()),
+  );
+  // cubit
+  getIt.registerFactoryParam<WorkflowCubit, WorkflowRole, void>(
+    (role, _) => WorkflowCubit(workflowRepo: getIt(), role: role),
   );
 
   // //! feature - certificates
@@ -353,7 +370,7 @@ Future<void> setupGetit() async {
   getIt.registerFactory<ExamsManagementCubit>(
     () => ExamsManagementCubit(
       examsManagementRepo: getIt(),
-      resultPublicationRepo: getIt(),
+      workflowRepo: getIt(),
     ),
   );
 

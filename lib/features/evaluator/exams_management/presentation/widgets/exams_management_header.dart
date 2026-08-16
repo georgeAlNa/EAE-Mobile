@@ -12,6 +12,7 @@ class ExamsManagementHeader extends StatelessWidget {
   final int draftCount;
   final TextEditingController searchController;
   final VoidCallback onCreateExam;
+  final VoidCallback onViewMyWorkflows;
 
   const ExamsManagementHeader({
     super.key,
@@ -20,6 +21,7 @@ class ExamsManagementHeader extends StatelessWidget {
     required this.draftCount,
     required this.searchController,
     required this.onCreateExam,
+    required this.onViewMyWorkflows,
   });
 
   @override
@@ -46,6 +48,16 @@ class ExamsManagementHeader extends StatelessWidget {
               style: IconButton.styleFrom(
                 backgroundColor: AppColors.secondaryColor7,
                 foregroundColor: AppColors.neutralColor,
+              ),
+            ),
+            horizontalSpace(8),
+            IconButton.outlined(
+              tooltip: AppStrings.tr('My Workflows'),
+              onPressed: onViewMyWorkflows,
+              icon: const Icon(Icons.account_tree_outlined),
+              style: IconButton.styleFrom(
+                foregroundColor: AppColors.secondaryColor7,
+                side: BorderSide(color: AppColors.secondaryColor7),
               ),
             ),
           ],

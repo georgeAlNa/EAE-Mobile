@@ -318,9 +318,6 @@ class AppStrings {
       ? 'يتطلب $roleName معرف مستخدم مستهدفاً.'
       : '$roleName requires a target user ID.';
 
-  static String viewWorkflowFor(String examName) =>
-      _isArabic ? 'عرض سير العمل لـ $examName' : 'View workflow for $examName';
-
   static String correctOption(String option) =>
       _isArabic ? 'الإجابة الصحيحة $option' : 'Correct $option';
 
@@ -522,7 +519,6 @@ class AppStrings {
     'Remove user': 'إزالة مستخدم',
     'Reset Token': 'رمز إعادة التعيين',
     'Reset password': 'إعادة تعيين كلمة المرور',
-    'Resource ID': 'معرف المورد',
     'Retry': 'إعادة المحاولة',
     'Retry role': 'إعادة محاولة الدور',
     'Role actions': 'إجراءات الدور',
@@ -562,11 +558,9 @@ class AppStrings {
     'User type': 'نوع المستخدم',
     'View': 'عرض',
     'View Log Details': 'عرض تفاصيل السجل',
-    'View publication workflow': 'عرض سير النشر',
     'What this category contains': 'ما تحتويه هذه الفئة',
     'What this competency measures': 'ما تقيسه هذه الكفاءة',
     'What this exam covers': 'ما يغطيه هذا الاختبار',
-    'Workflow ID': 'معرف سير العمل',
     'Write the full question': 'اكتب السؤال كاملا',
     'answer evaluation id': 'معرف تقييم الإجابة',
     'assessment result resource id': 'معرف مورد نتيجة التقييم',
@@ -942,6 +936,41 @@ class AppStrings {
     'Unable to load question bank': 'تعذر تحميل بنك الأسئلة',
     'Assign role': 'تعيين الدور',
     'Remove role': 'إزالة الدور',
+    'Workflows': 'سير العمل',
+    'My Workflows': 'سير عملي',
+    'Workflow Type': 'نوع سير العمل',
+    'Resource Type': 'نوع المورد',
+    'Resource ID': 'معرف المورد',
+    'resource id': 'معرف المورد',
+    'Workflow ID': 'معرف سير العمل',
+    'Workflow details': 'تفاصيل سير العمل',
+    'Workflow created': 'تم إنشاء سير العمل',
+    'Workflow approved': 'تمت الموافقة على سير العمل',
+    'Loaded workflows': 'سير العمل المحملة',
+    'No workflows found': 'لم يتم العثور على سير عمل',
+    'Change filters or refresh the list.': 'غيّر الفلاتر أو حدّث القائمة.',
+    'Review and approve tenant workflows.':
+        'راجع واعتمد سير العمل الخاص بالمستأجر.',
+    'Review workflows created by your account.':
+        'راجع سير العمل المنشأ بواسطة حسابك.',
+    'Result Publication': 'نشر النتيجة',
+    'Exam Publication': 'نشر الاختبار',
+    'Assessment Result': 'نتيجة التقييم',
+    'Approved': 'معتمد',
+    'Initiated': 'بدأ',
+    'Initiated at': 'بدأ في',
+    'Completed at': 'اكتمل في',
+    'Current Stage': 'المرحلة الحالية',
+    'Loading workflow details...': 'جارٍ تحميل تفاصيل سير العمل...',
+    'Approving workflow...': 'جارٍ اعتماد سير العمل...',
+    'Working...': 'جارٍ العمل...',
+    'Workflow approval is not available for your role':
+        'اعتماد سير العمل غير متاح لدورك.',
+    'Select a workflow first': 'اختر سير عمل أولاً',
+    'Workflow details not found': 'لم يتم العثور على تفاصيل سير العمل',
+    'Failed to load workflow': 'فشل تحميل سير العمل',
+    'Failed to approve workflow': 'فشل اعتماد سير العمل',
+    'Failed to load workflows': 'فشل تحميل سير العمل',
     'Edit exam': 'تعديل الاختبار',
   };
 }

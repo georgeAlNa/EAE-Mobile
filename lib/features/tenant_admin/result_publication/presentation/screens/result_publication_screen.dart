@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -33,8 +31,6 @@ class ResultPublicationScreen extends StatelessWidget {
             final status = cubit.resultPublicationStatusResponse;
             final published = cubit.resultPublicationResponse;
             final workflow = cubit.approvalWorkflowActionResponse;
-            final examWorkflow = cubit.examPublicationWorkflowResponse;
-            final publishedExam = cubit.publishedExamResponse;
             final isLoading = state.maybeWhen(
               statusLoading: () => true,
               publishLoading: () => true,
@@ -111,13 +107,6 @@ class ResultPublicationScreen extends StatelessWidget {
                             obscureText: false,
                           ),
                           verticalSpace(12),
-                          TextFieldWidget(
-                            controller: cubit.workflowIdController,
-                            hintText: AppStrings.tr('workflow id'),
-                            labelText: AppStrings.tr('Workflow ID'),
-                            obscureText: false,
-                          ),
-                          verticalSpace(12),
                           Wrap(
                             spacing: 8.w,
                             runSpacing: 8.h,
@@ -128,129 +117,14 @@ class ResultPublicationScreen extends StatelessWidget {
                                 label: Text(AppStrings.tr('Create')),
                                 style: _filledActionButtonStyle(),
                               ),
-                              OutlinedButton.icon(
-                                onPressed: () => _getWorkflow(context),
-                                icon: const Icon(Icons.search_rounded),
-                                label: Text(AppStrings.tr('Get')),
-                                style: _outlinedActionButtonStyle(),
-                              ),
-                              OutlinedButton.icon(
-                                onPressed: () => _approveWorkflow(context),
-                                icon: const Icon(Icons.verified_outlined),
-                                label: Text(AppStrings.tr('Approve')),
-                                style: _outlinedActionButtonStyle(),
-                              ),
                             ],
                           ),
                         ],
                       ),
                     ),
-                    verticalSpace(14),
-                    _ResultPublicationCard(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            AppStrings.tr('Exam publication workflow'),
-                            style: AppTextStyles.font14DarkGreySemiBold
-                                .copyWith(color: AppColors.primaryColor9),
-                          ),
-                          verticalSpace(8),
-                          Text(
-                            AppStrings.tr(
-                              'Approval and exam publish are separate backend calls.',
-                            ),
-                            style: AppTextStyles.font11DarkGreyLight.copyWith(
-                              color: AppColors.tertiaryColor6,
-                              height: 1.4,
-                            ),
-                          ),
-                          verticalSpace(12),
-                          TextFieldWidget(
-                            controller: cubit.examWorkflowExamIdController,
-                            hintText: AppStrings.tr('exam id'),
-                            labelText: AppStrings.tr('Exam ID'),
-                            obscureText: false,
-                          ),
-                          verticalSpace(12),
-                          TextFieldWidget(
-                            controller: cubit.examWorkflowIdController,
-                            hintText: AppStrings.tr('workflow id'),
-                            labelText: AppStrings.tr('Workflow ID'),
-                            obscureText: false,
-                          ),
-                          verticalSpace(12),
-                          Wrap(
-                            spacing: 8.w,
-                            runSpacing: 8.h,
-                            children: [
-                              FilledButton.icon(
-                                onPressed: () => _createExamWorkflow(context),
-                                icon: const Icon(Icons.account_tree_outlined),
-                                label: Text(AppStrings.tr('Create')),
-                                style: _filledActionButtonStyle(),
-                              ),
-                              OutlinedButton.icon(
-                                onPressed: () => _getExamWorkflow(context),
-                                icon: const Icon(Icons.search_rounded),
-                                label: Text(AppStrings.tr('Get')),
-                                style: _outlinedActionButtonStyle(),
-                              ),
-                              OutlinedButton.icon(
-                                onPressed: () => _approveExamWorkflow(context),
-                                icon: const Icon(Icons.verified_outlined),
-                                label: Text(AppStrings.tr('Approve')),
-                                style: _outlinedActionButtonStyle(),
-                              ),
-                              OutlinedButton.icon(
-                                onPressed: () => _publishApprovedExam(context),
-                                icon: const Icon(Icons.publish_outlined),
-                                label: Text(AppStrings.tr('Publish exam')),
-                                style: _outlinedActionButtonStyle(),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    if (examWorkflow != null) ...[
-                      verticalSpace(14),
-                      _ResultPublicationCard(
-                        child: Text(
-                          const JsonEncoder.withIndent(
-                            '  ',
-                          ).convert(examWorkflow.toJson()),
-                          style: AppTextStyles.font11DarkGreyLight.copyWith(
-                            color: AppColors.primaryColor9,
-                            height: 1.4,
-                          ),
-                        ),
-                      ),
-                    ],
-                    if (publishedExam != null) ...[
-                      verticalSpace(14),
-                      _ResultPublicationCard(
-                        child: Text(
-                          'Published exam: ${publishedExam.data.examName}',
-                          style: AppTextStyles.font12DarkGreyRegular.copyWith(
-                            color: AppColors.primaryColor9,
-                          ),
-                        ),
-                      ),
-                    ],
                     if (workflow != null) ...[
                       verticalSpace(14),
-                      _ResultPublicationCard(
-                        child: Text(
-                          const JsonEncoder.withIndent(
-                            '  ',
-                          ).convert(workflow.toJson()),
-                          style: AppTextStyles.font11DarkGreyLight.copyWith(
-                            color: AppColors.primaryColor9,
-                            height: 1.4,
-                          ),
-                        ),
-                      ),
+                      _ApprovalWorkflowSummaryCard(response: workflow),
                     ],
                     verticalSpace(14),
                     if (status != null)
@@ -261,9 +135,7 @@ class ResultPublicationScreen extends StatelessWidget {
                     ],
                     if (status == null &&
                         published == null &&
-                        workflow == null &&
-                        examWorkflow == null &&
-                        publishedExam == null) ...[
+                        workflow == null) ...[
                       TenantAdminEmptyState(
                         icon: Icons.publish_outlined,
                         title: AppStrings.tr('No session loaded'),
@@ -298,8 +170,6 @@ class ResultPublicationScreen extends StatelessWidget {
       statusError: (error) => showAppSnackBar(context, error),
       publishError: (error) => showAppSnackBar(context, error),
       workflowLoaded: (_) => showAppSnackBar(context, 'Workflow updated'),
-      examPublished: (_) =>
-          showAppSnackBar(context, 'Exam published successfully'),
       workflowError: (error) => showAppSnackBar(context, error),
       orElse: () {},
     );
@@ -340,71 +210,5 @@ class ResultPublicationScreen extends StatelessWidget {
         workflowType: 'result_publication',
       ),
     );
-  }
-
-  void _getWorkflow(BuildContext context) {
-    final cubit = context.read<ResultPublicationCubit>();
-    final workflowId = cubit.workflowIdController.text.trim();
-    if (workflowId.isEmpty) {
-      showAppSnackBar(context, 'Enter workflow id first');
-      return;
-    }
-
-    cubit.getApprovalWorkflow(workflowId);
-  }
-
-  void _approveWorkflow(BuildContext context) {
-    final cubit = context.read<ResultPublicationCubit>();
-    final workflowId = cubit.workflowIdController.text.trim();
-    if (workflowId.isEmpty) {
-      showAppSnackBar(context, 'Enter workflow id first');
-      return;
-    }
-
-    cubit.approveWorkflow(workflowId);
-  }
-
-  void _createExamWorkflow(BuildContext context) {
-    final cubit = context.read<ResultPublicationCubit>();
-    final examId = cubit.examWorkflowExamIdController.text.trim();
-    if (examId.isEmpty) {
-      showAppSnackBar(context, 'Enter exam id first');
-      return;
-    }
-
-    cubit.createExamPublicationWorkflow(examId);
-  }
-
-  void _getExamWorkflow(BuildContext context) {
-    final cubit = context.read<ResultPublicationCubit>();
-    final workflowId = cubit.examWorkflowIdController.text.trim();
-    if (workflowId.isEmpty) {
-      showAppSnackBar(context, 'Enter workflow id first');
-      return;
-    }
-
-    cubit.getExamPublicationWorkflow(workflowId);
-  }
-
-  void _approveExamWorkflow(BuildContext context) {
-    final cubit = context.read<ResultPublicationCubit>();
-    final workflowId = cubit.examWorkflowIdController.text.trim();
-    if (workflowId.isEmpty) {
-      showAppSnackBar(context, 'Enter workflow id first');
-      return;
-    }
-
-    cubit.approveExamPublicationWorkflow(workflowId);
-  }
-
-  void _publishApprovedExam(BuildContext context) {
-    final cubit = context.read<ResultPublicationCubit>();
-    final examId = cubit.examWorkflowExamIdController.text.trim();
-    if (examId.isEmpty) {
-      showAppSnackBar(context, 'Enter exam id first');
-      return;
-    }
-
-    cubit.publishApprovedExam(examId);
   }
 }

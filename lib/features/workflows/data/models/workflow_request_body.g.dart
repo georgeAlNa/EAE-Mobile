@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'result_publication_request_body.dart';
+part of 'workflow_request_body.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator

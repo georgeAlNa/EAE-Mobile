@@ -92,6 +92,59 @@ class _PublishedResultCard extends StatelessWidget {
   }
 }
 
+class _ApprovalWorkflowSummaryCard extends StatelessWidget {
+  final ApprovalWorkflowActionResponse response;
+
+  const _ApprovalWorkflowSummaryCard({required this.response});
+
+  @override
+  Widget build(BuildContext context) {
+    final workflow = response.data;
+
+    return _ResultPublicationCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            AppStrings.tr('Workflow created'),
+            style: AppTextStyles.font16DarkGreyBold,
+          ),
+          verticalSpace(10),
+          if (workflow == null)
+            Text(
+              response.message,
+              style: AppTextStyles.font12DarkGreyRegular.copyWith(
+                color: AppColors.primaryColor9,
+              ),
+            )
+          else ...[
+            TenantAdminCopyableValueRow(
+              label: AppStrings.tr('Workflow ID'),
+              value: workflow.workflowId,
+            ),
+            TenantAdminCopyableValueRow(
+              label: AppStrings.tr('Resource Type'),
+              value: workflow.resourceType,
+            ),
+            TenantAdminCopyableValueRow(
+              label: AppStrings.tr('Resource ID'),
+              value: workflow.resourceId,
+            ),
+            TenantAdminCopyableValueRow(
+              label: AppStrings.tr('Workflow Type'),
+              value: workflow.workflowType,
+            ),
+            TenantAdminCopyableValueRow(
+              label: AppStrings.tr('Status'),
+              value: workflow.currentWorkflowStatus,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
 class _ResultPublicationCard extends StatelessWidget {
   final Widget child;
 

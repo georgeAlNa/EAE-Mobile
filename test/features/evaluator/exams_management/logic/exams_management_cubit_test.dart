@@ -5,13 +5,13 @@ import 'package:eae_mobile/features/evaluator/exams_management/data/repos/exams_
 import 'package:eae_mobile/features/evaluator/exams_management/logic/exams_management_cubit.dart';
 import 'package:eae_mobile/features/tenant_admin/result_publication/data/models/result_publication_request_body.dart';
 import 'package:eae_mobile/features/tenant_admin/result_publication/data/models/result_publication_response.dart';
-import 'package:eae_mobile/features/tenant_admin/result_publication/data/repos/result_publication_repo.dart';
+import 'package:eae_mobile/features/workflows/data/repos/workflow_repo.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockExamsManagementRepo extends Mock implements ExamsManagementRepo {}
 
-class MockResultPublicationRepo extends Mock implements ResultPublicationRepo {}
+class MockWorkflowRepo extends Mock implements WorkflowRepo {}
 
 ExamRequestBody examRequest() {
   return ExamRequestBody(
@@ -150,7 +150,7 @@ ExamActionResponse? actionResponse(ExamsManagementState state) {
 
 void main() {
   late MockExamsManagementRepo repo;
-  late MockResultPublicationRepo workflowRepo;
+  late MockWorkflowRepo workflowRepo;
 
   setUpAll(() {
     registerFallbackValue(examRequest());
@@ -168,13 +168,13 @@ void main() {
 
   setUp(() {
     repo = MockExamsManagementRepo();
-    workflowRepo = MockResultPublicationRepo();
+    workflowRepo = MockWorkflowRepo();
   });
 
   ExamsManagementCubit createCubit() {
     final cubit = ExamsManagementCubit(
       examsManagementRepo: repo,
-      resultPublicationRepo: workflowRepo,
+      workflowRepo: workflowRepo,
     );
     addTearDown(cubit.close);
     return cubit;
@@ -379,10 +379,10 @@ void main() {
           ),
         );
         when(
-          () => workflowRepo.createApprovalWorkflow(any()),
+          () => workflowRepo.createWorkflow(any()),
         ).thenAnswer((_) async => created);
         when(
-          () => workflowRepo.getApprovalWorkflow(any()),
+          () => workflowRepo.getWorkflow(any()),
         ).thenAnswer((_) async => loaded);
 
         var emission = expectLater(
@@ -398,7 +398,7 @@ void main() {
         await emission;
         final request =
             verify(
-                  () => workflowRepo.createApprovalWorkflow(captureAny()),
+                  () => workflowRepo.createWorkflow(captureAny()),
                 ).captured.single
                 as CreateApprovalWorkflowRequestBody;
         expect(request.resourceType, 'exam');
@@ -417,9 +417,7 @@ void main() {
         await cubit.getExamPublicationWorkflow('workflow_001');
         await emission;
 
-        verify(
-          () => workflowRepo.getApprovalWorkflow('workflow_001'),
-        ).called(1);
+        verify(() => workflowRepo.getWorkflow('workflow_001')).called(1);
         verifyNever(() => workflowRepo.approveWorkflow(any()));
       },
     );

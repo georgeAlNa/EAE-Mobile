@@ -2,9 +2,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../core/networking/error/error_handler/network_exceptions.dart';
-import '../../../tenant_admin/result_publication/data/models/result_publication_request_body.dart';
-import '../../../tenant_admin/result_publication/data/models/result_publication_response.dart';
-import '../../../tenant_admin/result_publication/data/repos/result_publication_repo.dart';
+import '../../../workflows/data/models/workflow_request_body.dart';
+import '../../../workflows/data/models/workflow_response.dart';
+import '../../../workflows/data/repos/workflow_repo.dart';
 import '../data/models/exams_management_request_body.dart';
 import '../data/models/exams_management_response.dart';
 import '../data/repos/exams_management_repo.dart';
@@ -14,12 +14,10 @@ part 'exams_management_cubit.freezed.dart';
 
 class ExamsManagementCubit extends Cubit<ExamsManagementState> {
   final ExamsManagementRepo examsManagementRepo;
-  final ResultPublicationRepo? resultPublicationRepo;
+  final WorkflowRepo? workflowRepo;
 
-  ExamsManagementCubit({
-    required this.examsManagementRepo,
-    this.resultPublicationRepo,
-  }) : super(const ExamsManagementState.initial()) {
+  ExamsManagementCubit({required this.examsManagementRepo, this.workflowRepo})
+    : super(const ExamsManagementState.initial()) {
     getExams();
   }
 
@@ -148,7 +146,7 @@ class ExamsManagementCubit extends Cubit<ExamsManagementState> {
   }
 
   Future<void> createExamPublicationWorkflow(String examId) async {
-    final repo = resultPublicationRepo;
+    final repo = workflowRepo;
     if (repo == null) {
       emit(
         const ExamsManagementState.actionError(
@@ -161,7 +159,7 @@ class ExamsManagementCubit extends Cubit<ExamsManagementState> {
     emit(const ExamsManagementState.actionLoading());
 
     try {
-      final response = await repo.createApprovalWorkflow(
+      final response = await repo.createWorkflow(
         CreateApprovalWorkflowRequestBody(
           resourceType: 'exam',
           resourceId: examId,
@@ -192,7 +190,7 @@ class ExamsManagementCubit extends Cubit<ExamsManagementState> {
   }
 
   Future<void> getExamPublicationWorkflow(String workflowId) async {
-    final repo = resultPublicationRepo;
+    final repo = workflowRepo;
     if (repo == null) {
       emit(
         const ExamsManagementState.actionError(
@@ -205,7 +203,7 @@ class ExamsManagementCubit extends Cubit<ExamsManagementState> {
     emit(const ExamsManagementState.actionLoading());
 
     try {
-      final response = await repo.getApprovalWorkflow(workflowId);
+      final response = await repo.getWorkflow(workflowId);
       examPublicationWorkflowResponse = response;
       emit(
         ExamsManagementState.actionSuccess(

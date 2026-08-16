@@ -5,9 +5,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../core/constants/colors.dart';
+import '../../../../../core/di/dependency_injection.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../../../core/public_widgets/app_state_widgets.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
+import '../../../../workflows/logic/workflow_cubit.dart';
+import '../../../../workflows/presentation/screens/workflows_screen.dart';
 import '../../data/models/exams_management_response.dart';
 import '../../logic/exams_management_cubit.dart';
 import '../widgets/exam_card.dart';
@@ -108,6 +111,7 @@ class _ExamsManagementScreenState extends State<ExamsManagementScreen> {
                           searchController: _searchController,
                           onCreateExam: () =>
                               showExamFormSheet(context: context),
+                          onViewMyWorkflows: () => _openMyWorkflows(context),
                         ),
                         verticalSpace(18),
                         _ExamsDataSection(
@@ -125,7 +129,7 @@ class _ExamsManagementScreenState extends State<ExamsManagementScreen> {
                           onCreatePublicationWorkflow: (exam) =>
                               _createPublicationWorkflow(context, exam),
                           onViewPublicationWorkflow: (exam) =>
-                              _promptViewPublicationWorkflow(context, exam),
+                              _openMyWorkflows(context),
                           onArchive: (exam) => _confirmArchive(context, exam),
                         ),
                       ],
@@ -201,48 +205,15 @@ class _ExamsManagementScreenState extends State<ExamsManagementScreen> {
     }
   }
 
-  Future<void> _promptViewPublicationWorkflow(
-    BuildContext context,
-    ExamItem exam,
-  ) async {
-    final controller = TextEditingController();
-    final workflowId = await showDialog<String>(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: Text(AppStrings.viewWorkflowFor(exam.examName)),
-          content: TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              labelText: AppStrings.tr('Workflow ID'),
-              hintText: AppStrings.tr('workflow id'),
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: Text(AppStrings.tr('Cancel')),
-            ),
-            FilledButton(
-              onPressed: () =>
-                  Navigator.pop(dialogContext, controller.text.trim()),
-              child: Text(AppStrings.tr('View')),
-            ),
-          ],
-        );
-      },
+  void _openMyWorkflows(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => BlocProvider(
+          create: (_) => getIt<WorkflowCubit>(param1: WorkflowRole.evaluator),
+          child: WorkflowsScreen(title: AppStrings.tr('My Workflows')),
+        ),
+      ),
     );
-    controller.dispose();
-
-    if (workflowId == null || workflowId.isEmpty || !context.mounted) return;
-
-    final cubit = context.read<ExamsManagementCubit>();
-    await cubit.getExamPublicationWorkflow(workflowId);
-    if (!context.mounted) return;
-    final workflow = cubit.examPublicationWorkflowResponse;
-    if (workflow != null) {
-      _showWorkflowDetailsDialog(context, workflow.toJson());
-    }
   }
 
   void _showWorkflowDetailsDialog(
