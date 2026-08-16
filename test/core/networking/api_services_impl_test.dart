@@ -13,8 +13,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 class RecordingHttpClientAdapter implements HttpClientAdapter {
   int protectedAttempts = 0;
   int refreshAttempts = 0;
+  int publicVerifyAttempts = 0;
   final protectedPayloads = <Object?>[];
   final protectedHeaders = <Map<String, dynamic>>[];
+  final publicVerifyHeaders = <Map<String, dynamic>>[];
 
   @override
   Future<ResponseBody> fetch(
@@ -52,6 +54,18 @@ class RecordingHttpClientAdapter implements HttpClientAdapter {
 
       return ResponseBody.fromString(
         '{"data":{"import_log_id":"import_001","total":1,"successful":1,"failed":0,"errors":[]}}',
+        200,
+        headers: {
+          Headers.contentTypeHeader: [Headers.jsonContentType],
+        },
+      );
+    }
+
+    if (options.path.endsWith(AppLinkUrl.verifyCertificate('CERT-ABC123'))) {
+      publicVerifyAttempts++;
+      publicVerifyHeaders.add(Map<String, dynamic>.from(options.headers));
+      return ResponseBody.fromString(
+        '{"valid":true,"certificate_code":"CERT-ABC123","issued_at":"2026-08-15T10:00:00Z"}',
         200,
         headers: {
           Headers.contentTypeHeader: [Headers.jsonContentType],
@@ -132,6 +146,21 @@ void main() {
     expect(
       adapter.protectedHeaders.last['Authorization'],
       'Bearer new-access-token',
+    );
+  });
+
+  test('empty token sends public get without Authorization header', () async {
+    final response = await apiServicesImpl.get(
+      AppLinkUrl.verifyCertificate('CERT-ABC123'),
+      token: '',
+    );
+
+    expect(response['valid'], isTrue);
+    expect(adapter.publicVerifyAttempts, 1);
+    expect(adapter.publicVerifyHeaders.single, isNot(contains('X-Tenant-ID')));
+    expect(
+      adapter.publicVerifyHeaders.single,
+      isNot(contains('Authorization')),
     );
   });
 }

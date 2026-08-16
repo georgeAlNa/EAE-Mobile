@@ -7,6 +7,12 @@ typedef FormDataBuilder = FutureOr<FormData> Function();
 abstract class ApiServices {
   Future<dynamic> get(String path, {Map<String, String>? queryParams});
 
+  Future<List<int>> getBytes(
+    String path, {
+    Map<String, String>? queryParams,
+    String? token,
+  });
+
   Future<dynamic> post(
     String path, {
     Map<String, dynamic>? queryParams,

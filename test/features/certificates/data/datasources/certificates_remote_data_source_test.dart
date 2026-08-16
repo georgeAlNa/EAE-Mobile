@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:eae_mobile/core/constants/shared_pref_keys.dart';
 import 'package:eae_mobile/core/helpers/app_shared_preferences.dart';
 import 'package:eae_mobile/core/networking/api_services_impl.dart';
@@ -32,14 +34,19 @@ Map<String, dynamic> certificateJson({
   'exam_id': 'exam_001',
   'tenant_id': 'tenant_001',
   'certificate_code': 'CERT-ABC123',
-  'qr_code_data': 'http://localhost/verify/CERT-ABC123',
-  'issued_at': '2026-07-21T03:09:34.000000Z',
+  'qr_code_data': null,
+  'digital_signature': null,
+  'certificate_metadata': {'session_id': 'session_001'},
+  'issued_at': null,
   'expires_at': null,
   'verification_status': status,
-  'revoked_at': status == 'revoked' ? '2026-07-26T18:18:00.000000Z' : null,
-  'revocation_reason': status == 'revoked' ? 'test' : null,
-  'created_at': '2026-07-21T03:09:34.000000Z',
-  'updated_at': '2026-07-21T03:09:34.000000Z',
+  'additional_credentials': null,
+  'created_at': null,
+};
+
+Map<String, dynamic> listResponse() => {
+  'data': [certificateJson()],
+  'meta': {'current_page': 1, 'per_page': 15, 'total': 1},
 };
 
 void main() {
@@ -47,6 +54,7 @@ void main() {
   late CertificatesRemoteDataSourceImpl remoteDataSource;
 
   setUpAll(() {
+    registerFallbackValue(<String, String>{});
     registerFallbackValue(<String, dynamic>{});
     registerFallbackValue('');
   });
@@ -60,69 +68,104 @@ void main() {
   });
 
   group('CertificatesRemoteDataSource', () {
-    test('getCertificates uses expected endpoint and stored token', () async {
+    test(
+      'getCertificates omits params by default and uses stored token',
+      () async {
+        when(
+          () => apiServicesImpl.get(
+            AppLinkUrl.certificates,
+            queryParams: any(named: 'queryParams'),
+            token: any(named: 'token'),
+          ),
+        ).thenAnswer((_) async => listResponse());
+
+        final response = await remoteDataSource.getCertificates();
+
+        expect(response.data.single.certificateId, 'certificate_001');
+        verify(
+          () => apiServicesImpl.get(
+            AppLinkUrl.certificates,
+            queryParams: {},
+            token: 'access-token',
+          ),
+        ).called(1);
+      },
+    );
+
+    test('getCertificates sends only page and per_page params', () async {
       when(
         () => apiServicesImpl.get(
           AppLinkUrl.certificates,
+          queryParams: any(named: 'queryParams'),
           token: any(named: 'token'),
         ),
-      ).thenAnswer(
-        (_) async => {
-          'data': [certificateJson()],
-        },
-      );
+      ).thenAnswer((_) async => listResponse());
 
-      final response = await remoteDataSource.getCertificates();
+      await remoteDataSource.getCertificates(page: 2, perPage: 15);
 
-      expect(response.data.single.certificateId, 'certificate_001');
       verify(
-        () =>
-            apiServicesImpl.get(AppLinkUrl.certificates, token: 'access-token'),
+        () => apiServicesImpl.get(
+          AppLinkUrl.certificates,
+          queryParams: {'page': '2', 'per_page': '15'},
+          token: 'access-token',
+        ),
       ).called(1);
     });
 
-    test('details and session certificate use stored token', () async {
+    test('details uses stored token', () async {
       when(
         () => apiServicesImpl.get(
           AppLinkUrl.certificateDetails('certificate_001'),
           token: any(named: 'token'),
         ),
       ).thenAnswer((_) async => {'data': certificateJson()});
-      when(
-        () => apiServicesImpl.get(
-          AppLinkUrl.examSessionCertificate('session_001'),
-          token: any(named: 'token'),
-        ),
-      ).thenAnswer((_) async => {'data': certificateJson(id: 'session_cert')});
 
-      expect(
-        (await remoteDataSource.getCertificateDetails(
-          'certificate_001',
-        )).data.certificateId,
+      final response = await remoteDataSource.getCertificateDetails(
         'certificate_001',
       );
-      expect(
-        (await remoteDataSource.getSessionCertificate(
-          'session_001',
-        )).data.certificateId,
-        'session_cert',
-      );
 
+      expect(response.data.certificateId, 'certificate_001');
       verify(
         () => apiServicesImpl.get(
           AppLinkUrl.certificateDetails('certificate_001'),
           token: 'access-token',
         ),
       ).called(1);
-      verify(
-        () => apiServicesImpl.get(
-          AppLinkUrl.examSessionCertificate('session_001'),
-          token: 'access-token',
-        ),
-      ).called(1);
     });
 
-    test('regenerate and revoke post to action endpoints', () async {
+    test(
+      'downloadSessionCertificate downloads PDF bytes with stored token',
+      () async {
+        when(
+          () => apiServicesImpl.getBytes(
+            AppLinkUrl.examSessionCertificate('session_001'),
+            token: any(named: 'token'),
+          ),
+        ).thenAnswer((_) async => [37, 80, 68, 70]);
+
+        final file = await remoteDataSource.downloadSessionCertificate(
+          'session_001',
+        );
+
+        expect(file.fileName, 'certificate_session_001.pdf');
+        expect(file.bytesLength, 4);
+        expect(await File(file.filePath).readAsBytes(), [37, 80, 68, 70]);
+        verify(
+          () => apiServicesImpl.getBytes(
+            AppLinkUrl.examSessionCertificate('session_001'),
+            token: 'access-token',
+          ),
+        ).called(1);
+        verifyNever(
+          () => apiServicesImpl.get(
+            AppLinkUrl.examSessionCertificate('session_001'),
+            token: any(named: 'token'),
+          ),
+        );
+      },
+    );
+
+    test('regenerate and revoke post with expected body and token', () async {
       when(
         () => apiServicesImpl.post(
           AppLinkUrl.regenerateCertificate('certificate_001'),
@@ -137,29 +180,31 @@ void main() {
         ),
       ).thenAnswer((_) async => {'data': certificateJson(status: 'revoked')});
 
-      expect(
-        (await remoteDataSource.regenerateCertificate(
-          'certificate_001',
-        )).data.certificateId,
-        'regenerated',
+      await remoteDataSource.regenerateCertificate('certificate_001');
+      await remoteDataSource.revokeCertificate(
+        'certificate_001',
+        RevokeCertificateRequestBody(reason: 'test'),
       );
-      expect(
-        (await remoteDataSource.revokeCertificate(
-          'certificate_001',
-          RevokeCertificateRequestBody(reason: 'test'),
-        )).data.verificationStatus,
-        'revoked',
+      await remoteDataSource.revokeCertificate(
+        'certificate_001',
+        RevokeCertificateRequestBody(),
       );
 
-      final revokeCapture = verify(
+      verify(
+        () => apiServicesImpl.post(
+          AppLinkUrl.regenerateCertificate('certificate_001'),
+          token: 'access-token',
+        ),
+      ).called(1);
+      final captures = verify(
         () => apiServicesImpl.post(
           AppLinkUrl.revokeCertificate('certificate_001'),
           body: captureAny(named: 'body'),
-          token: captureAny(named: 'token'),
+          token: 'access-token',
         ),
       ).captured;
-      expect(revokeCapture[0], {'reason': 'test'});
-      expect(revokeCapture[1], 'access-token');
+      expect(captures[0], {'reason': 'test'});
+      expect(captures[1], isEmpty);
     });
 
     test(
@@ -196,6 +241,7 @@ void main() {
       when(
         () => apiServicesImpl.get(
           AppLinkUrl.certificates,
+          queryParams: any(named: 'queryParams'),
           token: any(named: 'token'),
         ),
       ).thenThrow(Exception('boom'));

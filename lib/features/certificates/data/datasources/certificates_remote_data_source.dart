@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 
 import '../../../../core/constants/shared_pref_keys.dart';
@@ -9,11 +11,11 @@ import '../models/certificates_request_body.dart';
 import '../models/certificates_response.dart';
 
 abstract class CertificatesRemoteDataSource {
-  Future<CertificatesResponse> getCertificates();
+  Future<CertificatesResponse> getCertificates({int? page, int? perPage});
 
   Future<CertificateResponse> getCertificateDetails(String certificateId);
 
-  Future<CertificateResponse> getSessionCertificate(String sessionId);
+  Future<CertificateDownloadFile> downloadSessionCertificate(String sessionId);
 
   Future<CertificateResponse> regenerateCertificate(String certificateId);
 
@@ -38,10 +40,19 @@ class CertificatesRemoteDataSourceImpl implements CertificatesRemoteDataSource {
   }
 
   @override
-  Future<CertificatesResponse> getCertificates() async {
+  Future<CertificatesResponse> getCertificates({
+    int? page,
+    int? perPage,
+  }) async {
     try {
+      final queryParams = <String, String>{
+        if (page != null) 'page': page.toString(),
+        if (perPage != null) 'per_page': perPage.toString(),
+      };
+
       final request = await apiServicesImpl.get(
         AppLinkUrl.certificates,
+        queryParams: queryParams,
         token: _token,
       );
 
@@ -72,14 +83,27 @@ class CertificatesRemoteDataSourceImpl implements CertificatesRemoteDataSource {
   }
 
   @override
-  Future<CertificateResponse> getSessionCertificate(String sessionId) async {
+  Future<CertificateDownloadFile> downloadSessionCertificate(
+    String sessionId,
+  ) async {
     try {
-      final request = await apiServicesImpl.get(
+      final bytes = await apiServicesImpl.getBytes(
         AppLinkUrl.examSessionCertificate(sessionId),
         token: _token,
       );
 
-      return CertificateResponse.fromJson(request);
+      final fileName = _safePdfFileName('certificate_$sessionId');
+      final directory = await Directory.systemTemp.createTemp(
+        'eae_certificates_',
+      );
+      final file = File('${directory.path}${Platform.pathSeparator}$fileName');
+      await file.writeAsBytes(bytes, flush: true);
+
+      return CertificateDownloadFile(
+        filePath: file.path,
+        fileName: fileName,
+        bytesLength: bytes.length,
+      );
     } on DioException catch (e) {
       throw NetworkExceptions.getException(e);
     } catch (e) {
@@ -141,5 +165,10 @@ class CertificatesRemoteDataSourceImpl implements CertificatesRemoteDataSource {
     } catch (e) {
       throw NetworkExceptions.getException(e);
     }
+  }
+
+  String _safePdfFileName(String value) {
+    final safe = value.replaceAll(RegExp(r'[^A-Za-z0-9_.-]'), '_');
+    return safe.toLowerCase().endsWith('.pdf') ? safe : '$safe.pdf';
   }
 }

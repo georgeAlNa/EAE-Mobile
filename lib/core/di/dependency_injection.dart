@@ -245,8 +245,8 @@ Future<void> setupGetit() async {
     ),
   );
   // cubit
-  getIt.registerFactory<CertificatesCubit>(
-    () => CertificatesCubit(certificatesRepo: getIt()),
+  getIt.registerFactoryParam<CertificatesCubit, CertificateRole, void>(
+    (role, _) => CertificatesCubit(certificatesRepo: getIt(), role: role),
   );
 
   // //! feature - exam sessions listing

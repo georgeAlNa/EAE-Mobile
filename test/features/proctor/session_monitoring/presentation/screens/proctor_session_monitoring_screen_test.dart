@@ -34,6 +34,7 @@ void main() {
 
     expect(find.text('Proctor Session Monitoring'), findsOneWidget);
     expect(find.text('Session ID'), findsOneWidget);
+    expect(find.text('Certificates'), findsNothing);
     expect(find.text('Suspend'), findsOneWidget);
     expect(find.text('Void Sanction'), findsNWidgets(2));
     expect(find.text('Submit Event'), findsOneWidget);

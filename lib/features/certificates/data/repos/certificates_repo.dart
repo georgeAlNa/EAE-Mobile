@@ -13,10 +13,16 @@ class CertificatesRepo {
     required this.networkInfo,
   });
 
-  Future<CertificatesResponse> getCertificates() async {
+  Future<CertificatesResponse> getCertificates({
+    int? page,
+    int? perPage,
+  }) async {
     if (await networkInfo.isConnected) {
       try {
-        return await certificatesRemoteDataSource.getCertificates();
+        return await certificatesRemoteDataSource.getCertificates(
+          page: page,
+          perPage: perPage,
+        );
       } catch (e) {
         throw NetworkExceptions.getException(e);
       }
@@ -41,10 +47,12 @@ class CertificatesRepo {
     }
   }
 
-  Future<CertificateResponse> getSessionCertificate(String sessionId) async {
+  Future<CertificateDownloadFile> downloadSessionCertificate(
+    String sessionId,
+  ) async {
     if (await networkInfo.isConnected) {
       try {
-        return await certificatesRemoteDataSource.getSessionCertificate(
+        return await certificatesRemoteDataSource.downloadSessionCertificate(
           sessionId,
         );
       } catch (e) {

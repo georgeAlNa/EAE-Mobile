@@ -16,8 +16,8 @@ Map<String, dynamic> _$CertificatesRequestBodyToJson(
 
 RevokeCertificateRequestBody _$RevokeCertificateRequestBodyFromJson(
   Map<String, dynamic> json,
-) => RevokeCertificateRequestBody(reason: json['reason'] as String);
+) => RevokeCertificateRequestBody(reason: json['reason'] as String?);
 
 Map<String, dynamic> _$RevokeCertificateRequestBodyToJson(
   RevokeCertificateRequestBody instance,
-) => <String, dynamic>{'reason': instance.reason};
+) => <String, dynamic>{'reason': ?instance.reason};

@@ -9,14 +9,35 @@ part of 'certificates_response.dart';
 CertificatesResponse _$CertificatesResponseFromJson(
   Map<String, dynamic> json,
 ) => CertificatesResponse(
-  data: (json['data'] as List<dynamic>)
-      .map((e) => Certificate.fromJson(e as Map<String, dynamic>))
-      .toList(),
+  data:
+      (json['data'] as List<dynamic>?)
+          ?.map((e) => Certificate.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      [],
+  meta: CertificatesPaginationMeta.fromJson(
+    json['meta'] as Map<String, dynamic>,
+  ),
 );
 
 Map<String, dynamic> _$CertificatesResponseToJson(
   CertificatesResponse instance,
-) => <String, dynamic>{'data': instance.data};
+) => <String, dynamic>{'data': instance.data, 'meta': instance.meta};
+
+CertificatesPaginationMeta _$CertificatesPaginationMetaFromJson(
+  Map<String, dynamic> json,
+) => CertificatesPaginationMeta(
+  currentPage: (json['current_page'] as num).toInt(),
+  perPage: (json['per_page'] as num).toInt(),
+  total: (json['total'] as num).toInt(),
+);
+
+Map<String, dynamic> _$CertificatesPaginationMetaToJson(
+  CertificatesPaginationMeta instance,
+) => <String, dynamic>{
+  'current_page': instance.currentPage,
+  'per_page': instance.perPage,
+  'total': instance.total,
+};
 
 CertificateResponse _$CertificateResponseFromJson(Map<String, dynamic> json) =>
     CertificateResponse(
@@ -31,7 +52,7 @@ CertificateVerificationResponse _$CertificateVerificationResponseFromJson(
   Map<String, dynamic> json,
 ) => CertificateVerificationResponse(
   valid: json['valid'] as bool,
-  certificateCode: json['certificate_code'] as String,
+  certificateCode: json['certificate_code'] as String?,
   issuedAt: json['issued_at'] as String?,
 );
 
@@ -39,8 +60,8 @@ Map<String, dynamic> _$CertificateVerificationResponseToJson(
   CertificateVerificationResponse instance,
 ) => <String, dynamic>{
   'valid': instance.valid,
-  'certificate_code': instance.certificateCode,
-  'issued_at': instance.issuedAt,
+  'certificate_code': ?instance.certificateCode,
+  'issued_at': ?instance.issuedAt,
 };
 
 Certificate _$CertificateFromJson(Map<String, dynamic> json) => Certificate(
@@ -50,14 +71,15 @@ Certificate _$CertificateFromJson(Map<String, dynamic> json) => Certificate(
   examId: json['exam_id'] as String,
   tenantId: json['tenant_id'] as String,
   certificateCode: json['certificate_code'] as String,
-  qrCodeData: json['qr_code_data'] as String,
-  issuedAt: json['issued_at'] as String,
+  qrCodeData: json['qr_code_data'] as String?,
+  digitalSignature: json['digital_signature'] as String?,
+  certificateMetadata: json['certificate_metadata'] as Map<String, dynamic>?,
+  issuedAt: json['issued_at'] as String?,
   expiresAt: json['expires_at'] as String?,
   verificationStatus: json['verification_status'] as String,
-  revokedAt: json['revoked_at'] as String?,
-  revocationReason: json['revocation_reason'] as String?,
+  additionalCredentials:
+      json['additional_credentials'] as Map<String, dynamic>?,
   createdAt: json['created_at'] as String?,
-  updatedAt: json['updated_at'] as String?,
 );
 
 Map<String, dynamic> _$CertificateToJson(Certificate instance) =>
@@ -69,11 +91,11 @@ Map<String, dynamic> _$CertificateToJson(Certificate instance) =>
       'tenant_id': instance.tenantId,
       'certificate_code': instance.certificateCode,
       'qr_code_data': instance.qrCodeData,
+      'digital_signature': instance.digitalSignature,
+      'certificate_metadata': instance.certificateMetadata,
       'issued_at': instance.issuedAt,
       'expires_at': instance.expiresAt,
       'verification_status': instance.verificationStatus,
-      'revoked_at': instance.revokedAt,
-      'revocation_reason': instance.revocationReason,
+      'additional_credentials': instance.additionalCredentials,
       'created_at': instance.createdAt,
-      'updated_at': instance.updatedAt,
     };

@@ -19,9 +19,12 @@ Certificate certificate({String id = 'certificate_001'}) => Certificate(
   examId: 'exam_001',
   tenantId: 'tenant_001',
   certificateCode: 'CERT-ABC123',
-  qrCodeData: 'http://localhost/verify/CERT-ABC123',
-  issuedAt: '2026-07-21T03:09:34.000000Z',
   verificationStatus: 'valid',
+);
+
+CertificatesResponse listResponse() => CertificatesResponse(
+  data: [certificate()],
+  meta: CertificatesPaginationMeta(currentPage: 1, perPage: 15, total: 1),
 );
 
 void main() {
@@ -31,6 +34,7 @@ void main() {
 
   setUpAll(() {
     registerFallbackValue('');
+    registerFallbackValue(1);
     registerFallbackValue(RevokeCertificateRequestBody(reason: 'test'));
   });
 
@@ -52,33 +56,45 @@ void main() {
   }
 
   group('CertificatesRepo', () {
-    test('read methods call remote when connected', () async {
+    test('list calls remote with pagination when connected', () async {
       connected();
-      final list = CertificatesResponse(data: [certificate()]);
-      final single = CertificateResponse(data: certificate());
+      final expected = listResponse();
       when(
-        () => remoteDataSource.getCertificates(),
-      ).thenAnswer((_) async => list);
+        () => remoteDataSource.getCertificates(
+          page: any(named: 'page'),
+          perPage: any(named: 'perPage'),
+        ),
+      ).thenAnswer((_) async => expected);
+
+      expect(await repo.getCertificates(page: 2, perPage: 15), same(expected));
+      verify(
+        () => remoteDataSource.getCertificates(page: 2, perPage: 15),
+      ).called(1);
+    });
+
+    test('details and download call remote when connected', () async {
+      connected();
+      final single = CertificateResponse(data: certificate());
+      const download = CertificateDownloadFile(
+        filePath: '/tmp/cert.pdf',
+        fileName: 'cert.pdf',
+        bytesLength: 4,
+      );
       when(
         () => remoteDataSource.getCertificateDetails(any()),
       ).thenAnswer((_) async => single);
       when(
-        () => remoteDataSource.getSessionCertificate(any()),
-      ).thenAnswer((_) async => single);
-      when(() => remoteDataSource.verifyCertificate(any())).thenAnswer(
-        (_) async => CertificateVerificationResponse(
-          valid: true,
-          certificateCode: 'CERT-ABC123',
-        ),
-      );
+        () => remoteDataSource.downloadSessionCertificate(any()),
+      ).thenAnswer((_) async => download);
 
-      expect(await repo.getCertificates(), same(list));
       expect(await repo.getCertificateDetails('certificate_001'), same(single));
-      expect(await repo.getSessionCertificate('session_001'), same(single));
-      expect((await repo.verifyCertificate('CERT-ABC123')).valid, isTrue);
+      expect(
+        await repo.downloadSessionCertificate('session_001'),
+        same(download),
+      );
     });
 
-    test('action methods call remote when connected', () async {
+    test('actions and verify call remote when connected', () async {
       connected();
       final response = CertificateResponse(data: certificate(id: 'updated'));
       when(
@@ -87,6 +103,12 @@ void main() {
       when(
         () => remoteDataSource.revokeCertificate(any(), any()),
       ).thenAnswer((_) async => response);
+      when(() => remoteDataSource.verifyCertificate(any())).thenAnswer(
+        (_) async => CertificateVerificationResponse(
+          valid: true,
+          certificateCode: 'CERT-ABC123',
+        ),
+      );
 
       expect(
         await repo.regenerateCertificate('certificate_001'),
@@ -98,6 +120,22 @@ void main() {
           RevokeCertificateRequestBody(reason: 'test'),
         ),
         same(response),
+      );
+      expect((await repo.verifyCertificate('CERT-ABC123')).valid, isTrue);
+    });
+
+    test('forwards backend failures', () async {
+      connected();
+      when(
+        () => remoteDataSource.getCertificates(
+          page: any(named: 'page'),
+          perPage: any(named: 'perPage'),
+        ),
+      ).thenThrow(const NetworkExceptions.unauthorizedRequest('Forbidden'));
+
+      expect(
+        () => repo.getCertificates(),
+        throwsA(const NetworkExceptions.unauthorizedRequest('Forbidden')),
       );
     });
 
@@ -113,7 +151,7 @@ void main() {
         throwsA(const NetworkExceptions.noInternetConnection()),
       );
       expect(
-        () => repo.getSessionCertificate('session_001'),
+        () => repo.downloadSessionCertificate('session_001'),
         throwsA(const NetworkExceptions.noInternetConnection()),
       );
       expect(

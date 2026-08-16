@@ -12,11 +12,11 @@ class CertificatesRequestBody {
   Map<String, dynamic> toJson() => _$CertificatesRequestBodyToJson(this);
 }
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull: false)
 class RevokeCertificateRequestBody {
-  final String reason;
+  final String? reason;
 
-  RevokeCertificateRequestBody({required this.reason});
+  RevokeCertificateRequestBody({this.reason});
 
   factory RevokeCertificateRequestBody.fromJson(Map<String, dynamic> json) =>
       _$RevokeCertificateRequestBodyFromJson(json);

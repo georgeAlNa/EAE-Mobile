@@ -4,14 +4,39 @@ part 'certificates_response.g.dart';
 
 @JsonSerializable()
 class CertificatesResponse {
+  @JsonKey(defaultValue: <Certificate>[])
   final List<Certificate> data;
 
-  CertificatesResponse({required this.data});
+  final CertificatesPaginationMeta meta;
+
+  CertificatesResponse({required this.data, required this.meta});
 
   factory CertificatesResponse.fromJson(Map<String, dynamic> json) =>
       _$CertificatesResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$CertificatesResponseToJson(this);
+}
+
+@JsonSerializable()
+class CertificatesPaginationMeta {
+  @JsonKey(name: 'current_page')
+  final int currentPage;
+
+  @JsonKey(name: 'per_page')
+  final int perPage;
+
+  final int total;
+
+  CertificatesPaginationMeta({
+    required this.currentPage,
+    required this.perPage,
+    required this.total,
+  });
+
+  factory CertificatesPaginationMeta.fromJson(Map<String, dynamic> json) =>
+      _$CertificatesPaginationMetaFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CertificatesPaginationMetaToJson(this);
 }
 
 @JsonSerializable()
@@ -26,19 +51,19 @@ class CertificateResponse {
   Map<String, dynamic> toJson() => _$CertificateResponseToJson(this);
 }
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull: false)
 class CertificateVerificationResponse {
   final bool valid;
 
   @JsonKey(name: 'certificate_code')
-  final String certificateCode;
+  final String? certificateCode;
 
   @JsonKey(name: 'issued_at')
   final String? issuedAt;
 
   CertificateVerificationResponse({
     required this.valid,
-    required this.certificateCode,
+    this.certificateCode,
     this.issuedAt,
   });
 
@@ -70,10 +95,16 @@ class Certificate {
   final String certificateCode;
 
   @JsonKey(name: 'qr_code_data')
-  final String qrCodeData;
+  final String? qrCodeData;
+
+  @JsonKey(name: 'digital_signature')
+  final String? digitalSignature;
+
+  @JsonKey(name: 'certificate_metadata')
+  final Map<String, dynamic>? certificateMetadata;
 
   @JsonKey(name: 'issued_at')
-  final String issuedAt;
+  final String? issuedAt;
 
   @JsonKey(name: 'expires_at')
   final String? expiresAt;
@@ -81,17 +112,11 @@ class Certificate {
   @JsonKey(name: 'verification_status')
   final String verificationStatus;
 
-  @JsonKey(name: 'revoked_at')
-  final String? revokedAt;
-
-  @JsonKey(name: 'revocation_reason')
-  final String? revocationReason;
+  @JsonKey(name: 'additional_credentials')
+  final Map<String, dynamic>? additionalCredentials;
 
   @JsonKey(name: 'created_at')
   final String? createdAt;
-
-  @JsonKey(name: 'updated_at')
-  final String? updatedAt;
 
   Certificate({
     required this.certificateId,
@@ -100,18 +125,61 @@ class Certificate {
     required this.examId,
     required this.tenantId,
     required this.certificateCode,
-    required this.qrCodeData,
-    required this.issuedAt,
+    this.qrCodeData,
+    this.digitalSignature,
+    this.certificateMetadata,
+    this.issuedAt,
     this.expiresAt,
     required this.verificationStatus,
-    this.revokedAt,
-    this.revocationReason,
+    this.additionalCredentials,
     this.createdAt,
-    this.updatedAt,
   });
+
+  bool get isRevoked => verificationStatus.toLowerCase() == 'revoked';
+
+  String? get revokedAt {
+    final value = certificateMetadata?['revoked_at'];
+    return value is String && value.isNotEmpty ? value : null;
+  }
+
+  String? get revokedReason {
+    final value = certificateMetadata?['revoked_reason'];
+    return value is String && value.isNotEmpty ? value : null;
+  }
+
+  Certificate copyWith({String? verificationStatus}) {
+    return Certificate(
+      certificateId: certificateId,
+      candidateUserId: candidateUserId,
+      assessmentResultId: assessmentResultId,
+      examId: examId,
+      tenantId: tenantId,
+      certificateCode: certificateCode,
+      qrCodeData: qrCodeData,
+      digitalSignature: digitalSignature,
+      certificateMetadata: certificateMetadata,
+      issuedAt: issuedAt,
+      expiresAt: expiresAt,
+      verificationStatus: verificationStatus ?? this.verificationStatus,
+      additionalCredentials: additionalCredentials,
+      createdAt: createdAt,
+    );
+  }
 
   factory Certificate.fromJson(Map<String, dynamic> json) =>
       _$CertificateFromJson(json);
 
   Map<String, dynamic> toJson() => _$CertificateToJson(this);
+}
+
+class CertificateDownloadFile {
+  final String filePath;
+  final String fileName;
+  final int bytesLength;
+
+  const CertificateDownloadFile({
+    required this.filePath,
+    required this.fileName,
+    required this.bytesLength,
+  });
 }

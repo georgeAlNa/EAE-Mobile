@@ -260,6 +260,39 @@ class ApiServicesImpl implements ApiServices {
   }
 
   @override
+  Future<List<int>> getBytes(
+    String path, {
+    Map<String, String>? queryParams,
+    String? token,
+    bool retryOnUnauthorized = true,
+  }) async {
+    try {
+      await setHeaders(token: token ?? _storedToken);
+      final response = await _dio.get<List<int>>(
+        path,
+        queryParameters: queryParams,
+        options: Options(headers: _headers, responseType: ResponseType.bytes),
+      );
+
+      return response.data ?? <int>[];
+    } on DioException catch (error) {
+      if (retryOnUnauthorized &&
+          _shouldAttemptTokenRefresh(error, path) &&
+          await _refreshAuthToken()) {
+        return getBytes(
+          path,
+          queryParams: queryParams,
+          token: _storedToken,
+          retryOnUnauthorized: false,
+        );
+      }
+      rethrow;
+    } catch (error) {
+      rethrow;
+    }
+  }
+
+  @override
   Future<dynamic> post(
     String path, {
     Map<String, dynamic>? queryParams,

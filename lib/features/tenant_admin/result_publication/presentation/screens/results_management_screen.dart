@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/di/dependency_injection.dart';
+import '../../../../certificates/logic/certificates_cubit.dart';
+import '../../../../certificates/presentation/screens/certificates_screen.dart';
 import '../../../../workflows/logic/workflow_cubit.dart';
 import '../../../../workflows/presentation/screens/workflows_screen.dart';
 import '../../logic/result_publication_cubit.dart';
@@ -15,7 +17,7 @@ class ResultsManagementScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: ColoredBox(
         color: AppColors.neutralColor,
         child: SafeArea(
@@ -30,6 +32,7 @@ class ResultsManagementScreen extends StatelessWidget {
                   tabs: [
                     Tab(text: AppStrings.tr('Workflows')),
                     Tab(text: AppStrings.tr('Result Publication')),
+                    Tab(text: AppStrings.tr('Certificates')),
                   ],
                 ),
               ),
@@ -45,6 +48,16 @@ class ResultsManagementScreen extends StatelessWidget {
                     BlocProvider(
                       create: (_) => getIt<ResultPublicationCubit>(),
                       child: const ResultPublicationScreen(),
+                    ),
+                    BlocProvider(
+                      create: (_) => getIt<CertificatesCubit>(
+                        param1: CertificateRole.tenantAdmin,
+                      ),
+                      child: CertificatesScreen(
+                        role: CertificateRole.tenantAdmin,
+                        title: AppStrings.tr('Certificates'),
+                        useScaffold: false,
+                      ),
                     ),
                   ],
                 ),

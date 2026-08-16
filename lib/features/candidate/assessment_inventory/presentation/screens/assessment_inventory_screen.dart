@@ -5,8 +5,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
+import '../../../../../core/di/dependency_injection.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../../../core/public_widgets/loading_widget.dart';
+import '../../../../certificates/logic/certificates_cubit.dart';
+import '../../../../certificates/presentation/screens/certificates_screen.dart';
 import '../../logic/assessment_inventory/assessment_inventory_cubit.dart';
 import '../widgets/assessment_active_section.dart';
 import '../widgets/assessment_dashboard_analytics_section.dart';
@@ -80,6 +83,15 @@ class _AssessmentInventoryView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const AssessmentHeader(),
+                verticalSpace(12),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () => _openMyCertificates(context),
+                    icon: const Icon(Icons.workspace_premium_outlined),
+                    label: Text(AppStrings.tr('My Certificates')),
+                  ),
+                ),
                 verticalSpace(20),
                 Text(
                   AppStrings.assessmentInventoryTitle,
@@ -121,4 +133,19 @@ class _AssessmentInventoryView extends StatelessWidget {
       ),
     );
   }
+}
+
+void _openMyCertificates(BuildContext context) {
+  Navigator.of(context).push(
+    MaterialPageRoute<void>(
+      builder: (_) => BlocProvider(
+        create: (_) =>
+            getIt<CertificatesCubit>(param1: CertificateRole.candidate),
+        child: CertificatesScreen(
+          role: CertificateRole.candidate,
+          title: AppStrings.tr('My Certificates'),
+        ),
+      ),
+    ),
+  );
 }
