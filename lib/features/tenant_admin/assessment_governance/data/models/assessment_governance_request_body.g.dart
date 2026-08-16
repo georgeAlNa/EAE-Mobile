@@ -37,10 +37,11 @@ EligibilityChainRequestBody _$EligibilityChainRequestBodyFromJson(
   chainStepNumber: (json['chain_step_number'] as num).toInt(),
   prerequisiteExamId: json['prerequisite_exam_id'] as String?,
   conditionType: json['condition_type'] as String,
-  conditionData: json['condition_data'] as Map<String, dynamic>?,
-  logicalOperator: json['logical_operator'] as String,
+  conditionData: json['condition_data'],
+  logicalOperator: json['logical_operator'] as String?,
   minScoreRequired: json['min_score_required'] as num?,
-  isSatisfiedOverrideAvailable: json['is_satisfied_override_available'] as bool,
+  isSatisfiedOverrideAvailable:
+      json['is_satisfied_override_available'] as bool?,
   chainMetadata: json['chain_metadata'] as Map<String, dynamic>?,
 );
 
@@ -61,9 +62,11 @@ Map<String, dynamic> _$EligibilityChainRequestBodyToJson(
 UpdateEligibilityChainRequestBody _$UpdateEligibilityChainRequestBodyFromJson(
   Map<String, dynamic> json,
 ) => UpdateEligibilityChainRequestBody(
+  chainStepNumber: (json['chain_step_number'] as num?)?.toInt(),
+  prerequisiteExamId: json['prerequisite_exam_id'] as String?,
   conditionType: json['condition_type'] as String?,
   minScoreRequired: json['min_score_required'] as num?,
-  conditionData: json['condition_data'] as Map<String, dynamic>?,
+  conditionData: json['condition_data'],
   logicalOperator: json['logical_operator'] as String?,
   isSatisfiedOverrideAvailable:
       json['is_satisfied_override_available'] as bool?,
@@ -73,10 +76,12 @@ UpdateEligibilityChainRequestBody _$UpdateEligibilityChainRequestBodyFromJson(
 Map<String, dynamic> _$UpdateEligibilityChainRequestBodyToJson(
   UpdateEligibilityChainRequestBody instance,
 ) => <String, dynamic>{
-  'condition_type': instance.conditionType,
-  'min_score_required': instance.minScoreRequired,
-  'condition_data': instance.conditionData,
-  'logical_operator': instance.logicalOperator,
-  'is_satisfied_override_available': instance.isSatisfiedOverrideAvailable,
-  'chain_metadata': instance.chainMetadata,
+  'chain_step_number': ?instance.chainStepNumber,
+  'prerequisite_exam_id': ?instance.prerequisiteExamId,
+  'condition_type': ?instance.conditionType,
+  'min_score_required': ?instance.minScoreRequired,
+  'condition_data': ?instance.conditionData,
+  'logical_operator': ?instance.logicalOperator,
+  'is_satisfied_override_available': ?instance.isSatisfiedOverrideAvailable,
+  'chain_metadata': ?instance.chainMetadata,
 };

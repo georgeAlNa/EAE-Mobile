@@ -235,6 +235,10 @@ class _EligibilityChainsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final chains = eligibilityChains?.data;
+    final needsExamFilter =
+        chains != null &&
+        chains.isEmpty &&
+        examFilterController.text.trim().isEmpty;
 
     return Column(
       children: [
@@ -317,7 +321,7 @@ class _EligibilityChainsView extends StatelessWidget {
                   Expanded(
                     child: TextFieldWidget(
                       controller: conditionTypeController,
-                      hintText: 'min_score',
+                      hintText: AppStrings.tr('prerequisite_exam'),
                       labelText: AppStrings.tr('Condition'),
                       obscureText: false,
                     ),
@@ -359,9 +363,13 @@ class _EligibilityChainsView extends StatelessWidget {
         else if (chains == null || chains.isEmpty)
           TenantAdminEmptyState(
             icon: Icons.account_tree_outlined,
-            title: AppStrings.tr('No eligibility chains'),
+            title: AppStrings.tr(
+              needsExamFilter ? 'Select an exam' : 'No eligibility chains',
+            ),
             message: AppStrings.tr(
-              'Create prerequisite chains for exam eligibility.',
+              needsExamFilter
+                  ? 'Enter an exam ID to load eligibility chains.'
+                  : 'Create prerequisite chains for exam eligibility.',
             ),
           )
         else

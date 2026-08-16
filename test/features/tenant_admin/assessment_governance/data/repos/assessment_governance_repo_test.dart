@@ -26,7 +26,7 @@ EligibilityChainRequestBody eligibilityRequest() => EligibilityChainRequestBody(
   examId: 'exam_001',
   chainStepNumber: 1,
   prerequisiteExamId: null,
-  conditionType: 'min_score',
+  conditionType: 'prerequisite_exam',
   conditionData: null,
   logicalOperator: 'AND',
   minScoreRequired: 70,
@@ -36,7 +36,9 @@ EligibilityChainRequestBody eligibilityRequest() => EligibilityChainRequestBody(
 
 UpdateEligibilityChainRequestBody updateEligibilityRequest() =>
     UpdateEligibilityChainRequestBody(
-      conditionType: 'min_score',
+      chainStepNumber: 2,
+      prerequisiteExamId: 'exam_000',
+      conditionType: 'prerequisite_exam',
       minScoreRequired: 80,
     );
 
@@ -59,7 +61,7 @@ EligibilityChain eligibilityChain({String score = '70.00'}) => EligibilityChain(
   examId: 'exam_001',
   chainStepNumber: 1,
   prerequisiteExamId: null,
-  conditionType: 'min_score',
+  conditionType: 'prerequisite_exam',
   conditionData: null,
   logicalOperator: 'AND',
   minScoreRequired: score,
@@ -158,10 +160,6 @@ void main() {
         data: [eligibilityChain()],
       );
       final singleResponse = EligibilityChainResponse(data: eligibilityChain());
-      final actionResponse = AssessmentGovernanceActionResponse(
-        message: 'Deleted',
-      );
-
       when(
         () =>
             remoteDataSource.getEligibilityChains(examId: any(named: 'examId')),
@@ -177,7 +175,7 @@ void main() {
       ).thenAnswer((_) async => singleResponse);
       when(
         () => remoteDataSource.deleteEligibilityChain(any()),
-      ).thenAnswer((_) async => actionResponse);
+      ).thenAnswer((_) async {});
 
       expect(
         await repo.getEligibilityChains(examId: 'exam_001'),
@@ -198,10 +196,7 @@ void main() {
         ),
         same(singleResponse),
       );
-      expect(
-        await repo.deleteEligibilityChain('chain_001'),
-        same(actionResponse),
-      );
+      await expectLater(repo.deleteEligibilityChain('chain_001'), completes);
 
       final captured = verify(
         () => remoteDataSource.getEligibilityChains(

@@ -31,7 +31,7 @@ EligibilityChain eligibilityChain({String score = '70.00'}) => EligibilityChain(
   examId: 'exam_001',
   chainStepNumber: 1,
   prerequisiteExamId: null,
-  conditionType: 'min_score',
+  conditionType: 'prerequisite_exam',
   conditionData: null,
   logicalOperator: 'AND',
   minScoreRequired: score,
@@ -113,6 +113,28 @@ void main() {
     expect(find.text('chain_001'), findsOneWidget);
     expect(find.text('Exam exam_001'), findsOneWidget);
   });
+
+  testWidgets(
+    'eligibility section asks for exam filter before showing empty chains',
+    (tester) async {
+      final cubit = await createCubit(
+        repo,
+        loadRules: () async => PenaltyRulesResponse(data: [penaltyRule()]),
+        loadChains: () async => EligibilityChainsResponse(data: const []),
+      );
+      await pumpScreen(tester, cubit);
+
+      await tester.tap(find.text('Eligibility'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Select an exam'), findsOneWidget);
+      expect(
+        find.text('Enter an exam ID to load eligibility chains.'),
+        findsOneWidget,
+      );
+      expect(find.text('No eligibility chains'), findsNothing);
+    },
+  );
 
   testWidgets('shows load error and retries through cubit', (tester) async {
     final cubit = await createCubit(

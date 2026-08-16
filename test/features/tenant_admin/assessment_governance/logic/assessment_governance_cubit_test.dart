@@ -23,7 +23,7 @@ EligibilityChainRequestBody eligibilityRequest() => EligibilityChainRequestBody(
   examId: 'exam_001',
   chainStepNumber: 1,
   prerequisiteExamId: null,
-  conditionType: 'min_score',
+  conditionType: 'prerequisite_exam',
   conditionData: null,
   logicalOperator: 'AND',
   minScoreRequired: 70,
@@ -33,7 +33,9 @@ EligibilityChainRequestBody eligibilityRequest() => EligibilityChainRequestBody(
 
 UpdateEligibilityChainRequestBody updateEligibilityRequest() =>
     UpdateEligibilityChainRequestBody(
-      conditionType: 'min_score',
+      chainStepNumber: 2,
+      prerequisiteExamId: 'exam_000',
+      conditionType: 'prerequisite_exam',
       minScoreRequired: 80,
     );
 
@@ -56,7 +58,7 @@ EligibilityChain eligibilityChain({String score = '70.00'}) => EligibilityChain(
   examId: 'exam_001',
   chainStepNumber: 1,
   prerequisiteExamId: null,
-  conditionType: 'min_score',
+  conditionType: 'prerequisite_exam',
   conditionData: null,
   logicalOperator: 'AND',
   minScoreRequired: score,
@@ -158,7 +160,7 @@ void main() {
       expect(cubit.penaltyActive, isFalse);
       expect(cubit.overrideAvailable, isTrue);
       expect(cubit.chainStepController.text, '1');
-      expect(cubit.conditionTypeController.text, 'min_score');
+      expect(cubit.conditionTypeController.text, 'prerequisite_exam');
       expect(cubit.logicalOperatorController.text, 'AND');
     });
 
@@ -185,7 +187,7 @@ void main() {
       expect(cubit.editingEligibilityChainId, 'chain_001');
       expect(cubit.examIdController.text, 'exam_001');
       expect(cubit.chainStepController.text, '1');
-      expect(cubit.conditionTypeController.text, 'min_score');
+      expect(cubit.conditionTypeController.text, 'prerequisite_exam');
       expect(cubit.logicalOperatorController.text, 'AND');
       expect(cubit.minScoreController.text, '70.00');
 
@@ -194,7 +196,7 @@ void main() {
       expect(cubit.editingEligibilityChainId, isNull);
       expect(cubit.examIdController.text, isEmpty);
       expect(cubit.chainStepController.text, '1');
-      expect(cubit.conditionTypeController.text, 'min_score');
+      expect(cubit.conditionTypeController.text, 'prerequisite_exam');
       expect(cubit.logicalOperatorController.text, 'AND');
       expect(cubit.overrideAvailable, isFalse);
     });
@@ -338,7 +340,7 @@ void main() {
           ),
           predicate<AssessmentGovernanceState>(isLoading),
           predicate<AssessmentGovernanceState>(
-            (state) => actionSuccess(state)?.message == 'Deleted',
+            (state) => actionSuccess(state)?.message == '',
           ),
         ]),
       );

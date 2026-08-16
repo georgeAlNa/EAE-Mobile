@@ -24,9 +24,9 @@ Map<String, dynamic> eligibilityBodyJson() => {
   'exam_id': 'exam_001',
   'chain_step_number': 1,
   'prerequisite_exam_id': null,
-  'condition_type': 'min_score',
+  'condition_type': 'prerequisite_exam',
   'condition_data': null,
-  'logical_operator': 'AND',
+  'logical_operator': null,
   'min_score_required': 70,
   'is_satisfied_override_available': false,
   'chain_metadata': null,
@@ -73,21 +73,104 @@ void main() {
         eligibilityBodyJson(),
       );
       final update = UpdateEligibilityChainRequestBody.fromJson({
-        'condition_type': 'min_score',
+        'chain_step_number': 2,
+        'prerequisite_exam_id': 'exam_000',
+        'condition_type': 'prerequisite_exam',
         'min_score_required': 80,
       });
 
       expect(create.examId, 'exam_001');
       expect(create.chainStepNumber, 1);
       expect(create.toJson(), eligibilityBodyJson());
-      expect(update.conditionType, 'min_score');
+      expect(update.conditionType, 'prerequisite_exam');
       expect(update.toJson(), {
-        'condition_type': 'min_score',
+        'chain_step_number': 2,
+        'prerequisite_exam_id': 'exam_000',
+        'condition_type': 'prerequisite_exam',
         'min_score_required': 80,
-        'condition_data': null,
+      });
+    });
+
+    test('supports required-only and optional create request values', () {
+      final requiredOnly = EligibilityChainRequestBody(
+        examId: 'exam_001',
+        chainStepNumber: 1,
+        conditionType: 'prerequisite_exam',
+      );
+      final scoreZero = EligibilityChainRequestBody(
+        examId: 'exam_001',
+        chainStepNumber: 2,
+        conditionType: 'prerequisite_exam',
+        logicalOperator: null,
+        minScoreRequired: 0,
+      );
+      final scoreHundred = EligibilityChainRequestBody(
+        examId: 'exam_001',
+        chainStepNumber: 3,
+        prerequisiteExamId: 'exam_000',
+        conditionType: 'prerequisite_exam',
+        conditionData: {'type': 'completion'},
+        logicalOperator: 'OR',
+        minScoreRequired: 100,
+        isSatisfiedOverrideAvailable: true,
+        chainMetadata: {'note': 'strict'},
+      );
+
+      expect(requiredOnly.toJson()['logical_operator'], isNull);
+      expect(scoreZero.toJson()['min_score_required'], 0);
+      expect(scoreHundred.toJson(), {
+        'exam_id': 'exam_001',
+        'chain_step_number': 3,
+        'prerequisite_exam_id': 'exam_000',
+        'condition_type': 'prerequisite_exam',
+        'condition_data': {'type': 'completion'},
+        'logical_operator': 'OR',
+        'min_score_required': 100,
+        'is_satisfied_override_available': true,
+        'chain_metadata': {'note': 'strict'},
+      });
+    });
+
+    test('update request sends allowed fields only', () {
+      final update = UpdateEligibilityChainRequestBody(
+        chainStepNumber: 3,
+        prerequisiteExamId: 'exam_000',
+        conditionType: 'prerequisite_exam',
+        conditionData: {'type': 'completion'},
+        logicalOperator: null,
+        minScoreRequired: null,
+        isSatisfiedOverrideAvailable: false,
+        chainMetadata: {'note': 'strict'},
+      ).toJson();
+
+      expect(update, {
+        'chain_step_number': 3,
+        'prerequisite_exam_id': 'exam_000',
+        'condition_type': 'prerequisite_exam',
+        'condition_data': {'type': 'completion'},
+        'is_satisfied_override_available': false,
+        'chain_metadata': {'note': 'strict'},
+      });
+      expect(update.containsKey('exam_id'), isFalse);
+      expect(update.containsKey('tenant_id'), isFalse);
+      expect(update.containsKey('created_by_user_id'), isFalse);
+    });
+
+    test('update request can explicitly clear nullable fields', () {
+      final update = UpdateEligibilityChainRequestBody(
+        conditionType: 'prerequisite_exam',
+        explicitNullFields: const {
+          'prerequisite_exam_id',
+          'logical_operator',
+          'min_score_required',
+        },
+      ).toJson();
+
+      expect(update, {
+        'condition_type': 'prerequisite_exam',
+        'prerequisite_exam_id': null,
         'logical_operator': null,
-        'is_satisfied_override_available': null,
-        'chain_metadata': null,
+        'min_score_required': null,
       });
     });
   });
@@ -102,8 +185,42 @@ void main() {
       });
 
       expect(list.data.single.chainId, 'chain_001');
+      expect(list.data.single.logicalOperator, isNull);
       expect(single.data.minScoreRequired, '80.00');
       expect(EligibilityChainsResponse.fromJson({'data': []}).data, isEmpty);
+    });
+
+    test('parses full backend row with nullable maps and score variants', () {
+      final withMaps = EligibilityChain.fromJson({
+        ...eligibilityJson(score: '75.00'),
+        'condition_data': {'required': true},
+        'chain_metadata': {'source': 'test'},
+        'logical_operator': null,
+      });
+      final withoutScore = EligibilityChain.fromJson({
+        ...eligibilityJson(score: '75.00'),
+        'min_score_required': null,
+      });
+
+      expect(withMaps.conditionData, {'required': true});
+      expect(withMaps.chainMetadata, {'source': 'test'});
+      expect(withMaps.minScoreRequired, '75.00');
+      expect(withoutScore.minScoreRequired, isNull);
+      expect(withMaps.createdAt, '2026-07-06T11:52:11.000000Z');
+      expect(withMaps.updatedAt, '2026-07-06T11:52:11.000000Z');
+    });
+
+    test('parses condition_data as list when backend stores array JSON', () {
+      final chain = EligibilityChain.fromJson({
+        ...eligibilityJson(score: '75.00'),
+        'condition_data': [
+          {'key': 'value'},
+        ],
+      });
+
+      expect(chain.conditionData, [
+        {'key': 'value'},
+      ]);
     });
   });
 

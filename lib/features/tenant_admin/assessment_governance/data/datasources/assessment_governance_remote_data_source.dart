@@ -31,9 +31,7 @@ abstract class AssessmentGovernanceRemoteDataSource {
     String chainId,
     UpdateEligibilityChainRequestBody updateEligibilityChainRequestBody,
   );
-  Future<AssessmentGovernanceActionResponse> deleteEligibilityChain(
-    String chainId,
-  );
+  Future<void> deleteEligibilityChain(String chainId);
 }
 
 class AssessmentGovernanceRemoteDataSourceImpl
@@ -247,16 +245,12 @@ class AssessmentGovernanceRemoteDataSourceImpl
   }
 
   @override
-  Future<AssessmentGovernanceActionResponse> deleteEligibilityChain(
-    String chainId,
-  ) async {
+  Future<void> deleteEligibilityChain(String chainId) async {
     try {
-      final request = await apiServicesImpl.delete(
+      await apiServicesImpl.delete(
         AppLinkUrl.eligibilityChainDetails(chainId),
         token: _token,
       );
-
-      return AssessmentGovernanceActionResponse.fromJson(request);
     } on DioException catch (e) {
       throw NetworkExceptions.getException(e);
     } catch (e) {

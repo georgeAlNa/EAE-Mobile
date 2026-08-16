@@ -11,6 +11,8 @@ import '../../../../../core/public_widgets/app_state_widgets.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
 import '../../../../workflows/logic/workflow_cubit.dart';
 import '../../../../workflows/presentation/screens/workflows_screen.dart';
+import '../../../../eligibility/logic/eligibility_cubit.dart';
+import '../../../../eligibility/presentation/screens/eligibility_chains_screen.dart';
 import '../../data/models/exams_management_response.dart';
 import '../../logic/exams_management_cubit.dart';
 import '../widgets/exam_card.dart';
@@ -130,6 +132,8 @@ class _ExamsManagementScreenState extends State<ExamsManagementScreen> {
                               _createPublicationWorkflow(context, exam),
                           onViewPublicationWorkflow: (exam) =>
                               _openMyWorkflows(context),
+                          onEligibilityRules: (exam) =>
+                              _openEligibilityRules(context, exam, exams ?? []),
                           onArchive: (exam) => _confirmArchive(context, exam),
                         ),
                       ],
@@ -216,6 +220,25 @@ class _ExamsManagementScreenState extends State<ExamsManagementScreen> {
     );
   }
 
+  void _openEligibilityRules(
+    BuildContext context,
+    ExamItem exam,
+    List<ExamItem> availableExams,
+  ) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => BlocProvider(
+          create: (_) => getIt<EligibilityCubit>(param1: exam.id),
+          child: EligibilityChainsScreen(
+            examId: exam.id,
+            examName: exam.examName,
+            availableExams: availableExams,
+          ),
+        ),
+      ),
+    );
+  }
+
   void _showWorkflowDetailsDialog(
     BuildContext context,
     Map<String, dynamic> workflowJson,
@@ -263,6 +286,7 @@ class _ExamsDataSection extends StatelessWidget {
   final ValueChanged<ExamItem> onDelete;
   final ValueChanged<ExamItem> onCreatePublicationWorkflow;
   final ValueChanged<ExamItem> onViewPublicationWorkflow;
+  final ValueChanged<ExamItem> onEligibilityRules;
   final ValueChanged<ExamItem> onArchive;
 
   const _ExamsDataSection({
@@ -276,6 +300,7 @@ class _ExamsDataSection extends StatelessWidget {
     required this.onDelete,
     required this.onCreatePublicationWorkflow,
     required this.onViewPublicationWorkflow,
+    required this.onEligibilityRules,
     required this.onArchive,
   });
 
@@ -327,6 +352,7 @@ class _ExamsDataSection extends StatelessWidget {
                     onCreatePublicationWorkflow(entry.value),
                 onViewPublicationWorkflow: () =>
                     onViewPublicationWorkflow(entry.value),
+                onEligibilityRules: () => onEligibilityRules(entry.value),
                 onArchive: () => onArchive(entry.value),
               ),
             ),

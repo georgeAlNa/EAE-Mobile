@@ -44,7 +44,7 @@ Map<String, dynamic> eligibilityBodyJson() => {
   'exam_id': 'exam_001',
   'chain_step_number': 1,
   'prerequisite_exam_id': null,
-  'condition_type': 'min_score',
+  'condition_type': 'prerequisite_exam',
   'condition_data': null,
   'logical_operator': 'AND',
   'min_score_required': 70,
@@ -215,7 +215,9 @@ void main() {
         eligibilityBodyJson(),
       );
       final updateRequest = UpdateEligibilityChainRequestBody(
-        conditionType: 'min_score',
+        chainStepNumber: 2,
+        prerequisiteExamId: 'exam_000',
+        conditionType: 'prerequisite_exam',
         minScoreRequired: 80,
       );
 
@@ -244,9 +246,9 @@ void main() {
         )).data.minScoreRequired,
         '80.00',
       );
-      expect(
-        (await remoteDataSource.deleteEligibilityChain('chain_001')).message,
-        '',
+      await expectLater(
+        remoteDataSource.deleteEligibilityChain('chain_001'),
+        completes,
       );
 
       final listCapture = verify(
@@ -258,6 +260,19 @@ void main() {
       ).captured;
       expect(listCapture[0], {'exam_id': 'exam_001'});
       expect(listCapture[1], 'access-token');
+      final patchCapture = verify(
+        () => apiServicesImpl.patch(
+          AppLinkUrl.eligibilityChainDetails('chain_001'),
+          body: captureAny(named: 'body'),
+          token: any(named: 'token'),
+        ),
+      ).captured;
+      expect(patchCapture.single, {
+        'chain_step_number': 2,
+        'prerequisite_exam_id': 'exam_000',
+        'condition_type': 'prerequisite_exam',
+        'min_score_required': 80,
+      });
     });
 
     test('wraps unexpected API failures as NetworkExceptions', () {

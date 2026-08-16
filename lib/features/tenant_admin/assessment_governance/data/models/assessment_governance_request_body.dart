@@ -56,16 +56,16 @@ class EligibilityChainRequestBody {
   final String conditionType;
 
   @JsonKey(name: 'condition_data')
-  final Map<String, dynamic>? conditionData;
+  final Object? conditionData;
 
   @JsonKey(name: 'logical_operator')
-  final String logicalOperator;
+  final String? logicalOperator;
 
   @JsonKey(name: 'min_score_required')
   final num? minScoreRequired;
 
   @JsonKey(name: 'is_satisfied_override_available')
-  final bool isSatisfiedOverrideAvailable;
+  final bool? isSatisfiedOverrideAvailable;
 
   @JsonKey(name: 'chain_metadata')
   final Map<String, dynamic>? chainMetadata;
@@ -76,9 +76,9 @@ class EligibilityChainRequestBody {
     this.prerequisiteExamId,
     required this.conditionType,
     this.conditionData,
-    required this.logicalOperator,
+    this.logicalOperator,
     this.minScoreRequired,
-    required this.isSatisfiedOverrideAvailable,
+    this.isSatisfiedOverrideAvailable,
     this.chainMetadata,
   });
 
@@ -88,8 +88,14 @@ class EligibilityChainRequestBody {
   Map<String, dynamic> toJson() => _$EligibilityChainRequestBodyToJson(this);
 }
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull: false)
 class UpdateEligibilityChainRequestBody {
+  @JsonKey(name: 'chain_step_number')
+  final int? chainStepNumber;
+
+  @JsonKey(name: 'prerequisite_exam_id')
+  final String? prerequisiteExamId;
+
   @JsonKey(name: 'condition_type')
   final String? conditionType;
 
@@ -97,7 +103,7 @@ class UpdateEligibilityChainRequestBody {
   final num? minScoreRequired;
 
   @JsonKey(name: 'condition_data')
-  final Map<String, dynamic>? conditionData;
+  final Object? conditionData;
 
   @JsonKey(name: 'logical_operator')
   final String? logicalOperator;
@@ -108,19 +114,30 @@ class UpdateEligibilityChainRequestBody {
   @JsonKey(name: 'chain_metadata')
   final Map<String, dynamic>? chainMetadata;
 
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  final Set<String> explicitNullFields;
+
   UpdateEligibilityChainRequestBody({
+    this.chainStepNumber,
+    this.prerequisiteExamId,
     this.conditionType,
     this.minScoreRequired,
     this.conditionData,
     this.logicalOperator,
     this.isSatisfiedOverrideAvailable,
     this.chainMetadata,
+    this.explicitNullFields = const <String>{},
   });
 
   factory UpdateEligibilityChainRequestBody.fromJson(
     Map<String, dynamic> json,
   ) => _$UpdateEligibilityChainRequestBodyFromJson(json);
 
-  Map<String, dynamic> toJson() =>
-      _$UpdateEligibilityChainRequestBodyToJson(this);
+  Map<String, dynamic> toJson() {
+    final json = _$UpdateEligibilityChainRequestBodyToJson(this);
+    for (final field in explicitNullFields) {
+      json[field] = null;
+    }
+    return json;
+  }
 }

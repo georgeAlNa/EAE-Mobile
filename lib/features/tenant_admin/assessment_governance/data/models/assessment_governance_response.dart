@@ -142,10 +142,10 @@ class EligibilityChain {
   final String conditionType;
 
   @JsonKey(name: 'condition_data')
-  final Map<String, dynamic>? conditionData;
+  final Object? conditionData;
 
   @JsonKey(name: 'logical_operator')
-  final String logicalOperator;
+  final String? logicalOperator;
 
   @JsonKey(name: 'min_score_required')
   final String? minScoreRequired;
@@ -174,7 +174,7 @@ class EligibilityChain {
     this.prerequisiteExamId,
     required this.conditionType,
     this.conditionData,
-    required this.logicalOperator,
+    this.logicalOperator,
     this.minScoreRequired,
     required this.isSatisfiedOverrideAvailable,
     this.overrideAuthorizedByUserId,

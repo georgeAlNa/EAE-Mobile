@@ -1,8 +1,12 @@
 import 'package:eae_mobile/core/networking/error/error_handler/network_exceptions.dart';
+import 'package:eae_mobile/core/di/dependency_injection.dart';
+import 'package:eae_mobile/features/eligibility/logic/eligibility_cubit.dart';
 import 'package:eae_mobile/features/evaluator/exams_management/data/models/exams_management_response.dart';
 import 'package:eae_mobile/features/evaluator/exams_management/data/repos/exams_management_repo.dart';
 import 'package:eae_mobile/features/evaluator/exams_management/logic/exams_management_cubit.dart';
 import 'package:eae_mobile/features/evaluator/exams_management/presentation/screens/exams_management_screen.dart';
+import 'package:eae_mobile/features/tenant_admin/assessment_governance/data/models/assessment_governance_response.dart';
+import 'package:eae_mobile/features/tenant_admin/assessment_governance/data/repos/assessment_governance_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,6 +15,9 @@ import 'package:mocktail/mocktail.dart';
 import '../../../../../helpers/widget_test_helpers.dart';
 
 class MockExamsManagementRepo extends Mock implements ExamsManagementRepo {}
+
+class MockAssessmentGovernanceRepo extends Mock
+    implements AssessmentGovernanceRepo {}
 
 ExamItem exam({String id = 'exam_001', String status = 'draft'}) {
   return ExamItem(
@@ -72,9 +79,12 @@ Future<void> pumpScreen(WidgetTester tester, ExamsManagementCubit cubit) {
 
 void main() {
   late MockExamsManagementRepo repo;
+  late MockAssessmentGovernanceRepo governanceRepo;
 
   setUp(() async {
     repo = MockExamsManagementRepo();
+    governanceRepo = MockAssessmentGovernanceRepo();
+    await getIt.reset();
     await resetWidgetTestPreferences();
   });
 
@@ -113,6 +123,42 @@ void main() {
     expect(find.text('Publish'), findsNothing);
     expect(find.text('Create publication workflow'), findsOneWidget);
     expect(find.text('My Workflows'), findsOneWidget);
+    expect(find.text('Eligibility Rules'), findsOneWidget);
+  });
+
+  testWidgets('opens eligibility rules with selected exam id only', (
+    tester,
+  ) async {
+    when(
+      () => governanceRepo.getEligibilityChains(examId: any(named: 'examId')),
+    ).thenAnswer((_) async => EligibilityChainsResponse(data: const []));
+    getIt.registerFactoryParam<EligibilityCubit, String, void>(
+      (examId, _) => EligibilityCubit(
+        assessmentGovernanceRepo: governanceRepo,
+        examId: examId,
+      ),
+    );
+
+    final cubit = await createCubit(
+      repo,
+      load: () async => ExamsResponse(data: [exam()]),
+    );
+    await pumpScreen(tester, cubit);
+
+    await tester.tap(find.byTooltip('Exam actions').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Eligibility Rules'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Eligibility Rules'), findsOneWidget);
+    expect(
+      find.text('No eligibility rules configured for this exam'),
+      findsOneWidget,
+    );
+    verify(
+      () => governanceRepo.getEligibilityChains(examId: 'exam_001'),
+    ).called(1);
+    verifyNever(() => governanceRepo.getPenaltyRules());
   });
 
   testWidgets('filters exams from search input', (tester) async {

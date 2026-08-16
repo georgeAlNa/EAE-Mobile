@@ -27,6 +27,7 @@ import '../../features/evaluator/manual_evaluation/logic/manual_evaluation_cubit
 import '../../features/evaluator/question_bank_and_categories/data/datasources/question_bank_and_categories_remote_data_source.dart';
 import '../../features/evaluator/question_bank_and_categories/data/repos/question_bank_and_categories_repo.dart';
 import '../../features/evaluator/question_bank_and_categories/logic/question_bank_and_categories_cubit.dart';
+import '../../features/eligibility/logic/eligibility_cubit.dart';
 import '../../features/exam_sessions/data/datasources/exam_sessions_remote_data_source.dart';
 import '../../features/exam_sessions/data/repos/exam_sessions_repo.dart';
 import '../../features/exam_sessions/logic/exam_sessions_cubit.dart';
@@ -196,6 +197,10 @@ Future<void> setupGetit() async {
   // cubit
   getIt.registerFactory<AssessmentGovernanceCubit>(
     () => AssessmentGovernanceCubit(assessmentGovernanceRepo: getIt()),
+  );
+  getIt.registerFactoryParam<EligibilityCubit, String, void>(
+    (examId, _) =>
+        EligibilityCubit(assessmentGovernanceRepo: getIt(), examId: examId),
   );
 
   // //! feature - result publication

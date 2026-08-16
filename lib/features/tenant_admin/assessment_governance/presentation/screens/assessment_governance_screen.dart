@@ -229,13 +229,16 @@ class AssessmentGovernanceScreen extends StatelessWidget {
     final minScore = num.tryParse(cubit.minScoreController.text.trim());
     if (cubit.examIdController.text.trim().isEmpty ||
         step == null ||
-        cubit.conditionTypeController.text.trim().isEmpty ||
-        cubit.logicalOperatorController.text.trim().isEmpty) {
+        step < 1 ||
+        cubit.conditionTypeController.text.trim().isEmpty) {
       showAppSnackBar(context, 'Complete eligibility chain fields');
       return;
     }
 
     final editingChainId = cubit.editingEligibilityChainId;
+    final logicalOperator = cubit.logicalOperatorController.text.trim().isEmpty
+        ? null
+        : cubit.logicalOperatorController.text.trim();
     if (editingChainId == null) {
       cubit.createEligibilityChain(
         EligibilityChainRequestBody(
@@ -246,19 +249,31 @@ class AssessmentGovernanceScreen extends StatelessWidget {
               ? null
               : cubit.prerequisiteExamIdController.text.trim(),
           conditionType: cubit.conditionTypeController.text.trim(),
-          logicalOperator: cubit.logicalOperatorController.text.trim(),
+          logicalOperator: logicalOperator,
           minScoreRequired: minScore,
           isSatisfiedOverrideAvailable: cubit.overrideAvailable,
         ),
       );
     } else {
+      final explicitNullFields = <String>{
+        if (cubit.prerequisiteExamIdController.text.trim().isEmpty)
+          'prerequisite_exam_id',
+        if (logicalOperator == null) 'logical_operator',
+        if (minScore == null) 'min_score_required',
+      };
       cubit.updateEligibilityChain(
         editingChainId,
         UpdateEligibilityChainRequestBody(
+          chainStepNumber: step,
+          prerequisiteExamId:
+              cubit.prerequisiteExamIdController.text.trim().isEmpty
+              ? null
+              : cubit.prerequisiteExamIdController.text.trim(),
           conditionType: cubit.conditionTypeController.text.trim(),
-          logicalOperator: cubit.logicalOperatorController.text.trim(),
+          logicalOperator: logicalOperator,
           minScoreRequired: minScore,
           isSatisfiedOverrideAvailable: cubit.overrideAvailable,
+          explicitNullFields: explicitNullFields,
         ),
       );
     }

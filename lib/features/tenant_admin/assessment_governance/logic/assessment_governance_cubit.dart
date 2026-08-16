@@ -35,7 +35,7 @@ class AssessmentGovernanceCubit extends Cubit<AssessmentGovernanceState> {
   final TextEditingController prerequisiteExamIdController =
       TextEditingController();
   final TextEditingController conditionTypeController = TextEditingController(
-    text: 'min_score',
+    text: 'prerequisite_exam',
   );
   final TextEditingController logicalOperatorController = TextEditingController(
     text: 'AND',
@@ -86,7 +86,7 @@ class AssessmentGovernanceCubit extends Cubit<AssessmentGovernanceState> {
     chainStepController.text = '${chain.chainStepNumber}';
     prerequisiteExamIdController.text = chain.prerequisiteExamId ?? '';
     conditionTypeController.text = chain.conditionType;
-    logicalOperatorController.text = chain.logicalOperator;
+    logicalOperatorController.text = chain.logicalOperator ?? 'AND';
     minScoreController.text = chain.minScoreRequired ?? '';
     editingEligibilityChainId = chain.chainId;
     overrideAvailable = chain.isSatisfiedOverrideAvailable;
@@ -108,7 +108,7 @@ class AssessmentGovernanceCubit extends Cubit<AssessmentGovernanceState> {
     examIdController.clear();
     chainStepController.text = '1';
     prerequisiteExamIdController.clear();
-    conditionTypeController.text = 'min_score';
+    conditionTypeController.text = 'prerequisite_exam';
     logicalOperatorController.text = 'AND';
     minScoreController.clear();
     editingEligibilityChainId = null;
@@ -321,10 +321,12 @@ class AssessmentGovernanceCubit extends Cubit<AssessmentGovernanceState> {
     emit(const AssessmentGovernanceState.actionLoading());
 
     try {
-      final response = await assessmentGovernanceRepo.deleteEligibilityChain(
-        chainId,
+      await assessmentGovernanceRepo.deleteEligibilityChain(chainId);
+      emit(
+        AssessmentGovernanceState.actionSuccess(
+          AssessmentGovernanceActionResponse(message: ''),
+        ),
       );
-      emit(AssessmentGovernanceState.actionSuccess(response));
     } on NetworkExceptions catch (e) {
       emit(
         AssessmentGovernanceState.actionError(

@@ -180,13 +180,12 @@ class AssessmentGovernanceRepo {
     }
   }
 
-  Future<AssessmentGovernanceActionResponse> deleteEligibilityChain(
-    String chainId,
-  ) async {
+  Future<void> deleteEligibilityChain(String chainId) async {
     if (await networkInfo.isConnected) {
       try {
-        return await assessmentGovernanceRemoteDataSource
-            .deleteEligibilityChain(chainId);
+        await assessmentGovernanceRemoteDataSource.deleteEligibilityChain(
+          chainId,
+        );
       } catch (e) {
         throw NetworkExceptions.getException(e);
       }

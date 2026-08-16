@@ -16,6 +16,7 @@ class ExamCard extends StatelessWidget {
   final VoidCallback onCreatePublicationWorkflow;
   final VoidCallback onViewPublicationWorkflow;
   final VoidCallback onArchive;
+  final VoidCallback onEligibilityRules;
 
   const ExamCard({
     super.key,
@@ -26,6 +27,7 @@ class ExamCard extends StatelessWidget {
     required this.onCreatePublicationWorkflow,
     required this.onViewPublicationWorkflow,
     required this.onArchive,
+    required this.onEligibilityRules,
   });
 
   @override
@@ -98,6 +100,8 @@ class ExamCard extends StatelessWidget {
                         onCreatePublicationWorkflow();
                       case _ExamAction.viewPublicationWorkflow:
                         onViewPublicationWorkflow();
+                      case _ExamAction.eligibilityRules:
+                        onEligibilityRules();
                       case _ExamAction.archive:
                         onArchive();
                       case _ExamAction.delete:
@@ -120,6 +124,10 @@ class ExamCard extends StatelessWidget {
                     PopupMenuItem(
                       value: _ExamAction.viewPublicationWorkflow,
                       child: Text(AppStrings.tr('My Workflows')),
+                    ),
+                    PopupMenuItem(
+                      value: _ExamAction.eligibilityRules,
+                      child: Text(AppStrings.tr('Eligibility Rules')),
                     ),
                     if (exam.examStatus.toLowerCase() != 'archived')
                       PopupMenuItem(
@@ -208,6 +216,7 @@ enum _ExamAction {
   edit,
   createPublicationWorkflow,
   viewPublicationWorkflow,
+  eligibilityRules,
   archive,
   delete,
 }
