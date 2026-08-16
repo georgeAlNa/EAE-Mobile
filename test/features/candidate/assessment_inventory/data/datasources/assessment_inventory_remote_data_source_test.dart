@@ -89,33 +89,6 @@ void main() {
     });
 
     test(
-      'assessmentInventoryDashboard gets analytics dashboard with token',
-      () async {
-        when(
-          () => apiServicesImpl.get(
-            AppLinkUrl.analyticsDashboard,
-            token: any(named: 'token'),
-          ),
-        ).thenAnswer(
-          (_) async => {
-            'data': {'total_finalized_results': 7, 'average_percentage': 82.5},
-          },
-        );
-
-        final response = await remoteDataSource.assessmentInventoryDashboard();
-
-        expect(response.data.totalFinalizedResults, 7);
-        expect(response.data.averagePercentage, 82.5);
-        verify(
-          () => apiServicesImpl.get(
-            AppLinkUrl.analyticsDashboard,
-            token: 'access-token',
-          ),
-        ).called(1);
-      },
-    );
-
-    test(
       'assessmentInventoryDetails gets exam details with stored token',
       () async {
         when(
@@ -138,6 +111,25 @@ void main() {
         ).called(1);
       },
     );
+
+    test('candidate inventory never calls analytics dashboard', () async {
+      when(
+        () => apiServicesImpl.get(AppLinkUrl.exams, token: any(named: 'token')),
+      ).thenAnswer(
+        (_) async => {
+          'data': [examJson()],
+        },
+      );
+
+      await remoteDataSource.assessmentInventory();
+
+      verifyNever(
+        () => apiServicesImpl.get(
+          AppLinkUrl.analyticsDashboard,
+          token: any(named: 'token'),
+        ),
+      );
+    });
 
     test('wraps unexpected API failures as NetworkExceptions', () {
       when(

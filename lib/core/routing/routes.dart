@@ -15,7 +15,6 @@ class Routes {
   static const String proctorNavigationShell = '/proctor';
   static const String assessmentInventoryDetailsScreen =
       '/assessment-inventory-details';
-  static const String analyticsScreen = '/analytics';
   static const String settingsScreen = '/settings';
   static const String assessmentSelectionScreen = '/assessment-selection';
   static const String forensicsCheckpointScreen = '/forensics-checkpoint';

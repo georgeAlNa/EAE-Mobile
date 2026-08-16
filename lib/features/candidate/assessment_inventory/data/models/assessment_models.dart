@@ -1,22 +1,10 @@
 class AssessmentInventoryViewData {
   final ActiveAssessment? primaryActiveAssessment;
   final List<AvailableAssessment> availableAssessments;
-  final AssessmentInventoryDashboard dashboard;
 
   const AssessmentInventoryViewData({
     required this.primaryActiveAssessment,
     required this.availableAssessments,
-    required this.dashboard,
-  });
-}
-
-class AssessmentInventoryDashboard {
-  final int totalFinalizedResults;
-  final num averagePercentage;
-
-  const AssessmentInventoryDashboard({
-    required this.totalFinalizedResults,
-    required this.averagePercentage,
   });
 }
 

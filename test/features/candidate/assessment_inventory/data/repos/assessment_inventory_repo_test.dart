@@ -2,7 +2,6 @@ import 'package:eae_mobile/core/networking/error/error_handler/network_exception
 import 'package:eae_mobile/core/networking/network_info.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/data/datasources/assessment_inventory_remote_data_source.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/data/models/assessment_inventory/assessment_inventory_response.dart';
-import 'package:eae_mobile/features/candidate/assessment_inventory/data/models/assessment_inventory_dashboard/assessment_inventory_dashboard_response.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/data/models/assessment_inventory_details/assessment_inventory_details_response.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/data/repos/assessment_inventory_repo.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -95,39 +94,6 @@ void main() {
       when(() => remoteDataSource.assessmentInventory()).thenThrow(exception);
 
       expect(() => repo.assessmentInventory(), throwsA(exception));
-    });
-  });
-
-  group('assessmentInventoryDashboard', () {
-    test(
-      'returns dashboard response when connected and remote succeeds',
-      () async {
-        final response = AssessmentInventoryDashboardResponse(
-          data: AssessmentInventoryDashboardData(
-            totalFinalizedResults: 7,
-            averagePercentage: 82.5,
-          ),
-        );
-        when(() => networkInfo.isConnected).thenAnswer((_) async => true);
-        when(
-          () => remoteDataSource.assessmentInventoryDashboard(),
-        ).thenAnswer((_) async => response);
-
-        final result = await repo.assessmentInventoryDashboard();
-
-        expect(result, same(response));
-        verify(() => remoteDataSource.assessmentInventoryDashboard()).called(1);
-      },
-    );
-
-    test('throws noInternetConnection when dashboard is offline', () {
-      when(() => networkInfo.isConnected).thenAnswer((_) async => false);
-
-      expect(
-        () => repo.assessmentInventoryDashboard(),
-        throwsA(const NetworkExceptions.noInternetConnection()),
-      );
-      verifyNever(() => remoteDataSource.assessmentInventoryDashboard());
     });
   });
 

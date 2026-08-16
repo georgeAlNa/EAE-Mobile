@@ -1,5 +1,4 @@
 import 'package:eae_mobile/core/di/dependency_injection.dart';
-import 'package:eae_mobile/features/analytics/logic/analytics_cubit.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/logic/assessment_inventory_details/assessment_inventory_details_cubit.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/logic/assessment_inventory/assessment_inventory_cubit.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/presentation/screens/assessment_inventory_details_screen.dart';
@@ -115,24 +114,9 @@ class AppRouter {
               BlocProvider(
                 create: (context) => getIt<AssessmentInventoryCubit>(),
               ),
-              BlocProvider(create: (context) => getIt<AnalyticsCubit>()),
               BlocProvider(create: (context) => getIt<SettingsCubit>()),
             ],
             child: const MainNavigationShell(initialIndex: 0),
-          ),
-        );
-
-      case Routes.analyticsScreen:
-        return MaterialPageRoute(
-          builder: (_) => MultiBlocProvider(
-            providers: [
-              BlocProvider(
-                create: (context) => getIt<AssessmentInventoryCubit>(),
-              ),
-              BlocProvider(create: (context) => getIt<AnalyticsCubit>()),
-              BlocProvider(create: (context) => getIt<SettingsCubit>()),
-            ],
-            child: const MainNavigationShell(initialIndex: 1),
           ),
         );
 
@@ -143,10 +127,9 @@ class AppRouter {
               BlocProvider(
                 create: (context) => getIt<AssessmentInventoryCubit>(),
               ),
-              BlocProvider(create: (context) => getIt<AnalyticsCubit>()),
               BlocProvider(create: (context) => getIt<SettingsCubit>()),
             ],
-            child: const MainNavigationShell(initialIndex: 2),
+            child: const MainNavigationShell(initialIndex: 1),
           ),
         );
 

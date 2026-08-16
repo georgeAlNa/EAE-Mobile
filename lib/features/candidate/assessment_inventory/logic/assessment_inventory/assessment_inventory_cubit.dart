@@ -3,7 +3,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/networking/error/error_handler/network_exceptions.dart';
-import '../../data/models/assessment_inventory_dashboard/assessment_inventory_dashboard_response.dart';
 import '../../data/models/assessment_inventory/assessment_inventory_response.dart';
 import '../../data/models/assessment_models.dart';
 import '../../data/repos/assessment_inventory_repo.dart';
@@ -24,11 +23,9 @@ class AssessmentInventoryCubit extends Cubit<AssessmentInventoryState> {
 
     try {
       final response = await assessmentInventoryRepo.assessmentInventory();
-      final dashboardResponse = await assessmentInventoryRepo
-          .assessmentInventoryDashboard();
       emit(
         AssessmentInventoryState.ready(
-          viewData: _mapResponseToViewData(response, dashboardResponse),
+          viewData: _mapResponseToViewData(response),
         ),
       );
     } on NetworkExceptions catch (e) {
@@ -48,7 +45,6 @@ class AssessmentInventoryCubit extends Cubit<AssessmentInventoryState> {
 
   AssessmentInventoryViewData _mapResponseToViewData(
     AssessmentInventoryResponse response,
-    AssessmentInventoryDashboardResponse dashboardResponse,
   ) {
     final assessments = response.data.map(_mapExamToAvailable).toList();
     final primaryAssessment = response.data.isEmpty
@@ -58,10 +54,6 @@ class AssessmentInventoryCubit extends Cubit<AssessmentInventoryState> {
     return AssessmentInventoryViewData(
       primaryActiveAssessment: primaryAssessment,
       availableAssessments: assessments,
-      dashboard: AssessmentInventoryDashboard(
-        totalFinalizedResults: dashboardResponse.data.totalFinalizedResults,
-        averagePercentage: dashboardResponse.data.averagePercentage,
-      ),
     );
   }
 

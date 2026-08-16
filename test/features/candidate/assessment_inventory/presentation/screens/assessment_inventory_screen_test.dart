@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:eae_mobile/core/routing/routes.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/data/models/assessment_inventory/assessment_inventory_response.dart';
-import 'package:eae_mobile/features/candidate/assessment_inventory/data/models/assessment_inventory_dashboard/assessment_inventory_dashboard_response.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/data/models/assessment_models.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/data/repos/assessment_inventory_repo.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/logic/assessment_inventory/assessment_inventory_cubit.dart';
@@ -57,10 +56,6 @@ AssessmentInventoryViewData viewDataFixture({
             sectionsLabel: '25 Question',
           ),
         ],
-    dashboard: const AssessmentInventoryDashboard(
-      totalFinalizedResults: 7,
-      averagePercentage: 82.5,
-    ),
   );
 }
 
@@ -98,14 +93,6 @@ AssessmentInventoryResponse inventoryResponse({bool empty = false}) =>
                 updatedAt: '2026-07-15T20:00:00.000Z',
               ),
             ],
-    );
-
-AssessmentInventoryDashboardResponse dashboardResponse() =>
-    AssessmentInventoryDashboardResponse(
-      data: AssessmentInventoryDashboardData(
-        totalFinalizedResults: 7,
-        averagePercentage: 82.5,
-      ),
     );
 
 void stubLoading(MockAssessmentInventoryRepo repo) {
@@ -172,7 +159,8 @@ void main() {
       expect(find.text('Assessment Inventory'), findsOneWidget);
       expect(find.text('Flutter Fundamentals'), findsOneWidget);
       expect(find.text('SHOW MORE'), findsOneWidget);
-      expect(find.text('Average Score'), findsOneWidget);
+      expect(find.text('Average Score'), findsNothing);
+      expect(find.text('ANALYTICS'), findsNothing);
     });
 
     testWidgets('renders empty state when no active assessment exists', (

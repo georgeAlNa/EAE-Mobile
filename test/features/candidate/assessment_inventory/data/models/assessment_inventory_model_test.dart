@@ -1,5 +1,4 @@
 import 'package:eae_mobile/features/candidate/assessment_inventory/data/models/assessment_inventory/assessment_inventory_response.dart';
-import 'package:eae_mobile/features/candidate/assessment_inventory/data/models/assessment_inventory_dashboard/assessment_inventory_dashboard_response.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/data/models/assessment_inventory_details/assessment_inventory_details_response.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -78,22 +77,6 @@ void main() {
         () => AssessmentInventoryResponse.fromJson({}),
         throwsA(isA<TypeError>()),
       );
-    });
-  });
-
-  group('AssessmentInventoryDashboardResponse', () {
-    test('fromJson and toJson parse dashboard metrics', () {
-      final response = AssessmentInventoryDashboardResponse.fromJson({
-        'data': {'total_finalized_results': 7, 'average_percentage': 82.5},
-      });
-
-      expect(response.data.totalFinalizedResults, 7);
-      expect(response.data.averagePercentage, 82.5);
-      expect(response.toJson(), {'data': same(response.data)});
-      expect(response.data.toJson(), {
-        'total_finalized_results': 7,
-        'average_percentage': 82.5,
-      });
     });
   });
 

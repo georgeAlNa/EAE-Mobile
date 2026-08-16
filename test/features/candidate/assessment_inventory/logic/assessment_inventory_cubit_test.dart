@@ -1,7 +1,6 @@
 import 'package:eae_mobile/core/constants/app_strings.dart';
 import 'package:eae_mobile/core/networking/error/error_handler/network_exceptions.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/data/models/assessment_inventory/assessment_inventory_response.dart';
-import 'package:eae_mobile/features/candidate/assessment_inventory/data/models/assessment_inventory_dashboard/assessment_inventory_dashboard_response.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/data/models/assessment_inventory_details/assessment_inventory_details_response.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/data/models/assessment_models.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/data/repos/assessment_inventory_repo.dart';
@@ -48,29 +47,13 @@ AssessmentExam exam({
   );
 }
 
-AssessmentInventoryDashboardResponse dashboardResponse({
-  int finalized = 7,
-  num average = 82.5,
-}) {
-  return AssessmentInventoryDashboardResponse(
-    data: AssessmentInventoryDashboardData(
-      totalFinalizedResults: finalized,
-      averagePercentage: average,
-    ),
-  );
-}
-
 void stubInventorySuccess(
   MockAssessmentInventoryRepo repo, {
   List<AssessmentExam>? exams,
-  AssessmentInventoryDashboardResponse? dashboard,
 }) {
   when(() => repo.assessmentInventory()).thenAnswer(
     (_) async => AssessmentInventoryResponse(data: exams ?? [exam()]),
   );
-  when(
-    () => repo.assessmentInventoryDashboard(),
-  ).thenAnswer((_) async => dashboard ?? dashboardResponse());
 }
 
 Future<AssessmentInventoryState> waitForInventoryTerminal(
@@ -137,10 +120,7 @@ void main() {
         'Difficulty 2',
       );
       expect(viewData.availableAssessments.single.sectionsLabel, '25 Question');
-      expect(viewData.dashboard.totalFinalizedResults, 7);
-      expect(viewData.dashboard.averagePercentage, 82.5);
       verify(() => repo.assessmentInventory()).called(1);
-      verify(() => repo.assessmentInventoryDashboard()).called(1);
     });
 
     test('maps empty inventory without primary active assessment', () async {
@@ -153,7 +133,6 @@ void main() {
 
       expect(viewData.primaryActiveAssessment, isNull);
       expect(viewData.availableAssessments, isEmpty);
-      expect(viewData.dashboard.totalFinalizedResults, 7);
     });
 
     test('emits error when inventory request fails', () async {
@@ -167,7 +146,6 @@ void main() {
       final state = await waitForInventoryTerminal(cubit);
 
       expect(inventoryError(state), 'Unauthorized');
-      verifyNever(() => repo.assessmentInventoryDashboard());
     });
 
     test(
@@ -187,7 +165,7 @@ void main() {
             ),
             predicate<AssessmentInventoryState>(
               (state) =>
-                  inventoryViewData(state)?.dashboard.averagePercentage == 82.5,
+                  inventoryViewData(state)?.availableAssessments.length == 1,
             ),
           ]),
         );

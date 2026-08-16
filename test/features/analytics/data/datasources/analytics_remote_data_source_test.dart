@@ -2,6 +2,7 @@ import 'package:eae_mobile/core/constants/shared_pref_keys.dart';
 import 'package:eae_mobile/core/helpers/app_shared_preferences.dart';
 import 'package:eae_mobile/core/networking/api_services_impl.dart';
 import 'package:eae_mobile/core/networking/app_link_url.dart';
+import 'package:eae_mobile/core/networking/error/error_handler/network_exceptions.dart';
 import 'package:eae_mobile/features/analytics/data/datasources/analytics_remote_data_source.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -32,27 +33,62 @@ void main() {
     );
   });
 
-  test('analyticsDashboard gets backend dashboard with stored token', () async {
+  test(
+    'analyticsDashboard gets backend dashboard with stored token and no params',
+    () async {
+      when(
+        () => apiServicesImpl.get(
+          AppLinkUrl.analyticsDashboard,
+          token: any(named: 'token'),
+          queryParams: any(named: 'queryParams'),
+        ),
+      ).thenAnswer(
+        (_) async => {
+          'data': {'total_finalized_results': 7, 'average_percentage': 82.5},
+        },
+      );
+
+      final response = await remoteDataSource.analyticsDashboard();
+
+      expect(response.data.totalFinalizedResults, 7);
+      expect(response.data.averagePercentage, 82.5);
+      verify(
+        () => apiServicesImpl.get(
+          AppLinkUrl.analyticsDashboard,
+          token: 'access-token',
+          queryParams: null,
+        ),
+      ).called(1);
+    },
+  );
+
+  test('analyticsDashboard propagates forbidden through NetworkExceptions', () {
     when(
       () => apiServicesImpl.get(
         AppLinkUrl.analyticsDashboard,
         token: any(named: 'token'),
+        queryParams: any(named: 'queryParams'),
       ),
-    ).thenAnswer(
-      (_) async => {
-        'data': {'total_finalized_results': 7, 'average_percentage': 82.5},
-      },
+    ).thenThrow(const NetworkExceptions.loggingInRequired());
+
+    expect(
+      () => remoteDataSource.analyticsDashboard(),
+      throwsA(isA<NetworkExceptions>()),
     );
+  });
 
-    final response = await remoteDataSource.analyticsDashboard();
-
-    expect(response.data.totalFinalizedResults, 7);
-    expect(response.data.averagePercentage, 82.5);
-    verify(
+  test('analyticsDashboard wraps unexpected API failures', () {
+    when(
       () => apiServicesImpl.get(
         AppLinkUrl.analyticsDashboard,
-        token: 'access-token',
+        token: any(named: 'token'),
+        queryParams: any(named: 'queryParams'),
       ),
-    ).called(1);
+    ).thenThrow(Exception('boom'));
+
+    expect(
+      () => remoteDataSource.analyticsDashboard(),
+      throwsA(isA<NetworkExceptions>()),
+    );
   });
 }

@@ -26,9 +26,7 @@ class AnalyticsCubit extends Cubit<AnalyticsState> {
     } on NetworkExceptions catch (e) {
       emit(AnalyticsState.error(error: NetworkExceptions.getErrorMessage(e)));
     } catch (_) {
-      emit(
-        const AnalyticsState.error(error: 'Failed to load analytics dashboard'),
-      );
+      emit(const AnalyticsState.error(error: 'Unable to load analytics'));
     }
   }
 
@@ -40,39 +38,10 @@ class AnalyticsCubit extends Cubit<AnalyticsState> {
     final normalizedAverage = (averagePercentage / 100).clamp(0.0, 1.0);
 
     return AnalyticsViewData(
-      title: 'Analytics Dashboard',
-      subtitle:
-          'Finalized results: ${data.totalFinalizedResults} | Average score: ${averagePercentage.toStringAsFixed(1)}%',
-      competencyTitle: 'Competency Metrics',
-      secureProfileLabel: 'API\nSYNCED',
-      radarLabelTop: 'AVERAGE',
-      radarLabelBottom: 'RESULTS',
-      chartValues: const [],
-      metrics: const [],
-      benchmarkingTitle: 'Dashboard Summary',
-      benchmarkingSubtitle: 'Values returned by analytics dashboard',
-      benchmarks: [
-        AnalyticsBenchmark(
-          label: 'Finalized Results',
-          value: data.totalFinalizedResults.toString(),
-        ),
-        AnalyticsBenchmark(
-          label: 'Average Percentage',
-          value: '${averagePercentage.toStringAsFixed(1)}%',
-        ),
-      ],
-      recommendationTitle: '',
-      recommendationSubtitle: '',
-      recommendationBody: '',
-      recommendationActionLabel: '',
-      credentialsTitle: 'Earned Credentials',
-      exportCertificateLabel: 'EXPORT CERTIFICATE',
-      credentials: const [],
-      assessmentStatusTitle: 'ASSESSMENT STATUS',
-      sessionLabel: 'Average percentage',
-      syncedLabel: '${averagePercentage.toStringAsFixed(1)}%',
-      statusProgress: normalizedAverage,
-      statusNotice: 'Based on finalized assessment results from the backend.',
+      totalFinalizedResults: data.totalFinalizedResults,
+      averagePercentage: data.averagePercentage,
+      averageProgress: normalizedAverage,
+      hasFinalizedResults: data.totalFinalizedResults > 0,
     );
   }
 }

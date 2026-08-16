@@ -1,7 +1,6 @@
 import '../../../../../core/networking/error/error_handler/network_exceptions.dart';
 import '../../../../../core/networking/network_info.dart';
 import '../datasources/assessment_inventory_remote_data_source.dart';
-import '../models/assessment_inventory_dashboard/assessment_inventory_dashboard_response.dart';
 import '../models/assessment_inventory_details/assessment_inventory_details_response.dart';
 import '../models/assessment_inventory/assessment_inventory_response.dart';
 
@@ -18,20 +17,6 @@ class AssessmentInventoryRepo {
     if (await networkInfo.isConnected) {
       try {
         return await assessmentInventoryRemoteDataSource.assessmentInventory();
-      } catch (e) {
-        throw NetworkExceptions.getException(e);
-      }
-    } else {
-      throw const NetworkExceptions.noInternetConnection();
-    }
-  }
-
-  Future<AssessmentInventoryDashboardResponse>
-  assessmentInventoryDashboard() async {
-    if (await networkInfo.isConnected) {
-      try {
-        return await assessmentInventoryRemoteDataSource
-            .assessmentInventoryDashboard();
       } catch (e) {
         throw NetworkExceptions.getException(e);
       }

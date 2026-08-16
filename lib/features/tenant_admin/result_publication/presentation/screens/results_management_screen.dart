@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/di/dependency_injection.dart';
+import '../../../../analytics/logic/analytics_cubit.dart';
+import '../../../../analytics/presentation/screens/analytics_screen.dart';
 import '../../../../certificates/logic/certificates_cubit.dart';
 import '../../../../certificates/presentation/screens/certificates_screen.dart';
 import '../../../../workflows/logic/workflow_cubit.dart';
@@ -17,7 +19,7 @@ class ResultsManagementScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: ColoredBox(
         color: AppColors.neutralColor,
         child: SafeArea(
@@ -30,6 +32,7 @@ class ResultsManagementScreen extends StatelessWidget {
                   labelColor: AppColors.primaryColor9,
                   indicatorColor: AppColors.secondaryColor7,
                   tabs: [
+                    Tab(text: AppStrings.tr('Analytics')),
                     Tab(text: AppStrings.tr('Workflows')),
                     Tab(text: AppStrings.tr('Result Publication')),
                     Tab(text: AppStrings.tr('Certificates')),
@@ -39,6 +42,10 @@ class ResultsManagementScreen extends StatelessWidget {
               Expanded(
                 child: TabBarView(
                   children: [
+                    BlocProvider(
+                      create: (_) => getIt<AnalyticsCubit>(),
+                      child: const AnalyticsScreen(useScaffold: false),
+                    ),
                     BlocProvider(
                       create: (_) => getIt<WorkflowCubit>(
                         param1: WorkflowRole.tenantAdmin,

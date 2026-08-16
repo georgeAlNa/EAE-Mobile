@@ -12,7 +12,6 @@ import '../../../../certificates/logic/certificates_cubit.dart';
 import '../../../../certificates/presentation/screens/certificates_screen.dart';
 import '../../logic/assessment_inventory/assessment_inventory_cubit.dart';
 import '../widgets/assessment_active_section.dart';
-import '../widgets/assessment_dashboard_analytics_section.dart';
 import '../widgets/assessment_header.dart';
 
 class AssessmentInventoryScreen extends StatelessWidget {
@@ -108,10 +107,6 @@ class _AssessmentInventoryView extends StatelessWidget {
                     color: AppColors.tertiaryColor6,
                     height: 1.5,
                   ),
-                ),
-                verticalSpace(24),
-                AssessmentDashboardAnalyticsSection(
-                  dashboard: viewData.dashboard,
                 ),
                 verticalSpace(24),
                 if (viewData.primaryActiveAssessment != null)
