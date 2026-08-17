@@ -108,7 +108,7 @@ class _CheckTile extends StatelessWidget {
               ],
             ),
           ),
-          _StatusPill(label: item.statusLabel),
+          _StatusPill(label: item.statusLabel, isValidated: item.isValidated),
         ],
       ),
     );
@@ -130,8 +130,9 @@ class _CheckTile extends StatelessWidget {
 
 class _StatusPill extends StatelessWidget {
   final String label;
+  final bool isValidated;
 
-  const _StatusPill({required this.label});
+  const _StatusPill({required this.label, required this.isValidated});
 
   @override
   Widget build(BuildContext context) {
@@ -144,7 +145,7 @@ class _StatusPill extends StatelessWidget {
       child: Row(
         children: [
           Icon(
-            Icons.check_circle,
+            isValidated ? Icons.check_circle : Icons.info_outline,
             size: 14.sp,
             color: AppColors.secondaryColor7,
           ),

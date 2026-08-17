@@ -1,5 +1,6 @@
 import 'package:eae_mobile/core/di/dependency_injection.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/logic/assessment_inventory_details/assessment_inventory_details_cubit.dart';
+import 'package:eae_mobile/features/candidate/assessment_inventory/data/models/assessment_inventory/assessment_inventory_response.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/logic/assessment_inventory/assessment_inventory_cubit.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/presentation/screens/assessment_inventory_details_screen.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/presentation/screens/assessment_selection_screen.dart';
@@ -168,11 +169,13 @@ class AppRouter {
         );
 
       case Routes.assessmentSetupScreen:
-        final examId = settings.arguments as String?;
+        final argument = settings.arguments;
+        final exam = argument is AssessmentExam ? argument : null;
+        final examId = exam?.id ?? (argument is String ? argument : null);
 
         return MaterialPageRoute(
           builder: (_) => BlocProvider(
-            create: (context) => getIt<AssessmentSetupCubit>(),
+            create: (context) => getIt<AssessmentSetupCubit>(param1: exam),
             child: AssessmentSetupScreen(examId: examId),
           ),
         );

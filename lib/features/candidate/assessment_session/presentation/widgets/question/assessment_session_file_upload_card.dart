@@ -19,6 +19,14 @@ class AssessmentSessionFileUploadCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (question.type != AssessmentSessionQuestionType.fileUpload &&
+        !question.canAttachEvidence) {
+      return const SizedBox.shrink();
+    }
+
+    final isUnsupportedFileUpload =
+        question.type == AssessmentSessionQuestionType.fileUpload;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -101,7 +109,7 @@ class AssessmentSessionFileUploadCard extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton.icon(
-                  onPressed: onPickFile,
+                  onPressed: isUnsupportedFileUpload ? null : onPickFile,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryColor10,
                     foregroundColor: AppColors.neutralColor,
@@ -112,7 +120,9 @@ class AssessmentSessionFileUploadCard extends StatelessWidget {
                   ),
                   icon: const Icon(Icons.attach_file_rounded),
                   label: Text(
-                    question.uploadedFileName == null
+                    isUnsupportedFileUpload
+                        ? 'Upload unavailable'
+                        : question.uploadedFileName == null
                         ? 'Choose File'
                         : 'Replace File',
                     style: AppTextStyles.font12WhiteSemiBold.copyWith(

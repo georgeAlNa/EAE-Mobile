@@ -213,6 +213,10 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
       rules: const SubmissionRulesData(title: 'Submission Rules', rules: []),
       questions: questions,
       currentQuestionIndex: 0,
+      backendQuestionIndex: session?.current.questionIndex,
+      knownTotalQuestions: _knownTotalQuestionsFromProgress(
+        session?.progress.progressData,
+      ),
       totalDurationSeconds: verifiedDuration,
       remainingSeconds: verifiedDuration,
       isFlaggedForReview: false,
@@ -237,6 +241,26 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
       sessionId: sessionId,
       config: const ExamProctoringConfig(),
     );
+  }
+
+  int? _knownTotalQuestionsFromProgress(Map<String, dynamic>? progressData) {
+    if (progressData == null || progressData.isEmpty) return null;
+    const keys = [
+      'total_questions',
+      'totalQuestions',
+      'total_question_count',
+      'totalQuestionCount',
+      'question_count',
+      'questionCount',
+    ];
+
+    for (final key in keys) {
+      final value = progressData[key];
+      if (value is int && value > 0) return value;
+      if (value is num && value > 0) return value.toInt();
+    }
+
+    return null;
   }
 
   bool _isInteractionBlocked(AssessmentSessionViewData viewData) {
@@ -277,7 +301,7 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
       responseText: '',
       canAttachEvidence: type == AssessmentSessionQuestionType.fileUpload,
       evidenceHint: type == AssessmentSessionQuestionType.fileUpload
-          ? 'Upload the answer file URL after it is available.'
+          ? 'File upload questions are not supported until a verified upload endpoint is available.'
           : '',
       isFlaggedForReview: false,
       placeholder: _placeholderForType(type),
@@ -782,28 +806,11 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
           return;
         }
 
-        final result = await FilePicker.pickFiles(
-          allowMultiple: false,
-          type: FileType.any,
-        );
-
-        final file = result?.files.first;
-        if (file == null) return;
-
-        final questions = List<AssessmentSessionQuestion>.from(
-          viewData.questions,
-        );
-        questions[0] = question.copyWith(
-          uploadedFileName: file.name,
-          uploadedFilePath: null,
-        );
-
         emit(
           AssessmentSessionState.ready(
             viewData: viewData.copyWith(
-              questions: questions,
               statusMessage:
-                  'File selected locally. A backend-accessible upload URL is required before this answer can be submitted.',
+                  'File upload is not available in this mobile build because no verified upload endpoint is configured.',
             ),
           ),
         );

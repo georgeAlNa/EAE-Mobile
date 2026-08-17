@@ -12,8 +12,13 @@ import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class ProctorSessionMonitoringScreen extends StatelessWidget {
   final String? initialSessionId;
+  final String? initialSessionState;
 
-  const ProctorSessionMonitoringScreen({super.key, this.initialSessionId});
+  const ProctorSessionMonitoringScreen({
+    super.key,
+    this.initialSessionId,
+    this.initialSessionState,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -30,11 +35,10 @@ class ProctorSessionMonitoringScreen extends StatelessWidget {
           },
           builder: (context, state) {
             final cubit = context.read<ProctorSessionCubit>();
-            if (initialSessionId != null &&
-                initialSessionId!.isNotEmpty &&
-                cubit.sessionIdController.text != initialSessionId) {
-              cubit.sessionIdController.text = initialSessionId!;
-            }
+            cubit.setSelectedSession(
+              sessionId: initialSessionId,
+              sessionState: initialSessionState,
+            );
             final isLoading = state.maybeWhen(
               loading: () => true,
               orElse: () => false,
@@ -47,6 +51,9 @@ class ProctorSessionMonitoringScreen extends StatelessWidget {
               actionSuccess: (message) => message,
               error: (error) => error,
               orElse: () => '',
+            );
+            final actionVisibility = _ActionVisibility.forState(
+              cubit.currentSessionState,
             );
 
             return SingleChildScrollView(
@@ -75,26 +82,32 @@ class ProctorSessionMonitoringScreen extends StatelessWidget {
                     controller: cubit.sessionIdController,
                     label: AppStrings.tr('Session ID'),
                     icon: Icons.confirmation_number_outlined,
+                    readOnly:
+                        initialSessionId != null &&
+                        initialSessionId!.isNotEmpty,
                   ),
                   verticalSpace(14),
                   _ActionGrid(
                     isLoading: isLoading,
                     actions: [
-                      _ProctorAction(
-                        label: AppStrings.tr('Suspend'),
-                        icon: Icons.pause_circle_outline,
-                        onTap: cubit.suspendExamSession,
-                      ),
-                      _ProctorAction(
-                        label: AppStrings.tr('Resume'),
-                        icon: Icons.play_circle_outline,
-                        onTap: cubit.resumeExamSession,
-                      ),
-                      _ProctorAction(
-                        label: AppStrings.tr('Terminate'),
-                        icon: Icons.stop_circle_outlined,
-                        onTap: cubit.terminateExamSession,
-                      ),
+                      if (actionVisibility.canSuspend)
+                        _ProctorAction(
+                          label: AppStrings.tr('Suspend'),
+                          icon: Icons.pause_circle_outline,
+                          onTap: cubit.suspendExamSession,
+                        ),
+                      if (actionVisibility.canResume)
+                        _ProctorAction(
+                          label: AppStrings.tr('Resume'),
+                          icon: Icons.play_circle_outline,
+                          onTap: cubit.resumeExamSession,
+                        ),
+                      if (actionVisibility.canTerminate)
+                        _ProctorAction(
+                          label: AppStrings.tr('Terminate'),
+                          icon: Icons.stop_circle_outlined,
+                          onTap: cubit.terminateExamSession,
+                        ),
                       _ProctorAction(
                         label: AppStrings.tr('Sanctions'),
                         icon: Icons.gavel_outlined,
@@ -106,32 +119,6 @@ class ProctorSessionMonitoringScreen extends StatelessWidget {
                         onTap: cubit.getProctoringEvents,
                       ),
                     ],
-                  ),
-                  verticalSpace(18),
-                  Text(
-                    AppStrings.tr('Void Sanction'),
-                    style: AppTextStyles.font14DarkGreySemiBold.copyWith(
-                      color: AppColors.primaryColor9,
-                    ),
-                  ),
-                  verticalSpace(10),
-                  _TextInput(
-                    controller: cubit.sanctionIdController,
-                    label: AppStrings.tr('Sanction ID'),
-                    icon: Icons.rule_outlined,
-                  ),
-                  verticalSpace(10),
-                  _TextInput(
-                    controller: cubit.voidReasonController,
-                    label: AppStrings.tr('Reason'),
-                    icon: Icons.edit_note_outlined,
-                  ),
-                  verticalSpace(10),
-                  _WideButton(
-                    label: AppStrings.tr('Void Sanction'),
-                    icon: Icons.cancel_outlined,
-                    enabled: !isLoading,
-                    onTap: cubit.voidSanction,
                   ),
                   verticalSpace(18),
                   Text(
@@ -190,17 +177,20 @@ class _TextInput extends StatelessWidget {
   final TextEditingController controller;
   final String label;
   final IconData icon;
+  final bool readOnly;
 
   const _TextInput({
     required this.controller,
     required this.label,
     required this.icon,
+    this.readOnly = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
+      readOnly: readOnly,
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon),
@@ -321,4 +311,52 @@ class _ProctorAction {
     required this.icon,
     required this.onTap,
   });
+}
+
+class _ActionVisibility {
+  final bool canSuspend;
+  final bool canResume;
+  final bool canTerminate;
+
+  const _ActionVisibility({
+    required this.canSuspend,
+    required this.canResume,
+    required this.canTerminate,
+  });
+
+  factory _ActionVisibility.forState(String? state) {
+    switch (state) {
+      case 'not_started':
+        return const _ActionVisibility(
+          canSuspend: false,
+          canResume: false,
+          canTerminate: true,
+        );
+      case 'in_progress':
+        return const _ActionVisibility(
+          canSuspend: true,
+          canResume: false,
+          canTerminate: true,
+        );
+      case 'paused':
+        return const _ActionVisibility(
+          canSuspend: false,
+          canResume: true,
+          canTerminate: true,
+        );
+      case 'completed':
+      case 'terminated':
+        return const _ActionVisibility(
+          canSuspend: false,
+          canResume: false,
+          canTerminate: false,
+        );
+      default:
+        return const _ActionVisibility(
+          canSuspend: true,
+          canResume: true,
+          canTerminate: true,
+        );
+    }
+  }
 }

@@ -98,7 +98,7 @@ void main() {
 
       expect(request.eventType, 'app_backgrounded');
       expect(request.eventCategory, 'focus');
-      expect(request.severityLevel, 'medium');
+      expect(request.severityLevel, 'warning');
       expect(request.detectionConfidenceScore, 1);
       expect(DateTime.tryParse(request.eventTimestamp ?? ''), isNotNull);
       expect(manager.state.appExitCount, 1);
@@ -125,7 +125,7 @@ void main() {
 
       expect(request.eventType, 'app_returned');
       expect(request.eventCategory, 'focus');
-      expect(request.severityLevel, 'low');
+      expect(request.severityLevel, 'info');
       expect(request.detectionConfidenceScore, 1);
       expect(
         manager.state.lastBackgroundDuration.inMilliseconds,
@@ -196,9 +196,62 @@ void main() {
               as SubmitProctoringEventRequestBody;
       expect(request.eventType, 'multi_window_detected');
       expect(request.eventCategory, 'screen_security');
-      expect(request.severityLevel, 'high');
+      expect(request.severityLevel, 'critical');
       expect(request.detectionConfidenceScore, 1);
     });
+
+    test(
+      'automatic event severities use backend-supported values only',
+      () async {
+        when(() => examSecurityService.checkDeviceIntegrity()).thenAnswer(
+          (_) async => const DeviceIntegrityResult(
+            isAndroid: true,
+            isRooted: true,
+            isEmulator: true,
+            isDebuggerConnected: true,
+            isCompromised: true,
+          ),
+        );
+
+        await manager.start(sessionId: 'session_001');
+        manager.didChangeAppLifecycleState(AppLifecycleState.paused);
+        await flushAsync();
+        manager.didChangeAppLifecycleState(AppLifecycleState.resumed);
+        await flushAsync();
+
+        final captured = verify(
+          () => proctorSessionRepo.submitProctoringEvent(
+            'session_001',
+            captureAny(),
+          ),
+        ).captured.cast<SubmitProctoringEventRequestBody>();
+
+        final severityByType = {
+          for (final request in captured)
+            request.eventType: request.severityLevel,
+        };
+
+        expect(severityByType['rooted_device_detected'], 'critical');
+        expect(severityByType['emulator_detected'], 'warning');
+        expect(severityByType['debugger_detected'], 'critical');
+        expect(severityByType['app_backgrounded'], 'warning');
+        expect(severityByType['app_returned'], 'info');
+        expect(
+          severityByType.values.toSet(),
+          everyElement(isIn({'info', 'warning', 'critical'})),
+        );
+        expect(
+          severityByType.keys,
+          containsAll([
+            'app_backgrounded',
+            'app_returned',
+            'rooted_device_detected',
+            'emulator_detected',
+            'debugger_detected',
+          ]),
+        );
+      },
+    );
 
     test(
       'restores interaction when Android reports full screen again',

@@ -139,7 +139,9 @@ void main() {
       await pumpSmallFrame(tester);
     });
 
-    testWidgets('navigates to assessment inventory on success', (tester) async {
+    testWidgets('navigates to login and clears stack on success', (
+      tester,
+    ) async {
       final observer = RecordingNavigatorObserver();
       final cubit = await pumpRegister(
         tester,
@@ -152,7 +154,19 @@ void main() {
 
       expect(
         observer.pushedRoutes.map((route) => route.settings.name),
-        contains(Routes.assessmentInventoryScreen),
+        contains(Routes.loginScreen),
+      );
+      expect(
+        observer.pushedRoutes.map((route) => route.settings.name),
+        isNot(contains(Routes.assessmentInventoryScreen)),
+      );
+      expect(
+        observer.pushedRoutes.map((route) => route.settings.name),
+        isNot(contains(Routes.roleVerificationScreen)),
+      );
+      expect(
+        observer.removedRoutes.map((route) => route.settings.name),
+        isNotEmpty,
       );
     });
   });

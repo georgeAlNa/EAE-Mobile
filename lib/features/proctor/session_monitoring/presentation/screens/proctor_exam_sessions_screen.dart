@@ -139,6 +139,7 @@ class _ProctorExamSessionsScreenState extends State<ProctorExamSessionsScreen> {
           },
           child: ProctorSessionMonitoringScreen(
             initialSessionId: session.sessionId,
+            initialSessionState: session.state,
           ),
         ),
       ),

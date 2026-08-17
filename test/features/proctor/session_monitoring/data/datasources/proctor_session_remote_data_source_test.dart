@@ -38,7 +38,7 @@ void main() {
     );
   });
 
-  test('session control endpoints use noauth token contract', () async {
+  test('session control endpoints use stored bearer token', () async {
     when(
       () => apiServicesImpl.post(
         AppLinkUrl.suspendExamSession('session_001'),
@@ -74,24 +74,24 @@ void main() {
     verify(
       () => apiServicesImpl.post(
         AppLinkUrl.suspendExamSession('session_001'),
-        token: '',
+        token: 'access-token',
       ),
     ).called(1);
     verify(
       () => apiServicesImpl.post(
         AppLinkUrl.resumeExamSession('session_001'),
-        token: '',
+        token: 'access-token',
       ),
     ).called(1);
     verify(
       () => apiServicesImpl.post(
         AppLinkUrl.terminateExamSession('session_001'),
-        token: '',
+        token: 'access-token',
       ),
     ).called(1);
   });
 
-  test('sanctions use stored token and proctor events use noauth', () async {
+  test('sanctions and proctor events use stored bearer token', () async {
     when(
       () => apiServicesImpl.get(
         AppLinkUrl.examSessionSanctions('session_001'),
@@ -105,6 +105,19 @@ void main() {
         token: any(named: 'token'),
       ),
     ).thenAnswer((_) async => {'message': 'event submitted'});
+    when(
+      () => apiServicesImpl.post(
+        AppLinkUrl.voidSanction('sanction_001'),
+        body: any(named: 'body'),
+        token: any(named: 'token'),
+      ),
+    ).thenAnswer((_) async => {'message': 'sanction voided'});
+    when(
+      () => apiServicesImpl.get(
+        AppLinkUrl.examSessionProctorEvents('session_001'),
+        token: any(named: 'token'),
+      ),
+    ).thenAnswer((_) async => {'message': 'events loaded'});
 
     expect(
       (await remoteDataSource.getSessionSanctions('session_001')).data,
@@ -113,6 +126,17 @@ void main() {
     await remoteDataSource.submitProctoringEvent(
       'session_001',
       SubmitProctoringEventRequestBody(eventType: 'focus_lost'),
+    );
+    expect(
+      (await remoteDataSource.voidSanction(
+        'sanction_001',
+        VoidSanctionRequestBody(reason: 'Duplicate sanction'),
+      )).message,
+      'sanction voided',
+    );
+    expect(
+      (await remoteDataSource.getProctoringEvents('session_001')).message,
+      'events loaded',
     );
 
     verify(
@@ -125,7 +149,20 @@ void main() {
       () => apiServicesImpl.post(
         AppLinkUrl.examSessionProctorEvents('session_001'),
         body: any(named: 'body'),
-        token: '',
+        token: 'access-token',
+      ),
+    ).called(1);
+    verify(
+      () => apiServicesImpl.post(
+        AppLinkUrl.voidSanction('sanction_001'),
+        body: any(named: 'body'),
+        token: 'access-token',
+      ),
+    ).called(1);
+    verify(
+      () => apiServicesImpl.get(
+        AppLinkUrl.examSessionProctorEvents('session_001'),
+        token: 'access-token',
       ),
     ).called(1);
   });

@@ -151,7 +151,7 @@ class CandidateProctoringManager with WidgetsBindingObserver {
         _sendEvent(
           eventType: 'app_backgrounded',
           category: 'focus',
-          severity: 'medium',
+          severity: 'warning',
           confidence: 1,
           timestamp: now,
         ),
@@ -175,7 +175,7 @@ class CandidateProctoringManager with WidgetsBindingObserver {
         _sendEvent(
           eventType: 'app_returned',
           category: 'focus',
-          severity: 'low',
+          severity: 'info',
           confidence: 1,
           timestamp: now,
         ),
@@ -209,7 +209,7 @@ class CandidateProctoringManager with WidgetsBindingObserver {
         _sendEvent(
           eventType: 'multi_window_detected',
           category: 'screen_security',
-          severity: 'high',
+          severity: 'critical',
           confidence: 1,
         ),
       );
@@ -232,7 +232,7 @@ class CandidateProctoringManager with WidgetsBindingObserver {
         _sendEvent(
           eventType: 'rooted_device_detected',
           category: 'device_integrity',
-          severity: 'high',
+          severity: 'critical',
           confidence: 0.9,
         ),
       );
@@ -242,7 +242,7 @@ class CandidateProctoringManager with WidgetsBindingObserver {
         _sendEvent(
           eventType: 'emulator_detected',
           category: 'device_integrity',
-          severity: 'medium',
+          severity: 'warning',
           confidence: 0.85,
         ),
       );
@@ -252,7 +252,7 @@ class CandidateProctoringManager with WidgetsBindingObserver {
         _sendEvent(
           eventType: 'debugger_detected',
           category: 'device_integrity',
-          severity: 'high',
+          severity: 'critical',
           confidence: 0.95,
         ),
       );

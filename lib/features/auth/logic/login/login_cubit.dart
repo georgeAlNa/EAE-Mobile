@@ -62,10 +62,6 @@ class LoginCubit extends Cubit<LoginState> {
     emit(const LoginState.initial());
   }
 
-  void submitBiometric() {
-    // TODO: implement biometric auth
-  }
-
   Future<void> submit() async {
     // Block submission during rate limiting
     if (state is RateLimited) return;

@@ -26,7 +26,7 @@ class RegisterScreen extends StatelessWidget {
           current.maybeWhen(success: (_) => true, orElse: () => false),
       listener: (context, state) {
         context.pushNamedAndRemoveUntil(
-          Routes.assessmentInventoryScreen,
+          Routes.loginScreen,
           predicate: (_) => false,
         );
       },

@@ -83,11 +83,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         AppLinkUrl.register,
         body: registerRequestBody.toJson(),
       );
-      final response = RegisterResponse.fromJson(request);
-      final sharedPref = AppSharedPreferences();
-      await sharedPref.setString(AppSharedPrefKeys.token, response.data.token);
-
-      return response;
+      return RegisterResponse.fromJson(request);
     } on DioException catch (e) {
       throw NetworkExceptions.getException(e);
     } catch (e) {

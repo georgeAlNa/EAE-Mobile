@@ -12,6 +12,8 @@ ExamSessionResponse sessionResponse({
   String state = 'in_progress',
   String? sessionItemId = 'session_item_001',
   String? questionVersionId = 'question_version_001',
+  int questionIndex = 4,
+  Map<String, dynamic> progressData = const {},
   int versionLock = 0,
   String? startedAt = '2026-06-25T14:03:03Z',
   int? totalSessionDurationSeconds = 0,
@@ -26,12 +28,12 @@ ExamSessionResponse sessionResponse({
     current: ExamSessionCurrent(
       sessionItemId: sessionItemId,
       questionVersionId: questionVersionId,
-      questionIndex: 1,
+      questionIndex: questionIndex,
     ),
     progress: ExamSessionProgress(
       totalQuestionsResponded: sessionItemId == null ? 1 : 0,
       totalQuestionsFlagged: 0,
-      progressData: const {},
+      progressData: progressData,
     ),
     timestamps: ExamSessionTimestamps(startedAt: startedAt),
     totalSessionDurationSeconds: totalSessionDurationSeconds,
@@ -116,6 +118,66 @@ void main() {
       );
       verify(() => repo.getCurrentQuestion('session_001')).called(1);
     });
+
+    test(
+      'uses backend question index without inventing unknown total',
+      () async {
+        when(
+          () => repo.startExamSession(any()),
+        ).thenAnswer((_) async => sessionResponse(questionIndex: 4));
+        when(
+          () => repo.getCurrentQuestion(any()),
+        ).thenAnswer((_) async => currentQuestionResponse());
+
+        final cubit = AssessmentSessionCubit(
+          assessmentSessionRepo: repo,
+          initialExamId: 'exam_001',
+        );
+        addTearDown(cubit.close);
+
+        final state = await cubit.stream.firstWhere(isReady);
+        final viewData = state.maybeWhen(
+          ready: (viewData) => viewData,
+          orElse: () => throw StateError('expected ready'),
+        );
+
+        expect(viewData.currentQuestionNumber, 4);
+        expect(viewData.hasKnownTotalQuestions, isFalse);
+        expect(viewData.questionHeaderLabel, 'QUESTION 4');
+        expect(viewData.questionCounterLabel, 'Question 4');
+      },
+    );
+
+    test(
+      'uses verified total when backend progress data provides it',
+      () async {
+        when(() => repo.startExamSession(any())).thenAnswer(
+          (_) async => sessionResponse(
+            questionIndex: 4,
+            progressData: const {'total_questions': 10},
+          ),
+        );
+        when(
+          () => repo.getCurrentQuestion(any()),
+        ).thenAnswer((_) async => currentQuestionResponse());
+
+        final cubit = AssessmentSessionCubit(
+          assessmentSessionRepo: repo,
+          initialExamId: 'exam_001',
+        );
+        addTearDown(cubit.close);
+
+        final state = await cubit.stream.firstWhere(isReady);
+        final viewData = state.maybeWhen(
+          ready: (viewData) => viewData,
+          orElse: () => throw StateError('expected ready'),
+        );
+
+        expect(viewData.hasKnownTotalQuestions, isTrue);
+        expect(viewData.questionHeaderLabel, 'QUESTION 4 OF 10');
+        expect(viewData.questionCounterLabel, '4/10');
+      },
+    );
 
     test('does not invent a client time limit from session duration', () async {
       when(() => repo.startExamSession(any())).thenAnswer(
@@ -257,6 +319,36 @@ void main() {
         contains('backend-accessible file URL'),
       );
     });
+
+    test(
+      'file upload picker reports unsupported endpoint without file pick',
+      () async {
+        when(
+          () => repo.startExamSession(any()),
+        ).thenAnswer((_) async => sessionResponse());
+        when(() => repo.getCurrentQuestion(any())).thenAnswer(
+          (_) async => currentQuestionResponse(questionType: 'file_upload'),
+        );
+
+        final cubit = AssessmentSessionCubit(
+          assessmentSessionRepo: repo,
+          initialExamId: 'exam_001',
+        );
+        addTearDown(cubit.close);
+        await cubit.stream.firstWhere(isReady);
+
+        await cubit.pickFileForCurrentQuestion();
+
+        expect(
+          cubit.state.maybeWhen(
+            ready: (viewData) => viewData.statusMessage,
+            orElse: () => null,
+          ),
+          contains('no verified upload endpoint'),
+        );
+        verifyNever(() => repo.submitExamAnswer(any(), any()));
+      },
+    );
 
     test(
       'stale version lock refreshes session without retrying answer',

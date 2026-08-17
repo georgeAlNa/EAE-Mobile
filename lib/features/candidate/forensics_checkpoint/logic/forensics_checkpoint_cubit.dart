@@ -9,49 +9,51 @@ part 'forensics_checkpoint_cubit.freezed.dart';
 
 class ForensicsCheckpointCubit extends Cubit<ForensicsCheckpointState> {
   ForensicsCheckpointCubit() : super(const ForensicsCheckpointState.loading()) {
-    _loadMockData();
+    _loadInformationalData();
   }
 
-  void _loadMockData() {
+  void _loadInformationalData() {
     final viewData = ForensicsCheckpointViewData(
       protocolLabel: AppStrings.securityProtocol,
       title: AppStrings.forensicsCheckpointTitle,
-      subtitle: AppStrings.forensicsCheckpointSubtitle,
-      heroTitle: AppStrings.hardwareIntegrity,
-      heroStatus: AppStrings.validated,
-      heroStep: '01',
-      checksCompleted: 4,
+      subtitle: AppStrings.tr(
+        'Security requirements are checked on the next setup screen.',
+      ),
+      heroTitle: AppStrings.tr('Security setup'),
+      heroStatus: AppStrings.tr('Pending setup check'),
+      heroStep: '--',
+      checksCompleted: 0,
       checksTotal: 4,
       checks: const [
         ForensicsCheckItem(
-          title: 'GPS Geofence',
-          subtitle: 'Authorized Institutional Zone',
-          statusLabel: 'Validated',
-          isValidated: true,
+          title: 'Location checks',
+          subtitle: 'No geofence validation is performed on this screen',
+          statusLabel: 'Not checked',
+          isValidated: false,
         ),
         ForensicsCheckItem(
-          title: 'Camera Access',
-          subtitle: 'Biometric identity verification active',
-          statusLabel: 'Authorized',
-          isValidated: true,
+          title: 'Camera permission',
+          subtitle: 'Checked only when required by exam setup',
+          statusLabel: 'Pending',
+          isValidated: false,
         ),
         ForensicsCheckItem(
-          title: 'Microphone Control',
-          subtitle: 'Ambient fraud detection enabled',
-          statusLabel: 'Authorized',
-          isValidated: true,
+          title: 'Microphone permission',
+          subtitle: 'Checked only when required by exam setup',
+          statusLabel: 'Pending',
+          isValidated: false,
         ),
         ForensicsCheckItem(
-          title: 'Root/Jailbreak Check',
-          subtitle: 'OS Kernel integrity verification',
-          statusLabel: 'Passed',
-          isValidated: true,
+          title: 'Device integrity',
+          subtitle: 'Reported by the setup security service',
+          statusLabel: 'Pending',
+          isValidated: false,
         ),
       ],
       sessionNotice: AppStrings.sessionRecordedNotice,
-      actionLabel: AppStrings.unlockAssessment,
-      deviceId: '#AF-9928-XX-221',
-      auditLatency: '14ms',
+      actionLabel: AppStrings.tr('Continue to setup'),
+      deviceId: AppStrings.tr('Not collected'),
+      auditLatency: AppStrings.tr('Not measured'),
     );
 
     emit(ForensicsCheckpointState.ready(viewData: viewData));

@@ -60,37 +60,6 @@ class LoginCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _BiometricButton(
-                  onTap: (isSubmitting || isRateLimited)
-                      ? null
-                      : cubit.submitBiometric,
-                ),
-                verticalSpace(12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.verified_user_outlined,
-                      color: AppColors.secondaryColor7,
-                      size: 18.sp,
-                    ),
-                    horizontalSpace(8),
-                    Flexible(
-                      child: Text(
-                        AppStrings.biometricSecurityActive,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTextStyles.font12DarkGreyLight.copyWith(
-                          color: AppColors.secondaryColor7,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                verticalSpace(16),
-                const _DividerLabel(),
-                verticalSpace(16),
                 Text(
                   AppStrings.workEmail,
                   style: AppTextStyles.font12DarkGreySemiBold.copyWith(
@@ -273,76 +242,6 @@ class LoginCard extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-}
-
-class _BiometricButton extends StatelessWidget {
-  final VoidCallback? onTap;
-
-  const _BiometricButton({this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(14.r),
-      child: Ink(
-        height: 52.h,
-        decoration: BoxDecoration(
-          color: AppColors.primaryColor10,
-          borderRadius: BorderRadius.circular(14.r),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primaryColor8.withValues(alpha: 0.3),
-              blurRadius: 16.r,
-              offset: Offset(0, 10.h),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.fingerprint, color: AppColors.neutralColor, size: 18.sp),
-            horizontalSpace(10),
-            Flexible(
-              child: Text(
-                AppStrings.signInWithBiometrics,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.font14DarkGreySemiBold.copyWith(
-                  color: AppColors.neutralColor,
-                  letterSpacing: 0.4,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _DividerLabel extends StatelessWidget {
-  const _DividerLabel();
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(child: Divider(color: AppColors.tertiaryColor2, thickness: 1)),
-        horizontalSpace(12),
-        Text(
-          AppStrings.enterpriseOidc,
-          style: AppTextStyles.font10DarkGreyRegular.copyWith(
-            color: AppColors.tertiaryColor6,
-            letterSpacing: 2,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        horizontalSpace(12),
-        Expanded(child: Divider(color: AppColors.tertiaryColor2, thickness: 1)),
-      ],
     );
   }
 }

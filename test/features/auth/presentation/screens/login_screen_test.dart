@@ -71,6 +71,7 @@ void main() {
         expect(find.text('Work Email'), findsWidgets);
         expect(find.text('Password'), findsWidgets);
         expect(find.text('Enterprise Sign In'), findsOneWidget);
+        expect(find.text('Sign in with biometrics'), findsNothing);
         expect(find.text('Forgot password?'), findsOneWidget);
         expect(find.byType(CircularProgressIndicator), findsNothing);
         expect(find.textContaining('Failed'), findsNothing);

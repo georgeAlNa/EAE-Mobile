@@ -1,3 +1,4 @@
+import 'package:eae_mobile/features/candidate/assessment_inventory/data/models/assessment_inventory/assessment_inventory_response.dart';
 import 'package:eae_mobile/features/candidate/assessment_session/data/services/exam_security_service.dart';
 import 'package:eae_mobile/features/candidate/assessment_setup/logic/assessment_setup_cubit.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,6 +16,43 @@ void main() {
   setUp(() {
     examSecurityService = MockExamSecurityService();
   });
+
+  AssessmentExam exam({
+    String name = 'Backend Exam A',
+    int duration = 45,
+    int totalQuestions = 12,
+    int passMark = 70,
+    int difficultyTier = 2,
+  }) {
+    return AssessmentExam(
+      id: 'exam_001',
+      tenantId: 'tenant_001',
+      createdByUserId: 'user_001',
+      examName: name,
+      examCode: 'EX-A',
+      examDescription: 'Description from backend',
+      examType: 'technical',
+      assessmentMode: 'online',
+      totalQuestions: totalQuestions,
+      totalDurationMinutes: duration,
+      passMarkPercentage: passMark,
+      difficultyTierLevel: difficultyTier,
+      isAdaptiveExam: false,
+      isRandomized: true,
+      allowReviewAfterSubmit: false,
+      allowFlaggingForReview: true,
+      timerVisibleToCandidate: true,
+      showCorrectAnswersAfter: false,
+      securityProtocols: const {},
+      examMetadata: const {},
+      examStatus: 'published',
+      isPublished: true,
+      publishedAt: '2026-06-25T14:03:03Z',
+      archivedAt: null,
+      createdAt: '2026-06-24T14:03:03Z',
+      updatedAt: '2026-06-25T14:03:03Z',
+    );
+  }
 
   ExamSecurityCheckResult securityResult({
     bool cameraRequired = false,
@@ -92,6 +130,36 @@ void main() {
       );
       expect(viewData.securityCheckItems, isNotEmpty);
       verify(() => examSecurityService.checkRequirements(any())).called(1);
+    });
+
+    test('maps selected backend exam data into setup view data', () async {
+      when(
+        () => examSecurityService.checkRequirements(any()),
+      ).thenAnswer((_) async => securityResult());
+
+      final cubit = AssessmentSetupCubit(
+        examSecurityService: examSecurityService,
+        exam: exam(),
+      );
+      addTearDown(cubit.close);
+      final ready = await cubit.stream.firstWhere(
+        (state) => state.maybeWhen(ready: (_, _) => true, orElse: () => false),
+      );
+
+      final viewData = ready.maybeWhen(
+        ready: (viewData, _) => viewData,
+        orElse: () => throw StateError('expected ready'),
+      );
+
+      expect(viewData.title, 'Backend Exam A');
+      expect(viewData.description, 'Description from backend');
+      expect(viewData.durationLabel, '45 Minutes');
+      expect(viewData.modulesValue, '12 Questions');
+      expect(viewData.difficultyValue, 'Tier 2');
+      expect(viewData.passMarkValue, '70%');
+      expect(viewData.title, isNot('Strategic Financial Risk Analysis'));
+      expect(viewData.durationLabel, isNot('120 Minutes'));
+      expect(viewData.passMarkValue, isNot('85% Aggregate'));
     });
 
     test('camera and microphone are not required by default', () async {

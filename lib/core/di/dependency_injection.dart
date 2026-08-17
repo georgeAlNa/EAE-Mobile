@@ -69,6 +69,7 @@ import '../../features/candidate/assessment_inventory/logic/assessment_inventory
 import '../../features/candidate/assessment_inventory/logic/assessment_inventory/assessment_inventory_cubit.dart';
 import '../../features/analytics/logic/analytics_cubit.dart';
 import '../../features/settings/logic/settings_cubit.dart';
+import '../../features/candidate/assessment_inventory/data/models/assessment_inventory/assessment_inventory_response.dart';
 import '../../features/candidate/assessment_setup/logic/assessment_setup_cubit.dart';
 import '../../features/candidate/assessment_session/logic/assessment_session_cubit.dart';
 import '../../features/candidate/forensics_checkpoint/logic/forensics_checkpoint_cubit.dart';
@@ -433,8 +434,8 @@ Future<void> setupGetit() async {
 
   // //! feature - assessment setup
   // cubit
-  getIt.registerFactory<AssessmentSetupCubit>(
-    () => AssessmentSetupCubit(examSecurityService: getIt()),
+  getIt.registerFactoryParam<AssessmentSetupCubit, AssessmentExam?, void>(
+    (exam, _) => AssessmentSetupCubit(examSecurityService: getIt(), exam: exam),
   );
 
   // //! feature - competency task

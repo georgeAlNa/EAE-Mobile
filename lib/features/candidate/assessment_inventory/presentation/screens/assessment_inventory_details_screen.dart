@@ -88,8 +88,8 @@ class _AssessmentInventoryDetailsView extends StatelessWidget {
                       verticalSpace(18),
                       AssessmentDetailsStartButton(
                         onTap: () => context.pushNamed(
-                          Routes.forensicsCheckpointScreen,
-                          arguments: exam.id,
+                          Routes.assessmentSetupScreen,
+                          arguments: exam,
                         ),
                       ),
                       verticalSpace(24),

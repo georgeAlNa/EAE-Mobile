@@ -340,7 +340,7 @@ class _AssessmentSessionExamContentState
             children: [
               Expanded(
                 child: Text(
-                  '${AppStrings.questionLabel.toUpperCase()} ${viewData.currentQuestionNumber} OF ${viewData.totalQuestions}',
+                  viewData.questionHeaderLabel,
                   style: AppTextStyles.font12DarkGreySemiBold.copyWith(
                     color: AppColors.tertiaryColor6,
                     letterSpacing: 2,

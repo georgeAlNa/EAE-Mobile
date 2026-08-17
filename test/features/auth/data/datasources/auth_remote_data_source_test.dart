@@ -85,7 +85,7 @@ void main() {
       );
     });
 
-    test('register posts body and stores returned token', () async {
+    test('register posts body and does not store returned token', () async {
       when(
         () =>
             apiServicesImpl.post(AppLinkUrl.register, body: any(named: 'body')),
@@ -110,10 +110,7 @@ void main() {
       );
 
       expect(response.data.userId, 'usr_new');
-      expect(
-        AppSharedPreferences().getString(AppSharedPrefKeys.token),
-        'registration-token',
-      );
+      expect(AppSharedPreferences().getString(AppSharedPrefKeys.token), isNull);
       final captured =
           verify(
                 () => apiServicesImpl.post(

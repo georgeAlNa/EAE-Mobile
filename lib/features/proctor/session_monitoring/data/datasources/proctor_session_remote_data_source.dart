@@ -40,7 +40,7 @@ class ProctorSessionRemoteDataSourceImpl
     try {
       final request = await apiServicesImpl.post(
         AppLinkUrl.suspendExamSession(sessionId),
-        token: '',
+        token: _token,
       );
 
       return ProctorActionResponse.fromJson(request);
@@ -56,7 +56,7 @@ class ProctorSessionRemoteDataSourceImpl
     try {
       final request = await apiServicesImpl.post(
         AppLinkUrl.resumeExamSession(sessionId),
-        token: '',
+        token: _token,
       );
 
       return ProctorActionResponse.fromJson(request);
@@ -72,7 +72,7 @@ class ProctorSessionRemoteDataSourceImpl
     try {
       final request = await apiServicesImpl.post(
         AppLinkUrl.terminateExamSession(sessionId),
-        token: '',
+        token: _token,
       );
 
       return ProctorActionResponse.fromJson(request);
@@ -108,7 +108,7 @@ class ProctorSessionRemoteDataSourceImpl
       final request = await apiServicesImpl.post(
         AppLinkUrl.voidSanction(sanctionId),
         body: voidSanctionRequestBody.toJson(),
-        token: '',
+        token: _token,
       );
 
       return ProctorActionResponse.fromJson(request);
@@ -128,7 +128,7 @@ class ProctorSessionRemoteDataSourceImpl
       final request = await apiServicesImpl.post(
         AppLinkUrl.examSessionProctorEvents(sessionId),
         body: submitProctoringEventRequestBody.toJson(),
-        token: '',
+        token: _token,
       );
 
       return ProctorActionResponse.fromJson(request);
@@ -144,7 +144,7 @@ class ProctorSessionRemoteDataSourceImpl
     try {
       final request = await apiServicesImpl.get(
         AppLinkUrl.examSessionProctorEvents(sessionId),
-        token: '',
+        token: _token,
       );
 
       return ProctorActionResponse.fromJson(request);

@@ -141,4 +141,23 @@ void main() {
       ),
     ).called(1);
   });
+
+  test('gets exam session state with stored token', () async {
+    when(
+      () => apiServicesImpl.get(
+        AppLinkUrl.examSession('session_001'),
+        token: any(named: 'token'),
+      ),
+    ).thenAnswer((_) async => sessionResponse(state: 'paused'));
+
+    final response = await remoteDataSource.getExamSessionState('session_001');
+
+    expect(response.data.state, 'paused');
+    verify(
+      () => apiServicesImpl.get(
+        AppLinkUrl.examSession('session_001'),
+        token: 'access-token',
+      ),
+    ).called(1);
+  });
 }

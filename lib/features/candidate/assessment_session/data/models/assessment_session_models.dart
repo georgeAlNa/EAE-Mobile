@@ -26,6 +26,8 @@ class AssessmentSessionViewData {
   final SubmissionRulesData rules;
   final List<AssessmentSessionQuestion> questions;
   final int currentQuestionIndex;
+  final int? backendQuestionIndex;
+  final int? knownTotalQuestions;
   final int totalDurationSeconds;
   final int remainingSeconds;
   final bool isFlaggedForReview;
@@ -54,6 +56,8 @@ class AssessmentSessionViewData {
     required this.rules,
     required this.questions,
     required this.currentQuestionIndex,
+    this.backendQuestionIndex,
+    this.knownTotalQuestions,
     required this.totalDurationSeconds,
     required this.remainingSeconds,
     required this.isFlaggedForReview,
@@ -69,17 +73,41 @@ class AssessmentSessionViewData {
     this.statusMessage,
   });
 
-  int get totalQuestions => questions.length;
+  bool get hasKnownTotalQuestions =>
+      knownTotalQuestions != null && knownTotalQuestions! > 0;
 
-  int get currentQuestionNumber =>
-      questions.isEmpty ? 0 : currentQuestionIndex + 1;
+  int get totalQuestions => hasKnownTotalQuestions ? knownTotalQuestions! : 0;
 
-  double get completionProgress => questions.isEmpty
-      ? (isEndOfQuestions || isSubmitted ? 1 : 0)
-      : currentQuestionNumber / questions.length;
+  int get currentQuestionNumber {
+    final backendIndex = backendQuestionIndex;
+    if (backendIndex != null && backendIndex > 0) {
+      return backendIndex;
+    }
 
-  String get questionCounterLabel =>
-      questions.isEmpty ? 'End' : '$currentQuestionNumber/${questions.length}';
+    return questions.isEmpty ? 0 : currentQuestionIndex + 1;
+  }
+
+  double get completionProgress => hasKnownTotalQuestions
+      ? (currentQuestionNumber / knownTotalQuestions!).clamp(0, 1).toDouble()
+      : questions.isEmpty
+      ? (isEndOfQuestions || isSubmitted ? 1.0 : 0.0)
+      : 0.0;
+
+  String get questionCounterLabel {
+    if (questions.isEmpty) return 'End';
+    if (hasKnownTotalQuestions) {
+      return '$currentQuestionNumber/$knownTotalQuestions';
+    }
+    return 'Question $currentQuestionNumber';
+  }
+
+  String get questionHeaderLabel {
+    if (questions.isEmpty) return 'END OF QUESTIONS';
+    if (hasKnownTotalQuestions) {
+      return 'QUESTION $currentQuestionNumber OF $knownTotalQuestions';
+    }
+    return 'QUESTION $currentQuestionNumber';
+  }
 
   String get remainingTimeLabel => totalDurationSeconds <= 0
       ? 'No verified time limit'
@@ -130,6 +158,8 @@ class AssessmentSessionViewData {
     SubmissionRulesData? rules,
     List<AssessmentSessionQuestion>? questions,
     int? currentQuestionIndex,
+    int? backendQuestionIndex,
+    int? knownTotalQuestions,
     int? totalDurationSeconds,
     int? remainingSeconds,
     bool? isFlaggedForReview,
@@ -159,6 +189,8 @@ class AssessmentSessionViewData {
       rules: rules ?? this.rules,
       questions: questions ?? this.questions,
       currentQuestionIndex: currentQuestionIndex ?? this.currentQuestionIndex,
+      backendQuestionIndex: backendQuestionIndex ?? this.backendQuestionIndex,
+      knownTotalQuestions: knownTotalQuestions ?? this.knownTotalQuestions,
       totalDurationSeconds: totalDurationSeconds ?? this.totalDurationSeconds,
       remainingSeconds: remainingSeconds ?? this.remainingSeconds,
       isFlaggedForReview: isFlaggedForReview ?? this.isFlaggedForReview,

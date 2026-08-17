@@ -26,7 +26,27 @@ class ProctorSessionCubit extends Cubit<ProctorSessionState> {
   late final TextEditingController eventTypeController;
   late final TextEditingController eventCategoryController;
 
+  String? currentSessionState;
+
   String get _sessionId => sessionIdController.text.trim();
+
+  void setSelectedSession({String? sessionId, String? sessionState}) {
+    final selectedSessionId = sessionId?.trim();
+    var sessionChanged = false;
+    if (selectedSessionId != null &&
+        selectedSessionId.isNotEmpty &&
+        sessionIdController.text != selectedSessionId) {
+      sessionIdController.text = selectedSessionId;
+      currentSessionState = null;
+      sessionChanged = true;
+    }
+
+    final selectedState = _normalizeSessionState(sessionState);
+    if (selectedState != null &&
+        (sessionChanged || currentSessionState == null)) {
+      currentSessionState = selectedState;
+    }
+  }
 
   Future<void> suspendExamSession() async {
     if (_sessionId.isEmpty) {
@@ -160,6 +180,8 @@ class ProctorSessionCubit extends Cubit<ProctorSessionState> {
 
     try {
       final response = await action();
+      currentSessionState =
+          _sessionStateFromActionResponse(response) ?? currentSessionState;
       emit(
         ProctorSessionState.actionSuccess(
           response.message.isEmpty ? fallbackMessage : response.message,
@@ -182,5 +204,25 @@ class ProctorSessionCubit extends Cubit<ProctorSessionState> {
     eventTypeController.dispose();
     eventCategoryController.dispose();
     return super.close();
+  }
+
+  String? _sessionStateFromActionResponse(ProctorActionResponse response) {
+    final data = response.data;
+    if (data is Map) {
+      return _normalizeSessionState(
+        data['state'] ??
+            data['session_state'] ??
+            data['status'] ??
+            (data['session'] is Map ? (data['session'] as Map)['state'] : null),
+      );
+    }
+
+    return null;
+  }
+
+  String? _normalizeSessionState(Object? value) {
+    final normalized = value?.toString().trim().toLowerCase();
+    if (normalized == null || normalized.isEmpty) return null;
+    return normalized == 'suspended' ? 'paused' : normalized;
   }
 }
