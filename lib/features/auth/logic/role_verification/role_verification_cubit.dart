@@ -12,7 +12,7 @@ class RoleVerificationCubit extends Cubit<RoleVerificationState> {
   final SettingsRepo settingsRepo;
 
   RoleVerificationCubit({required this.settingsRepo})
-    : super(const RoleVerificationInitial());
+      : super(const RoleVerificationInitial());
 
   bool _isVerifying = false;
 
@@ -25,52 +25,68 @@ class RoleVerificationCubit extends Cubit<RoleVerificationState> {
     try {
       final response = await settingsRepo.getProfile();
       final profile = response.data;
-      final serverRole = AuthRoleResolver.roleFromServerUserType(
-        profile.userType,
-      );
-
-      if (serverRole == null) {
-        await _clearSession();
-        emit(
-          RoleVerificationFailed(
-            message:
-                'We could not verify your access role. Please select your role and sign in again.',
-          ),
-        );
-        return;
-      }
-
       final sharedPref = AppSharedPreferences();
       final selectedRole = AuthRoleResolver.selectedRoleFromValue(
         sharedPref.getString(AppSharedPrefKeys.selectedRole),
       );
+      final serverRole = AuthRoleResolver.roleFromServerUserType(
+        profile.userType,
+      );
+      final isStaff = AuthRoleResolver.isStaffUserType(profile.userType);
+      late final UserRole accessRole;
 
-      final canAccessSelectedRole =
-          serverRole == selectedRole || serverRole == UserRole.tenantAdmin;
+      if (isStaff) {
+        final staffAccessRole = AuthRoleResolver.staffAccessRole(selectedRole);
 
-      if (selectedRole != null && !canAccessSelectedRole) {
-        await _clearSession();
-        emit(
-          RoleVerificationFailed(
-            message:
-                'This account is registered as ${serverRole.label}. Please select the matching access role.',
-          ),
+        if (staffAccessRole == null) {
+          await _clearSession();
+          emit(
+            const RoleVerificationFailed(
+              message:
+                  'This staff account can access only Evaluator or Proctor workspaces. Please select the matching access role.',
+            ),
+          );
+          return;
+        }
+
+        accessRole = staffAccessRole;
+      } else {
+        if (serverRole == null) {
+          await _clearSession();
+          emit(
+            RoleVerificationFailed(
+              message:
+                  'We could not verify your access role. Please select your role and sign in again.',
+            ),
+          );
+          return;
+        }
+
+        final canAccessSelectedRole =
+            serverRole == selectedRole || serverRole == UserRole.tenantAdmin;
+
+        if (selectedRole != null && !canAccessSelectedRole) {
+          await _clearSession();
+          emit(
+            RoleVerificationFailed(
+              message:
+                  'This account is registered as ${serverRole.label}. Please select the matching access role.',
+            ),
+          );
+          return;
+        }
+
+        accessRole = AuthRoleResolver.effectiveAccessRole(
+          serverRole: serverRole,
+          selectedRole: selectedRole,
         );
-        return;
       }
 
       await sharedPref.setString(
         AppSharedPrefKeys.selectedRole,
-        AuthRoleResolver.effectiveAccessRole(
-          serverRole: serverRole,
-          selectedRole: selectedRole,
-        ).value,
+        accessRole.value,
       );
       final permissionsResponse = await settingsRepo.getPermissions();
-      final accessRole = AuthRoleResolver.effectiveAccessRole(
-        serverRole: serverRole,
-        selectedRole: selectedRole,
-      );
 
       emit(
         RoleVerificationVerified(

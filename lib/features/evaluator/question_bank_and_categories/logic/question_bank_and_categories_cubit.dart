@@ -14,7 +14,7 @@ class QuestionBankAndCategoriesCubit
   final QuestionBankAndCategoriesRepo questionBankAndCategoriesRepo;
 
   QuestionBankAndCategoriesCubit({required this.questionBankAndCategoriesRepo})
-    : super(const QuestionBankAndCategoriesState.initial()) {
+      : super(const QuestionBankAndCategoriesState.initial()) {
     loadQuestionBankAndCategories();
   }
 
@@ -27,8 +27,8 @@ class QuestionBankAndCategoriesCubit
     emit(const QuestionBankAndCategoriesState.questionBankLoading());
 
     try {
-      final categories = await questionBankAndCategoriesRepo
-          .getCategoriesTree();
+      final categories =
+          await questionBankAndCategoriesRepo.getCategoriesTree();
       final questions = await questionBankAndCategoriesRepo.getQuestions();
 
       categoriesTreeResponse = categories;
@@ -256,7 +256,7 @@ class QuestionBankAndCategoriesCubit
     }
   }
 
-  Future<void> addQuestionCompetency(
+  Future<QuestionCompetencyResponse?> addQuestionCompetency(
     String questionId,
     QuestionCompetencyRequestBody requestBody,
   ) async {
@@ -267,9 +267,13 @@ class QuestionBankAndCategoriesCubit
           .addQuestionCompetency(questionId, requestBody);
       emit(
         QuestionBankAndCategoriesState.actionSuccess(
-          QuestionBankActionResponse(message: response.data.weightId),
+          QuestionBankActionResponse(
+            message: response.data.weightId,
+            refreshQuestionBank: false,
+          ),
         ),
       );
+      return response;
     } on NetworkExceptions catch (e) {
       emit(
         QuestionBankAndCategoriesState.actionError(
@@ -283,9 +287,12 @@ class QuestionBankAndCategoriesCubit
         ),
       );
     }
+    return null;
   }
 
-  Future<void> getQuestionCompetencies(String questionId) async {
+  Future<QuestionCompetenciesResponse?> getQuestionCompetencies(
+    String questionId,
+  ) async {
     emit(const QuestionBankAndCategoriesState.actionLoading());
 
     try {
@@ -294,9 +301,13 @@ class QuestionBankAndCategoriesCubit
       questionCompetenciesResponse = response;
       emit(
         QuestionBankAndCategoriesState.actionSuccess(
-          QuestionBankActionResponse(message: '${response.data.length}'),
+          QuestionBankActionResponse(
+            message: '${response.data.length}',
+            refreshQuestionBank: false,
+          ),
         ),
       );
+      return response;
     } on NetworkExceptions catch (e) {
       emit(
         QuestionBankAndCategoriesState.actionError(
@@ -310,19 +321,26 @@ class QuestionBankAndCategoriesCubit
         ),
       );
     }
+    return null;
   }
 
-  Future<void> approveQuestionVersion(String versionId) async {
+  Future<QuestionVersionApprovalResponse?> approveQuestionVersion(
+    String versionId,
+  ) async {
     emit(const QuestionBankAndCategoriesState.actionLoading());
 
     try {
-      final response = await questionBankAndCategoriesRepo
-          .approveQuestionVersion(versionId);
+      final response =
+          await questionBankAndCategoriesRepo.approveQuestionVersion(versionId);
       emit(
         QuestionBankAndCategoriesState.actionSuccess(
-          QuestionBankActionResponse(message: response.data.versionId),
+          QuestionBankActionResponse(
+            message: response.data.versionId,
+            refreshQuestionBank: false,
+          ),
         ),
       );
+      return response;
     } on NetworkExceptions catch (e) {
       emit(
         QuestionBankAndCategoriesState.actionError(
@@ -336,9 +354,11 @@ class QuestionBankAndCategoriesCubit
         ),
       );
     }
+    return null;
   }
 
-  Future<void> updateQuestionVersionPsychometrics(
+  Future<QuestionVersionPsychometricsResponse?>
+      updateQuestionVersionPsychometrics(
     String versionId,
     QuestionVersionPsychometricsRequestBody requestBody,
   ) async {
@@ -349,9 +369,13 @@ class QuestionBankAndCategoriesCubit
           .updateQuestionVersionPsychometrics(versionId, requestBody);
       emit(
         QuestionBankAndCategoriesState.actionSuccess(
-          QuestionBankActionResponse(message: response.data.psychometricId),
+          QuestionBankActionResponse(
+            message: response.data.psychometricId,
+            refreshQuestionBank: false,
+          ),
         ),
       );
+      return response;
     } on NetworkExceptions catch (e) {
       emit(
         QuestionBankAndCategoriesState.actionError(
@@ -365,5 +389,6 @@ class QuestionBankAndCategoriesCubit
         ),
       );
     }
+    return null;
   }
 }

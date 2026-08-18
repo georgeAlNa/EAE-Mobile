@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../../core/constants/colors.dart';
+import '../../../../../../core/constants/images.dart';
 import '../../../../../../core/constants/text_styles.dart';
 import '../../../../../../core/helpers/spacing.dart';
 import 'package:eae_mobile/core/constants/app_strings.dart';
@@ -22,18 +23,13 @@ class AssessmentSessionHeader extends StatelessWidget {
             Container(
               width: 32.w,
               height: 32.w,
-              decoration: BoxDecoration(
-                color: AppColors.primaryColor9,
-                borderRadius: BorderRadius.circular(10.r),
-              ),
-              child: Center(
-                child: Icon(
-                  Icons.shield_outlined,
-                  color: AppColors.neutralColor,
-                  size: 18.sp,
+                decoration: BoxDecoration(
+                  color: AppColors.primaryColor9,
+                  borderRadius: BorderRadius.circular(10.r),
                 ),
+                clipBehavior: Clip.antiAlias,
+                child: Image.asset(AppImages.miqyasIcon, fit: BoxFit.cover),
               ),
-            ),
             SizedBox(width: 10.w),
             Expanded(
               child: Column(
@@ -51,7 +47,7 @@ class AssessmentSessionHeader extends StatelessWidget {
                   ),
                   verticalSpace(2),
                   Text(
-                    AppStrings.tr('Enterprise exam workspace'),
+                    AppStrings.tr('Miqyas exam workspace'),
                     style: AppTextStyles.font10DarkGreyRegular.copyWith(
                       color: AppColors.tertiaryColor6,
                       letterSpacing: 0.4,

@@ -13,45 +13,46 @@ class MockQuestionBankRemoteDataSource extends Mock
 class MockNetworkInfo extends Mock implements NetworkInfo {}
 
 QuestionCategory category({String id = 'cat_001'}) => QuestionCategory(
-  id: id,
-  title: 'Mobile',
-  tenantId: 'tenant_001',
-  parentId: null,
-  categoryCode: 'MOBILE',
-  description: 'Mobile questions',
-  hierarchyLevel: 0,
-  isActive: true,
-  children: const [],
-  createdAt: '2026-07-01T20:00:00.000Z',
-  updatedAt: '2026-07-15T20:00:00.000Z',
-);
+      id: id,
+      title: 'Mobile',
+      tenantId: 'tenant_001',
+      parentId: null,
+      categoryCode: 'MOBILE',
+      description: 'Mobile questions',
+      hierarchyLevel: 0,
+      isActive: true,
+      children: const [],
+      createdAt: '2026-07-01T20:00:00.000Z',
+      updatedAt: '2026-07-15T20:00:00.000Z',
+    );
 
 QuestionBankItem question({String id = 'question_001'}) => QuestionBankItem(
-  id: id,
-  tenantId: 'tenant_001',
-  categoryId: 'cat_001',
-  title: 'Flutter basics',
-  type: 'multiple_choice',
-  bloomLevel: 2,
-  difficultyLevel: 3,
-  usageCount: 4,
-  questionText: 'Which toolkit is made by Google?',
-  stem: 'Choose the correct answer',
-  versionId: 'version_001',
-  choices: [
-    QuestionChoice(
-      id: 'choice_001',
-      optionSequence: 1,
-      optionText: 'Flutter',
-      isCorrect: true,
-    ),
-  ],
-  psychometrics: QuestionPsychometrics(pValue: 0.7, discriminationIndex: 0.4),
-  correctAnswer: const {'choice_id': 'choice_001'},
-  evaluatorInstructions: const [],
-  createdAt: '2026-07-01T20:00:00.000Z',
-  updatedAt: '2026-07-15T20:00:00.000Z',
-);
+      id: id,
+      tenantId: 'tenant_001',
+      categoryId: 'cat_001',
+      title: 'Flutter basics',
+      type: 'mcq',
+      bloomLevel: 2,
+      difficultyLevel: 3,
+      usageCount: 4,
+      questionText: 'Which toolkit is made by Google?',
+      stem: 'Choose the correct answer',
+      versionId: 'version_001',
+      choices: [
+        QuestionChoice(
+          id: 'choice_001',
+          optionSequence: 1,
+          optionText: 'Flutter',
+          isCorrect: true,
+        ),
+      ],
+      psychometrics:
+          QuestionPsychometrics(pValue: 0.7, discriminationIndex: 0.4),
+      correctAnswer: const {'choice_id': 'choice_001'},
+      evaluatorInstructions: const [],
+      createdAt: '2026-07-01T20:00:00.000Z',
+      updatedAt: '2026-07-15T20:00:00.000Z',
+    );
 
 CreateCategoryRequestBody createCategoryRequest() =>
     CreateCategoryRequestBody(title: 'Mobile', description: 'Mobile questions');
@@ -60,25 +61,24 @@ MoveCategoryRequestBody moveCategoryRequest() =>
     MoveCategoryRequestBody(title: 'Updated');
 
 CreateQuestionRequestBody createQuestionRequest() => CreateQuestionRequestBody(
-  categoryId: 'cat_001',
-  title: 'Flutter basics',
-  type: 'multiple_choice',
-  questionText: 'Which toolkit is made by Google?',
-  stem: 'Choose the correct answer',
-  bloomLevel: 2,
-  difficultyLevel: 3,
-  correctAnswer: const {'choice_sequence': 1},
-);
+      categoryId: 'cat_001',
+      title: 'Flutter basics',
+      type: 'mcq',
+      questionText: 'Which toolkit is made by Google?',
+      stem: 'Choose the correct answer',
+      bloomLevel: 2,
+      difficultyLevel: 3,
+    );
 
 UpdateQuestionRequestBody updateQuestionRequest() => UpdateQuestionRequestBody(
-  title: 'Updated question',
-  categoryId: 'cat_001',
-  bloomLevel: 2,
-  difficultyLevel: 3,
-  questionText: 'Updated text',
-  stem: 'Updated stem',
-  correctAnswer: const {'choice_sequence': 1},
-);
+      title: 'Updated question',
+      categoryId: 'cat_001',
+      type: 'mcq',
+      bloomLevel: 2,
+      difficultyLevel: 3,
+      questionText: 'Updated text',
+      stem: 'Updated stem',
+    );
 
 PartialUpdateQuestionRequestBody partialUpdateQuestionRequest() =>
     PartialUpdateQuestionRequestBody(
@@ -105,26 +105,26 @@ QuestionVersionPsychometricsRequestBody versionPsychometricsRequest() =>
     );
 
 QuestionCompetencyWeight competencyWeight() => QuestionCompetencyWeight(
-  weightId: 'weight_001',
-  questionId: 'question_001',
-  competencyId: 'competency_001',
-  weightPercentage: '100.00',
-  isPrimaryCompetency: true,
-);
+      weightId: 'weight_001',
+      questionId: 'question_001',
+      competencyId: 'competency_001',
+      weightPercentage: '100.00',
+      isPrimaryCompetency: true,
+    );
 
 QuestionVersionApproval approval() => QuestionVersionApproval(
-  versionId: 'version_001',
-  questionId: 'question_001',
-  createdByUserId: 'user_001',
-  verNum: 1,
-  questionText: 'What is 2 + 2?',
-  questionType: 'mcq',
-  approvalStatus: 'approved',
-  approvedByUserId: 'user_001',
-  usageCountInExams: 0,
-  contentHash: 'hash',
-  createdAt: '2026-07-21T02:22:03.000000Z',
-);
+      versionId: 'version_001',
+      questionId: 'question_001',
+      createdByUserId: 'user_001',
+      verNum: 1,
+      questionText: 'What is 2 + 2?',
+      questionType: 'mcq',
+      approvalStatus: 'approved',
+      approvedByUserId: 'user_001',
+      usageCountInExams: 0,
+      contentHash: 'hash',
+      createdAt: '2026-07-21T02:22:03.000000Z',
+    );
 
 QuestionVersionPsychometrics versionPsychometrics() =>
     QuestionVersionPsychometrics(

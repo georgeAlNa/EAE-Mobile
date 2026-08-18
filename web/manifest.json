@@ -1,11 +1,11 @@
 {
-    "name": "eae_mobile",
-    "short_name": "eae_mobile",
+    "name": "Miqyas",
+    "short_name": "Miqyas",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Miqyas assessment platform.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

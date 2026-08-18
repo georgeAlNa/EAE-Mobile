@@ -11,6 +11,7 @@ import '../../../shared/presentation/widgets/evaluator_copy_widgets.dart';
 import '../../data/models/question_bank_and_categories_request_body.dart';
 import '../../data/models/question_bank_and_categories_response.dart';
 import '../../logic/question_bank_and_categories_cubit.dart';
+import 'question_configuration_sheet.dart';
 import 'question_bank_helpers.dart';
 import 'package:eae_mobile/core/constants/app_strings.dart';
 
@@ -55,12 +56,19 @@ Future<void> showQuestionDetailsSheet({
   required QuestionBankItem question,
   required String categoryTitle,
 }) async {
+  final cubit = context.read<QuestionBankAndCategoriesCubit>();
+
   await showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     backgroundColor: AppColors.neutralColor,
-    builder: (_) =>
-        QuestionDetailsSheet(question: question, categoryTitle: categoryTitle),
+    builder: (_) => BlocProvider.value(
+      value: cubit,
+      child: QuestionDetailsSheet(
+        question: question,
+        categoryTitle: categoryTitle,
+      ),
+    ),
   );
 }
 
@@ -206,6 +214,8 @@ class _QuestionSheetState extends State<QuestionSheet> {
   late final TextEditingController _questionTextController;
   late final TextEditingController _stemController;
   late final TextEditingController _acceptedAnswersController;
+  late final TextEditingController _rubricHintController;
+  late final TextEditingController _maxWordsController;
   late final TextEditingController _pValueController;
   late final TextEditingController _discriminationController;
   late final TextEditingController _usageCountController;
@@ -214,6 +224,8 @@ class _QuestionSheetState extends State<QuestionSheet> {
   late String _selectedType;
   late String? _selectedCategoryId;
   String _correctOption = 'A';
+  bool _trueFalseAnswer = true;
+  String _matchMode = 'case_insensitive';
   int _bloomLevel = 1;
   int _difficultyLevel = 1;
 
@@ -221,13 +233,14 @@ class _QuestionSheetState extends State<QuestionSheet> {
   void initState() {
     super.initState();
     final question = widget.question;
-    _selectedType = question?.type ?? 'mcq';
-    _selectedCategoryId =
-        question?.categoryId ??
+    _selectedType = _normalizeQuestionType(question?.type ?? 'mcq');
+    _selectedCategoryId = question?.categoryId ??
         (widget.categories.isEmpty ? null : widget.categories.first.id);
     _bloomLevel = question?.bloomLevel ?? 1;
     _difficultyLevel = question?.difficultyLevel ?? 1;
     _correctOption = _initialCorrectOption(question);
+    _trueFalseAnswer = _initialTrueFalseAnswer(question);
+    _matchMode = _initialMatchMode(question);
 
     _titleController = TextEditingController(text: question?.title ?? '');
     _questionTextController = TextEditingController(
@@ -236,6 +249,12 @@ class _QuestionSheetState extends State<QuestionSheet> {
     _stemController = TextEditingController(text: question?.stem ?? '');
     _acceptedAnswersController = TextEditingController(
       text: _initialAcceptedAnswers(question),
+    );
+    _rubricHintController = TextEditingController(
+      text: _initialRubricHint(question),
+    );
+    _maxWordsController = TextEditingController(
+      text: _initialMaxWords(question),
     );
     _pValueController = TextEditingController(
       text: question?.psychometrics?.pValue?.toString() ?? '0',
@@ -260,6 +279,8 @@ class _QuestionSheetState extends State<QuestionSheet> {
     _questionTextController.dispose();
     _stemController.dispose();
     _acceptedAnswersController.dispose();
+    _rubricHintController.dispose();
+    _maxWordsController.dispose();
     _pValueController.dispose();
     _discriminationController.dispose();
     _usageCountController.dispose();
@@ -309,6 +330,14 @@ class _QuestionSheetState extends State<QuestionSheet> {
                   value: 'short_answer',
                   child: Text(AppStrings.tr('Short answer')),
                 ),
+                DropdownMenuItem(
+                  value: 'true_false',
+                  child: Text(AppStrings.tr('True / False')),
+                ),
+                DropdownMenuItem(
+                  value: 'essay',
+                  child: Text(AppStrings.tr('Essay')),
+                ),
               ],
               onChanged: isEditing
                   ? null
@@ -344,6 +373,7 @@ class _QuestionSheetState extends State<QuestionSheet> {
                   child: _LevelDropdown(
                     label: AppStrings.tr('Bloom level'),
                     value: _bloomLevel,
+                    maxValue: 6,
                     onChanged: (value) => setState(() => _bloomLevel = value),
                   ),
                 ),
@@ -352,6 +382,7 @@ class _QuestionSheetState extends State<QuestionSheet> {
                   child: _LevelDropdown(
                     label: AppStrings.tr('Difficulty'),
                     value: _difficultyLevel,
+                    maxValue: 5,
                     onChanged: (value) =>
                         setState(() => _difficultyLevel = value),
                   ),
@@ -359,22 +390,25 @@ class _QuestionSheetState extends State<QuestionSheet> {
               ],
             ),
             verticalSpace(16),
-            if (_selectedType == 'mcq')
-              _McqChoicesSection(
-                choiceControllers: _choiceControllers,
-                correctOption: _correctOption,
-                onCorrectOptionChanged: (value) {
-                  setState(() => _correctOption = value);
-                },
-              )
-            else
-              _SheetTextField(
-                controller: _acceptedAnswersController,
-                label: AppStrings.tr('Accepted answers'),
-                hintText: AppStrings.tr('Answer one, Answer two'),
-                maxLines: 2,
-                validator: _requiredValidator,
-              ),
+            _AnswerConfiguration(
+              selectedType: _selectedType,
+              choiceControllers: _choiceControllers,
+              correctOption: _correctOption,
+              trueFalseAnswer: _trueFalseAnswer,
+              acceptedAnswersController: _acceptedAnswersController,
+              rubricHintController: _rubricHintController,
+              maxWordsController: _maxWordsController,
+              matchMode: _matchMode,
+              onCorrectOptionChanged: (value) {
+                setState(() => _correctOption = value);
+              },
+              onTrueFalseAnswerChanged: (value) {
+                setState(() => _trueFalseAnswer = value);
+              },
+              onMatchModeChanged: (value) {
+                setState(() => _matchMode = value);
+              },
+            ),
             verticalSpace(16),
             _PsychometricsSection(
               pValueController: _pValueController,
@@ -406,6 +440,18 @@ class _QuestionSheetState extends State<QuestionSheet> {
       return;
     }
 
+    if (_selectedType == 'mcq' && !_hasSelectedCorrectChoice()) {
+      showAppSnackBar(context, 'Select a correct MCQ option that has text');
+      return;
+    }
+
+    final acceptedAnswers = _acceptedAnswers();
+    if (_selectedType == 'short_answer' && acceptedAnswers.isEmpty) {
+      showAppSnackBar(
+          context, 'Short answer questions require accepted answers');
+      return;
+    }
+
     final pValue = num.tryParse(_pValueController.text.trim()) ?? 0;
     final discrimination =
         num.tryParse(_discriminationController.text.trim()) ?? 0;
@@ -416,11 +462,6 @@ class _QuestionSheetState extends State<QuestionSheet> {
     }
 
     final usageCount = int.tryParse(_usageCountController.text.trim()) ?? 0;
-    final acceptedAnswers = _acceptedAnswersController.text
-        .split(',')
-        .map((answer) => answer.trim())
-        .where((answer) => answer.isNotEmpty)
-        .toList();
 
     final cubit = context.read<QuestionBankAndCategoriesCubit>();
     final existingQuestion = widget.question;
@@ -430,6 +471,10 @@ class _QuestionSheetState extends State<QuestionSheet> {
       usageCount: usageCount,
     );
     final choices = _selectedType == 'mcq' ? _buildChoices() : null;
+    final evaluatorInstructions =
+        _selectedType == 'essay' ? _buildEvaluatorInstructions() : null;
+    final correctAnswer =
+        _selectedType == 'true_false' ? _trueFalseAnswer : null;
 
     if (existingQuestion == null) {
       cubit.createQuestion(
@@ -441,17 +486,13 @@ class _QuestionSheetState extends State<QuestionSheet> {
           stem: _stemController.text.trim(),
           bloomLevel: _bloomLevel,
           difficultyLevel: _difficultyLevel,
-          correctAnswer: _selectedType == 'mcq'
-              ? {'correct': _correctOption}
-              : false,
-          acceptedAnswers: _selectedType == 'short_answer'
-              ? acceptedAnswers
-              : null,
-          matchMode: _selectedType == 'short_answer'
-              ? 'case_insensitive'
-              : null,
+          correctAnswer: correctAnswer,
+          acceptedAnswers:
+              _selectedType == 'short_answer' ? acceptedAnswers : null,
+          matchMode: _selectedType == 'short_answer' ? _matchMode : null,
           psychometrics: psychometrics,
           choices: choices,
+          evaluatorInstructions: evaluatorInstructions,
         ),
       );
     } else {
@@ -462,19 +503,16 @@ class _QuestionSheetState extends State<QuestionSheet> {
           title: _titleController.text.trim(),
           questionText: _questionTextController.text.trim(),
           stem: _stemController.text.trim(),
+          type: _selectedType,
           bloomLevel: _bloomLevel,
           difficultyLevel: _difficultyLevel,
-          correctAnswer: _selectedType == 'mcq'
-              ? {'correct': _correctOption}
-              : false,
-          acceptedAnswers: _selectedType == 'short_answer'
-              ? acceptedAnswers
-              : null,
-          matchMode: _selectedType == 'short_answer'
-              ? 'case_insensitive'
-              : null,
+          correctAnswer: correctAnswer,
+          acceptedAnswers:
+              _selectedType == 'short_answer' ? acceptedAnswers : null,
+          matchMode: _selectedType == 'short_answer' ? _matchMode : null,
           psychometrics: psychometrics,
           choices: choices,
+          evaluatorInstructions: evaluatorInstructions,
         ),
       );
     }
@@ -487,6 +525,15 @@ class _QuestionSheetState extends State<QuestionSheet> {
             .where((controller) => controller.text.trim().isNotEmpty)
             .length >=
         2;
+  }
+
+  bool _hasSelectedCorrectChoice() {
+    final correctIndex = _correctOption.codeUnitAt(0) - 65;
+    if (correctIndex < 0 || correctIndex >= _choiceControllers.length) {
+      return false;
+    }
+
+    return _choiceControllers[correctIndex].text.trim().isNotEmpty;
   }
 
   List<QuestionChoiceRequestBody> _buildChoices() {
@@ -502,6 +549,29 @@ class _QuestionSheetState extends State<QuestionSheet> {
           ),
         )
         .toList();
+  }
+
+  List<String> _acceptedAnswers() {
+    return _acceptedAnswersController.text
+        .split(',')
+        .map((answer) => answer.trim())
+        .where((answer) => answer.isNotEmpty)
+        .toList();
+  }
+
+  Map<String, dynamic>? _buildEvaluatorInstructions() {
+    final rubricHint = _rubricHintController.text.trim();
+    final maxWords = int.tryParse(_maxWordsController.text.trim());
+    final instructions = <String, dynamic>{};
+
+    if (rubricHint.isNotEmpty) {
+      instructions['rubric_hint'] = rubricHint;
+    }
+    if (maxWords != null && maxWords > 0) {
+      instructions['max_words'] = maxWords;
+    }
+
+    return instructions.isEmpty ? null : instructions;
   }
 }
 
@@ -568,6 +638,22 @@ class QuestionDetailsSheet extends StatelessWidget {
             value: correctAnswerText(question),
           ),
           verticalSpace(12),
+          ButtonWidget(
+            title: AppStrings.tr('Configure for Exam'),
+            width: double.infinity,
+            height: 46.h,
+            radius: 8.r,
+            backgroundColor: AppColors.secondaryColor7,
+            borderColor: AppColors.secondaryColor7,
+            textStyle: AppTextStyles.font12DarkGreySemiBold.copyWith(
+              color: AppColors.neutralColor,
+            ),
+            onTap: () => showQuestionConfigurationSheet(
+              context: context,
+              question: question,
+            ),
+          ),
+          verticalSpace(12),
           EvaluatorCopyableValueRow(
             label: AppStrings.tr('Created at'),
             value: question.createdAt,
@@ -624,6 +710,64 @@ class QuestionDetailsSheet extends StatelessWidget {
   }
 }
 
+class _AnswerConfiguration extends StatelessWidget {
+  final String selectedType;
+  final List<TextEditingController> choiceControllers;
+  final String correctOption;
+  final bool trueFalseAnswer;
+  final TextEditingController acceptedAnswersController;
+  final TextEditingController rubricHintController;
+  final TextEditingController maxWordsController;
+  final String matchMode;
+  final ValueChanged<String> onCorrectOptionChanged;
+  final ValueChanged<bool> onTrueFalseAnswerChanged;
+  final ValueChanged<String> onMatchModeChanged;
+
+  const _AnswerConfiguration({
+    required this.selectedType,
+    required this.choiceControllers,
+    required this.correctOption,
+    required this.trueFalseAnswer,
+    required this.acceptedAnswersController,
+    required this.rubricHintController,
+    required this.maxWordsController,
+    required this.matchMode,
+    required this.onCorrectOptionChanged,
+    required this.onTrueFalseAnswerChanged,
+    required this.onMatchModeChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    switch (selectedType) {
+      case 'mcq':
+        return _McqChoicesSection(
+          choiceControllers: choiceControllers,
+          correctOption: correctOption,
+          onCorrectOptionChanged: onCorrectOptionChanged,
+        );
+      case 'true_false':
+        return _TrueFalseSection(
+          value: trueFalseAnswer,
+          onChanged: onTrueFalseAnswerChanged,
+        );
+      case 'short_answer':
+        return _ShortAnswerSection(
+          acceptedAnswersController: acceptedAnswersController,
+          matchMode: matchMode,
+          onMatchModeChanged: onMatchModeChanged,
+        );
+      case 'essay':
+        return _EssayInstructionsSection(
+          rubricHintController: rubricHintController,
+          maxWordsController: maxWordsController,
+        );
+      default:
+        return const SizedBox.shrink();
+    }
+  }
+}
+
 class _McqChoicesSection extends StatelessWidget {
   final List<TextEditingController> choiceControllers;
   final String correctOption;
@@ -676,6 +820,98 @@ class _McqChoicesSection extends StatelessWidget {
             ),
           );
         }),
+      ],
+    );
+  }
+}
+
+class _TrueFalseSection extends StatelessWidget {
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  const _TrueFalseSection({required this.value, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return DropdownButtonFormField<bool>(
+      initialValue: value,
+      decoration: _fieldDecoration(AppStrings.tr('Correct answer')),
+      items: [
+        DropdownMenuItem(value: true, child: Text(AppStrings.tr('True'))),
+        DropdownMenuItem(value: false, child: Text(AppStrings.tr('False'))),
+      ],
+      onChanged: (value) => onChanged(value ?? true),
+    );
+  }
+}
+
+class _ShortAnswerSection extends StatelessWidget {
+  final TextEditingController acceptedAnswersController;
+  final String matchMode;
+  final ValueChanged<String> onMatchModeChanged;
+
+  const _ShortAnswerSection({
+    required this.acceptedAnswersController,
+    required this.matchMode,
+    required this.onMatchModeChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        _SheetTextField(
+          controller: acceptedAnswersController,
+          label: AppStrings.tr('Accepted answers'),
+          hintText: AppStrings.tr('Answer one, Answer two'),
+          maxLines: 2,
+          validator: _requiredValidator,
+        ),
+        verticalSpace(10),
+        DropdownButtonFormField<String>(
+          initialValue: matchMode,
+          decoration: _fieldDecoration(AppStrings.tr('Match mode')),
+          items: [
+            DropdownMenuItem(
+              value: 'case_insensitive',
+              child: Text(AppStrings.tr('Case insensitive')),
+            ),
+            DropdownMenuItem(
+                value: 'exact', child: Text(AppStrings.tr('Exact'))),
+          ],
+          onChanged: (value) => onMatchModeChanged(value ?? 'case_insensitive'),
+        ),
+      ],
+    );
+  }
+}
+
+class _EssayInstructionsSection extends StatelessWidget {
+  final TextEditingController rubricHintController;
+  final TextEditingController maxWordsController;
+
+  const _EssayInstructionsSection({
+    required this.rubricHintController,
+    required this.maxWordsController,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        _SheetTextField(
+          controller: rubricHintController,
+          label: AppStrings.tr('Rubric hint'),
+          hintText: AppStrings.tr('Award points for key criteria'),
+          maxLines: 3,
+        ),
+        verticalSpace(10),
+        _SheetTextField(
+          controller: maxWordsController,
+          label: AppStrings.tr('Max words'),
+          hintText: '500',
+          keyboardType: TextInputType.number,
+        ),
       ],
     );
   }
@@ -740,11 +976,13 @@ class _PsychometricsSection extends StatelessWidget {
 class _LevelDropdown extends StatelessWidget {
   final String label;
   final int value;
+  final int maxValue;
   final ValueChanged<int> onChanged;
 
   const _LevelDropdown({
     required this.label,
     required this.value,
+    required this.maxValue,
     required this.onChanged,
   });
 
@@ -754,7 +992,7 @@ class _LevelDropdown extends StatelessWidget {
       initialValue: value,
       decoration: _fieldDecoration(label),
       items: List.generate(
-        5,
+        maxValue,
         (index) =>
             DropdownMenuItem(value: index + 1, child: Text('${index + 1}')),
       ),
@@ -912,12 +1150,22 @@ String? _requiredValidator(String? value) {
 
 String _optionLabel(int index) => String.fromCharCode(65 + index);
 
+String _normalizeQuestionType(String type) {
+  switch (type) {
+    case 'multiple_choice':
+      return 'mcq';
+    default:
+      return type;
+  }
+}
+
 String _initialCorrectOption(QuestionBankItem? question) {
   if (question == null) return 'A';
   final correctAnswer = question.correctAnswer;
-  if (correctAnswer == null) return 'A';
-  final correct = correctAnswer['correct'];
-  if (correct is String && correct.isNotEmpty) return correct.toUpperCase();
+  if (correctAnswer != null) {
+    final correct = correctAnswer['correct'];
+    if (correct is String && correct.isNotEmpty) return correct.toUpperCase();
+  }
   final correctChoiceIndex = question.choices.indexWhere(
     (choice) => choice.isCorrect,
   );
@@ -925,9 +1173,43 @@ String _initialCorrectOption(QuestionBankItem? question) {
   return _optionLabel(correctChoiceIndex);
 }
 
+bool _initialTrueFalseAnswer(QuestionBankItem? question) {
+  if (question == null) return true;
+  final value = question.correctAnswer?['value'];
+  if (value is bool) return value;
+  final correctChoice = question.choices.where((choice) => choice.isCorrect);
+  if (correctChoice.isEmpty) return true;
+  return correctChoice.first.optionText.toLowerCase() == 'true';
+}
+
 String _initialAcceptedAnswers(QuestionBankItem? question) {
   if (question == null) return '';
   final accepted = question.correctAnswer?['accepted'];
   if (accepted is List) return accepted.join(', ');
+  return '';
+}
+
+String _initialMatchMode(QuestionBankItem? question) {
+  if (question == null) return 'case_insensitive';
+  final match = question.correctAnswer?['match'];
+  if (match == 'exact' || match == 'case_insensitive') return match as String;
+  return 'case_insensitive';
+}
+
+String _initialRubricHint(QuestionBankItem? question) {
+  final instructions = question?.evaluatorInstructions;
+  if (instructions is Map<String, dynamic>) {
+    final hint = instructions['rubric_hint'];
+    if (hint != null) return hint.toString();
+  }
+  return '';
+}
+
+String _initialMaxWords(QuestionBankItem? question) {
+  final instructions = question?.evaluatorInstructions;
+  if (instructions is Map<String, dynamic>) {
+    final maxWords = instructions['max_words'];
+    if (maxWords != null) return maxWords.toString();
+  }
   return '';
 }

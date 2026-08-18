@@ -83,9 +83,8 @@ class _ExamsManagementScreenState extends State<ExamsManagementScreen> {
               orElse: () => null,
             );
 
-            final visibleExams = exams == null
-                ? null
-                : filterExams(exams, _query);
+            final visibleExams =
+                exams == null ? null : filterExams(exams, _query);
 
             return Stack(
               children: [
@@ -104,12 +103,10 @@ class _ExamsManagementScreenState extends State<ExamsManagementScreen> {
                       children: [
                         ExamsManagementHeader(
                           examsCount: exams?.length ?? 0,
-                          publishedCount: exams == null
-                              ? 0
-                              : countPublishedExams(exams),
-                          draftCount: exams == null
-                              ? 0
-                              : countDraftExams(exams),
+                          publishedCount:
+                              exams == null ? 0 : countPublishedExams(exams),
+                          draftCount:
+                              exams == null ? 0 : countDraftExams(exams),
                           searchController: _searchController,
                           onCreateExam: () =>
                               showExamFormSheet(context: context),
@@ -175,9 +172,11 @@ class _ExamsManagementScreenState extends State<ExamsManagementScreen> {
         showAppSnackBar(context, 'Exam saved successfully');
         context.read<ExamsManagementCubit>().getExams();
       },
-      actionSuccess: (_) {
-        showAppSnackBar(context, 'Action completed successfully');
-        context.read<ExamsManagementCubit>().getExams();
+      actionSuccess: (response) {
+        if (response.refreshExams) {
+          showAppSnackBar(context, 'Action completed successfully');
+          context.read<ExamsManagementCubit>().getExams();
+        }
       },
       detailsError: (error) => showAppSnackBar(context, error),
       saveError: (error) => showAppSnackBar(context, error),

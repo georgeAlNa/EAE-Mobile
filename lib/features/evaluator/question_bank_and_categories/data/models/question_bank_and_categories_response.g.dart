@@ -53,11 +53,17 @@ Map<String, dynamic> _$QuestionDetailsResponseToJson(
 
 QuestionBankActionResponse _$QuestionBankActionResponseFromJson(
   Map<String, dynamic> json,
-) => QuestionBankActionResponse(message: json['message'] as String? ?? '');
+) => QuestionBankActionResponse(
+  message: json['message'] as String? ?? '',
+  refreshQuestionBank: json['refreshQuestionBank'] as bool? ?? true,
+);
 
 Map<String, dynamic> _$QuestionBankActionResponseToJson(
   QuestionBankActionResponse instance,
-) => <String, dynamic>{'message': instance.message};
+) => <String, dynamic>{
+  'message': instance.message,
+  'refreshQuestionBank': instance.refreshQuestionBank,
+};
 
 BulkImportQuestionsResponse _$BulkImportQuestionsResponseFromJson(
   Map<String, dynamic> json,
@@ -325,7 +331,7 @@ QuestionBankItem _$QuestionBankItemFromJson(Map<String, dynamic> json) =>
               json['psychometrics'] as Map<String, dynamic>,
             ),
       correctAnswer: json['correct_answer'] as Map<String, dynamic>?,
-      evaluatorInstructions: json['evaluator_instructions'] as List<dynamic>?,
+      evaluatorInstructions: json['evaluator_instructions'],
       createdAt: json['created_at'] as String? ?? '',
       updatedAt: json['updated_at'] as String? ?? '',
     );

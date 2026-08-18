@@ -73,10 +73,13 @@ class ExamRequestBody {
   Map<String, dynamic> toJson() => _$ExamRequestBodyToJson(this);
 }
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull: false)
 class ExamSectionRequestBody {
   @JsonKey(name: 'section_name')
   final String sectionName;
+
+  @JsonKey(name: 'section_code')
+  final String? sectionCode;
 
   @JsonKey(name: 'section_sequence')
   final int sectionSequence;
@@ -84,10 +87,15 @@ class ExamSectionRequestBody {
   @JsonKey(name: 'questions_in_section')
   final int questionsInSection;
 
+  @JsonKey(name: 'time_limit_minutes')
+  final int? timeLimitMinutes;
+
   ExamSectionRequestBody({
     required this.sectionName,
+    this.sectionCode,
     required this.sectionSequence,
     required this.questionsInSection,
+    this.timeLimitMinutes,
   });
 
   factory ExamSectionRequestBody.fromJson(Map<String, dynamic> json) =>
@@ -96,7 +104,7 @@ class ExamSectionRequestBody {
   Map<String, dynamic> toJson() => _$ExamSectionRequestBodyToJson(this);
 }
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull: false)
 class ExamBlueprintRequestBody {
   @JsonKey(name: 'section_id')
   final String sectionId;
@@ -116,6 +124,12 @@ class ExamBlueprintRequestBody {
   @JsonKey(name: 'max_weight_percentage')
   final num maxWeightPercentage;
 
+  @JsonKey(name: 'target_difficulty')
+  final num? targetDifficulty;
+
+  @JsonKey(name: 'min_discrimination')
+  final num? minDiscrimination;
+
   ExamBlueprintRequestBody({
     required this.sectionId,
     required this.competencyId,
@@ -123,6 +137,8 @@ class ExamBlueprintRequestBody {
     required this.maxQuestionsCount,
     required this.minWeightPercentage,
     required this.maxWeightPercentage,
+    this.targetDifficulty,
+    this.minDiscrimination,
   });
 
   factory ExamBlueprintRequestBody.fromJson(Map<String, dynamic> json) =>

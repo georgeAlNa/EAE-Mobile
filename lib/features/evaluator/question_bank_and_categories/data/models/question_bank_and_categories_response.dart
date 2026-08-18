@@ -55,8 +55,12 @@ class QuestionDetailsResponse {
 class QuestionBankActionResponse {
   @JsonKey(defaultValue: '')
   final String message;
+  final bool refreshQuestionBank;
 
-  QuestionBankActionResponse({required this.message});
+  QuestionBankActionResponse({
+    required this.message,
+    this.refreshQuestionBank = true,
+  });
 
   factory QuestionBankActionResponse.fromJson(Map<String, dynamic> json) =>
       _$QuestionBankActionResponseFromJson(json);
@@ -121,7 +125,8 @@ class QuestionVersionPsychometricsResponse {
 
   factory QuestionVersionPsychometricsResponse.fromJson(
     Map<String, dynamic> json,
-  ) => _$QuestionVersionPsychometricsResponseFromJson(json);
+  ) =>
+      _$QuestionVersionPsychometricsResponseFromJson(json);
 
   Map<String, dynamic> toJson() =>
       _$QuestionVersionPsychometricsResponseToJson(this);
@@ -472,7 +477,7 @@ class QuestionBankItem {
   final Map<String, dynamic>? correctAnswer;
 
   @JsonKey(name: 'evaluator_instructions')
-  final List<dynamic>? evaluatorInstructions;
+  final dynamic evaluatorInstructions;
 
   @JsonKey(name: 'created_at', defaultValue: '')
   final String createdAt;

@@ -14,7 +14,7 @@ class MockAssessmentResultsRepo extends Mock implements AssessmentResultsRepo {}
 
 AssessmentSessionViewData submittedViewData() =>
     const AssessmentSessionViewData(
-      headerTitle: 'Enterprise Assessment',
+      headerTitle: 'Miqyas',
       title: 'Completed',
       description: '',
       badgeLabel: 'SECURE',

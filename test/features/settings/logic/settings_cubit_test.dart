@@ -17,7 +17,7 @@ class MockSettingsRepo extends Mock implements SettingsRepo {}
 class MockAuthRepo extends Mock implements AuthRepo {}
 
 SettingsProfileData profile({
-  String firstName = 'EAE',
+  String firstName = 'Miqyas',
   String lastName = 'User',
   String? externalEmployeeId = 'EMP-001',
 }) {
@@ -175,9 +175,9 @@ void main() {
       final cubit = createCubit();
       final state = await waitForLoaded(cubit);
 
-      expect(readyProfile(state)?.firstName, 'EAE');
+      expect(readyProfile(state)?.firstName, 'Miqyas');
       expect(readySessions(state)?.single.sessionId, 'sess_001');
-      expect(cubit.firstNameController.text, 'EAE');
+      expect(cubit.firstNameController.text, 'Miqyas');
       expect(cubit.lastNameController.text, 'User');
       expect(cubit.externalEmployeeIdController.text, 'EMP-001');
       expect(cubit.hasProfileChanges, isFalse);
@@ -223,7 +223,7 @@ void main() {
         cubit.resetProfileForm();
         await emission;
 
-        expect(cubit.firstNameController.text, 'EAE');
+        expect(cubit.firstNameController.text, 'Miqyas');
         expect(cubit.hasProfileChanges, isFalse);
       },
     );

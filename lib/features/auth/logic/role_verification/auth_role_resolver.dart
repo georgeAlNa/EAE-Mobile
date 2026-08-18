@@ -39,6 +39,22 @@ class AuthRoleResolver {
     }
   }
 
+  static bool isStaffUserType(String value) {
+    return _normalize(value) == 'staff';
+  }
+
+  static UserRole? staffAccessRole(UserRole? selectedRole) {
+    switch (selectedRole) {
+      case UserRole.evaluator:
+      case UserRole.proctor:
+        return selectedRole;
+      case UserRole.candidate:
+      case UserRole.tenantAdmin:
+      case null:
+        return null;
+    }
+  }
+
   static String homeRouteForRole(UserRole role) {
     switch (role) {
       case UserRole.candidate:

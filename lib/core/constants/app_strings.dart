@@ -1,11 +1,11 @@
 class AppStrings {
   static String currentLanguage = 'en';
   static bool get _isArabic => currentLanguage == 'ar';
+  static String get appName => _isArabic ? 'مقياس' : 'Miqyas';
   static String get settingsTitle => _isArabic ? 'الإعدادات' : 'Settings';
 
   // Secure Access Screen
-  static String get enterpriseAssessmentTitle =>
-      _isArabic ? 'تقييم المؤسسة' : 'Enterprise Assessment';
+  static String get enterpriseAssessmentTitle => appName;
   static String get institutionalGatewayTitle =>
       _isArabic ? 'البوابة المؤسسية' : 'INSTITUTIONAL GATEWAY';
   static String get secureAccess =>
@@ -39,11 +39,11 @@ class AppStrings {
   static String get institutionalSecurityNotice =>
       _isArabic ? 'إشعار أمني مؤسسي' : 'Institutional Security Notice';
   static String get institutionalSecurityNoticeDescription => _isArabic
-      ? 'هذا البوابة مخصصة للأفراد المخولين. يتم مراقبة اتصالك وحمايته بواسطة بروتوكولات تشفير Enterprise Vault.'
-      : 'This assessment portal is strictly for authorized personnel. Your connection is being monitored and protected by Enterprise Vault encryption protocols.';
+      ? 'هذه البوابة مخصصة للأفراد المخولين. يتم مراقبة اتصالك وحمايته بواسطة بروتوكولات تشفير مقياس.'
+      : 'This assessment portal is strictly for authorized personnel. Your connection is being monitored and protected by Miqyas encryption protocols.';
   static String get allRightsReserved => _isArabic
-      ? '© 2024 Enterprise Assessment Engine. جميع الحقوق محفوظة.'
-      : '© 2024 Enterprise Assessment Engine. All rights reserved.';
+      ? '© 2024 مقياس. جميع الحقوق محفوظة.'
+      : '© 2024 Miqyas. All rights reserved.';
   static String get privacyProtocol =>
       _isArabic ? 'بروتوكول الخصوصية' : 'PRIVACY PROTOCOL';
   static String get termsOfAccess =>
@@ -69,7 +69,7 @@ class AppStrings {
   static String get forgotPassword =>
       _isArabic ? 'نسيت كلمة المرور؟' : 'Forgot password?';
   static String get enterpriseSignIn =>
-      _isArabic ? 'تسجيل دخول المؤسسة' : 'Enterprise Sign In';
+      _isArabic ? 'تسجيل دخول مقياس' : 'Miqyas Sign In';
   static String get acceptInvite => _isArabic ? 'قبول الدعوة' : 'Accept Invite';
   static String get haveInvite => _isArabic ? 'لديك دعوة؟' : 'Have an invite?';
   static String get backToSignIn =>
@@ -147,8 +147,8 @@ class AppStrings {
   static String get forensicsCheckpointTitle =>
       _isArabic ? 'نقطة تحقق الطب الشرعي' : 'Forensics Checkpoint';
   static String get forensicsCheckpointSubtitle => _isArabic
-      ? 'قبل الوصول إلى بيئة تقييم المؤسسة يجب التحقق من سلامة الجهاز والموقع الفعلي لضمان بقاء البيانات المالية داخل الخزنة الرقمية.'
-      : 'Before accessing the enterprise assessment environment, we must verify your hardware integrity and physical location. This ensures all financial data remains within the digital vault.';
+      ? 'قبل الوصول إلى بيئة مقياس يجب التحقق من سلامة الجهاز والموقع الفعلي لضمان بقاء البيانات المالية داخل الخزنة الرقمية.'
+      : 'Before accessing the Miqyas environment, we must verify your hardware integrity and physical location. This ensures all financial data remains within the digital vault.';
   static String get hardwareIntegrity =>
       _isArabic ? 'سلامة الجهاز' : 'Hardware Integrity';
   static String get validated => _isArabic ? 'تم التحقق' : 'Validated';
@@ -360,9 +360,10 @@ class AppStrings {
   static String analyticsSummary(
     String finalizedResults,
     String averageScore,
-  ) => _isArabic
-      ? 'النتائج النهائية: $finalizedResults | متوسط الدرجة: $averageScore'
-      : 'Finalized results: $finalizedResults | Average score: $averageScore';
+  ) =>
+      _isArabic
+          ? 'النتائج النهائية: $finalizedResults | متوسط الدرجة: $averageScore'
+          : 'Finalized results: $finalizedResults | Average score: $averageScore';
 
   static String securityDetail(String detail) {
     if (!_isArabic) return detail;
@@ -748,7 +749,7 @@ class AppStrings {
     'Competency Metrics': 'مقاييس الكفاءة',
     'Dashboard Summary': 'ملخص اللوحة',
     'Earned Credentials': 'الشهادات المكتسبة',
-    'Enterprise\nAssessment': 'تقييم\nالمؤسسة',
+    'Miqyas': 'مقياس',
     'EXPORT CERTIFICATE': 'تصدير الشهادة',
     'Unable to load analytics': 'تعذر تحميل التحليلات',
     'Values returned by analytics dashboard': 'القيم المعادة من لوحة التحليلات',
@@ -952,7 +953,7 @@ class AppStrings {
         'نزاهة مؤسسية.\nتميّز تكيفي.',
     'Powering high-stakes financial analysis through\nprecision data models and secure auditing\nframeworks.':
         'تمكين التحليل المالي عالي الحساسية عبر\nنماذج بيانات دقيقة وأطر تدقيق\nآمنة.',
-    'Enterprise exam workspace': 'مساحة عمل اختبار المؤسسة',
+    'Miqyas exam workspace': 'مساحة عمل اختبار مقياس',
     'SYNCING HEARTBEAT': 'مزامنة النبض',
     'Submit exam?': 'إرسال الاختبار؟',
     'Submitting now will lock the answers and finish the exam.':
@@ -1007,7 +1008,7 @@ class AppStrings {
     'Current Stage': 'المرحلة الحالية',
     'Loading workflow details...': 'جارٍ تحميل تفاصيل سير العمل...',
     'Approving workflow...': 'جارٍ اعتماد سير العمل...',
-    'Working...': 'جارٍ العمل...',
+    // 'Working...': 'جارٍ العمل...',
     'Workflow approval is not available for your role':
         'اعتماد سير العمل غير متاح لدورك.',
     'Select a workflow first': 'اختر سير عمل أولاً',
@@ -1062,6 +1063,84 @@ class AppStrings {
     'Updating certificate...': 'جارٍ تحديث الشهادة...',
     'Downloading certificate...': 'جارٍ تنزيل الشهادة...',
     'Verifying certificate...': 'جارٍ التحقق من الشهادة...',
+    'Configure for Exam': 'إعداد للاختبار',
+    'Competency Mapping': 'ربط الكفاءة',
+    'Competency': 'الكفاءة',
+    'Weight percentage': 'نسبة الوزن',
+    'Primary competency': 'الكفاءة الأساسية',
+    'Save Competency Mapping': 'حفظ ربط الكفاءة',
+    'No linked competencies': 'لا توجد كفاءات مرتبطة',
+    'Version Approval': 'اعتماد النسخة',
+    'Version ID': 'معرف النسخة',
+    'Approve Current Version': 'اعتماد النسخة الحالية',
+    'Approval status': 'حالة الاعتماد',
+    'Psychometric Calibration': 'معايرة القياسات النفسية',
+    'Difficulty index': 'مؤشر الصعوبة',
+    'Discrimination index': 'مؤشر التمييز',
+    'Sample size': 'حجم العينة',
+    'Correct count': 'عدد الإجابات الصحيحة',
+    'Calibration status': 'حالة المعايرة',
+    'Calibrate Version': 'معايرة النسخة',
+    'Loading...': 'جارٍ التحميل...',
+    'Working...': 'جارٍ التنفيذ...',
+    'Select a competency': 'اختر كفاءة',
+    'Weight must be between 0 and 100': 'يجب أن يكون الوزن بين 0 و100',
+    'Competency mapping saved': 'تم حفظ ربط الكفاءة',
+    'Difficulty index must be between 0 and 1':
+        'يجب أن يكون مؤشر الصعوبة بين 0 و1',
+    'Discrimination index must be between 0 and 1':
+        'يجب أن يكون مؤشر التمييز بين 0 و1',
+    'Sample size must be at least 1': 'يجب أن يكون حجم العينة 1 على الأقل',
+    'Correct count must be 0 or more':
+        'يجب أن يكون عدد الإجابات الصحيحة 0 أو أكثر',
+    'Configure Exam Content': 'إعداد محتوى الاختبار',
+    'Sections': 'الأقسام',
+    'Existing sections': 'الأقسام الحالية',
+    'Create Section': 'إنشاء قسم',
+    'Section name': 'اسم القسم',
+    'Section code': 'رمز القسم',
+    'Section sequence': 'ترتيب القسم',
+    'Questions in section': 'الأسئلة في القسم',
+    'Time limit minutes': 'حد الوقت بالدقائق',
+    'Save Section': 'حفظ القسم',
+    'No sections configured': 'لا توجد أقسام معدة',
+    'Section created': 'تم إنشاء القسم',
+    'Blueprints': 'المخططات',
+    'Existing blueprints': 'المخططات الحالية',
+    'Create Blueprint': 'إنشاء مخطط',
+    'Section': 'القسم',
+    'Min questions': 'الحد الأدنى للأسئلة',
+    'Max questions': 'الحد الأعلى للأسئلة',
+    'Min weight percentage': 'الحد الأدنى لنسبة الوزن',
+    'Max weight percentage': 'الحد الأعلى لنسبة الوزن',
+    'Target difficulty': 'الصعوبة المستهدفة',
+    'Min discrimination': 'الحد الأدنى للتمييز',
+    'Save Blueprint': 'حفظ المخطط',
+    'No blueprints configured': 'لا توجد مخططات معدة',
+    'Blueprint created': 'تم إنشاء المخطط',
+    'Select a section': 'اختر قسما',
+    'Section name is required': 'اسم القسم مطلوب',
+    'Section sequence must be at least 1':
+        'يجب أن يكون ترتيب القسم 1 على الأقل',
+    'Questions in section must be at least 1':
+        'يجب أن يكون عدد الأسئلة في القسم 1 على الأقل',
+    'Time limit must be at least 1': 'يجب أن يكون حد الوقت 1 على الأقل',
+    'Minimum questions must be at least 1':
+        'يجب أن يكون الحد الأدنى للأسئلة 1 على الأقل',
+    'Maximum questions must be at least minimum questions':
+        'يجب أن يكون الحد الأعلى للأسئلة أكبر من أو يساوي الحد الأدنى',
+    'Minimum weight must be between 0 and 100':
+        'يجب أن يكون الحد الأدنى للوزن بين 0 و100',
+    'Maximum weight must be between minimum weight and 100':
+        'يجب أن يكون الحد الأعلى للوزن بين الحد الأدنى و100',
+    'Target difficulty must be between 0 and 1':
+        'يجب أن تكون الصعوبة المستهدفة بين 0 و1',
+    'Minimum discrimination must be between 0 and 1':
+        'يجب أن يكون الحد الأدنى للتمييز بين 0 و1',
+    'Blueprint minimum weight exceeds section limit':
+        'مجموع الحد الأدنى لأوزان مخططات هذا القسم يتجاوز 100',
+    'Loading sections...': 'جار تحميل الأقسام...',
+    'Loading blueprints...': 'جار تحميل المخططات...',
     'Edit exam': 'تعديل الاختبار',
   };
 }

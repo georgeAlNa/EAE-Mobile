@@ -64,14 +64,14 @@ class _InviteUserSheetState extends State<InviteUserSheet> {
             verticalSpace(12),
             TextFieldWidget(
               controller: _firstNameController,
-              hintText: 'Lana',
+              hintText: 'First name',
               labelText: AppStrings.tr('First name'),
               obscureText: false,
             ),
             verticalSpace(12),
             TextFieldWidget(
               controller: _lastNameController,
-              hintText: 'Barakat',
+              hintText: 'Last name',
               labelText: AppStrings.tr('Last name'),
               obscureText: false,
             ),

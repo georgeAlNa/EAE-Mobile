@@ -31,7 +31,10 @@ class ExamActionResponse {
   @JsonKey(defaultValue: '')
   final String message;
 
-  ExamActionResponse({required this.message});
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  final bool refreshExams;
+
+  ExamActionResponse({required this.message, this.refreshExams = true});
 
   factory ExamActionResponse.fromJson(Map<String, dynamic> json) =>
       _$ExamActionResponseFromJson(json);

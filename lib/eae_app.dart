@@ -34,7 +34,7 @@ class EaeApp extends StatelessWidget {
 
                 return MaterialApp(
                   debugShowCheckedModeBanner: false,
-                  title: 'EAE Mobile ',
+                  title: AppStrings.appName,
                   onGenerateRoute: appRouter.generateRoute,
                   initialRoute: Routes.splashScreen,
                   locale: Locale(language),

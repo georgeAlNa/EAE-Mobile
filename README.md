@@ -1,6 +1,6 @@
-# EAE Mobile
+# Miqyas
 
-EAE Mobile is a Flutter application for an assessment platform with role-based workflows for candidates, evaluators, proctors, and tenant administrators. The app connects to backend APIs through a layered networking architecture and includes authentication, account settings, assessment inventory, exam/session flows, evaluator management tools, proctoring tools, and tenant administration tools.
+Miqyas is a Flutter application for an assessment platform with role-based workflows for candidates, evaluators, proctors, and tenant administrators. The app connects to backend APIs through a layered networking architecture and includes authentication, account settings, assessment inventory, exam/session flows, evaluator management tools, proctoring tools, and tenant administration tools.
 
 The codebase uses a feature-first structure. Each backend-connected feature follows the same flow: JSON models, remote data source, repository, Cubit state management, and presentation widgets/screens.
 

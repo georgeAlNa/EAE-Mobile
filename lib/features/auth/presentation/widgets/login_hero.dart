@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/colors.dart';
+import '../../../../core/constants/images.dart';
 import '../../../../core/constants/text_styles.dart';
 import '../../../../core/helpers/spacing.dart';
 
@@ -30,7 +31,8 @@ class LoginHero extends StatelessWidget {
                 ),
               ],
             ),
-            child: Icon(Icons.hub, color: AppColors.primaryColor7, size: 28.sp),
+            clipBehavior: Clip.antiAlias,
+            child: Image.asset(AppImages.miqyasIcon, fit: BoxFit.cover),
           ),
         ),
         verticalSpace(20),

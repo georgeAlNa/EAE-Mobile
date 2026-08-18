@@ -6,16 +6,16 @@ void main() {
   group('SettingsProfileRequestBody', () {
     test('fromJson and toJson use backend field names', () {
       final request = SettingsProfileRequestBody.fromJson({
-        'first_name': 'EAE',
+        'first_name': 'Miqyas',
         'last_name': 'User',
         'external_employee_id': 'EMP-001',
       });
 
-      expect(request.firstName, 'EAE');
+      expect(request.firstName, 'Miqyas');
       expect(request.lastName, 'User');
       expect(request.externalEmployeeId, 'EMP-001');
       expect(request.toJson(), {
-        'first_name': 'EAE',
+        'first_name': 'Miqyas',
         'last_name': 'User',
         'external_employee_id': 'EMP-001',
       });
@@ -24,7 +24,7 @@ void main() {
     test('fromJson throws when external_employee_id is missing', () {
       expect(
         () => SettingsProfileRequestBody.fromJson({
-          'first_name': 'EAE',
+          'first_name': 'Miqyas',
           'last_name': 'User',
         }),
         throwsA(isA<TypeError>()),
@@ -38,7 +38,7 @@ void main() {
         'id': 'usr_001',
         'tenant_id': 'tenant_001',
         'email': 'user@tenant.com',
-        'first_name': 'EAE',
+        'first_name': 'Miqyas',
         'last_name': 'User',
         'external_employee_id': externalEmployeeId,
         'user_type': 'Tenant Admin',
@@ -60,13 +60,13 @@ void main() {
       expect(response.data.id, 'usr_001');
       expect(response.data.tenantId, 'tenant_001');
       expect(response.data.email, 'user@tenant.com');
-      expect(response.data.firstName, 'EAE');
+      expect(response.data.firstName, 'Miqyas');
       expect(response.data.lastName, 'User');
       expect(response.data.externalEmployeeId, 'EMP-001');
       expect(response.data.userType, 'Tenant Admin');
       expect(response.data.isActive, isTrue);
       expect(response.data.userAttributes, {'locale': 'en'});
-      expect(response.data.fullName, 'EAE User');
+      expect(response.data.fullName, 'Miqyas User');
     });
 
     test('fullName trims missing trailing name spacing', () {
@@ -74,7 +74,7 @@ void main() {
         validJson()['data'] as Map<String, dynamic>,
       );
 
-      expect(profile.fullName, 'EAE User');
+      expect(profile.fullName, 'Miqyas User');
     });
 
     test('toJson keeps nested SettingsProfileData object', () {
@@ -82,7 +82,7 @@ void main() {
         id: 'usr_001',
         tenantId: 'tenant_001',
         email: 'user@tenant.com',
-        firstName: 'EAE',
+        firstName: 'Miqyas',
         lastName: 'User',
         externalEmployeeId: null,
         userType: 'Tenant Admin',
@@ -101,7 +101,7 @@ void main() {
         'id': 'usr_001',
         'tenant_id': 'tenant_001',
         'email': 'user@tenant.com',
-        'first_name': 'EAE',
+        'first_name': 'Miqyas',
         'last_name': 'User',
         'external_employee_id': null,
         'user_type': 'Tenant Admin',

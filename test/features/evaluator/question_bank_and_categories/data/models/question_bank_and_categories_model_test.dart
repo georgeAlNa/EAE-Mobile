@@ -7,128 +7,131 @@ Map<String, dynamic> categoryJson({
   String title = 'Mobile',
   String? parentId,
   List<Map<String, dynamic>>? children,
-}) => {
-  'id': id,
-  'title': title,
-  'tenant_id': 'tenant_001',
-  'parent_id': parentId,
-  'category_code': 'MOBILE',
-  'description': 'Mobile questions',
-  'hierarchy_level': parentId == null ? 0 : 1,
-  'is_active': true,
-  'children': children,
-  'created_at': '2026-07-01T20:00:00.000Z',
-  'updated_at': '2026-07-15T20:00:00.000Z',
-};
+}) =>
+    {
+      'id': id,
+      'title': title,
+      'tenant_id': 'tenant_001',
+      'parent_id': parentId,
+      'category_code': 'MOBILE',
+      'description': 'Mobile questions',
+      'hierarchy_level': parentId == null ? 0 : 1,
+      'is_active': true,
+      'children': children,
+      'created_at': '2026-07-01T20:00:00.000Z',
+      'updated_at': '2026-07-15T20:00:00.000Z',
+    };
 
 Map<String, dynamic> choiceJson({
   String id = 'choice_001',
   bool correct = true,
-}) => {
-  'id': id,
-  'option_sequence': correct ? 1 : 2,
-  'option_text': correct ? 'Flutter' : 'React Native',
-  'is_correct': correct,
-};
+}) =>
+    {
+      'id': id,
+      'option_sequence': correct ? 1 : 2,
+      'option_text': correct ? 'Flutter' : 'React Native',
+      'is_correct': correct,
+    };
 
 Map<String, dynamic> questionJson({String id = 'question_001'}) => {
-  'id': id,
-  'tenant_id': 'tenant_001',
-  'category_id': 'cat_001',
-  'title': 'Flutter basics',
-  'type': 'multiple_choice',
-  'bloom_level': 2,
-  'difficulty_level': 3,
-  'usage_count': 4,
-  'question_text': 'Which toolkit is made by Google?',
-  'stem': 'Choose the correct answer',
-  'version_id': 'version_001',
-  'choices': [choiceJson(), choiceJson(id: 'choice_002', correct: false)],
-  'psychometrics': {'p_value': 0.7, 'discrimination_index': 0.4},
-  'correct_answer': {'choice_id': 'choice_001'},
-  'evaluator_instructions': ['Check reasoning'],
-  'created_at': '2026-07-01T20:00:00.000Z',
-  'updated_at': '2026-07-15T20:00:00.000Z',
-};
+      'id': id,
+      'tenant_id': 'tenant_001',
+      'category_id': 'cat_001',
+      'title': 'Flutter basics',
+      'type': 'mcq',
+      'bloom_level': 2,
+      'difficulty_level': 3,
+      'usage_count': 4,
+      'question_text': 'Which toolkit is made by Google?',
+      'stem': 'Choose the correct answer',
+      'version_id': 'version_001',
+      'choices': [choiceJson(), choiceJson(id: 'choice_002', correct: false)],
+      'psychometrics': {'p_value': 0.7, 'discrimination_index': 0.4},
+      'correct_answer': {'choice_id': 'choice_001'},
+      'evaluator_instructions': ['Check reasoning'],
+      'created_at': '2026-07-01T20:00:00.000Z',
+      'updated_at': '2026-07-15T20:00:00.000Z',
+    };
 
 Map<String, dynamic> createQuestionJson() => {
-  'category_id': 'cat_001',
-  'title': 'Flutter basics',
-  'type': 'multiple_choice',
-  'question_text': 'Which toolkit is made by Google?',
-  'stem': 'Choose the correct answer',
-  'bloom_level': 2,
-  'difficulty_level': 3,
-  'correct_answer': {'choice_sequence': 1},
-  'accepted_answers': ['Flutter'],
-  'match_mode': 'exact',
-  'psychometrics': {
-    'p_value': 0.7,
-    'discrimination_index': 0.4,
-    'usage_count': 4,
-  },
-  'choices': [
-    {'option_text': 'Flutter', 'is_correct': true, 'option_sequence': 1},
-    {'option_text': 'React Native', 'is_correct': false, 'option_sequence': 2},
-  ],
-};
+      'category_id': 'cat_001',
+      'title': 'Flutter basics',
+      'type': 'mcq',
+      'question_text': 'Which toolkit is made by Google?',
+      'stem': 'Choose the correct answer',
+      'bloom_level': 2,
+      'difficulty_level': 3,
+      'psychometrics': {
+        'p_value': 0.7,
+        'discrimination_index': 0.4,
+        'usage_count': 4,
+      },
+      'choices': [
+        {'option_text': 'Flutter', 'is_correct': true, 'option_sequence': 1},
+        {
+          'option_text': 'React Native',
+          'is_correct': false,
+          'option_sequence': 2
+        },
+      ],
+    };
 
 Map<String, dynamic> competencyWeightJson() => {
-  'weight_id': 'weight_001',
-  'question_id': 'question_001',
-  'competency_id': 'competency_001',
-  'weight_percentage': '100.00',
-  'skill_category': null,
-  'skill_gap_trigger': null,
-  'is_primary_competency': true,
-  'weighting_metadata': null,
-  'created_at': '2026-07-21T02:31:13.000000Z',
-  'updated_at': '2026-07-21T02:31:13.000000Z',
-  'competency': {
-    'competency_id': 'competency_001',
-    'competency_name': 'Basic Math Skills',
-    'competency_type': 'knowledge',
-    'is_active': true,
-  },
-};
+      'weight_id': 'weight_001',
+      'question_id': 'question_001',
+      'competency_id': 'competency_001',
+      'weight_percentage': '100.00',
+      'skill_category': null,
+      'skill_gap_trigger': null,
+      'is_primary_competency': true,
+      'weighting_metadata': null,
+      'created_at': '2026-07-21T02:31:13.000000Z',
+      'updated_at': '2026-07-21T02:31:13.000000Z',
+      'competency': {
+        'competency_id': 'competency_001',
+        'competency_name': 'Basic Math Skills',
+        'competency_type': 'knowledge',
+        'is_active': true,
+      },
+    };
 
 Map<String, dynamic> approvalJson() => {
-  'version_id': 'version_001',
-  'question_id': 'question_001',
-  'created_by_user_id': 'user_001',
-  'ver_num': 1,
-  'question_text': 'What is 2 + 2?',
-  'question_type': 'mcq',
-  'question_stem': null,
-  'correct_answer_json': null,
-  'explanation_text': null,
-  'evaluator_instructions': null,
-  'approval_status': 'approved',
-  'approved_by_user_id': 'user_001',
-  'usage_count_in_exams': 0,
-  'content_hash': 'hash',
-  'version_metadata': null,
-  'created_at': '2026-07-21T02:22:03.000000Z',
-  'approved_at': '2026-07-26T19:09:23.000000Z',
-  'deleted_at': null,
-};
+      'version_id': 'version_001',
+      'question_id': 'question_001',
+      'created_by_user_id': 'user_001',
+      'ver_num': 1,
+      'question_text': 'What is 2 + 2?',
+      'question_type': 'mcq',
+      'question_stem': null,
+      'correct_answer_json': null,
+      'explanation_text': null,
+      'evaluator_instructions': null,
+      'approval_status': 'approved',
+      'approved_by_user_id': 'user_001',
+      'usage_count_in_exams': 0,
+      'content_hash': 'hash',
+      'version_metadata': null,
+      'created_at': '2026-07-21T02:22:03.000000Z',
+      'approved_at': '2026-07-26T19:09:23.000000Z',
+      'deleted_at': null,
+    };
 
 Map<String, dynamic> versionPsychometricsJson() => {
-  'psychometric_id': 'psychometric_001',
-  'question_version_id': 'version_001',
-  'tenant_id': 'tenant_001',
-  'difficulty_index': '0.5000',
-  'discrimination_index': '0.5000',
-  'point_biserial': null,
-  'sample_size': 10,
-  'correct_count': 5,
-  'is_calibrated': true,
-  'calibration_status': 'calibrated',
-  'calibration_metadata': null,
-  'last_calibrated_at': '2026-07-26T19:10:27.000000Z',
-  'created_at': '2026-07-21T02:22:03.000000Z',
-  'updated_at': '2026-07-26T19:10:27.000000Z',
-};
+      'psychometric_id': 'psychometric_001',
+      'question_version_id': 'version_001',
+      'tenant_id': 'tenant_001',
+      'difficulty_index': '0.5000',
+      'discrimination_index': '0.5000',
+      'point_biserial': null,
+      'sample_size': 10,
+      'correct_count': 5,
+      'is_calibrated': true,
+      'calibration_status': 'calibrated',
+      'calibration_metadata': null,
+      'last_calibrated_at': '2026-07-26T19:10:27.000000Z',
+      'created_at': '2026-07-21T02:22:03.000000Z',
+      'updated_at': '2026-07-26T19:10:27.000000Z',
+    };
 
 void main() {
   group('category request models', () {
@@ -165,8 +168,6 @@ void main() {
         );
 
         expect(request.categoryId, 'cat_001');
-        expect(request.correctAnswer, {'choice_sequence': 1});
-        expect(request.acceptedAnswers, ['Flutter']);
         expect(request.psychometrics?.pValue, 0.7);
         expect(request.choices, hasLength(2));
         expect(request.choices!.first.toJson(), {
@@ -174,10 +175,110 @@ void main() {
           'is_correct': true,
           'option_sequence': 1,
         });
-        expect(request.toJson()['psychometrics'], same(request.psychometrics));
-        expect(request.toJson()['choices'], same(request.choices));
+        expect(request.toJson(), {
+          'category_id': 'cat_001',
+          'title': 'Flutter basics',
+          'type': 'mcq',
+          'question_text': 'Which toolkit is made by Google?',
+          'stem': 'Choose the correct answer',
+          'bloom_level': 2,
+          'difficulty_level': 3,
+          'psychometrics': {
+            'p_value': 0.7,
+            'discrimination_index': 0.4,
+            'usage_count': 4,
+          },
+          'choices': [
+            {
+              'option_text': 'Flutter',
+              'is_correct': true,
+              'option_sequence': 1,
+            },
+            {
+              'option_text': 'React Native',
+              'is_correct': false,
+              'option_sequence': 2,
+            },
+          ],
+        });
       },
     );
+
+    test('CreateQuestionRequestBody serializes type specific fields', () {
+      expect(
+        CreateQuestionRequestBody(
+          categoryId: 'cat_001',
+          title: 'Sky colour',
+          type: 'true_false',
+          questionText: 'The sky is blue.',
+          stem: '',
+          bloomLevel: 1,
+          difficultyLevel: 1,
+          correctAnswer: true,
+        ).toJson(),
+        {
+          'category_id': 'cat_001',
+          'title': 'Sky colour',
+          'type': 'true_false',
+          'question_text': 'The sky is blue.',
+          'bloom_level': 1,
+          'difficulty_level': 1,
+          'correct_answer': true,
+        },
+      );
+
+      expect(
+        CreateQuestionRequestBody(
+          categoryId: 'cat_001',
+          title: 'Chemical formula',
+          type: 'short_answer',
+          questionText: 'Formula for water?',
+          stem: '',
+          bloomLevel: 1,
+          difficultyLevel: 1,
+          acceptedAnswers: const ['H2O', 'water'],
+          matchMode: 'case_insensitive',
+        ).toJson(),
+        {
+          'category_id': 'cat_001',
+          'title': 'Chemical formula',
+          'type': 'short_answer',
+          'question_text': 'Formula for water?',
+          'bloom_level': 1,
+          'difficulty_level': 1,
+          'accepted_answers': ['H2O', 'water'],
+          'match_mode': 'case_insensitive',
+        },
+      );
+
+      expect(
+        CreateQuestionRequestBody(
+          categoryId: 'cat_001',
+          title: 'Discuss',
+          type: 'essay',
+          questionText: 'Discuss the causes of WWI.',
+          stem: '',
+          bloomLevel: 4,
+          difficultyLevel: 1,
+          evaluatorInstructions: const {
+            'rubric_hint': 'Award 2 points per cause',
+            'max_words': 500,
+          },
+        ).toJson(),
+        {
+          'category_id': 'cat_001',
+          'title': 'Discuss',
+          'type': 'essay',
+          'question_text': 'Discuss the causes of WWI.',
+          'bloom_level': 4,
+          'difficulty_level': 1,
+          'evaluator_instructions': {
+            'rubric_hint': 'Award 2 points per cause',
+            'max_words': 500,
+          },
+        },
+      );
+    });
 
     test('UpdateQuestionRequestBody serializes editable fields', () {
       final request = UpdateQuestionRequestBody.fromJson({
@@ -351,8 +452,8 @@ void main() {
       });
       final psychometricsResponse =
           QuestionVersionPsychometricsResponse.fromJson({
-            'data': versionPsychometricsJson(),
-          });
+        'data': versionPsychometricsJson(),
+      });
 
       expect(importResponse.data.successful, 3);
       expect(

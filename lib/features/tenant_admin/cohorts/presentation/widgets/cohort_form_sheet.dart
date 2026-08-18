@@ -56,7 +56,7 @@ class _CohortFormSheetState extends State<CohortFormSheet> {
     _codeController = TextEditingController(
       text: widget.initialCohortCode ?? '',
     );
-    _cohortType = widget.initialCohortType ?? 'training';
+    _cohortType = widget.initialCohortType ?? 'cohort';
     _descriptionController = TextEditingController(
       text: widget.initialCohortDescription ?? '',
     );
@@ -121,6 +121,7 @@ class _CohortFormSheetState extends State<CohortFormSheet> {
                 hintText: AppStrings.tr('optional parent cohort UUID'),
                 labelText: AppStrings.tr('Parent cohort ID'),
                 obscureText: false,
+                isRequired: false,
               ),
             ],
             if (widget.isEditing) ...[
@@ -199,11 +200,12 @@ class _CohortFormSheetState extends State<CohortFormSheet> {
 }
 
 const List<String> _cohortTypeOptions = [
-  'training',
-  'assessment',
+  'team',
   'department',
   'batch',
-  'program',
+  'class',
+  'cohort',
+  'group',
 ];
 
 List<String> _dropdownItems(String? value, List<String> options) {

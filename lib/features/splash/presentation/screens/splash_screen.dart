@@ -76,7 +76,7 @@ class _SplashView extends StatelessWidget {
                   const SplashLogo(),
                   verticalSpace(18),
                   Text(
-                    'Enterprise\nAssessment',
+                    AppStrings.appName,
                     textAlign: TextAlign.center,
                     style: AppTextStyles.font32DarkGreyMedium.copyWith(
                       color: AppColors.neutralColor,
@@ -95,7 +95,9 @@ class _SplashView extends StatelessWidget {
                   ),
                   verticalSpace(16),
                   Text(
-                    'INSTITUTIONAL INTEGRITY.\nADAPTIVE EXCELLENCE.',
+                    AppStrings.tr(
+                      'INSTITUTIONAL INTEGRITY.\nADAPTIVE EXCELLENCE.',
+                    ),
                     textAlign: TextAlign.center,
                     style: AppTextStyles.font12DarkGreySemiBold.copyWith(
                       color: AppColors.tertiaryColor3,
@@ -104,7 +106,9 @@ class _SplashView extends StatelessWidget {
                   ),
                   verticalSpace(12),
                   Text(
-                    'Powering high-stakes financial analysis through\nprecision data models and secure auditing\nframeworks.',
+                    AppStrings.tr(
+                      'Powering high-stakes financial analysis through\nprecision data models and secure auditing\nframeworks.',
+                    ),
                     textAlign: TextAlign.center,
                     style: AppTextStyles.font13DarkGreyMedium.copyWith(
                       color: AppColors.tertiaryColor4,

@@ -30,6 +30,7 @@ class TextFieldWidget extends StatelessWidget {
   final InputValidationType validationType;
   final String? customPattern;
   final bool? readOnly;
+  final bool isRequired;
 
   const TextFieldWidget({
     super.key,
@@ -55,6 +56,7 @@ class TextFieldWidget extends StatelessWidget {
     this.validationType = InputValidationType.none,
     this.customPattern,
     this.readOnly,
+    this.isRequired = true,
   });
 
   @override
@@ -68,11 +70,16 @@ class TextFieldWidget extends StatelessWidget {
         keyboardType: keyboardType ?? TextInputType.text,
         cursorColor: AppColors.primaryColor,
         onChanged: onChanged,
-        validator: (value) => InputValidator.validate(
-          value: value ?? "",
-          type: validationType,
-          customPattern: customPattern,
-        ),
+        validator: (value) {
+          final fieldValue = value ?? "";
+          if (!isRequired && fieldValue.trim().isEmpty) return null;
+
+          return InputValidator.validate(
+            value: fieldValue,
+            type: validationType,
+            customPattern: customPattern,
+          );
+        },
         controller: controller,
         obscureText: obscureText,
         maxLines: obscureText ? 1 : maxLines,

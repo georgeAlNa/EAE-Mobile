@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import '../entities/error_entity.dart';
 part 'network_exceptions.freezed.dart';
 
 @freezed
@@ -79,32 +78,62 @@ abstract class NetworkExceptions with _$NetworkExceptions implements Exception {
     ];
   }
 
-  static NetworkExceptions handleResponse(Response<dynamic>? response) {
-    ErrorEntity errorModel;
-    try {
-      final data = response?.data;
+  static Map<String, dynamic>? _decodeErrorBody(dynamic data) {
+    if (data is Map<String, dynamic>) return data;
 
-      if (data is Map<String, dynamic>) {
-        errorModel = ErrorEntity.fromJson(data);
-      } else if (data is String) {
-        errorModel = ErrorEntity.fromJson(jsonDecode(data));
-      } else {
-        errorModel = ErrorEntity(message: null);
-      }
-    } catch (_) {
-      errorModel = ErrorEntity(message: null);
+    if (data is Map) {
+      return Map<String, dynamic>.from(data);
     }
+
+    if (data is String && data.trim().isNotEmpty) {
+      final decoded = jsonDecode(data);
+      if (decoded is Map<String, dynamic>) return decoded;
+      if (decoded is Map) return Map<String, dynamic>.from(decoded);
+    }
+
+    return null;
+  }
+
+  static String? _nonEmptyString(dynamic value) {
+    if (value is! String) return null;
+    final trimmed = value.trim();
+    return trimmed.isEmpty ? null : trimmed;
+  }
+
+  static String? _extractErrorMessage(Response<dynamic>? response) {
+    try {
+      final body = _decodeErrorBody(response?.data);
+      if (body == null) return null;
+
+      final rootMessage = _nonEmptyString(body['message']);
+      if (rootMessage != null) return rootMessage;
+
+      final errorNode = body['error'];
+      if (errorNode is Map) {
+        return _nonEmptyString(errorNode['message']);
+      }
+
+      return _nonEmptyString(errorNode);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static NetworkExceptions handleResponse(Response<dynamic>? response) {
+    final errorMessage = _extractErrorMessage(response);
 
     int statusCode = response?.statusCode ?? 0;
 
     switch (statusCode) {
       case 400:
       case 401:
-        return NetworkExceptions.unauthorizedRequest("${errorModel.message}");
+        return NetworkExceptions.unauthorizedRequest(
+          errorMessage ?? "Unauthorized request",
+        );
       case 403:
         return const NetworkExceptions.loggingInRequired();
       case 404:
-        return NetworkExceptions.notFound("${errorModel.message}");
+        return NetworkExceptions.notFound(errorMessage ?? "Not found");
       case 405:
         return const NetworkExceptions.methodNotAllowed();
       case 409:
@@ -112,7 +141,9 @@ abstract class NetworkExceptions with _$NetworkExceptions implements Exception {
       case 408:
         return const NetworkExceptions.requestTimeout();
       case 422:
-        return NetworkExceptions.unprocessableEntity("$response");
+        return NetworkExceptions.unprocessableEntity(
+          errorMessage ?? "Unprocessable entity",
+        );
       case 429:
         {
           final data = response?.data;

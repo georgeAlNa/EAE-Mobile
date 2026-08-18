@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/constants/colors.dart';
+import '../../../../../core/constants/images.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
 
@@ -23,9 +24,8 @@ class AssessmentSetupHeader extends StatelessWidget {
                 color: AppColors.primaryColor9,
                 borderRadius: BorderRadius.circular(10.r),
               ),
-              child: Center(
-                child: Text('TL', style: AppTextStyles.font12WhiteSemiBold),
-              ),
+              clipBehavior: Clip.antiAlias,
+              child: Image.asset(AppImages.miqyasIcon, fit: BoxFit.cover),
             ),
             horizontalSpace(10),
             Text(

@@ -99,7 +99,7 @@ void main() {
       final materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
 
       expect(materialApp.debugShowCheckedModeBanner, isFalse);
-      expect(materialApp.title, 'EAE Mobile ');
+      expect(materialApp.title, 'Miqyas');
       expect(materialApp.initialRoute, Routes.splashScreen);
       expect(materialApp.themeMode, ThemeMode.light);
       expect(materialApp.locale, const Locale('en'));

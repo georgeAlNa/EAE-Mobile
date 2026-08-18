@@ -23,7 +23,7 @@ Future<void> resetPrefs() async {
 }
 
 Map<String, dynamic> profileJson({
-  String firstName = 'EAE',
+  String firstName = 'Miqyas',
   String lastName = 'User',
   String? externalEmployeeId = 'EMP-001',
 }) => {
@@ -105,7 +105,7 @@ void main() {
 
       final response = await remoteDataSource.getProfile();
 
-      expect(response.data.firstName, 'EAE');
+      expect(response.data.firstName, 'Miqyas');
       final captured = verify(
         () => apiServicesImpl.get(
           AppLinkUrl.identityProfile,

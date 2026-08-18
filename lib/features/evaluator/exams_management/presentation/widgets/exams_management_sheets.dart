@@ -10,6 +10,7 @@ import '../../../shared/presentation/widgets/evaluator_copy_widgets.dart';
 import '../../data/models/exams_management_request_body.dart';
 import '../../data/models/exams_management_response.dart';
 import '../../logic/exams_management_cubit.dart';
+import 'exam_content_configuration_sheet.dart';
 import 'exams_management_helpers.dart';
 import 'package:eae_mobile/core/constants/app_strings.dart';
 
@@ -150,9 +151,8 @@ class _ExamFormSheetState extends State<ExamFormSheet> {
     final isEditing = widget.exam != null;
 
     return _SheetScaffold(
-      title: isEditing
-          ? AppStrings.tr('Edit exam')
-          : AppStrings.tr('Create exam'),
+      title:
+          isEditing ? AppStrings.tr('Edit exam') : AppStrings.tr('Create exam'),
       subtitle:
           'Configure the exam details, scoring, timing, and candidate options.',
       child: Form(
@@ -432,6 +432,21 @@ class ExamDetailsSheet extends StatelessWidget {
           EvaluatorCopyableBlock(
             title: AppStrings.tr('Description'),
             value: exam.examDescription,
+          ),
+          verticalSpace(18),
+          ButtonWidget(
+            key: const Key('configure_exam_content_button'),
+            title: AppStrings.tr('Configure Exam Content'),
+            width: double.infinity,
+            radius: 8.r,
+            backgroundColor: AppColors.secondaryColor7,
+            textStyle: AppTextStyles.font14DarkGreySemiBold.copyWith(
+              color: AppColors.neutralColor,
+            ),
+            onTap: () => showExamContentConfigurationSheet(
+              context: context,
+              exam: exam,
+            ),
           ),
         ],
       ),

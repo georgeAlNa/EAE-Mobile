@@ -12,7 +12,7 @@ class MockSettingsRemoteDataSource extends Mock
 
 class MockNetworkInfo extends Mock implements NetworkInfo {}
 
-SettingsProfileData profile({String firstName = 'EAE'}) {
+SettingsProfileData profile({String firstName = 'Miqyas'}) {
   return SettingsProfileData(
     id: 'usr_001',
     tenantId: 'tenant_001',

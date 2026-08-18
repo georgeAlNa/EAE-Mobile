@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../../core/constants/colors.dart';
+import '../../../../../../core/constants/images.dart';
 import '../../../../../../core/constants/text_styles.dart';
 import '../../../data/models/assessment_session_models.dart';
 
@@ -23,11 +24,8 @@ class AssessmentSessionSubmissionHeader extends StatelessWidget {
               color: AppColors.primaryColor9,
               borderRadius: BorderRadius.circular(10.r),
             ),
-            child: Icon(
-              Icons.shield_outlined,
-              color: AppColors.neutralColor,
-              size: 18.sp,
-            ),
+            clipBehavior: Clip.antiAlias,
+            child: Image.asset(AppImages.miqyasIcon, fit: BoxFit.cover),
           ),
           const SizedBox(width: 12),
           Expanded(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/colors.dart';
+import '../../../../core/constants/images.dart';
 
 class SplashLogo extends StatelessWidget {
   const SplashLogo({super.key});
@@ -22,10 +23,11 @@ class SplashLogo extends StatelessWidget {
           ),
         ],
       ),
-      child: Icon(
-        Icons.shield_rounded,
-        size: 52.sp,
-        color: AppColors.secondaryColor,
+      child: Image.asset(
+        AppImages.miqyasIcon,
+        width: 64.r,
+        height: 64.r,
+        fit: BoxFit.contain,
       ),
     );
   }

@@ -60,9 +60,14 @@ String categoryTitleFor(String categoryId, List<QuestionCategory> categories) {
 String questionTypeLabel(String type) {
   switch (type) {
     case 'mcq':
+    case 'multiple_choice':
       return 'MCQ';
+    case 'true_false':
+      return 'True / False';
     case 'short_answer':
       return 'Short answer';
+    case 'essay':
+      return 'Essay';
     default:
       return type.replaceAll('_', ' ');
   }
@@ -70,7 +75,11 @@ String questionTypeLabel(String type) {
 
 String correctAnswerText(QuestionBankItem question) {
   final correctAnswer = question.correctAnswer;
+  if (question.type == 'essay') return 'Not required';
   if (correctAnswer == null) return 'Not set';
+
+  final value = correctAnswer['value'];
+  if (value is bool) return value ? 'True' : 'False';
 
   final correct = correctAnswer['correct'];
   if (correct != null) return correct.toString();

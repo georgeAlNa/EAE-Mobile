@@ -66,6 +66,9 @@ class CreateQuestionRequestBody {
   final QuestionPsychometricsRequestBody? psychometrics;
   final List<QuestionChoiceRequestBody>? choices;
 
+  @JsonKey(name: 'evaluator_instructions')
+  final Map<String, dynamic>? evaluatorInstructions;
+
   CreateQuestionRequestBody({
     required this.categoryId,
     required this.title,
@@ -74,17 +77,32 @@ class CreateQuestionRequestBody {
     required this.stem,
     required this.bloomLevel,
     required this.difficultyLevel,
-    required this.correctAnswer,
+    this.correctAnswer,
     this.acceptedAnswers,
     this.matchMode,
     this.psychometrics,
     this.choices,
+    this.evaluatorInstructions,
   });
 
   factory CreateQuestionRequestBody.fromJson(Map<String, dynamic> json) =>
       _$CreateQuestionRequestBodyFromJson(json);
 
-  Map<String, dynamic> toJson() => _$CreateQuestionRequestBodyToJson(this);
+  Map<String, dynamic> toJson() => _questionPayload(
+        categoryId: categoryId,
+        title: title,
+        type: type,
+        questionText: questionText,
+        stem: stem,
+        bloomLevel: bloomLevel,
+        difficultyLevel: difficultyLevel,
+        correctAnswer: correctAnswer,
+        acceptedAnswers: acceptedAnswers,
+        matchMode: matchMode,
+        psychometrics: psychometrics,
+        choices: choices,
+        evaluatorInstructions: evaluatorInstructions,
+      );
 }
 
 @JsonSerializable()
@@ -117,6 +135,11 @@ class UpdateQuestionRequestBody {
   final QuestionPsychometricsRequestBody? psychometrics;
   final List<QuestionChoiceRequestBody>? choices;
 
+  final String? type;
+
+  @JsonKey(name: 'evaluator_instructions')
+  final Map<String, dynamic>? evaluatorInstructions;
+
   UpdateQuestionRequestBody({
     required this.title,
     required this.categoryId,
@@ -124,17 +147,33 @@ class UpdateQuestionRequestBody {
     required this.difficultyLevel,
     required this.questionText,
     required this.stem,
-    required this.correctAnswer,
+    this.correctAnswer,
     this.acceptedAnswers,
     this.matchMode,
     this.psychometrics,
     this.choices,
+    this.type,
+    this.evaluatorInstructions,
   });
 
   factory UpdateQuestionRequestBody.fromJson(Map<String, dynamic> json) =>
       _$UpdateQuestionRequestBodyFromJson(json);
 
-  Map<String, dynamic> toJson() => _$UpdateQuestionRequestBodyToJson(this);
+  Map<String, dynamic> toJson() => _questionPayload(
+        categoryId: categoryId,
+        title: title,
+        type: type ?? _inferQuestionType(this),
+        questionText: questionText,
+        stem: stem,
+        bloomLevel: bloomLevel,
+        difficultyLevel: difficultyLevel,
+        correctAnswer: correctAnswer,
+        acceptedAnswers: acceptedAnswers,
+        matchMode: matchMode,
+        psychometrics: psychometrics,
+        choices: choices,
+        evaluatorInstructions: evaluatorInstructions,
+      );
 }
 
 @JsonSerializable(includeIfNull: false)
@@ -167,6 +206,9 @@ class PartialUpdateQuestionRequestBody {
   final QuestionPsychometricsRequestBody? psychometrics;
   final List<QuestionChoiceRequestBody>? choices;
 
+  @JsonKey(name: 'evaluator_instructions')
+  final Map<String, dynamic>? evaluatorInstructions;
+
   PartialUpdateQuestionRequestBody({
     this.title,
     this.categoryId,
@@ -179,14 +221,27 @@ class PartialUpdateQuestionRequestBody {
     this.matchMode,
     this.psychometrics,
     this.choices,
+    this.evaluatorInstructions,
   });
 
   factory PartialUpdateQuestionRequestBody.fromJson(
     Map<String, dynamic> json,
-  ) => _$PartialUpdateQuestionRequestBodyFromJson(json);
+  ) =>
+      _$PartialUpdateQuestionRequestBodyFromJson(json);
 
-  Map<String, dynamic> toJson() =>
-      _$PartialUpdateQuestionRequestBodyToJson(this);
+  Map<String, dynamic> toJson() {
+    final json = _$PartialUpdateQuestionRequestBodyToJson(this);
+    if (psychometrics != null) {
+      json['psychometrics'] = psychometrics!.toJson();
+    }
+    if (choices != null) {
+      json['choices'] = choices!.map((choice) => choice.toJson()).toList();
+    }
+    if (evaluatorInstructions != null && evaluatorInstructions!.isNotEmpty) {
+      json['evaluator_instructions'] = evaluatorInstructions;
+    }
+    return json;
+  }
 }
 
 @JsonSerializable()
@@ -208,7 +263,8 @@ class QuestionPsychometricsRequestBody {
 
   factory QuestionPsychometricsRequestBody.fromJson(
     Map<String, dynamic> json,
-  ) => _$QuestionPsychometricsRequestBodyFromJson(json);
+  ) =>
+      _$QuestionPsychometricsRequestBodyFromJson(json);
 
   Map<String, dynamic> toJson() =>
       _$QuestionPsychometricsRequestBodyToJson(this);
@@ -299,8 +355,73 @@ class QuestionVersionPsychometricsRequestBody {
 
   factory QuestionVersionPsychometricsRequestBody.fromJson(
     Map<String, dynamic> json,
-  ) => _$QuestionVersionPsychometricsRequestBodyFromJson(json);
+  ) =>
+      _$QuestionVersionPsychometricsRequestBodyFromJson(json);
 
   Map<String, dynamic> toJson() =>
       _$QuestionVersionPsychometricsRequestBodyToJson(this);
+}
+
+Map<String, dynamic> _questionPayload({
+  required String categoryId,
+  required String title,
+  required String type,
+  required String questionText,
+  required String stem,
+  required int bloomLevel,
+  required int difficultyLevel,
+  required dynamic correctAnswer,
+  required List<String>? acceptedAnswers,
+  required String? matchMode,
+  required QuestionPsychometricsRequestBody? psychometrics,
+  required List<QuestionChoiceRequestBody>? choices,
+  required Map<String, dynamic>? evaluatorInstructions,
+}) {
+  final normalizedType = type.trim();
+  final json = <String, dynamic>{
+    'category_id': categoryId,
+    'title': title,
+    'type': normalizedType,
+    'question_text': questionText,
+    'bloom_level': bloomLevel,
+    'difficulty_level': difficultyLevel,
+  };
+
+  if (stem.trim().isNotEmpty) {
+    json['stem'] = stem;
+  }
+
+  if (psychometrics != null) {
+    json['psychometrics'] = psychometrics.toJson();
+  }
+
+  switch (normalizedType) {
+    case 'mcq':
+      json['choices'] = (choices ?? const <QuestionChoiceRequestBody>[])
+          .map((choice) => choice.toJson())
+          .toList();
+      break;
+    case 'true_false':
+      json['correct_answer'] = correctAnswer == true;
+      break;
+    case 'short_answer':
+      json['accepted_answers'] = acceptedAnswers ?? const <String>[];
+      json['match_mode'] = matchMode ?? 'case_insensitive';
+      break;
+    case 'essay':
+      if (evaluatorInstructions != null && evaluatorInstructions.isNotEmpty) {
+        json['evaluator_instructions'] = evaluatorInstructions;
+      }
+      break;
+  }
+
+  return json;
+}
+
+String _inferQuestionType(UpdateQuestionRequestBody request) {
+  if (request.choices != null) return 'mcq';
+  if (request.acceptedAnswers != null) return 'short_answer';
+  if (request.correctAnswer is bool) return 'true_false';
+  if (request.evaluatorInstructions != null) return 'essay';
+  return 'mcq';
 }

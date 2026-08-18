@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/constants/colors.dart';
+import '../../../../../core/constants/images.dart';
 import '../../../../../core/constants/text_styles.dart';
 
 class AssessmentHeader extends StatelessWidget {
@@ -23,11 +24,8 @@ class AssessmentHeader extends StatelessWidget {
                   color: AppColors.primaryColor5,
                   borderRadius: BorderRadius.circular(10.r),
                 ),
-                child: Icon(
-                  Icons.shield_outlined,
-                  size: 18.sp,
-                  color: AppColors.primaryColor9,
-                ),
+                clipBehavior: Clip.antiAlias,
+                child: Image.asset(AppImages.miqyasIcon, fit: BoxFit.cover),
               ),
               SizedBox(width: 10.w),
               Expanded(

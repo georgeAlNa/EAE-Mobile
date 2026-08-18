@@ -17,7 +17,7 @@ class ExamsManagementCubit extends Cubit<ExamsManagementState> {
   final WorkflowRepo? workflowRepo;
 
   ExamsManagementCubit({required this.examsManagementRepo, this.workflowRepo})
-    : super(const ExamsManagementState.initial()) {
+      : super(const ExamsManagementState.initial()) {
     getExams();
   }
 
@@ -246,7 +246,7 @@ class ExamsManagementCubit extends Cubit<ExamsManagementState> {
     }
   }
 
-  Future<void> createExamSection(
+  Future<ExamSectionResponse?> createExamSection(
     String examId,
     ExamSectionRequestBody requestBody,
   ) async {
@@ -259,9 +259,13 @@ class ExamsManagementCubit extends Cubit<ExamsManagementState> {
       );
       emit(
         ExamsManagementState.actionSuccess(
-          ExamActionResponse(message: response.data.sectionId),
+          ExamActionResponse(
+            message: response.data.sectionId,
+            refreshExams: false,
+          ),
         ),
       );
+      return response;
     } on NetworkExceptions catch (e) {
       emit(
         ExamsManagementState.actionError(
@@ -275,9 +279,10 @@ class ExamsManagementCubit extends Cubit<ExamsManagementState> {
         ),
       );
     }
+    return null;
   }
 
-  Future<void> getExamSections(String examId) async {
+  Future<ExamSectionsResponse?> getExamSections(String examId) async {
     emit(const ExamsManagementState.actionLoading());
 
     try {
@@ -285,9 +290,13 @@ class ExamsManagementCubit extends Cubit<ExamsManagementState> {
       examSectionsResponse = response;
       emit(
         ExamsManagementState.actionSuccess(
-          ExamActionResponse(message: '${response.data.length}'),
+          ExamActionResponse(
+            message: '${response.data.length}',
+            refreshExams: false,
+          ),
         ),
       );
+      return response;
     } on NetworkExceptions catch (e) {
       emit(
         ExamsManagementState.actionError(
@@ -301,9 +310,10 @@ class ExamsManagementCubit extends Cubit<ExamsManagementState> {
         ),
       );
     }
+    return null;
   }
 
-  Future<void> createExamBlueprint(
+  Future<ExamBlueprintResponse?> createExamBlueprint(
     String examId,
     ExamBlueprintRequestBody requestBody,
   ) async {
@@ -316,9 +326,13 @@ class ExamsManagementCubit extends Cubit<ExamsManagementState> {
       );
       emit(
         ExamsManagementState.actionSuccess(
-          ExamActionResponse(message: response.data.blueprintId),
+          ExamActionResponse(
+            message: response.data.blueprintId,
+            refreshExams: false,
+          ),
         ),
       );
+      return response;
     } on NetworkExceptions catch (e) {
       emit(
         ExamsManagementState.actionError(
@@ -332,9 +346,10 @@ class ExamsManagementCubit extends Cubit<ExamsManagementState> {
         ),
       );
     }
+    return null;
   }
 
-  Future<void> getExamBlueprints(String examId) async {
+  Future<ExamBlueprintsResponse?> getExamBlueprints(String examId) async {
     emit(const ExamsManagementState.actionLoading());
 
     try {
@@ -342,9 +357,13 @@ class ExamsManagementCubit extends Cubit<ExamsManagementState> {
       examBlueprintsResponse = response;
       emit(
         ExamsManagementState.actionSuccess(
-          ExamActionResponse(message: '${response.data.length}'),
+          ExamActionResponse(
+            message: '${response.data.length}',
+            refreshExams: false,
+          ),
         ),
       );
+      return response;
     } on NetworkExceptions catch (e) {
       emit(
         ExamsManagementState.actionError(
@@ -358,6 +377,7 @@ class ExamsManagementCubit extends Cubit<ExamsManagementState> {
         ),
       );
     }
+    return null;
   }
 
   Future<void> exportExamResults(String examId) async {

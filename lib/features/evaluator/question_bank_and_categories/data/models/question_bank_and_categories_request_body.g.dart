@@ -55,6 +55,8 @@ CreateQuestionRequestBody _$CreateQuestionRequestBodyFromJson(
         (e) => QuestionChoiceRequestBody.fromJson(e as Map<String, dynamic>),
       )
       .toList(),
+  evaluatorInstructions:
+      json['evaluator_instructions'] as Map<String, dynamic>?,
 );
 
 Map<String, dynamic> _$CreateQuestionRequestBodyToJson(
@@ -72,6 +74,7 @@ Map<String, dynamic> _$CreateQuestionRequestBodyToJson(
   'match_mode': instance.matchMode,
   'psychometrics': instance.psychometrics,
   'choices': instance.choices,
+  'evaluator_instructions': instance.evaluatorInstructions,
 };
 
 UpdateQuestionRequestBody _$UpdateQuestionRequestBodyFromJson(
@@ -98,6 +101,9 @@ UpdateQuestionRequestBody _$UpdateQuestionRequestBodyFromJson(
         (e) => QuestionChoiceRequestBody.fromJson(e as Map<String, dynamic>),
       )
       .toList(),
+  type: json['type'] as String?,
+  evaluatorInstructions:
+      json['evaluator_instructions'] as Map<String, dynamic>?,
 );
 
 Map<String, dynamic> _$UpdateQuestionRequestBodyToJson(
@@ -114,6 +120,8 @@ Map<String, dynamic> _$UpdateQuestionRequestBodyToJson(
   'match_mode': instance.matchMode,
   'psychometrics': instance.psychometrics,
   'choices': instance.choices,
+  'type': instance.type,
+  'evaluator_instructions': instance.evaluatorInstructions,
 };
 
 PartialUpdateQuestionRequestBody _$PartialUpdateQuestionRequestBodyFromJson(
@@ -140,6 +148,8 @@ PartialUpdateQuestionRequestBody _$PartialUpdateQuestionRequestBodyFromJson(
         (e) => QuestionChoiceRequestBody.fromJson(e as Map<String, dynamic>),
       )
       .toList(),
+  evaluatorInstructions:
+      json['evaluator_instructions'] as Map<String, dynamic>?,
 );
 
 Map<String, dynamic> _$PartialUpdateQuestionRequestBodyToJson(
@@ -156,6 +166,7 @@ Map<String, dynamic> _$PartialUpdateQuestionRequestBodyToJson(
   'match_mode': ?instance.matchMode,
   'psychometrics': ?instance.psychometrics,
   'choices': ?instance.choices,
+  'evaluator_instructions': ?instance.evaluatorInstructions,
 };
 
 QuestionPsychometricsRequestBody _$QuestionPsychometricsRequestBodyFromJson(

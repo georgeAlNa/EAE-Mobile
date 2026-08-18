@@ -67,40 +67,40 @@ ExamItem exam({String id = 'exam_001', String status = 'draft'}) {
 ExamsResponse examsResponse() => ExamsResponse(data: [exam()]);
 
 ExamSectionRequestBody sectionRequest() => ExamSectionRequestBody(
-  sectionName: 'Second Section',
-  sectionSequence: 2,
-  questionsInSection: 1,
-);
+      sectionName: 'Second Section',
+      sectionSequence: 2,
+      questionsInSection: 1,
+    );
 
 ExamBlueprintRequestBody blueprintRequest() => ExamBlueprintRequestBody(
-  sectionId: 'section_001',
-  competencyId: 'competency_001',
-  minQuestionsCount: 1,
-  maxQuestionsCount: 1,
-  minWeightPercentage: 100,
-  maxWeightPercentage: 100,
-);
+      sectionId: 'section_001',
+      competencyId: 'competency_001',
+      minQuestionsCount: 1,
+      maxQuestionsCount: 1,
+      minWeightPercentage: 100,
+      maxWeightPercentage: 100,
+    );
 
 ExamSection section({String id = 'section_001'}) => ExamSection(
-  sectionId: id,
-  tenantId: 'tenant_001',
-  examId: 'exam_001',
-  sectionName: 'Main Section',
-  sectionSequence: 1,
-  questionsInSection: 1,
-  blueprints: const [],
-);
+      sectionId: id,
+      tenantId: 'tenant_001',
+      examId: 'exam_001',
+      sectionName: 'Main Section',
+      sectionSequence: 1,
+      questionsInSection: 1,
+      blueprints: const [],
+    );
 
 ExamBlueprint blueprint({String id = 'blueprint_001'}) => ExamBlueprint(
-  blueprintId: id,
-  examId: 'exam_001',
-  sectionId: 'section_001',
-  competencyId: 'competency_001',
-  minQuestionsCount: 1,
-  maxQuestionsCount: 1,
-  minWeightPercentage: '100.00',
-  maxWeightPercentage: '100.00',
-);
+      blueprintId: id,
+      examId: 'exam_001',
+      sectionId: 'section_001',
+      competencyId: 'competency_001',
+      minQuestionsCount: 1,
+      maxQuestionsCount: 1,
+      minWeightPercentage: '100.00',
+      maxWeightPercentage: '100.00',
+    );
 
 Future<ExamsManagementState> waitForLoadTerminal(ExamsManagementCubit cubit) {
   return cubit.stream.firstWhere(
@@ -248,9 +248,9 @@ void main() {
       await cubit.createExam(examRequest());
       await emission;
 
-      final captured =
-          verify(() => repo.createExam(captureAny())).captured.single
-              as ExamRequestBody;
+      final captured = verify(() => repo.createExam(captureAny()))
+          .captured
+          .single as ExamRequestBody;
       expect(captured.examCode, 'FLUTTER-101');
     });
 
@@ -396,11 +396,9 @@ void main() {
         );
         await cubit.createExamPublicationWorkflow('exam_001');
         await emission;
-        final request =
-            verify(
-                  () => workflowRepo.createWorkflow(captureAny()),
-                ).captured.single
-                as CreateApprovalWorkflowRequestBody;
+        final request = verify(
+          () => workflowRepo.createWorkflow(captureAny()),
+        ).captured.single as CreateApprovalWorkflowRequestBody;
         expect(request.resourceType, 'exam');
         expect(request.resourceId, 'exam_001');
         expect(request.workflowType, 'exam_publication');
@@ -495,24 +493,33 @@ void main() {
         emitsInOrder([
           predicate<ExamsManagementState>(isLoading),
           predicate<ExamsManagementState>(
-            (state) => actionResponse(state)?.message == 'section_new',
+            (state) =>
+                actionResponse(state)?.message == 'section_new' &&
+                actionResponse(state)?.refreshExams == false,
           ),
         ]),
       );
-      await cubit.createExamSection('exam_001', sectionRequest());
+      final createResponse = await cubit.createExamSection(
+        'exam_001',
+        sectionRequest(),
+      );
       await emission;
+      expect(createResponse, same(created));
 
       emission = expectLater(
         cubit.stream,
         emitsInOrder([
           predicate<ExamsManagementState>(isLoading),
           predicate<ExamsManagementState>(
-            (state) => actionResponse(state)?.message == '1',
+            (state) =>
+                actionResponse(state)?.message == '1' &&
+                actionResponse(state)?.refreshExams == false,
           ),
         ]),
       );
-      await cubit.getExamSections('exam_001');
+      final sectionsResponse = await cubit.getExamSections('exam_001');
       await emission;
+      expect(sectionsResponse, same(sections));
       expect(cubit.examSectionsResponse, same(sections));
     });
 
@@ -536,24 +543,33 @@ void main() {
           emitsInOrder([
             predicate<ExamsManagementState>(isLoading),
             predicate<ExamsManagementState>(
-              (state) => actionResponse(state)?.message == 'blueprint_new',
+              (state) =>
+                  actionResponse(state)?.message == 'blueprint_new' &&
+                  actionResponse(state)?.refreshExams == false,
             ),
           ]),
         );
-        await cubit.createExamBlueprint('exam_001', blueprintRequest());
+        final createResponse = await cubit.createExamBlueprint(
+          'exam_001',
+          blueprintRequest(),
+        );
         await emission;
+        expect(createResponse, same(created));
 
         emission = expectLater(
           cubit.stream,
           emitsInOrder([
             predicate<ExamsManagementState>(isLoading),
             predicate<ExamsManagementState>(
-              (state) => actionResponse(state)?.message == '1',
+              (state) =>
+                  actionResponse(state)?.message == '1' &&
+                  actionResponse(state)?.refreshExams == false,
             ),
           ]),
         );
-        await cubit.getExamBlueprints('exam_001');
+        final blueprintsResponse = await cubit.getExamBlueprints('exam_001');
         await emission;
+        expect(blueprintsResponse, same(blueprints));
         expect(cubit.examBlueprintsResponse, same(blueprints));
       },
     );
