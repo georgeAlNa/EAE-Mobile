@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -218,9 +216,14 @@ class _ExamsManagementScreenState extends State<ExamsManagementScreen> {
     final cubit = context.read<ExamsManagementCubit>();
     await cubit.createExamPublicationWorkflow(exam.id);
     if (!context.mounted) return;
-    final workflow = cubit.examPublicationWorkflowResponse;
+    final workflow = cubit.examPublicationWorkflowResponse?.data;
+
     if (workflow != null) {
-      _showWorkflowDetailsDialog(context, workflow.toJson());
+      _showWorkflowCreatedDialog(
+        context,
+        workflowId: workflow.workflowId,
+        status: workflow.currentWorkflowStatus,
+      );
     }
   }
 
@@ -254,23 +257,58 @@ class _ExamsManagementScreenState extends State<ExamsManagementScreen> {
     );
   }
 
-  void _showWorkflowDetailsDialog(
-    BuildContext context,
-    Map<String, dynamic> workflowJson,
-  ) {
+  // void _showWorkflowDetailsDialog(
+  //   BuildContext context,
+  //   Map<String, dynamic> workflowJson,
+  // ) {
+  //   showDialog<void>(
+  //     context: context,
+  //     builder: (_) {
+  //       return AlertDialog(
+  //         title: Text(AppStrings.tr('Exam publication workflow')),
+  //         content: SingleChildScrollView(
+  //           child: Text(
+  //             const JsonEncoder.withIndent('  ').convert(workflowJson),
+  //           ),
+  //         ),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () => Navigator.pop(context),
+  //             child: Text(AppStrings.tr('Close')),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
+
+  void _showWorkflowCreatedDialog(
+    BuildContext context, {
+    required String workflowId,
+    required String status,
+  }) {
     showDialog<void>(
       context: context,
-      builder: (_) {
+      builder: (dialogContext) {
         return AlertDialog(
           title: Text(AppStrings.tr('Exam publication workflow')),
-          content: SingleChildScrollView(
-            child: Text(
-              const JsonEncoder.withIndent('  ').convert(workflowJson),
-            ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(AppStrings.tr('Publication workflow created successfully.')),
+              verticalSpace(12),
+              Text('${AppStrings.tr('Status')}: ${AppStrings.tr(status)}'),
+              verticalSpace(8),
+              Text(
+                '${AppStrings.tr('Workflow ID')}: $workflowId',
+                style: const TextStyle(fontSize: 12),
+              ),
+            ],
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Navigator.of(dialogContext).pop(),
               child: Text(AppStrings.tr('Close')),
             ),
           ],
