@@ -234,7 +234,8 @@ class _QuestionSheetState extends State<QuestionSheet> {
     super.initState();
     final question = widget.question;
     _selectedType = _normalizeQuestionType(question?.type ?? 'mcq');
-    _selectedCategoryId = question?.categoryId ??
+    _selectedCategoryId =
+        question?.categoryId ??
         (widget.categories.isEmpty ? null : widget.categories.first.id);
     _bloomLevel = question?.bloomLevel ?? 1;
     _difficultyLevel = question?.difficultyLevel ?? 1;
@@ -448,7 +449,9 @@ class _QuestionSheetState extends State<QuestionSheet> {
     final acceptedAnswers = _acceptedAnswers();
     if (_selectedType == 'short_answer' && acceptedAnswers.isEmpty) {
       showAppSnackBar(
-          context, 'Short answer questions require accepted answers');
+        context,
+        'Short answer questions require accepted answers',
+      );
       return;
     }
 
@@ -471,10 +474,12 @@ class _QuestionSheetState extends State<QuestionSheet> {
       usageCount: usageCount,
     );
     final choices = _selectedType == 'mcq' ? _buildChoices() : null;
-    final evaluatorInstructions =
-        _selectedType == 'essay' ? _buildEvaluatorInstructions() : null;
-    final correctAnswer =
-        _selectedType == 'true_false' ? _trueFalseAnswer : null;
+    final evaluatorInstructions = _selectedType == 'essay'
+        ? _buildEvaluatorInstructions()
+        : null;
+    final correctAnswer = _selectedType == 'true_false'
+        ? _trueFalseAnswer
+        : null;
 
     if (existingQuestion == null) {
       cubit.createQuestion(
@@ -487,8 +492,9 @@ class _QuestionSheetState extends State<QuestionSheet> {
           bloomLevel: _bloomLevel,
           difficultyLevel: _difficultyLevel,
           correctAnswer: correctAnswer,
-          acceptedAnswers:
-              _selectedType == 'short_answer' ? acceptedAnswers : null,
+          acceptedAnswers: _selectedType == 'short_answer'
+              ? acceptedAnswers
+              : null,
           matchMode: _selectedType == 'short_answer' ? _matchMode : null,
           psychometrics: psychometrics,
           choices: choices,
@@ -507,8 +513,9 @@ class _QuestionSheetState extends State<QuestionSheet> {
           bloomLevel: _bloomLevel,
           difficultyLevel: _difficultyLevel,
           correctAnswer: correctAnswer,
-          acceptedAnswers:
-              _selectedType == 'short_answer' ? acceptedAnswers : null,
+          acceptedAnswers: _selectedType == 'short_answer'
+              ? acceptedAnswers
+              : null,
           matchMode: _selectedType == 'short_answer' ? _matchMode : null,
           psychometrics: psychometrics,
           choices: choices,
@@ -877,7 +884,9 @@ class _ShortAnswerSection extends StatelessWidget {
               child: Text(AppStrings.tr('Case insensitive')),
             ),
             DropdownMenuItem(
-                value: 'exact', child: Text(AppStrings.tr('Exact'))),
+              value: 'exact',
+              child: Text(AppStrings.tr('Exact')),
+            ),
           ],
           onChanged: (value) => onMatchModeChanged(value ?? 'case_insensitive'),
         ),

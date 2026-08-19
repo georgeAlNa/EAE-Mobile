@@ -65,13 +65,11 @@ class _SessionActionsCard extends StatelessWidget {
   final TextEditingController sessionIdController;
   final VoidCallback onLoadPending;
   final VoidCallback onCheckStatus;
-  final VoidCallback onPublish;
 
   const _SessionActionsCard({
     required this.sessionIdController,
     required this.onLoadPending,
     required this.onCheckStatus,
-    required this.onPublish,
   });
 
   @override
@@ -107,12 +105,6 @@ class _SessionActionsCard extends StatelessWidget {
                 icon: const Icon(Icons.verified_outlined),
                 label: Text(AppStrings.tr('Status')),
                 style: _outlinedActionButtonStyle(),
-              ),
-              FilledButton.icon(
-                onPressed: onPublish,
-                icon: const Icon(Icons.publish_outlined),
-                label: Text(AppStrings.tr('Publish')),
-                style: _filledActionButtonStyle(),
               ),
             ],
           ),
@@ -377,49 +369,6 @@ class _PublicationStatusCard extends StatelessWidget {
           _InfoLine(
             label: AppStrings.tr('Calculated at'),
             value: status.resultCalculatedAt ?? '-',
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _PublishedResultCard extends StatelessWidget {
-  final PublishedSessionResult result;
-
-  const _PublishedResultCard({required this.result});
-
-  @override
-  Widget build(BuildContext context) {
-    final summary = result.summary;
-
-    return _EvaluationCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            AppStrings.tr('Published result'),
-            style: AppTextStyles.font16DarkGreyBold,
-          ),
-          verticalSpace(10),
-          _InfoLine(label: AppStrings.tr('Result ID'), value: result.resultId),
-          _InfoLine(
-            label: AppStrings.tr('Status'),
-            value:
-                '${result.status.resultStatus} / ${result.status.publicationStatus}',
-          ),
-          _InfoLine(
-            label: AppStrings.tr('Grade'),
-            value:
-                '${summary.gradeLetter ?? '-'} - ${summary.percentage}% (${summary.rawScore}/${summary.maxScore})',
-          ),
-          _InfoLine(
-            label: AppStrings.tr('Pending evaluations'),
-            value: '${summary.totals.pendingEvaluations}',
-          ),
-          _InfoLine(
-            label: AppStrings.tr('Published at'),
-            value: result.timestamps.publishedAt ?? '-',
           ),
         ],
       ),

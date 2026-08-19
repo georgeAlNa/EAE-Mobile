@@ -19,8 +19,6 @@ class AssessmentSessionQuestionCard extends StatelessWidget {
   final VoidCallback onPickFile;
   final VoidCallback onRecordVideo;
   final String recordingTime;
-  final String resolutionLabel;
-  final String isoLabel;
 
   const AssessmentSessionQuestionCard({
     super.key,
@@ -32,8 +30,6 @@ class AssessmentSessionQuestionCard extends StatelessWidget {
     required this.onPickFile,
     required this.onRecordVideo,
     required this.recordingTime,
-    required this.resolutionLabel,
-    required this.isoLabel,
   });
 
   @override
@@ -114,8 +110,6 @@ class AssessmentSessionQuestionCard extends StatelessWidget {
                 question: question,
                 onRecordVideo: onRecordVideo,
                 recordingTime: recordingTime,
-                resolutionLabel: resolutionLabel,
-                isoLabel: isoLabel,
               ),
           },
         ],

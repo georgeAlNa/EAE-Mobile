@@ -21,6 +21,7 @@ import 'package:eae_mobile/features/tenant_admin/bottom_nav/presentation/screens
 import 'package:eae_mobile/features/candidate/assessment_setup/logic/assessment_setup_cubit.dart';
 import 'package:eae_mobile/features/candidate/assessment_setup/presentation/screens/assessment_setup_screen.dart';
 import 'package:eae_mobile/features/candidate/assessment_session/logic/assessment_session_cubit.dart';
+import 'package:eae_mobile/features/candidate/assessment_session/data/models/assessment_session_models.dart';
 import 'package:eae_mobile/features/candidate/assessment_session/presentation/screens/assessment_session_screen.dart';
 import 'package:eae_mobile/features/candidate/forensics_checkpoint/logic/forensics_checkpoint_cubit.dart';
 import 'package:eae_mobile/features/candidate/forensics_checkpoint/presentation/screens/forensics_checkpoint_screen.dart';
@@ -181,11 +182,22 @@ class AppRouter {
         );
 
       case Routes.assessmentSessionScreen:
-        final examId = settings.arguments as String?;
+        final argument = settings.arguments;
+        final launchData = argument is AssessmentSessionLaunchData
+            ? argument
+            : argument is String
+            ? AssessmentSessionLaunchData(
+                examId: argument,
+                totalDurationMinutes: 0,
+                timerVisibleToCandidate: true,
+              )
+            : null;
 
         return MaterialPageRoute(
           builder: (_) => BlocProvider(
-            create: (context) => getIt<AssessmentSessionCubit>(param1: examId),
+            create: (context) => getIt<AssessmentSessionCubit>(
+              param1: launchData,
+            ),
             child: const AssessmentSessionScreen(),
           ),
         );

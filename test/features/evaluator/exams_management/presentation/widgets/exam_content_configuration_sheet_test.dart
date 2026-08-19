@@ -19,95 +19,92 @@ class MockExamsManagementRepo extends Mock implements ExamsManagementRepo {}
 class MockCompetenciesRepo extends Mock implements CompetenciesRepo {}
 
 ExamItem exam() => ExamItem(
-      id: 'exam_001',
-      tenantId: 'tenant_001',
-      createdByUserId: 'usr_creator',
-      examName: 'Flutter Fundamentals',
-      examCode: 'FLUTTER-101',
-      examDescription: 'Covers Flutter basics',
-      examType: 'technical',
-      assessmentMode: 'online',
-      totalQuestions: 25,
-      totalDurationMinutes: 60,
-      passMarkPercentage: 70,
-      difficultyTierLevel: 2,
-      isAdaptiveExam: false,
-      isRandomized: true,
-      allowReviewAfterSubmit: true,
-      allowFlaggingForReview: true,
-      timerVisibleToCandidate: true,
-      showCorrectAnswersAfter: false,
-      examStatus: 'draft',
-      isPublished: false,
-      createdAt: '2026-07-01T20:00:00.000Z',
-      updatedAt: '2026-07-15T20:00:00.000Z',
-    );
+  id: 'exam_001',
+  tenantId: 'tenant_001',
+  createdByUserId: 'usr_creator',
+  examName: 'Flutter Fundamentals',
+  examCode: 'FLUTTER-101',
+  examDescription: 'Covers Flutter basics',
+  examType: 'technical',
+  assessmentMode: 'online',
+  totalQuestions: 25,
+  totalDurationMinutes: 60,
+  passMarkPercentage: 70,
+  difficultyTierLevel: 2,
+  isAdaptiveExam: false,
+  isRandomized: true,
+  allowReviewAfterSubmit: true,
+  allowFlaggingForReview: true,
+  timerVisibleToCandidate: true,
+  showCorrectAnswersAfter: false,
+  examStatus: 'draft',
+  isPublished: false,
+  createdAt: '2026-07-01T20:00:00.000Z',
+  updatedAt: '2026-07-15T20:00:00.000Z',
+);
 
 ExamSection section({
   String id = 'section_001',
   String name = 'Main Section',
-}) =>
-    ExamSection(
-      sectionId: id,
-      tenantId: 'tenant_001',
-      examId: 'exam_001',
-      sectionName: name,
-      sectionCode: 'SEC-01',
-      sectionSequence: 1,
-      questionsInSection: 10,
-      timeLimitMinutes: 20,
-      blueprints: const [],
-    );
+}) => ExamSection(
+  sectionId: id,
+  tenantId: 'tenant_001',
+  examId: 'exam_001',
+  sectionName: name,
+  sectionCode: 'SEC-01',
+  sectionSequence: 1,
+  questionsInSection: 10,
+  timeLimitMinutes: 20,
+  blueprints: const [],
+);
 
 ExamBlueprint blueprint({
   String id = 'blueprint_001',
   String sectionId = 'section_001',
   String minWeightPercentage = '30.00',
-}) =>
-    ExamBlueprint(
-      blueprintId: id,
-      examId: 'exam_001',
-      sectionId: sectionId,
-      competencyId: 'competency_001',
-      minQuestionsCount: 2,
-      maxQuestionsCount: 4,
-      minWeightPercentage: minWeightPercentage,
-      maxWeightPercentage: '50.00',
-      competency: ExamBlueprintCompetency(
-        competencyId: 'competency_001',
-        competencyName: 'Basic Math Skills',
-        competencyType: 'knowledge',
-        isActive: true,
-      ),
-    );
+}) => ExamBlueprint(
+  blueprintId: id,
+  examId: 'exam_001',
+  sectionId: sectionId,
+  competencyId: 'competency_001',
+  minQuestionsCount: 2,
+  maxQuestionsCount: 4,
+  minWeightPercentage: minWeightPercentage,
+  maxWeightPercentage: '50.00',
+  competency: ExamBlueprintCompetency(
+    competencyId: 'competency_001',
+    competencyName: 'Basic Math Skills',
+    competencyType: 'knowledge',
+    isActive: true,
+  ),
+);
 
 Competency competency({
   String id = 'competency_001',
   String name = 'Basic Math Skills',
   bool isActive = true,
-}) =>
-    Competency(
-      id: id,
-      name: name,
-      hierarchyLevel: 0,
-      isActive: isActive,
-      children: const [],
-    );
+}) => Competency(
+  id: id,
+  name: name,
+  hierarchyLevel: 0,
+  isActive: isActive,
+  children: const [],
+);
 
 ExamSectionRequestBody sectionRequest() => ExamSectionRequestBody(
-      sectionName: 'Algebra',
-      sectionSequence: 2,
-      questionsInSection: 5,
-    );
+  sectionName: 'Algebra',
+  sectionSequence: 2,
+  questionsInSection: 5,
+);
 
 ExamBlueprintRequestBody blueprintRequest() => ExamBlueprintRequestBody(
-      sectionId: 'section_001',
-      competencyId: 'competency_001',
-      minQuestionsCount: 1,
-      maxQuestionsCount: 3,
-      minWeightPercentage: 20,
-      maxWeightPercentage: 40,
-    );
+  sectionId: 'section_001',
+  competencyId: 'competency_001',
+  minQuestionsCount: 1,
+  maxQuestionsCount: 3,
+  minWeightPercentage: 20,
+  maxWeightPercentage: 40,
+);
 
 Future<ExamsManagementCubit> createExamsCubit(
   MockExamsManagementRepo repo, {
@@ -115,9 +112,9 @@ Future<ExamsManagementCubit> createExamsCubit(
   List<ExamBlueprint>? blueprints,
   Object? sectionsError,
 }) async {
-  when(() => repo.getExams()).thenAnswer((_) async => ExamsResponse(data: [
-        exam(),
-      ]));
+  when(
+    () => repo.getExams(),
+  ).thenAnswer((_) async => ExamsResponse(data: [exam()]));
   if (sectionsError == null) {
     when(() => repo.getExamSections(any())).thenAnswer(
       (_) async => ExamSectionsResponse(data: sections ?? [section()]),
@@ -261,10 +258,14 @@ void main() {
     verifyNever(() => examsRepo.createExamSection(any(), any()));
 
     await tester.enterText(
-        find.byKey(const Key('section_name_input')), 'Algebra');
+      find.byKey(const Key('section_name_input')),
+      'Algebra',
+    );
     await tester.enterText(find.byKey(const Key('section_code_input')), 'ALG');
     await tester.enterText(
-        find.byKey(const Key('section_sequence_input')), '2');
+      find.byKey(const Key('section_sequence_input')),
+      '2',
+    );
     await tester.enterText(
       find.byKey(const Key('questions_in_section_input')),
       '5',
@@ -275,9 +276,11 @@ void main() {
     );
     await tapVisible(tester, find.byKey(const Key('create_section_button')));
 
-    final captured = verify(
-      () => examsRepo.createExamSection('exam_001', captureAny()),
-    ).captured.single as ExamSectionRequestBody;
+    final captured =
+        verify(
+              () => examsRepo.createExamSection('exam_001', captureAny()),
+            ).captured.single
+            as ExamSectionRequestBody;
     expect(captured.sectionName, 'Algebra');
     expect(captured.sectionCode, 'ALG');
     expect(captured.sectionSequence, 2);
@@ -287,48 +290,49 @@ void main() {
   });
 
   testWidgets(
-      'section dropdown uses only current exam sections and active competencies',
-      (
-    tester,
-  ) async {
-    final examsCubit = await createExamsCubit(
-      examsRepo,
-      sections: [section(), section(id: 'section_002', name: 'Practical')],
-    );
-    final competenciesCubit = await createCompetenciesCubit(competenciesRepo);
+    'section dropdown uses only current exam sections and active competencies',
+    (tester) async {
+      final examsCubit = await createExamsCubit(
+        examsRepo,
+        sections: [
+          section(),
+          section(id: 'section_002', name: 'Practical'),
+        ],
+      );
+      final competenciesCubit = await createCompetenciesCubit(competenciesRepo);
 
-    await pumpConfigurationSheet(
-      tester,
-      examsCubit: examsCubit,
-      competenciesCubit: competenciesCubit,
-    );
-    await tester.pumpAndSettle();
+      await pumpConfigurationSheet(
+        tester,
+        examsCubit: examsCubit,
+        competenciesCubit: competenciesCubit,
+      );
+      await tester.pumpAndSettle();
 
-    await tapVisible(
-        tester, find.byKey(const Key('blueprint_section_dropdown')));
-    expect(find.text('Main Section'), findsWidgets);
-    expect(find.text('Practical'), findsWidgets);
-    expect(find.text('Other Exam Section'), findsNothing);
-    await tester.tap(find.text('Practical').last);
-    await tester.pumpAndSettle();
+      await tapVisible(
+        tester,
+        find.byKey(const Key('blueprint_section_dropdown')),
+      );
+      expect(find.text('Main Section'), findsWidgets);
+      expect(find.text('Practical'), findsWidgets);
+      expect(find.text('Other Exam Section'), findsNothing);
+      await tester.tap(find.text('Practical').last);
+      await tester.pumpAndSettle();
 
-    await tapVisible(
-      tester,
-      find.byKey(const Key('blueprint_competency_dropdown')),
-    );
-    expect(find.text('Basic Math Skills'), findsWidgets);
-    expect(find.text('Inactive Skill'), findsNothing);
-    expect(find.byKey(const Key('section_id_input')), findsNothing);
-    expect(find.byKey(const Key('competency_id_input')), findsNothing);
-  });
+      await tapVisible(
+        tester,
+        find.byKey(const Key('blueprint_competency_dropdown')),
+      );
+      expect(find.text('Basic Math Skills'), findsWidgets);
+      expect(find.text('Inactive Skill'), findsNothing);
+      expect(find.byKey(const Key('section_id_input')), findsNothing);
+      expect(find.byKey(const Key('competency_id_input')), findsNothing);
+    },
+  );
 
   testWidgets('validates blueprint input and sends optional blueprint fields', (
     tester,
   ) async {
-    final examsCubit = await createExamsCubit(
-      examsRepo,
-      blueprints: const [],
-    );
+    final examsCubit = await createExamsCubit(examsRepo, blueprints: const []);
     final competenciesCubit = await createCompetenciesCubit(competenciesRepo);
     when(() => examsRepo.createExamBlueprint(any(), any())).thenAnswer(
       (_) async => ExamBlueprintResponse(data: blueprint(id: 'blueprint_new')),
@@ -360,9 +364,11 @@ void main() {
     );
     await tapVisible(tester, find.byKey(const Key('create_blueprint_button')));
 
-    final captured = verify(
-      () => examsRepo.createExamBlueprint('exam_001', captureAny()),
-    ).captured.single as ExamBlueprintRequestBody;
+    final captured =
+        verify(
+              () => examsRepo.createExamBlueprint('exam_001', captureAny()),
+            ).captured.single
+            as ExamBlueprintRequestBody;
     expect(captured.sectionId, 'section_001');
     expect(captured.competencyId, 'competency_001');
     expect(captured.minQuestionsCount, 2);
@@ -413,10 +419,7 @@ void main() {
   testWidgets('validates target difficulty and min discrimination ranges', (
     tester,
   ) async {
-    final examsCubit = await createExamsCubit(
-      examsRepo,
-      blueprints: const [],
-    );
+    final examsCubit = await createExamsCubit(examsRepo, blueprints: const []);
     final competenciesCubit = await createCompetenciesCubit(competenciesRepo);
 
     await pumpConfigurationSheet(
@@ -437,10 +440,14 @@ void main() {
     );
     await tapVisible(tester, find.byKey(const Key('create_blueprint_button')));
     expect(
-        find.text('Target difficulty must be between 0 and 1'), findsOneWidget);
+      find.text('Target difficulty must be between 0 and 1'),
+      findsOneWidget,
+    );
 
     await tester.enterText(
-        find.byKey(const Key('target_difficulty_input')), '');
+      find.byKey(const Key('target_difficulty_input')),
+      '',
+    );
     await tester.enterText(
       find.byKey(const Key('min_discrimination_input')),
       '-0.1',
@@ -456,8 +463,9 @@ void main() {
   testWidgets('shows API error state for configuration calls', (tester) async {
     final examsCubit = await createExamsCubit(
       examsRepo,
-      sectionsError:
-          const NetworkExceptions.unauthorizedRequest('Unauthorized'),
+      sectionsError: const NetworkExceptions.unauthorizedRequest(
+        'Unauthorized',
+      ),
     );
     final competenciesCubit = await createCompetenciesCubit(competenciesRepo);
 

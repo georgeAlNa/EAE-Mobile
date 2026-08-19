@@ -214,71 +214,77 @@ void main() {
       await emission;
     });
 
-    test('verifies staff account as evaluator when evaluator is selected',
-        () async {
-      await resetPrefs(selectedRole: UserRole.evaluator);
-      when(() => settingsRepo.getProfile()).thenAnswer(
-        (_) async => SettingsProfileResponse(data: profile(userType: 'staff')),
-      );
-      when(() => settingsRepo.getPermissions()).thenAnswer(
-        (_) async => SettingsPermissionsResponse(data: permissions()),
-      );
+    test(
+      'verifies staff account as evaluator when evaluator is selected',
+      () async {
+        await resetPrefs(selectedRole: UserRole.evaluator);
+        when(() => settingsRepo.getProfile()).thenAnswer(
+          (_) async =>
+              SettingsProfileResponse(data: profile(userType: 'staff')),
+        );
+        when(() => settingsRepo.getPermissions()).thenAnswer(
+          (_) async => SettingsPermissionsResponse(data: permissions()),
+        );
 
-      final emission = expectLater(
-        cubit.stream,
-        emitsInOrder([
-          isA<RoleVerificationLoading>(),
-          isA<RoleVerificationVerified>()
-              .having((state) => state.role, 'role', UserRole.evaluator)
-              .having(
-                (state) => state.routeName,
-                'routeName',
-                Routes.evaluatorNavigationShell,
-              ),
-        ]),
-      );
+        final emission = expectLater(
+          cubit.stream,
+          emitsInOrder([
+            isA<RoleVerificationLoading>(),
+            isA<RoleVerificationVerified>()
+                .having((state) => state.role, 'role', UserRole.evaluator)
+                .having(
+                  (state) => state.routeName,
+                  'routeName',
+                  Routes.evaluatorNavigationShell,
+                ),
+          ]),
+        );
 
-      await cubit.verifyRole();
-      await emission;
+        await cubit.verifyRole();
+        await emission;
 
-      expect(
-        AppSharedPreferences().getString(AppSharedPrefKeys.selectedRole),
-        UserRole.evaluator.value,
-      );
-    });
+        expect(
+          AppSharedPreferences().getString(AppSharedPrefKeys.selectedRole),
+          UserRole.evaluator.value,
+        );
+      },
+    );
 
-    test('verifies staff account as proctor when proctor is selected',
-        () async {
-      await resetPrefs(selectedRole: UserRole.proctor);
-      when(() => settingsRepo.getProfile()).thenAnswer(
-        (_) async => SettingsProfileResponse(data: profile(userType: 'staff')),
-      );
-      when(() => settingsRepo.getPermissions()).thenAnswer(
-        (_) async => SettingsPermissionsResponse(data: permissions()),
-      );
+    test(
+      'verifies staff account as proctor when proctor is selected',
+      () async {
+        await resetPrefs(selectedRole: UserRole.proctor);
+        when(() => settingsRepo.getProfile()).thenAnswer(
+          (_) async =>
+              SettingsProfileResponse(data: profile(userType: 'staff')),
+        );
+        when(() => settingsRepo.getPermissions()).thenAnswer(
+          (_) async => SettingsPermissionsResponse(data: permissions()),
+        );
 
-      final emission = expectLater(
-        cubit.stream,
-        emitsInOrder([
-          isA<RoleVerificationLoading>(),
-          isA<RoleVerificationVerified>()
-              .having((state) => state.role, 'role', UserRole.proctor)
-              .having(
-                (state) => state.routeName,
-                'routeName',
-                Routes.proctorNavigationShell,
-              ),
-        ]),
-      );
+        final emission = expectLater(
+          cubit.stream,
+          emitsInOrder([
+            isA<RoleVerificationLoading>(),
+            isA<RoleVerificationVerified>()
+                .having((state) => state.role, 'role', UserRole.proctor)
+                .having(
+                  (state) => state.routeName,
+                  'routeName',
+                  Routes.proctorNavigationShell,
+                ),
+          ]),
+        );
 
-      await cubit.verifyRole();
-      await emission;
+        await cubit.verifyRole();
+        await emission;
 
-      expect(
-        AppSharedPreferences().getString(AppSharedPrefKeys.selectedRole),
-        UserRole.proctor.value,
-      );
-    });
+        expect(
+          AppSharedPreferences().getString(AppSharedPrefKeys.selectedRole),
+          UserRole.proctor.value,
+        );
+      },
+    );
 
     test(
       'emits failed and clears session when staff selects unsupported workspace',

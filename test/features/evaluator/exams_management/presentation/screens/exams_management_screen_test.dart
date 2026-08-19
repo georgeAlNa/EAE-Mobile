@@ -108,9 +108,7 @@ void main() {
     expect(find.text('Draft'), findsWidgets);
   });
 
-  testWidgets('action menu hides direct publish and keeps workflow actions', (
-    tester,
-  ) async {
+  testWidgets('action menu shows publish only for draft exams', (tester) async {
     final cubit = await createCubit(
       repo,
       load: () async => ExamsResponse(data: [exam()]),
@@ -120,10 +118,33 @@ void main() {
     await tester.tap(find.byTooltip('Exam actions').first);
     await tester.pumpAndSettle();
 
-    expect(find.text('Publish'), findsNothing);
+    expect(find.text('Publish Exam'), findsOneWidget);
     expect(find.text('Create publication workflow'), findsOneWidget);
     expect(find.text('My Workflows'), findsOneWidget);
     expect(find.text('Eligibility Rules'), findsOneWidget);
+  });
+
+  testWidgets('publishes a draft exam after confirmation', (tester) async {
+    final draft = exam();
+    when(
+      () => repo.publishExam('exam_001'),
+    ).thenAnswer((_) async => ExamResponse(data: exam(status: 'published')));
+    final cubit = await createCubit(
+      repo,
+      load: () async => ExamsResponse(data: [draft]),
+    );
+
+    await pumpScreen(tester, cubit);
+    await tester.tap(find.byTooltip('Exam actions').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Publish Exam'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Publish Exam'), findsOneWidget);
+    await tester.tap(find.text('Confirm'));
+    await tester.pump();
+
+    verify(() => repo.publishExam('exam_001')).called(1);
   });
 
   testWidgets('opens eligibility rules with selected exam id only', (

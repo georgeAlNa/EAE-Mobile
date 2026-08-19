@@ -14,7 +14,7 @@ class QuestionBankAndCategoriesCubit
   final QuestionBankAndCategoriesRepo questionBankAndCategoriesRepo;
 
   QuestionBankAndCategoriesCubit({required this.questionBankAndCategoriesRepo})
-      : super(const QuestionBankAndCategoriesState.initial()) {
+    : super(const QuestionBankAndCategoriesState.initial()) {
     loadQuestionBankAndCategories();
   }
 
@@ -27,8 +27,8 @@ class QuestionBankAndCategoriesCubit
     emit(const QuestionBankAndCategoriesState.questionBankLoading());
 
     try {
-      final categories =
-          await questionBankAndCategoriesRepo.getCategoriesTree();
+      final categories = await questionBankAndCategoriesRepo
+          .getCategoriesTree();
       final questions = await questionBankAndCategoriesRepo.getQuestions();
 
       categoriesTreeResponse = categories;
@@ -330,8 +330,8 @@ class QuestionBankAndCategoriesCubit
     emit(const QuestionBankAndCategoriesState.actionLoading());
 
     try {
-      final response =
-          await questionBankAndCategoriesRepo.approveQuestionVersion(versionId);
+      final response = await questionBankAndCategoriesRepo
+          .approveQuestionVersion(versionId);
       emit(
         QuestionBankAndCategoriesState.actionSuccess(
           QuestionBankActionResponse(
@@ -358,7 +358,7 @@ class QuestionBankAndCategoriesCubit
   }
 
   Future<QuestionVersionPsychometricsResponse?>
-      updateQuestionVersionPsychometrics(
+  updateQuestionVersionPsychometrics(
     String versionId,
     QuestionVersionPsychometricsRequestBody requestBody,
   ) async {

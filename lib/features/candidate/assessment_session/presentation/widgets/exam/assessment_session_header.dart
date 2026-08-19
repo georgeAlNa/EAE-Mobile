@@ -23,13 +23,13 @@ class AssessmentSessionHeader extends StatelessWidget {
             Container(
               width: 32.w,
               height: 32.w,
-                decoration: BoxDecoration(
-                  color: AppColors.primaryColor9,
-                  borderRadius: BorderRadius.circular(10.r),
-                ),
-                clipBehavior: Clip.antiAlias,
-                child: Image.asset(AppImages.miqyasIcon, fit: BoxFit.cover),
+              decoration: BoxDecoration(
+                color: AppColors.primaryColor9,
+                borderRadius: BorderRadius.circular(10.r),
               ),
+              clipBehavior: Clip.antiAlias,
+              child: Image.asset(AppImages.miqyasIcon, fit: BoxFit.cover),
+            ),
             SizedBox(width: 10.w),
             Expanded(
               child: Column(

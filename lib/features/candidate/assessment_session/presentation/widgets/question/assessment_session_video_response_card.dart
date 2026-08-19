@@ -11,16 +11,12 @@ class AssessmentSessionVideoResponseCard extends StatelessWidget {
   final AssessmentSessionQuestion question;
   final VoidCallback onRecordVideo;
   final String recordingTime;
-  final String resolutionLabel;
-  final String isoLabel;
 
   const AssessmentSessionVideoResponseCard({
     super.key,
     required this.question,
     required this.onRecordVideo,
     required this.recordingTime,
-    required this.resolutionLabel,
-    required this.isoLabel,
   });
 
   @override
@@ -37,11 +33,7 @@ class AssessmentSessionVideoResponseCard extends StatelessWidget {
           ),
         ),
         verticalSpace(12),
-        AssessmentSessionVideoCard(
-          recordingTime: recordingTime,
-          resolutionLabel: resolutionLabel,
-          isoLabel: isoLabel,
-        ),
+        AssessmentSessionVideoCard(recordingTime: recordingTime),
         if (question.recordedVideoName != null) ...[
           verticalSpace(12),
           Container(

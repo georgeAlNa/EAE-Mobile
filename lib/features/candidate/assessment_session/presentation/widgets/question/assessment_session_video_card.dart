@@ -6,15 +6,8 @@ import '../../../../../../core/constants/text_styles.dart';
 
 class AssessmentSessionVideoCard extends StatelessWidget {
   final String recordingTime;
-  final String resolutionLabel;
-  final String isoLabel;
 
-  const AssessmentSessionVideoCard({
-    super.key,
-    required this.recordingTime,
-    required this.resolutionLabel,
-    required this.isoLabel,
-  });
+  const AssessmentSessionVideoCard({super.key, required this.recordingTime});
 
   @override
   Widget build(BuildContext context) {
@@ -69,25 +62,6 @@ class AssessmentSessionVideoCard extends StatelessWidget {
               ),
             ),
           ),
-          Positioned(
-            top: 16.h,
-            right: 16.w,
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
-              decoration: BoxDecoration(
-                color: AppColors.primaryColor9.withValues(alpha: 0.6),
-                borderRadius: BorderRadius.circular(10.r),
-              ),
-              child: Text(
-                resolutionLabel,
-                style: AppTextStyles.font10DarkGreyRegular.copyWith(
-                  color: AppColors.neutralColor,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.6,
-                ),
-              ),
-            ),
-          ),
           Center(
             child: Container(
               width: 60.w,
@@ -100,24 +74,6 @@ class AssessmentSessionVideoCard extends StatelessWidget {
                 Icons.close,
                 size: 28.sp,
                 color: AppColors.neutralColor.withValues(alpha: 0.6),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 16.h,
-            right: 16.w,
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 6.h),
-              decoration: BoxDecoration(
-                color: AppColors.primaryColor9.withValues(alpha: 0.6),
-                borderRadius: BorderRadius.circular(10.r),
-              ),
-              child: Text(
-                isoLabel,
-                style: AppTextStyles.font10DarkGreyRegular.copyWith(
-                  color: AppColors.neutralColor,
-                  fontWeight: FontWeight.w600,
-                ),
               ),
             ),
           ),

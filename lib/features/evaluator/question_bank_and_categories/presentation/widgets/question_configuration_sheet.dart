@@ -89,8 +89,10 @@ class _QuestionConfigurationSheetState
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<QuestionBankAndCategoriesCubit,
-        QuestionBankAndCategoriesState>(
+    return BlocListener<
+      QuestionBankAndCategoriesCubit,
+      QuestionBankAndCategoriesState
+    >(
       listener: (context, state) {
         state.maybeWhen(
           actionError: (error) => setState(() => _localError = error),
@@ -279,15 +281,17 @@ class _QuestionConfigurationSheetState
 
     if (!_isUnitRange(difficultyIndex)) {
       setState(
-        () => _localError =
-            AppStrings.tr('Difficulty index must be between 0 and 1'),
+        () => _localError = AppStrings.tr(
+          'Difficulty index must be between 0 and 1',
+        ),
       );
       return;
     }
     if (!_isUnitRange(discriminationIndex)) {
       setState(
-        () => _localError =
-            AppStrings.tr('Discrimination index must be between 0 and 1'),
+        () => _localError = AppStrings.tr(
+          'Discrimination index must be between 0 and 1',
+        ),
       );
       return;
     }
@@ -396,9 +400,10 @@ class _CompetencyMappingSection extends StatelessWidget {
             final competencies = response == null
                 ? const <Competency>[]
                 : _flattenActiveCompetencies(response.data);
-            final value = competencies.any(
-              (competency) => competency.id == selectedCompetencyId,
-            )
+            final value =
+                competencies.any(
+                  (competency) => competency.id == selectedCompetencyId,
+                )
                 ? selectedCompetencyId
                 : null;
 
@@ -584,9 +589,7 @@ class _PsychometricCalibrationSection extends StatelessWidget {
                 key: const Key('difficulty_index_input'),
                 controller: difficultyIndexController,
                 keyboardType: TextInputType.number,
-                decoration: _fieldDecoration(
-                  AppStrings.tr('Difficulty index'),
-                ),
+                decoration: _fieldDecoration(AppStrings.tr('Difficulty index')),
               ),
             ),
             horizontalSpace(10),
@@ -626,10 +629,7 @@ class _PsychometricCalibrationSection extends StatelessWidget {
         ),
         if (status != null) ...[
           verticalSpace(10),
-          _StatusBanner(
-            key: const Key('calibration_status'),
-            message: status!,
-          ),
+          _StatusBanner(key: const Key('calibration_status'), message: status!),
         ],
         verticalSpace(12),
         _ActionButton(
@@ -768,11 +768,7 @@ class _StatusBanner extends StatelessWidget {
   final String message;
   final bool isError;
 
-  const _StatusBanner({
-    super.key,
-    required this.message,
-    this.isError = false,
-  });
+  const _StatusBanner({super.key, required this.message, this.isError = false});
 
   @override
   Widget build(BuildContext context) {
@@ -810,9 +806,7 @@ class _InlineProgress extends StatelessWidget {
           ),
         ),
         horizontalSpace(8),
-        Expanded(
-          child: _MutedText(AppStrings.tr('Loading...')),
-        ),
+        Expanded(child: _MutedText(AppStrings.tr('Loading...'))),
       ],
     );
   }

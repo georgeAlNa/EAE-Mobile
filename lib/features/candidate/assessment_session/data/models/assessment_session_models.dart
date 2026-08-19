@@ -12,6 +12,18 @@ enum AssessmentSessionQuestionType {
   videoResponse,
 }
 
+class AssessmentSessionLaunchData {
+  final String examId;
+  final int totalDurationMinutes;
+  final bool timerVisibleToCandidate;
+
+  const AssessmentSessionLaunchData({
+    required this.examId,
+    required this.totalDurationMinutes,
+    required this.timerVisibleToCandidate,
+  });
+}
+
 class AssessmentSessionViewData {
   final String headerTitle;
   final String title;
@@ -30,6 +42,7 @@ class AssessmentSessionViewData {
   final int? knownTotalQuestions;
   final int totalDurationSeconds;
   final int remainingSeconds;
+  final bool isTimerVisible;
   final bool isFlaggedForReview;
   final bool isSubmitted;
   final bool autoSubmitted;
@@ -60,6 +73,7 @@ class AssessmentSessionViewData {
     this.knownTotalQuestions,
     required this.totalDurationSeconds,
     required this.remainingSeconds,
+    this.isTimerVisible = true,
     required this.isFlaggedForReview,
     required this.isSubmitted,
     required this.autoSubmitted,
@@ -162,6 +176,7 @@ class AssessmentSessionViewData {
     int? knownTotalQuestions,
     int? totalDurationSeconds,
     int? remainingSeconds,
+    bool? isTimerVisible,
     bool? isFlaggedForReview,
     bool? isSubmitted,
     bool? autoSubmitted,
@@ -193,6 +208,7 @@ class AssessmentSessionViewData {
       knownTotalQuestions: knownTotalQuestions ?? this.knownTotalQuestions,
       totalDurationSeconds: totalDurationSeconds ?? this.totalDurationSeconds,
       remainingSeconds: remainingSeconds ?? this.remainingSeconds,
+      isTimerVisible: isTimerVisible ?? this.isTimerVisible,
       isFlaggedForReview: isFlaggedForReview ?? this.isFlaggedForReview,
       isSubmitted: isSubmitted ?? this.isSubmitted,
       autoSubmitted: autoSubmitted ?? this.autoSubmitted,

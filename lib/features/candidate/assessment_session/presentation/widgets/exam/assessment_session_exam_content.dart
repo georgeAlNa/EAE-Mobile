@@ -9,7 +9,6 @@ import '../../../../../../core/helpers/spacing.dart';
 import '../../../data/models/assessment_session_models.dart';
 import '../../../logic/assessment_session_cubit.dart';
 import 'assessment_session_exam_footer.dart';
-import 'assessment_session_exam_navigation.dart';
 import 'assessment_session_exam_timer_chip.dart';
 import 'assessment_session_header.dart';
 import '../question/assessment_session_question_card.dart';
@@ -349,9 +348,10 @@ class _AssessmentSessionExamContentState
               ),
               Row(
                 children: [
-                  AssessmentSessionExamTimerChip(
-                    label: viewData.remainingTimeLabel,
-                  ),
+                  if (viewData.isTimerVisible)
+                    AssessmentSessionExamTimerChip(
+                      label: viewData.remainingTimeLabel,
+                    ),
                   if (flaggedCount > 0) ...[
                     horizontalSpace(10),
                     Container(
@@ -423,13 +423,12 @@ class _AssessmentSessionExamContentState
             ),
           ),
           verticalSpace(18),
-          AssessmentSessionQuestionNavigator(
-            currentLabel: viewData.questionCounterLabel,
-            canGoPrevious: viewData.canGoPrevious,
-            canGoNext: viewData.canGoNext,
-            onPrevious: () =>
-                context.read<AssessmentSessionCubit>().previousQuestion(),
-            onNext: () => context.read<AssessmentSessionCubit>().nextQuestion(),
+          Text(
+            viewData.questionCounterLabel,
+            style: AppTextStyles.font14DarkGreySemiBold.copyWith(
+              color: AppColors.primaryColor9,
+              letterSpacing: 1.4,
+            ),
           ),
           verticalSpace(16),
           ProctoringWarningBanner(viewData: viewData),
@@ -460,8 +459,6 @@ class _AssessmentSessionExamContentState
                     .read<AssessmentSessionCubit>()
                     .recordVideoForCurrentQuestion(),
                 recordingTime: viewData.recordingTime,
-                resolutionLabel: viewData.resolutionLabel,
-                isoLabel: viewData.isoLabel,
               ),
             ),
           verticalSpace(16),

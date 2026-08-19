@@ -38,12 +38,10 @@ class ManualEvaluationScreen extends StatelessWidget {
             }
             final pending = cubit.pendingEvaluationsResponse;
             final status = cubit.resultPublicationStatusResponse;
-            final published = cubit.resultPublicationResponse;
             final isLoading = state.maybeWhen(
               pendingLoading: () => true,
               scoreLoading: () => true,
               statusLoading: () => true,
-              publishLoading: () => true,
               orElse: () => false,
             );
             final loadError = state.maybeWhen(
@@ -71,7 +69,6 @@ class ManualEvaluationScreen extends StatelessWidget {
                         sessionIdController: cubit.sessionIdController,
                         onLoadPending: () => _loadPending(context),
                         onCheckStatus: () => _checkStatus(context),
-                        onPublish: () => _publishResult(context),
                       ),
                       verticalSpace(14),
                       _ScoreFormCard(
@@ -84,12 +81,7 @@ class ManualEvaluationScreen extends StatelessWidget {
                       verticalSpace(14),
                       if (status != null)
                         _PublicationStatusCard(status: status.data),
-                      if (published != null) ...[
-                        if (status != null) verticalSpace(14),
-                        _PublishedResultCard(result: published.data),
-                      ],
-                      if (status != null || published != null)
-                        verticalSpace(14),
+                      if (status != null) verticalSpace(14),
                       _PendingEvaluationsSection(
                         response: pending,
                         isLoading: pending == null && isLoading,
@@ -117,10 +109,6 @@ class ManualEvaluationScreen extends StatelessWidget {
 
   void _listenToState(BuildContext context, ManualEvaluationState state) {
     state.maybeWhen(
-      published: (_) {
-        showAppSnackBar(context, 'Result published successfully');
-        _checkStatus(context);
-      },
       scoreSubmitted: (_) {
         showAppSnackBar(context, 'Evaluation score submitted successfully');
         _loadPending(context);
@@ -129,7 +117,6 @@ class ManualEvaluationScreen extends StatelessWidget {
       pendingError: (error) => showAppSnackBar(context, error),
       scoreError: (error) => showAppSnackBar(context, error),
       statusError: (error) => showAppSnackBar(context, error),
-      publishError: (error) => showAppSnackBar(context, error),
       orElse: () {},
     );
   }
@@ -152,16 +139,6 @@ class ManualEvaluationScreen extends StatelessWidget {
       return;
     }
     cubit.getResultPublicationStatus(sessionId);
-  }
-
-  void _publishResult(BuildContext context) {
-    final cubit = context.read<ManualEvaluationCubit>();
-    final sessionId = cubit.sessionIdController.text.trim();
-    if (sessionId.isEmpty) {
-      showAppSnackBar(context, 'Enter session id first');
-      return;
-    }
-    cubit.publishSessionResult(sessionId);
   }
 
   void _submitScore(BuildContext context) {

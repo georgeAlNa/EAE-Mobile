@@ -8,6 +8,7 @@ import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/extentions.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../../../core/routing/routes.dart';
+import '../../../assessment_session/data/models/assessment_session_models.dart';
 import '../../logic/assessment_setup_cubit.dart';
 import '../widgets/assessment_overview_card.dart';
 import '../widgets/assessment_precheck_card.dart';
@@ -112,7 +113,21 @@ class _AssessmentSetupView extends StatelessWidget {
                         isAcknowledged && !viewData.hasBlockingSecurityFailure,
                     onTap: () => context.pushReplacementNamed(
                       Routes.assessmentSessionScreen,
-                      arguments: examId,
+                      arguments: AssessmentSessionLaunchData(
+                        examId: examId ?? '',
+                        totalDurationMinutes:
+                            context
+                                .read<AssessmentSetupCubit>()
+                                .exam
+                                ?.totalDurationMinutes ??
+                            0,
+                        timerVisibleToCandidate:
+                            context
+                                .read<AssessmentSetupCubit>()
+                                .exam
+                                ?.timerVisibleToCandidate ??
+                            true,
+                      ),
                     ),
                   ),
                   verticalSpace(12),

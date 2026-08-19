@@ -212,6 +212,61 @@ void main() {
       verifyNever(() => repo.completeExamSession(any()));
     });
 
+    test('uses the documented exam duration for the countdown', () async {
+      when(() => repo.startExamSession(any())).thenAnswer(
+        (_) async => sessionResponse(
+          startedAt: DateTime.now().toUtc().toIso8601String(),
+          totalSessionDurationSeconds: 0,
+        ),
+      );
+      when(
+        () => repo.getCurrentQuestion(any()),
+      ).thenAnswer((_) async => currentQuestionResponse());
+
+      final cubit = AssessmentSessionCubit(
+        assessmentSessionRepo: repo,
+        initialExamId: 'exam_001',
+        allowedDurationSeconds: 120,
+      );
+      addTearDown(cubit.close);
+
+      final state = await cubit.stream.firstWhere(isReady);
+      final viewData = state.maybeWhen(
+        ready: (viewData) => viewData,
+        orElse: () => throw StateError('expected ready'),
+      );
+
+      expect(viewData.totalDurationSeconds, 120);
+      expect(viewData.remainingSeconds, inInclusiveRange(118, 120));
+      verifyNever(() => repo.completeExamSession(any()));
+    });
+
+    test('keeps the timer hidden when the exam contract disables it', () async {
+      when(() => repo.startExamSession(any())).thenAnswer(
+        (_) async => sessionResponse(),
+      );
+      when(
+        () => repo.getCurrentQuestion(any()),
+      ).thenAnswer((_) async => currentQuestionResponse());
+
+      final cubit = AssessmentSessionCubit(
+        assessmentSessionRepo: repo,
+        initialExamId: 'exam_001',
+        allowedDurationSeconds: 120,
+        timerVisibleToCandidate: false,
+      );
+      addTearDown(cubit.close);
+
+      final state = await cubit.stream.firstWhere(isReady);
+      expect(
+        state.maybeWhen(
+          ready: (viewData) => viewData.isTimerVisible,
+          orElse: () => true,
+        ),
+        isFalse,
+      );
+    });
+
     test('submits MCQ using active session item and version lock', () async {
       when(
         () => repo.startExamSession(any()),

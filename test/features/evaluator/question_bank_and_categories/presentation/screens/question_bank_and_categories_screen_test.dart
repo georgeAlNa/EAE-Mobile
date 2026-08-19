@@ -14,46 +14,45 @@ class MockQuestionBankRepo extends Mock
     implements QuestionBankAndCategoriesRepo {}
 
 QuestionCategory category({String id = 'cat_001'}) => QuestionCategory(
-      id: id,
-      title: 'Mobile',
-      tenantId: 'tenant_001',
-      parentId: null,
-      categoryCode: 'MOBILE',
-      description: 'Mobile questions',
-      hierarchyLevel: 0,
-      isActive: true,
-      children: const [],
-      createdAt: '2026-07-01T20:00:00.000Z',
-      updatedAt: '2026-07-15T20:00:00.000Z',
-    );
+  id: id,
+  title: 'Mobile',
+  tenantId: 'tenant_001',
+  parentId: null,
+  categoryCode: 'MOBILE',
+  description: 'Mobile questions',
+  hierarchyLevel: 0,
+  isActive: true,
+  children: const [],
+  createdAt: '2026-07-01T20:00:00.000Z',
+  updatedAt: '2026-07-15T20:00:00.000Z',
+);
 
 QuestionBankItem question({String id = 'question_001'}) => QuestionBankItem(
-      id: id,
-      tenantId: 'tenant_001',
-      categoryId: 'cat_001',
-      title: 'Flutter basics',
-      type: 'mcq',
-      bloomLevel: 2,
-      difficultyLevel: 3,
-      usageCount: 4,
-      questionText: 'Which toolkit is made by Google?',
-      stem: 'Choose the correct answer',
-      versionId: 'version_001',
-      choices: [
-        QuestionChoice(
-          id: 'choice_001',
-          optionSequence: 1,
-          optionText: 'Flutter',
-          isCorrect: true,
-        ),
-      ],
-      psychometrics:
-          QuestionPsychometrics(pValue: 0.7, discriminationIndex: 0.4),
-      correctAnswer: const {'choice_id': 'choice_001'},
-      evaluatorInstructions: const [],
-      createdAt: '2026-07-01T20:00:00.000Z',
-      updatedAt: '2026-07-15T20:00:00.000Z',
-    );
+  id: id,
+  tenantId: 'tenant_001',
+  categoryId: 'cat_001',
+  title: 'Flutter basics',
+  type: 'mcq',
+  bloomLevel: 2,
+  difficultyLevel: 3,
+  usageCount: 4,
+  questionText: 'Which toolkit is made by Google?',
+  stem: 'Choose the correct answer',
+  versionId: 'version_001',
+  choices: [
+    QuestionChoice(
+      id: 'choice_001',
+      optionSequence: 1,
+      optionText: 'Flutter',
+      isCorrect: true,
+    ),
+  ],
+  psychometrics: QuestionPsychometrics(pValue: 0.7, discriminationIndex: 0.4),
+  correctAnswer: const {'choice_id': 'choice_001'},
+  evaluatorInstructions: const [],
+  createdAt: '2026-07-01T20:00:00.000Z',
+  updatedAt: '2026-07-15T20:00:00.000Z',
+);
 
 Future<QuestionBankAndCategoriesCubit> createCubit(
   MockQuestionBankRepo repo, {

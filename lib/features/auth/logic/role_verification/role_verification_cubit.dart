@@ -12,7 +12,7 @@ class RoleVerificationCubit extends Cubit<RoleVerificationState> {
   final SettingsRepo settingsRepo;
 
   RoleVerificationCubit({required this.settingsRepo})
-      : super(const RoleVerificationInitial());
+    : super(const RoleVerificationInitial());
 
   bool _isVerifying = false;
 

@@ -13,6 +13,7 @@ class ExamCard extends StatelessWidget {
   final VoidCallback onDetails;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
+  final VoidCallback onPublish;
   final VoidCallback onCreatePublicationWorkflow;
   final VoidCallback onViewPublicationWorkflow;
   final VoidCallback onArchive;
@@ -24,6 +25,7 @@ class ExamCard extends StatelessWidget {
     required this.onDetails,
     required this.onEdit,
     required this.onDelete,
+    required this.onPublish,
     required this.onCreatePublicationWorkflow,
     required this.onViewPublicationWorkflow,
     required this.onArchive,
@@ -96,6 +98,8 @@ class ExamCard extends StatelessWidget {
                         onDetails();
                       case _ExamAction.edit:
                         onEdit();
+                      case _ExamAction.publish:
+                        onPublish();
                       case _ExamAction.createPublicationWorkflow:
                         onCreatePublicationWorkflow();
                       case _ExamAction.viewPublicationWorkflow:
@@ -117,6 +121,11 @@ class ExamCard extends StatelessWidget {
                       value: _ExamAction.edit,
                       child: Text(AppStrings.tr('Edit')),
                     ),
+                    if (exam.examStatus.toLowerCase() == 'draft')
+                      PopupMenuItem(
+                        value: _ExamAction.publish,
+                        child: Text(AppStrings.tr('Publish Exam')),
+                      ),
                     PopupMenuItem(
                       value: _ExamAction.createPublicationWorkflow,
                       child: Text(AppStrings.tr('Create publication workflow')),
@@ -214,6 +223,7 @@ class _ExamChip extends StatelessWidget {
 enum _ExamAction {
   details,
   edit,
+  publish,
   createPublicationWorkflow,
   viewPublicationWorkflow,
   eligibilityRules,

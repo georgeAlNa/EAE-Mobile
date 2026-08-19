@@ -360,10 +360,9 @@ class AppStrings {
   static String analyticsSummary(
     String finalizedResults,
     String averageScore,
-  ) =>
-      _isArabic
-          ? 'النتائج النهائية: $finalizedResults | متوسط الدرجة: $averageScore'
-          : 'Finalized results: $finalizedResults | Average score: $averageScore';
+  ) => _isArabic
+      ? 'النتائج النهائية: $finalizedResults | متوسط الدرجة: $averageScore'
+      : 'Finalized results: $finalizedResults | Average score: $averageScore';
 
   static String securityDetail(String detail) {
     if (!_isArabic) return detail;

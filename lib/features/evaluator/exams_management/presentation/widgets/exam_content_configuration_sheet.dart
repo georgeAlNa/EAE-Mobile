@@ -201,16 +201,17 @@ class _ExamContentConfigurationSheetState
       _localError = null;
     });
 
-    final response = await context
-        .read<ExamsManagementCubit>()
-        .getExamSections(widget.exam.id);
+    final response = await context.read<ExamsManagementCubit>().getExamSections(
+      widget.exam.id,
+    );
 
     if (!mounted) return;
     setState(() {
       _sections = response?.data ?? _sections;
       if (_selectedSectionId != null &&
-          !_sections
-              .any((section) => section.sectionId == _selectedSectionId)) {
+          !_sections.any(
+            (section) => section.sectionId == _selectedSectionId,
+          )) {
         _selectedSectionId = null;
       }
       _loadingSections = false;
@@ -240,8 +241,9 @@ class _ExamContentConfigurationSheetState
     final sequence = int.tryParse(_sectionSequenceController.text.trim());
     final questions = int.tryParse(_questionsInSectionController.text.trim());
     final timeLimitText = _timeLimitMinutesController.text.trim();
-    final timeLimit =
-        timeLimitText.isEmpty ? null : int.tryParse(timeLimitText);
+    final timeLimit = timeLimitText.isEmpty
+        ? null
+        : int.tryParse(timeLimitText);
 
     if (sectionName.isEmpty) {
       _showLocalError(AppStrings.tr('Section name is required'));
@@ -266,17 +268,18 @@ class _ExamContentConfigurationSheetState
       _sectionStatus = null;
     });
 
-    final response =
-        await context.read<ExamsManagementCubit>().createExamSection(
-              widget.exam.id,
-              ExamSectionRequestBody(
-                sectionName: sectionName,
-                sectionCode: sectionCode.isEmpty ? null : sectionCode,
-                sectionSequence: sequence,
-                questionsInSection: questions,
-                timeLimitMinutes: timeLimit,
-              ),
-            );
+    final response = await context
+        .read<ExamsManagementCubit>()
+        .createExamSection(
+          widget.exam.id,
+          ExamSectionRequestBody(
+            sectionName: sectionName,
+            sectionCode: sectionCode.isEmpty ? null : sectionCode,
+            sectionSequence: sequence,
+            questionsInSection: questions,
+            timeLimitMinutes: timeLimit,
+          ),
+        );
 
     if (!mounted) return;
     setState(() {
@@ -356,8 +359,8 @@ class _ExamContentConfigurationSheetState
     final existingWeight = _blueprints
         .where((blueprint) => blueprint.sectionId == sectionId)
         .fold<num>(0, (sum, blueprint) {
-      return sum + (num.tryParse(blueprint.minWeightPercentage) ?? 0);
-    });
+          return sum + (num.tryParse(blueprint.minWeightPercentage) ?? 0);
+        });
     if (existingWeight + minWeight > 100) {
       _showLocalError(
         AppStrings.tr('Blueprint minimum weight exceeds section limit'),
@@ -371,20 +374,21 @@ class _ExamContentConfigurationSheetState
       _blueprintStatus = null;
     });
 
-    final response =
-        await context.read<ExamsManagementCubit>().createExamBlueprint(
-              widget.exam.id,
-              ExamBlueprintRequestBody(
-                sectionId: sectionId,
-                competencyId: competencyId,
-                minQuestionsCount: minQuestions,
-                maxQuestionsCount: maxQuestions,
-                minWeightPercentage: minWeight,
-                maxWeightPercentage: maxWeight,
-                targetDifficulty: targetDifficulty,
-                minDiscrimination: minDiscrimination,
-              ),
-            );
+    final response = await context
+        .read<ExamsManagementCubit>()
+        .createExamBlueprint(
+          widget.exam.id,
+          ExamBlueprintRequestBody(
+            sectionId: sectionId,
+            competencyId: competencyId,
+            minQuestionsCount: minQuestions,
+            maxQuestionsCount: maxQuestions,
+            minWeightPercentage: minWeight,
+            maxWeightPercentage: maxWeight,
+            targetDifficulty: targetDifficulty,
+            minDiscrimination: minDiscrimination,
+          ),
+        );
 
     if (!mounted) return;
     setState(() {
@@ -552,9 +556,8 @@ class _BlueprintsConfigurationSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final sectionValue = sections.any(
-      (section) => section.sectionId == selectedSectionId,
-    )
+    final sectionValue =
+        sections.any((section) => section.sectionId == selectedSectionId)
         ? selectedSectionId
         : null;
 
@@ -620,12 +623,13 @@ class _BlueprintsConfigurationSection extends StatelessWidget {
 
             final competencies = response == null
                 ? const <Competency>[]
-                : flattenCompetencies(response.data)
-                    .where((competency) => competency.isActive)
-                    .toList();
-            final competencyValue = competencies.any(
-              (competency) => competency.id == selectedCompetencyId,
-            )
+                : flattenCompetencies(
+                    response.data,
+                  ).where((competency) => competency.isActive).toList();
+            final competencyValue =
+                competencies.any(
+                  (competency) => competency.id == selectedCompetencyId,
+                )
                 ? selectedCompetencyId
                 : null;
 
@@ -701,8 +705,9 @@ class _BlueprintsConfigurationSection extends StatelessWidget {
                 key: const Key('target_difficulty_input'),
                 controller: targetDifficultyController,
                 keyboardType: TextInputType.number,
-                decoration:
-                    _fieldDecoration(AppStrings.tr('Target difficulty')),
+                decoration: _fieldDecoration(
+                  AppStrings.tr('Target difficulty'),
+                ),
               ),
             ),
             horizontalSpace(10),
@@ -794,7 +799,8 @@ class _BlueprintsList extends StatelessWidget {
       children: blueprints
           .map(
             (blueprint) => _CompactRow(
-              title: blueprint.competency?.competencyName ??
+              title:
+                  blueprint.competency?.competencyName ??
                   blueprint.competencyId,
               subtitle:
                   '${AppStrings.tr('Min questions')}: ${blueprint.minQuestionsCount} - '
@@ -921,11 +927,7 @@ class _StatusBanner extends StatelessWidget {
   final String message;
   final bool isError;
 
-  const _StatusBanner({
-    super.key,
-    required this.message,
-    this.isError = false,
-  });
+  const _StatusBanner({super.key, required this.message, this.isError = false});
 
   @override
   Widget build(BuildContext context) {
@@ -1018,8 +1020,9 @@ class _ActionButton extends StatelessWidget {
       title: isLoading ? AppStrings.tr('Working...') : title,
       width: double.infinity,
       radius: 8.r,
-      backgroundColor:
-          isLoading ? AppColors.tertiaryColor4 : AppColors.secondaryColor7,
+      backgroundColor: isLoading
+          ? AppColors.tertiaryColor4
+          : AppColors.secondaryColor7,
       textStyle: AppTextStyles.font14DarkGreySemiBold.copyWith(
         color: AppColors.neutralColor,
       ),

@@ -17,7 +17,7 @@ class ExamsManagementCubit extends Cubit<ExamsManagementState> {
   final WorkflowRepo? workflowRepo;
 
   ExamsManagementCubit({required this.examsManagementRepo, this.workflowRepo})
-      : super(const ExamsManagementState.initial()) {
+    : super(const ExamsManagementState.initial()) {
     getExams();
   }
 

@@ -9,6 +9,7 @@ import '../../features/candidate/assessment_results/data/datasources/assessment_
 import '../../features/candidate/assessment_results/data/repos/assessment_results_repo.dart';
 import '../../features/candidate/assessment_results/logic/assessment_results_cubit.dart';
 import '../../features/candidate/assessment_session/data/datasources/assessment_session_remote_data_source.dart';
+import '../../features/candidate/assessment_session/data/models/assessment_session_models.dart';
 import '../../features/candidate/assessment_session/data/repos/assessment_session_repo.dart';
 import '../../features/candidate/assessment_session/data/services/candidate_proctoring_manager.dart';
 import '../../features/candidate/assessment_session/data/services/exam_security_service.dart';
@@ -446,11 +447,15 @@ Future<void> setupGetit() async {
     ),
   );
   // cubit
-  getIt.registerFactoryParam<AssessmentSessionCubit, String?, void>(
-    (examId, _) => AssessmentSessionCubit(
+  getIt.registerFactoryParam<AssessmentSessionCubit, AssessmentSessionLaunchData?, void>(
+    (launchData, _) => AssessmentSessionCubit(
       assessmentSessionRepo: getIt(),
       candidateProctoringManager: getIt(),
-      initialExamId: examId,
+      initialExamId: launchData?.examId,
+      allowedDurationSeconds: launchData == null
+          ? null
+          : launchData.totalDurationMinutes * 60,
+      timerVisibleToCandidate: launchData?.timerVisibleToCandidate,
     ),
   );
 

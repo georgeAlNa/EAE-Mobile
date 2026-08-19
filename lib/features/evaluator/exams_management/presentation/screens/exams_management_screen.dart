@@ -83,8 +83,9 @@ class _ExamsManagementScreenState extends State<ExamsManagementScreen> {
               orElse: () => null,
             );
 
-            final visibleExams =
-                exams == null ? null : filterExams(exams, _query);
+            final visibleExams = exams == null
+                ? null
+                : filterExams(exams, _query);
 
             return Stack(
               children: [
@@ -103,10 +104,12 @@ class _ExamsManagementScreenState extends State<ExamsManagementScreen> {
                       children: [
                         ExamsManagementHeader(
                           examsCount: exams?.length ?? 0,
-                          publishedCount:
-                              exams == null ? 0 : countPublishedExams(exams),
-                          draftCount:
-                              exams == null ? 0 : countDraftExams(exams),
+                          publishedCount: exams == null
+                              ? 0
+                              : countPublishedExams(exams),
+                          draftCount: exams == null
+                              ? 0
+                              : countDraftExams(exams),
                           searchController: _searchController,
                           onCreateExam: () =>
                               showExamFormSheet(context: context),
@@ -124,6 +127,7 @@ class _ExamsManagementScreenState extends State<ExamsManagementScreen> {
                               .getExamDetails(exam.id),
                           onEdit: (exam) =>
                               showExamFormSheet(context: context, exam: exam),
+                          onPublish: (exam) => _confirmPublish(context, exam),
                           onDelete: (exam) => _confirmDelete(context, exam),
                           onCreatePublicationWorkflow: (exam) =>
                               _createPublicationWorkflow(context, exam),
@@ -169,7 +173,7 @@ class _ExamsManagementScreenState extends State<ExamsManagementScreen> {
         showExamDetailsSheet(context: context, exam: response.data);
       },
       saved: (_) {
-        showAppSnackBar(context, 'Exam saved successfully');
+        showAppSnackBar(context, AppStrings.tr('Exam saved successfully'));
         context.read<ExamsManagementCubit>().getExams();
       },
       actionSuccess: (response) {
@@ -192,6 +196,18 @@ class _ExamsManagementScreenState extends State<ExamsManagementScreen> {
       message: AppStrings.deleteItem(exam.examName),
       onConfirmed: () =>
           context.read<ExamsManagementCubit>().deleteExam(exam.id),
+    );
+  }
+
+  void _confirmPublish(BuildContext context, ExamItem exam) {
+    confirmExamAction(
+      context: context,
+      title: AppStrings.tr('Publish Exam'),
+      message: AppStrings.tr(
+        'Publish ${exam.examName}? This action makes the exam available to candidates.',
+      ),
+      onConfirmed: () =>
+          context.read<ExamsManagementCubit>().publishExam(exam.id),
     );
   }
 
@@ -282,6 +298,7 @@ class _ExamsDataSection extends StatelessWidget {
   final VoidCallback onRetry;
   final ValueChanged<ExamItem> onDetails;
   final ValueChanged<ExamItem> onEdit;
+  final ValueChanged<ExamItem> onPublish;
   final ValueChanged<ExamItem> onDelete;
   final ValueChanged<ExamItem> onCreatePublicationWorkflow;
   final ValueChanged<ExamItem> onViewPublicationWorkflow;
@@ -296,6 +313,7 @@ class _ExamsDataSection extends StatelessWidget {
     required this.onRetry,
     required this.onDetails,
     required this.onEdit,
+    required this.onPublish,
     required this.onDelete,
     required this.onCreatePublicationWorkflow,
     required this.onViewPublicationWorkflow,
@@ -346,6 +364,7 @@ class _ExamsDataSection extends StatelessWidget {
                 exam: entry.value,
                 onDetails: () => onDetails(entry.value),
                 onEdit: () => onEdit(entry.value),
+                onPublish: () => onPublish(entry.value),
                 onDelete: () => onDelete(entry.value),
                 onCreatePublicationWorkflow: () =>
                     onCreatePublicationWorkflow(entry.value),

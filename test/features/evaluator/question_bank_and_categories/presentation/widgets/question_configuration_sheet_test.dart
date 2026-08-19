@@ -20,30 +20,30 @@ class MockQuestionBankRepo extends Mock
 class MockCompetenciesRepo extends Mock implements CompetenciesRepo {}
 
 QuestionCategory category() => QuestionCategory(
-      id: 'cat_001',
-      title: 'Math',
-      categoryCode: 'MATH',
-      hierarchyLevel: 0,
-      isActive: true,
-      children: const [],
-    );
+  id: 'cat_001',
+  title: 'Math',
+  categoryCode: 'MATH',
+  hierarchyLevel: 0,
+  isActive: true,
+  children: const [],
+);
 
 QuestionBankItem question() => QuestionBankItem(
-      id: 'question_001',
-      tenantId: 'tenant_001',
-      categoryId: 'cat_001',
-      title: 'Basic Addition',
-      type: 'mcq',
-      bloomLevel: 1,
-      difficultyLevel: 1,
-      usageCount: 0,
-      questionText: 'What is 2+2?',
-      stem: 'Choose the correct answer',
-      versionId: 'version_001',
-      choices: const [],
-      createdAt: '',
-      updatedAt: '',
-    );
+  id: 'question_001',
+  tenantId: 'tenant_001',
+  categoryId: 'cat_001',
+  title: 'Basic Addition',
+  type: 'mcq',
+  bloomLevel: 1,
+  difficultyLevel: 1,
+  usageCount: 0,
+  questionText: 'What is 2+2?',
+  stem: 'Choose the correct answer',
+  versionId: 'version_001',
+  choices: const [],
+  createdAt: '',
+  updatedAt: '',
+);
 
 Competency competency({String id = 'competency_001', bool isActive = true}) =>
     Competency(
@@ -55,18 +55,18 @@ Competency competency({String id = 'competency_001', bool isActive = true}) =>
     );
 
 QuestionCompetencyWeight linkedCompetency() => QuestionCompetencyWeight(
-      weightId: 'weight_001',
-      questionId: 'question_001',
-      competencyId: 'competency_001',
-      weightPercentage: '100.00',
-      isPrimaryCompetency: true,
-      competency: QuestionCompetency(
-        competencyId: 'competency_001',
-        competencyName: 'Basic Math Skills',
-        competencyType: 'knowledge',
-        isActive: true,
-      ),
-    );
+  weightId: 'weight_001',
+  questionId: 'question_001',
+  competencyId: 'competency_001',
+  weightPercentage: '100.00',
+  isPrimaryCompetency: true,
+  competency: QuestionCompetency(
+    competencyId: 'competency_001',
+    competencyName: 'Basic Math Skills',
+    competencyType: 'knowledge',
+    isActive: true,
+  ),
+);
 
 Future<QuestionBankAndCategoriesCubit> createQuestionCubit(
   MockQuestionBankRepo repo,
@@ -77,11 +77,9 @@ Future<QuestionBankAndCategoriesCubit> createQuestionCubit(
   when(
     () => repo.getQuestions(),
   ).thenAnswer((_) async => QuestionsResponse(data: [question()]));
-  when(
-    () => repo.getQuestionCompetencies(any()),
-  ).thenAnswer((_) async => QuestionCompetenciesResponse(data: [
-        linkedCompetency(),
-      ]));
+  when(() => repo.getQuestionCompetencies(any())).thenAnswer(
+    (_) async => QuestionCompetenciesResponse(data: [linkedCompetency()]),
+  );
 
   final cubit = QuestionBankAndCategoriesCubit(
     questionBankAndCategoriesRepo: repo,
@@ -181,9 +179,7 @@ void main() {
   ) async {
     final questionCubit = await createQuestionCubit(questionRepo);
     final competenciesCubit = await createCompetenciesCubit(competenciesRepo);
-    when(
-      () => questionRepo.addQuestionCompetency(any(), any()),
-    ).thenAnswer(
+    when(() => questionRepo.addQuestionCompetency(any(), any())).thenAnswer(
       (_) async => QuestionCompetencyResponse(data: linkedCompetency()),
     );
 
@@ -199,7 +195,9 @@ void main() {
     await tester.tap(find.text('Basic Math Skills').last);
     await tester.pumpAndSettle();
     await tester.enterText(
-        find.byKey(const Key('competency_weight_input')), '120');
+      find.byKey(const Key('competency_weight_input')),
+      '120',
+    );
     await tester.tap(find.byKey(const Key('save_competency_mapping_button')));
     await tester.pumpAndSettle();
 
@@ -207,16 +205,20 @@ void main() {
     verifyNever(() => questionRepo.addQuestionCompetency(any(), any()));
 
     await tester.enterText(
-        find.byKey(const Key('competency_weight_input')), '80');
+      find.byKey(const Key('competency_weight_input')),
+      '80',
+    );
     await tester.tap(find.byKey(const Key('save_competency_mapping_button')));
     await tester.pumpAndSettle();
 
-    final captured = verify(
-      () => questionRepo.addQuestionCompetency(
-        'question_001',
-        captureAny(),
-      ),
-    ).captured.single as QuestionCompetencyRequestBody;
+    final captured =
+        verify(
+              () => questionRepo.addQuestionCompetency(
+                'question_001',
+                captureAny(),
+              ),
+            ).captured.single
+            as QuestionCompetencyRequestBody;
     expect(captured.competencyId, 'competency_001');
     expect(captured.weightPercentage, 80);
     expect(captured.isPrimaryCompetency, true);
@@ -290,7 +292,9 @@ void main() {
     await tester.pumpAndSettle();
 
     await tester.enterText(
-        find.byKey(const Key('difficulty_index_input')), '1.2');
+      find.byKey(const Key('difficulty_index_input')),
+      '1.2',
+    );
     await tester.tap(find.byKey(const Key('calibrate_version_button')));
     await tester.pumpAndSettle();
 
@@ -303,7 +307,9 @@ void main() {
     );
 
     await tester.enterText(
-        find.byKey(const Key('difficulty_index_input')), '0.7');
+      find.byKey(const Key('difficulty_index_input')),
+      '0.7',
+    );
     await tester.enterText(
       find.byKey(const Key('discrimination_index_input')),
       '0.4',
@@ -313,12 +319,14 @@ void main() {
     await tester.tap(find.byKey(const Key('calibrate_version_button')));
     await tester.pumpAndSettle();
 
-    final captured = verify(
-      () => questionRepo.updateQuestionVersionPsychometrics(
-        'version_001',
-        captureAny(),
-      ),
-    ).captured.single as QuestionVersionPsychometricsRequestBody;
+    final captured =
+        verify(
+              () => questionRepo.updateQuestionVersionPsychometrics(
+                'version_001',
+                captureAny(),
+              ),
+            ).captured.single
+            as QuestionVersionPsychometricsRequestBody;
     expect(captured.difficultyIndex, 0.7);
     expect(captured.discriminationIndex, 0.4);
     expect(captured.sampleSize, 20);
@@ -332,9 +340,9 @@ void main() {
   ) async {
     final questionCubit = await createQuestionCubit(questionRepo);
     final competenciesCubit = await createCompetenciesCubit(competenciesRepo);
-    when(() => questionRepo.approveQuestionVersion(any())).thenThrow(
-      const NetworkExceptions.unauthorizedRequest('Denied'),
-    );
+    when(
+      () => questionRepo.approveQuestionVersion(any()),
+    ).thenThrow(const NetworkExceptions.unauthorizedRequest('Denied'));
 
     await pumpConfigurationSheet(
       tester,

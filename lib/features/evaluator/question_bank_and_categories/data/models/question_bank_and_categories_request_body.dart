@@ -89,20 +89,20 @@ class CreateQuestionRequestBody {
       _$CreateQuestionRequestBodyFromJson(json);
 
   Map<String, dynamic> toJson() => _questionPayload(
-        categoryId: categoryId,
-        title: title,
-        type: type,
-        questionText: questionText,
-        stem: stem,
-        bloomLevel: bloomLevel,
-        difficultyLevel: difficultyLevel,
-        correctAnswer: correctAnswer,
-        acceptedAnswers: acceptedAnswers,
-        matchMode: matchMode,
-        psychometrics: psychometrics,
-        choices: choices,
-        evaluatorInstructions: evaluatorInstructions,
-      );
+    categoryId: categoryId,
+    title: title,
+    type: type,
+    questionText: questionText,
+    stem: stem,
+    bloomLevel: bloomLevel,
+    difficultyLevel: difficultyLevel,
+    correctAnswer: correctAnswer,
+    acceptedAnswers: acceptedAnswers,
+    matchMode: matchMode,
+    psychometrics: psychometrics,
+    choices: choices,
+    evaluatorInstructions: evaluatorInstructions,
+  );
 }
 
 @JsonSerializable()
@@ -160,20 +160,20 @@ class UpdateQuestionRequestBody {
       _$UpdateQuestionRequestBodyFromJson(json);
 
   Map<String, dynamic> toJson() => _questionPayload(
-        categoryId: categoryId,
-        title: title,
-        type: type ?? _inferQuestionType(this),
-        questionText: questionText,
-        stem: stem,
-        bloomLevel: bloomLevel,
-        difficultyLevel: difficultyLevel,
-        correctAnswer: correctAnswer,
-        acceptedAnswers: acceptedAnswers,
-        matchMode: matchMode,
-        psychometrics: psychometrics,
-        choices: choices,
-        evaluatorInstructions: evaluatorInstructions,
-      );
+    categoryId: categoryId,
+    title: title,
+    type: type ?? _inferQuestionType(this),
+    questionText: questionText,
+    stem: stem,
+    bloomLevel: bloomLevel,
+    difficultyLevel: difficultyLevel,
+    correctAnswer: correctAnswer,
+    acceptedAnswers: acceptedAnswers,
+    matchMode: matchMode,
+    psychometrics: psychometrics,
+    choices: choices,
+    evaluatorInstructions: evaluatorInstructions,
+  );
 }
 
 @JsonSerializable(includeIfNull: false)
@@ -226,8 +226,7 @@ class PartialUpdateQuestionRequestBody {
 
   factory PartialUpdateQuestionRequestBody.fromJson(
     Map<String, dynamic> json,
-  ) =>
-      _$PartialUpdateQuestionRequestBodyFromJson(json);
+  ) => _$PartialUpdateQuestionRequestBodyFromJson(json);
 
   Map<String, dynamic> toJson() {
     final json = _$PartialUpdateQuestionRequestBodyToJson(this);
@@ -263,8 +262,7 @@ class QuestionPsychometricsRequestBody {
 
   factory QuestionPsychometricsRequestBody.fromJson(
     Map<String, dynamic> json,
-  ) =>
-      _$QuestionPsychometricsRequestBodyFromJson(json);
+  ) => _$QuestionPsychometricsRequestBodyFromJson(json);
 
   Map<String, dynamic> toJson() =>
       _$QuestionPsychometricsRequestBodyToJson(this);
@@ -355,8 +353,7 @@ class QuestionVersionPsychometricsRequestBody {
 
   factory QuestionVersionPsychometricsRequestBody.fromJson(
     Map<String, dynamic> json,
-  ) =>
-      _$QuestionVersionPsychometricsRequestBodyFromJson(json);
+  ) => _$QuestionVersionPsychometricsRequestBodyFromJson(json);
 
   Map<String, dynamic> toJson() =>
       _$QuestionVersionPsychometricsRequestBodyToJson(this);

@@ -20,6 +20,8 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
   final AssessmentSessionRepo assessmentSessionRepo;
   final CandidateProctoringManager? candidateProctoringManager;
   final String? initialExamId;
+  final int? allowedDurationSeconds;
+  final bool? timerVisibleToCandidate;
   Timer? _timer;
   StreamSubscription<CandidateProctoringState>? _proctoringSubscription;
   final ImagePicker _imagePicker = ImagePicker();
@@ -34,6 +36,8 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
     required this.assessmentSessionRepo,
     this.candidateProctoringManager,
     this.initialExamId,
+    this.allowedDurationSeconds,
+    this.timerVisibleToCandidate,
   }) : super(const AssessmentSessionState.loading()) {
     _listenToProctoring();
     final examId = initialExamId?.trim();
@@ -188,8 +192,16 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
     final questions = question == null
         ? <AssessmentSessionQuestion>[]
         : [_mapQuestion(question, session?.current.sectionId)];
-    const verifiedDuration = 0;
+    final verifiedDuration = allowedDurationSeconds;
     final elapsed = _secondsSince(_sessionStartedAt);
+    final hasVerifiedDuration =
+        verifiedDuration != null && verifiedDuration > 0;
+    final remainingSeconds = hasVerifiedDuration
+        ? (verifiedDuration - elapsed).clamp(0, verifiedDuration).toInt()
+        : 0;
+    final resolvedStatusMessage = hasVerifiedDuration && remainingSeconds == 0
+        ? AppStrings.tr('Time expired')
+        : statusMessage;
 
     return AssessmentSessionViewData(
       headerTitle: AppStrings.enterpriseAssessmentTitle,
@@ -198,17 +210,17 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
       badgeLabel: AppStrings.encryptedMediaSandboxActive,
       sessionId: session?.sessionId ?? '',
       recordingTime: formatAssessmentSessionDuration(elapsed),
-      resolutionLabel: '1080P | 60FPS',
-      isoLabel: 'ISO 400',
+      resolutionLabel: '',
+      isoLabel: '',
       actions: const [],
       syncStatus: const SyncStatusData(
-        title: 'Sync Status',
-        statusLabel: 'Active',
-        statusValue: 'CONNECTED',
-        progressLabel: '100%',
-        progress: 1,
-        noteTitle: 'Backend session active',
-        noteBody: 'Answers are submitted to the active exam session.',
+        title: '',
+        statusLabel: '',
+        statusValue: '',
+        progressLabel: '',
+        progress: 0,
+        noteTitle: '',
+        noteBody: '',
       ),
       rules: const SubmissionRulesData(title: 'Submission Rules', rules: []),
       questions: questions,
@@ -217,8 +229,9 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
       knownTotalQuestions: _knownTotalQuestionsFromProgress(
         session?.progress.progressData,
       ),
-      totalDurationSeconds: verifiedDuration,
-      remainingSeconds: verifiedDuration,
+      totalDurationSeconds: verifiedDuration ?? 0,
+      remainingSeconds: remainingSeconds,
+      isTimerVisible: timerVisibleToCandidate ?? true,
       isFlaggedForReview: false,
       isSubmitted: isSubmitted,
       autoSubmitted: autoSubmitted,
@@ -232,7 +245,7 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
           candidateProctoringManager?.state.lastBackgroundDuration.inSeconds ??
           0,
       proctoringWarning: candidateProctoringManager?.state.warningMessage,
-      statusMessage: statusMessage,
+      statusMessage: resolvedStatusMessage,
     );
   }
 
@@ -368,11 +381,31 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
           }
 
           final elapsed = _secondsSince(_sessionStartedAt);
+          final hasVerifiedDuration = viewData.totalDurationSeconds > 0;
+          final remainingSeconds = hasVerifiedDuration
+              ? (viewData.totalDurationSeconds - elapsed)
+                    .clamp(0, viewData.totalDurationSeconds)
+                    .toInt()
+              : 0;
+
+          if (hasVerifiedDuration && remainingSeconds == 0) {
+            timer.cancel();
+            emit(
+              AssessmentSessionState.ready(
+                viewData: viewData.copyWith(
+                  remainingSeconds: 0,
+                  statusMessage: AppStrings.tr('Time expired'),
+                ),
+              ),
+            );
+            return;
+          }
 
           emit(
             AssessmentSessionState.ready(
               viewData: viewData.copyWith(
                 recordingTime: formatAssessmentSessionDuration(elapsed),
+                remainingSeconds: remainingSeconds,
                 statusMessage: null,
               ),
             ),
@@ -400,8 +433,6 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
       // Heartbeat failures should not interrupt local answer entry.
     }
   }
-
-  void goToQuestion(int index) {}
 
   Future<void> completeExam({bool autoSubmitted = false}) async {
     await state.maybeWhen<Future<void>>(
@@ -673,8 +704,6 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
       orElse: () {},
     );
   }
-
-  void previousQuestion() {}
 
   void toggleFlagForCurrentQuestion() {
     state.maybeWhen(

@@ -151,8 +151,9 @@ class _ExamFormSheetState extends State<ExamFormSheet> {
     final isEditing = widget.exam != null;
 
     return _SheetScaffold(
-      title:
-          isEditing ? AppStrings.tr('Edit exam') : AppStrings.tr('Create exam'),
+      title: isEditing
+          ? AppStrings.tr('Edit exam')
+          : AppStrings.tr('Create exam'),
       subtitle:
           'Configure the exam details, scoring, timing, and candidate options.',
       child: Form(
@@ -443,10 +444,8 @@ class ExamDetailsSheet extends StatelessWidget {
             textStyle: AppTextStyles.font14DarkGreySemiBold.copyWith(
               color: AppColors.neutralColor,
             ),
-            onTap: () => showExamContentConfigurationSheet(
-              context: context,
-              exam: exam,
-            ),
+            onTap: () =>
+                showExamContentConfigurationSheet(context: context, exam: exam),
           ),
         ],
       ),
