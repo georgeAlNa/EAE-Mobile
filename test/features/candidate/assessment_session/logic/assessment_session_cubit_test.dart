@@ -242,9 +242,9 @@ void main() {
     });
 
     test('keeps the timer hidden when the exam contract disables it', () async {
-      when(() => repo.startExamSession(any())).thenAnswer(
-        (_) async => sessionResponse(),
-      );
+      when(
+        () => repo.startExamSession(any()),
+      ).thenAnswer((_) async => sessionResponse());
       when(
         () => repo.getCurrentQuestion(any()),
       ).thenAnswer((_) async => currentQuestionResponse());
@@ -267,7 +267,7 @@ void main() {
       );
     });
 
-    test('submits MCQ using active session item and version lock', () async {
+    test('submits MCQ without the unavailable item version lock', () async {
       when(
         () => repo.startExamSession(any()),
       ).thenAnswer((_) async => sessionResponse(versionLock: 3));
@@ -289,6 +289,7 @@ void main() {
       addTearDown(cubit.close);
       await cubit.stream.firstWhere(isReady);
       cubit.selectSingleOption(0);
+      cubit.toggleFlagForCurrentQuestion();
 
       await cubit.submitCurrentAnswer();
 
@@ -300,7 +301,11 @@ void main() {
       expect(request.sessionItemId, 'session_item_001');
       expect(request.responseType, 'mcq');
       expect(request.selectedOptions, ['option_001']);
-      expect(request.expectedItemVersionLock, 3);
+      expect(request.expectedItemVersionLock, isNull);
+      expect(request.toJson(), isNot(contains('expected_item_version_lock')));
+      expect(request.timeSpentSeconds, greaterThanOrEqualTo(0));
+      expect(request.timeElapsedFromStartSeconds, greaterThanOrEqualTo(0));
+      expect(request.isFlaggedForReview, isTrue);
       expect(
         cubit.state.maybeWhen(
           ready: (viewData) => viewData.isEndOfQuestions,
@@ -311,7 +316,7 @@ void main() {
       verify(() => repo.getCurrentQuestion(any())).called(1);
     });
 
-    test('submits text answer with response_text', () async {
+    test('submits short answer with response_text', () async {
       final startedAt = DateTime.now()
           .subtract(const Duration(seconds: 45))
           .toUtc()
@@ -319,9 +324,9 @@ void main() {
       when(
         () => repo.startExamSession(any()),
       ).thenAnswer((_) async => sessionResponse(startedAt: startedAt));
-      when(
-        () => repo.getCurrentQuestion(any()),
-      ).thenAnswer((_) async => currentQuestionResponse(questionType: 'essay'));
+      when(() => repo.getCurrentQuestion(any())).thenAnswer(
+        (_) async => currentQuestionResponse(questionType: 'short_answer'),
+      );
       when(() => repo.submitExamAnswer(any(), any())).thenAnswer(
         (_) async =>
             sessionResponse(sessionItemId: null, questionVersionId: null),
@@ -343,9 +348,49 @@ void main() {
               ).captured.single
               as SubmitExamAnswerRequestBody;
       expect(request.responseText, 'Written answer');
+      expect(request.responseType, 'short_answer');
       expect(request.selectedOptions, isNull);
+      expect(request.toJson(), isNot(contains('expected_item_version_lock')));
       expect(request.timeElapsedFromStartSeconds, greaterThanOrEqualTo(45));
     });
+
+    test(
+      'successful answer follows the next backend current question',
+      () async {
+        when(
+          () => repo.startExamSession(any()),
+        ).thenAnswer((_) async => sessionResponse(questionIndex: 1));
+        when(
+          () => repo.getCurrentQuestion(any()),
+        ).thenAnswer((_) async => currentQuestionResponse());
+        when(() => repo.submitExamAnswer(any(), any())).thenAnswer(
+          (_) async => sessionResponse(
+            sessionItemId: 'session_item_002',
+            questionVersionId: 'question_version_002',
+            questionIndex: 2,
+          ),
+        );
+
+        final cubit = AssessmentSessionCubit(
+          assessmentSessionRepo: repo,
+          initialExamId: 'exam_001',
+        );
+        addTearDown(cubit.close);
+        await cubit.stream.firstWhere(isReady);
+        cubit.selectSingleOption(0);
+
+        await cubit.submitCurrentAnswer();
+
+        expect(
+          cubit.state.maybeWhen(
+            ready: (viewData) => viewData.currentQuestionNumber,
+            orElse: () => 0,
+          ),
+          2,
+        );
+        verify(() => repo.getCurrentQuestion('session_001')).called(2);
+      },
+    );
 
     test('does not submit file upload answer with local device path', () async {
       when(

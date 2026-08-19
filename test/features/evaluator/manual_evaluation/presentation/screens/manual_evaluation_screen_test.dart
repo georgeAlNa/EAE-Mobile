@@ -78,6 +78,8 @@ void main() {
     expect(find.text('Session'), findsOneWidget);
     expect(find.text('Score evaluation'), findsOneWidget);
     expect(find.text('Load a session'), findsOneWidget);
+    expect(find.text('Publish Result'), findsNothing);
+    expect(find.text('Publish'), findsNothing);
   });
 
   testWidgets('loads pending evaluations from session id', (tester) async {

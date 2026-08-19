@@ -127,9 +127,62 @@ class ExamsManagementCubit extends Cubit<ExamsManagementState> {
   }
 
   Future<void> publishExam(String examId) async {
+    final isAlreadyPublished =
+        examsResponse?.data.any(
+          (item) =>
+              item.id == examId &&
+              (item.examStatus.toLowerCase() == 'published' ||
+                  item.isPublished),
+        ) ??
+        false;
+    if (isAlreadyPublished) {
+      emit(
+        const ExamsManagementState.saveError(
+          error: 'This exam is already published.',
+        ),
+      );
+      return;
+    }
+
     emit(const ExamsManagementState.saveLoading());
 
+    final workflowRepo = this.workflowRepo;
+    if (workflowRepo == null) {
+      emit(
+        const ExamsManagementState.saveError(
+          error: 'Workflow integration is unavailable',
+        ),
+      );
+      return;
+    }
+
     try {
+      final workflows = await workflowRepo.getWorkflows(
+        workflowType: 'exam_publication',
+        resourceType: 'exam',
+        resourceId: examId,
+        perPage: 100,
+      );
+      final matchingWorkflows = workflows.data.where(
+        (workflow) =>
+            workflow.resourceType == 'exam' &&
+            workflow.resourceId == examId &&
+            workflow.workflowType == 'exam_publication',
+      );
+      final statuses = matchingWorkflows
+          .map((workflow) => workflow.currentWorkflowStatus.toLowerCase())
+          .toSet();
+
+      if (!statuses.contains('approved')) {
+        final error = statuses.contains('pending')
+            ? 'Exam publication approval is still pending.'
+            : statuses.contains('rejected')
+            ? 'Exam publication request was rejected.'
+            : 'Create the publication approval workflow first.';
+        emit(ExamsManagementState.saveError(error: error));
+        return;
+      }
+
       final response = await examsManagementRepo.publishExam(examId);
       emit(ExamsManagementState.saved(response));
     } on NetworkExceptions catch (e) {

@@ -619,7 +619,11 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
       timeSpentSeconds: timeSpent,
       timeElapsedFromStartSeconds: elapsed,
       isFlaggedForReview: question.isFlaggedForReview,
-      expectedItemVersionLock: session.versionLock,
+      // The backend validates this against the current ExamSessionItem lock,
+      // which is not exposed to Mobile. The session-level lock is different.
+      // Keep the nullable field for future compatibility; includeIfNull: false
+      // ensures it is omitted from the serialized request.
+      expectedItemVersionLock: null,
     );
   }
 

@@ -3,8 +3,8 @@ import 'package:eae_mobile/features/evaluator/exams_management/data/models/exams
 import 'package:eae_mobile/features/evaluator/exams_management/data/models/exams_management_response.dart';
 import 'package:eae_mobile/features/evaluator/exams_management/data/repos/exams_management_repo.dart';
 import 'package:eae_mobile/features/evaluator/exams_management/logic/exams_management_cubit.dart';
-import 'package:eae_mobile/features/tenant_admin/result_publication/data/models/result_publication_request_body.dart';
-import 'package:eae_mobile/features/tenant_admin/result_publication/data/models/result_publication_response.dart';
+import 'package:eae_mobile/features/workflows/data/models/workflow_request_body.dart';
+import 'package:eae_mobile/features/workflows/data/models/workflow_response.dart';
 import 'package:eae_mobile/features/workflows/data/repos/workflow_repo.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -65,6 +65,28 @@ ExamItem exam({String id = 'exam_001', String status = 'draft'}) {
 }
 
 ExamsResponse examsResponse() => ExamsResponse(data: [exam()]);
+
+ApprovalWorkflowsListResponse workflowList({String? status}) {
+  return ApprovalWorkflowsListResponse(
+    data: status == null
+        ? const []
+        : [
+            ApprovalWorkflowData(
+              workflowId: 'workflow_001',
+              resourceType: 'exam',
+              resourceId: 'exam_001',
+              workflowType: 'exam_publication',
+              currentWorkflowStatus: status,
+            ),
+          ],
+    meta: ApprovalWorkflowsPaginationMeta(
+      currentPage: 1,
+      perPage: 100,
+      total: status == null ? 0 : 1,
+      lastPage: 1,
+    ),
+  );
+}
 
 ExamSectionRequestBody sectionRequest() => ExamSectionRequestBody(
   sectionName: 'Second Section',
@@ -335,9 +357,17 @@ void main() {
       );
     });
 
-    test('publishExam emits loading then saved', () async {
+    test('publishExam refreshes approved workflow then publishes', () async {
       final cubit = await loadedCubit();
       final response = ExamResponse(data: exam(status: 'published'));
+      when(
+        () => workflowRepo.getWorkflows(
+          workflowType: 'exam_publication',
+          resourceType: 'exam',
+          resourceId: 'exam_001',
+          perPage: 100,
+        ),
+      ).thenAnswer((_) async => workflowList(status: 'approved'));
       when(() => repo.publishExam(any())).thenAnswer((_) async => response);
 
       final emission = expectLater(
@@ -352,6 +382,57 @@ void main() {
 
       await cubit.publishExam('exam_001');
       await emission;
+      verify(() => repo.publishExam('exam_001')).called(1);
+    });
+
+    for (final scenario in <String?, String>{
+      null: 'Create the publication approval workflow first.',
+      'pending': 'Exam publication approval is still pending.',
+      'rejected': 'Exam publication request was rejected.',
+    }.entries) {
+      test(
+        'publishExam blocks ${scenario.key ?? 'missing'} workflow',
+        () async {
+          final cubit = await loadedCubit();
+          when(
+            () => workflowRepo.getWorkflows(
+              workflowType: 'exam_publication',
+              resourceType: 'exam',
+              resourceId: 'exam_001',
+              perPage: 100,
+            ),
+          ).thenAnswer((_) async => workflowList(status: scenario.key));
+
+          final emission = expectLater(
+            cubit.stream,
+            emitsInOrder([
+              predicate<ExamsManagementState>(isLoading),
+              predicate<ExamsManagementState>(
+                (state) => stateError(state) == scenario.value,
+              ),
+            ]),
+          );
+
+          await cubit.publishExam('exam_001');
+          await emission;
+
+          verifyNever(() => repo.publishExam(any()));
+        },
+      );
+    }
+
+    test('publishExam blocks an already published exam', () async {
+      when(() => repo.getExams()).thenAnswer(
+        (_) async => ExamsResponse(data: [exam(status: 'published')]),
+      );
+      final cubit = createCubit();
+      await waitForLoadTerminal(cubit);
+
+      await cubit.publishExam('exam_001');
+
+      expect(stateError(cubit.state), 'This exam is already published.');
+      verifyNever(() => repo.publishExam(any()));
+      verifyNoMoreInteractions(workflowRepo);
     });
 
     test(

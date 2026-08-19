@@ -5,7 +5,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/helpers/extentions.dart';
 import '../../../../../core/helpers/spacing.dart';
-import '../../../../../core/public_widgets/loading_widget.dart';
+import '../../../../../core/public_widgets/app_state_widgets.dart';
 import '../../../../../core/routing/routes.dart';
 import '../../logic/assessment_inventory_details/assessment_inventory_details_cubit.dart';
 import '../widgets/assessment_details_description_section.dart';
@@ -59,7 +59,10 @@ class _AssessmentInventoryDetailsView extends StatelessWidget {
                 }
 
                 if (response == null) {
-                  return const LoadingWidget();
+                  return const AppSkeletonListView(
+                    itemCount: 5,
+                    itemHeight: 104,
+                  );
                 }
 
                 final exam = response.data;

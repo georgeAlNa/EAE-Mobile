@@ -25,6 +25,7 @@ class ResultPublicationCubit extends Cubit<ResultPublicationState> {
   ResultPublicationStatusResponse? resultPublicationStatusResponse;
   ResultPublicationResponse? resultPublicationResponse;
   ApprovalWorkflowActionResponse? approvalWorkflowActionResponse;
+  ApprovalWorkflowData? resultPublicationWorkflow;
 
   Future<void> getResultPublicationStatus(String sessionId) async {
     emit(const ResultPublicationState.statusLoading());
@@ -34,6 +35,11 @@ class ResultPublicationCubit extends Cubit<ResultPublicationState> {
         sessionId,
       );
       resultPublicationStatusResponse = response;
+      final resultId = response.data.resultId;
+      if (resultId != null && resultId.isNotEmpty) {
+        workflowResourceIdController.text = resultId;
+      }
+      resultPublicationWorkflow = await _getResultPublicationWorkflow(resultId);
       emit(ResultPublicationState.statusLoaded(response));
     } on NetworkExceptions catch (e) {
       emit(
@@ -51,9 +57,51 @@ class ResultPublicationCubit extends Cubit<ResultPublicationState> {
   }
 
   Future<void> publishSessionResult(String sessionId) async {
+    final status = resultPublicationStatusResponse?.data;
+    final resultId = status?.resultId;
+    if (status == null || resultId == null || resultId.trim().isEmpty) {
+      emit(
+        const ResultPublicationState.publishError(
+          error: 'Load a result before publishing.',
+        ),
+      );
+      return;
+    }
+
+    if (status.resultStatus.toLowerCase() != 'final') {
+      emit(
+        const ResultPublicationState.publishError(
+          error: 'Only final results can be published.',
+        ),
+      );
+      return;
+    }
+
+    if (status.publicationStatus.toLowerCase() == 'published') {
+      emit(
+        const ResultPublicationState.publishError(
+          error: 'This result is already published.',
+        ),
+      );
+      return;
+    }
+
     emit(const ResultPublicationState.publishLoading());
 
     try {
+      final workflow = await _getResultPublicationWorkflow(resultId);
+      resultPublicationWorkflow = workflow;
+      final workflowStatus = workflow?.currentWorkflowStatus.toLowerCase();
+      if (workflowStatus != 'approved') {
+        final error = workflowStatus == 'pending'
+            ? 'Result publication approval is still pending.'
+            : workflowStatus == 'rejected'
+            ? 'Result publication request was rejected.'
+            : 'Create the result publication workflow first.';
+        emit(ResultPublicationState.publishError(error: error));
+        return;
+      }
+
       final response = await resultPublicationRepo.publishSessionResult(
         sessionId,
       );
@@ -82,6 +130,7 @@ class ResultPublicationCubit extends Cubit<ResultPublicationState> {
     try {
       final response = await workflowRepo.createWorkflow(requestBody);
       approvalWorkflowActionResponse = response;
+      resultPublicationWorkflow = response.data;
       emit(ResultPublicationState.workflowLoaded(response));
     } on NetworkExceptions catch (e) {
       emit(
@@ -96,6 +145,33 @@ class ResultPublicationCubit extends Cubit<ResultPublicationState> {
         ),
       );
     }
+  }
+
+  Future<ApprovalWorkflowData?> _getResultPublicationWorkflow(
+    String? resultId,
+  ) async {
+    if (resultId == null || resultId.trim().isEmpty) return null;
+
+    final response = await workflowRepo.getWorkflows(
+      workflowType: 'result_publication',
+      resourceType: 'assessment_result',
+      resourceId: resultId,
+      perPage: 100,
+    );
+    final matching = response.data.where(
+      (workflow) =>
+          workflow.resourceType == 'assessment_result' &&
+          workflow.resourceId == resultId &&
+          workflow.workflowType == 'result_publication',
+    );
+    ApprovalWorkflowData? fallback;
+    for (final workflow in matching) {
+      fallback ??= workflow;
+      if (workflow.currentWorkflowStatus.toLowerCase() == 'approved') {
+        return workflow;
+      }
+    }
+    return fallback;
   }
 
   @override

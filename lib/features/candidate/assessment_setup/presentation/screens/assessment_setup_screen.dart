@@ -7,6 +7,7 @@ import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/extentions.dart';
 import '../../../../../core/helpers/spacing.dart';
+import '../../../../../core/public_widgets/app_state_widgets.dart';
 import '../../../../../core/routing/routes.dart';
 import '../../../assessment_session/data/models/assessment_session_models.dart';
 import '../../logic/assessment_setup_cubit.dart';
@@ -51,7 +52,7 @@ class _AssessmentSetupView extends StatelessWidget {
             );
 
             if (viewData == null) {
-              return const Center(child: CircularProgressIndicator());
+              return const AppSkeletonListView(itemCount: 6, itemHeight: 112);
             }
 
             return SingleChildScrollView(

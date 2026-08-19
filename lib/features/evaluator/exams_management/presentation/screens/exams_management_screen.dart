@@ -181,8 +181,8 @@ class _ExamsManagementScreenState extends State<ExamsManagementScreen> {
         }
       },
       detailsError: (error) => showAppSnackBar(context, error),
-      saveError: (error) => showAppSnackBar(context, error),
-      actionError: (error) => showAppSnackBar(context, error),
+      saveError: (error) => showAppSnackBar(context, AppStrings.tr(error)),
+      actionError: (error) => showAppSnackBar(context, AppStrings.tr(error)),
       orElse: () {},
     );
   }
@@ -257,31 +257,6 @@ class _ExamsManagementScreenState extends State<ExamsManagementScreen> {
     );
   }
 
-  // void _showWorkflowDetailsDialog(
-  //   BuildContext context,
-  //   Map<String, dynamic> workflowJson,
-  // ) {
-  //   showDialog<void>(
-  //     context: context,
-  //     builder: (_) {
-  //       return AlertDialog(
-  //         title: Text(AppStrings.tr('Exam publication workflow')),
-  //         content: SingleChildScrollView(
-  //           child: Text(
-  //             const JsonEncoder.withIndent('  ').convert(workflowJson),
-  //           ),
-  //         ),
-  //         actions: [
-  //           TextButton(
-  //             onPressed: () => Navigator.pop(context),
-  //             child: Text(AppStrings.tr('Close')),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
-
   void _showWorkflowCreatedDialog(
     BuildContext context, {
     required String workflowId,
@@ -298,7 +273,9 @@ class _ExamsManagementScreenState extends State<ExamsManagementScreen> {
             children: [
               Text(AppStrings.tr('Publication workflow created successfully.')),
               verticalSpace(12),
-              Text('${AppStrings.tr('Status')}: ${AppStrings.tr(status)}'),
+              Text(
+                '${AppStrings.tr('Status')}: ${AppStrings.displayValue(status)}',
+              ),
               verticalSpace(8),
               Text(
                 '${AppStrings.tr('Workflow ID')}: $workflowId',

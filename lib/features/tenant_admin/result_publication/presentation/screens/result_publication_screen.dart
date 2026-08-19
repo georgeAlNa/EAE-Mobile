@@ -31,6 +31,18 @@ class ResultPublicationScreen extends StatelessWidget {
             final status = cubit.resultPublicationStatusResponse;
             final published = cubit.resultPublicationResponse;
             final workflow = cubit.approvalWorkflowActionResponse;
+            final publicationStatus = status?.data;
+            final workflowStatus = cubit
+                .resultPublicationWorkflow
+                ?.currentWorkflowStatus
+                .toLowerCase();
+            final isAlreadyPublished =
+                publicationStatus?.publicationStatus.toLowerCase() ==
+                'published';
+            final canPublish =
+                publicationStatus?.resultStatus.toLowerCase() == 'final' &&
+                !isAlreadyPublished &&
+                workflowStatus == 'approved';
             final isLoading = state.maybeWhen(
               statusLoading: () => true,
               publishLoading: () => true,
@@ -76,14 +88,32 @@ class ResultPublicationScreen extends StatelessWidget {
                                 label: Text(AppStrings.tr('Status')),
                                 style: _filledActionButtonStyle(),
                               ),
-                              OutlinedButton.icon(
-                                onPressed: () => _publishResult(context),
-                                icon: const Icon(Icons.publish_outlined),
-                                label: Text(AppStrings.tr('Publish')),
-                                style: _outlinedActionButtonStyle(),
-                              ),
+                              if (!isAlreadyPublished)
+                                OutlinedButton.icon(
+                                  onPressed: canPublish
+                                      ? () => _publishResult(context)
+                                      : null,
+                                  icon: const Icon(Icons.publish_outlined),
+                                  label: Text(AppStrings.tr('Publish')),
+                                  style: _outlinedActionButtonStyle(),
+                                ),
                             ],
                           ),
+                          if (publicationStatus != null) ...[
+                            verticalSpace(10),
+                            Text(
+                              AppStrings.tr(
+                                canPublish
+                                    ? 'The result is approved for publication.'
+                                    : _publicationGuardMessage(
+                                        publicationStatus,
+                                        workflowStatus,
+                                      ),
+                              ),
+                              style: AppTextStyles.font12DarkGreyRegular
+                                  .copyWith(color: AppColors.tertiaryColor7),
+                            ),
+                          ],
                         ],
                       ),
                     ),
@@ -164,13 +194,17 @@ class ResultPublicationScreen extends StatelessWidget {
   void _listenToState(BuildContext context, ResultPublicationState state) {
     state.maybeWhen(
       published: (_) {
-        showAppSnackBar(context, 'Result published successfully');
+        showAppSnackBar(
+          context,
+          AppStrings.tr('Result published successfully'),
+        );
         _checkStatus(context);
       },
-      statusError: (error) => showAppSnackBar(context, error),
-      publishError: (error) => showAppSnackBar(context, error),
-      workflowLoaded: (_) => showAppSnackBar(context, 'Workflow updated'),
-      workflowError: (error) => showAppSnackBar(context, error),
+      statusError: (error) => showAppSnackBar(context, AppStrings.tr(error)),
+      publishError: (error) => showAppSnackBar(context, AppStrings.tr(error)),
+      workflowLoaded: (_) =>
+          showAppSnackBar(context, AppStrings.tr('Workflow updated')),
+      workflowError: (error) => showAppSnackBar(context, AppStrings.tr(error)),
       orElse: () {},
     );
   }
@@ -210,5 +244,24 @@ class ResultPublicationScreen extends StatelessWidget {
         workflowType: 'result_publication',
       ),
     );
+  }
+
+  String _publicationGuardMessage(
+    ResultPublicationStatus status,
+    String? workflowStatus,
+  ) {
+    if (status.publicationStatus.toLowerCase() == 'published') {
+      return 'This result is already published.';
+    }
+    if (status.resultStatus.toLowerCase() != 'final') {
+      return 'Only final results can be published.';
+    }
+    if (workflowStatus == 'pending') {
+      return 'Result publication approval is still pending.';
+    }
+    if (workflowStatus == 'rejected') {
+      return 'Result publication request was rejected.';
+    }
+    return 'Create the result publication workflow first.';
   }
 }

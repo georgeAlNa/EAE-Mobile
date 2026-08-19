@@ -195,9 +195,8 @@ class AppRouter {
 
         return MaterialPageRoute(
           builder: (_) => BlocProvider(
-            create: (context) => getIt<AssessmentSessionCubit>(
-              param1: launchData,
-            ),
+            create: (context) =>
+                getIt<AssessmentSessionCubit>(param1: launchData),
             child: const AssessmentSessionScreen(),
           ),
         );

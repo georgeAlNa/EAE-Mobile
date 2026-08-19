@@ -35,21 +35,27 @@ class AssessmentSetupCubit extends Cubit<AssessmentSetupState> {
       modulesValue: _questionsLabel(selectedExam),
       difficultyValue: _difficultyLabel(selectedExam),
       passMarkValue: _passMarkLabel(selectedExam),
-      systemRequirements: const [
+      systemRequirements: [
         AssessmentSetupItem(
           iconType: AssessmentSetupIconType.browser,
-          title: 'Chrome v98+ or Firefox v102+',
-          subtitle: 'Browser must support hardware acceleration',
+          title: AppStrings.tr('Supported Mobile Device'),
+          subtitle: AppStrings.tr(
+            'Keep the Miqyas application active during the assessment.',
+          ),
         ),
         AssessmentSetupItem(
           iconType: AssessmentSetupIconType.network,
-          title: 'Stable 10Mbps Connection',
-          subtitle: 'Ethernet recommended over wireless',
+          title: AppStrings.tr('Stable Internet Connection'),
+          subtitle: AppStrings.tr(
+            'A reliable Wi-Fi or mobile data connection is required.',
+          ),
         ),
       ],
       hardwareSetup: _hardwareSetupFor(proctoringConfig),
       preparingTitle: AppStrings.preparingYourSpace,
-      preparingDescription: AppStrings.preparingYourSpaceDescription,
+      preparingDescription: AppStrings.preparingYourSpaceDescriptionForCamera(
+        proctoringConfig.requiresCamera,
+      ),
       securityLabel: AppStrings.securityProtocolLabel,
       securityTitle: AppStrings.strictProctoredSession,
       securityItems: const [
@@ -69,7 +75,9 @@ class AssessmentSetupCubit extends Cubit<AssessmentSetupState> {
           : AppStrings.readyStatus,
       securityCheckItems: securityCheck.items.map(_mapSecurityCheck).toList(),
       hasBlockingSecurityFailure: securityCheck.hasBlockingFailure,
-      acknowledgeText: AppStrings.acknowledgeSetup,
+      acknowledgeText: AppStrings.acknowledgeSetupForDuration(
+        selectedExam?.totalDurationMinutes,
+      ),
       actionLabel: AppStrings.acknowledgeBeginSetup,
       timerNotice: AppStrings.timerCannotBePaused,
       supportLabel: AppStrings.technicalSupport,

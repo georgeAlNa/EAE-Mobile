@@ -22,11 +22,11 @@ class _PublicationStatusCard extends StatelessWidget {
           ),
           TenantAdminCopyableValueRow(
             label: AppStrings.tr('Result status'),
-            value: status.resultStatus,
+            value: AppStrings.displayValue(status.resultStatus),
           ),
           TenantAdminCopyableValueRow(
             label: AppStrings.tr('Publication status'),
-            value: status.publicationStatus,
+            value: AppStrings.displayValue(status.publicationStatus),
           ),
           TenantAdminCopyableValueRow(
             label: AppStrings.tr('Published at'),
@@ -75,7 +75,8 @@ class _PublishedResultCard extends StatelessWidget {
           TenantAdminCopyableValueRow(
             label: AppStrings.tr('Status'),
             value:
-                '${result.status.resultStatus} / ${result.status.publicationStatus}',
+                '${AppStrings.displayValue(result.status.resultStatus)} / '
+                '${AppStrings.displayValue(result.status.publicationStatus)}',
           ),
           TenantAdminCopyableValueRow(
             label: AppStrings.tr('Grade'),
@@ -112,7 +113,7 @@ class _ApprovalWorkflowSummaryCard extends StatelessWidget {
           verticalSpace(10),
           if (workflow == null)
             Text(
-              response.message,
+              AppStrings.tr('Workflow request completed.'),
               style: AppTextStyles.font12DarkGreyRegular.copyWith(
                 color: AppColors.primaryColor9,
               ),
@@ -136,7 +137,7 @@ class _ApprovalWorkflowSummaryCard extends StatelessWidget {
             ),
             TenantAdminCopyableValueRow(
               label: AppStrings.tr('Status'),
-              value: workflow.currentWorkflowStatus,
+              value: AppStrings.displayValue(workflow.currentWorkflowStatus),
             ),
           ],
         ],

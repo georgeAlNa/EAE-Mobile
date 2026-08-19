@@ -68,6 +68,7 @@ class LoginCard extends StatelessWidget {
                 ),
                 verticalSpace(8),
                 TextFieldWidget(
+                  key: const Key('login_email_field'),
                   controller: cubit.emailController,
                   hintText: AppStrings.workEmailHint,
                   labelText: AppStrings.workEmail,
@@ -112,6 +113,7 @@ class LoginCard extends StatelessWidget {
                 ),
                 verticalSpace(8),
                 TextFieldWidget(
+                  key: const Key('login_password_field'),
                   controller: cubit.passwordController,
                   hintText: AppStrings.passwordHint,
                   labelText: AppStrings.password,
@@ -158,6 +160,7 @@ class LoginCard extends StatelessWidget {
                           children: [
                             AbsorbPointer(
                               child: ButtonWidget(
+                                key: const Key('login_submit_button'),
                                 title: AppStrings.enterpriseSignIn,
                                 onTap: () {},
                                 width: double.infinity,
@@ -182,6 +185,7 @@ class LoginCard extends StatelessWidget {
                       : isRateLimited
                       ? AbsorbPointer(
                           child: ButtonWidget(
+                            key: const Key('login_submit_button'),
                             title:
                                 'Retry in ${_formatSeconds(rateLimitedSeconds)}',
                             onTap: () {},
@@ -196,6 +200,7 @@ class LoginCard extends StatelessWidget {
                           ),
                         )
                       : ButtonWidget(
+                          key: const Key('login_submit_button'),
                           title: AppStrings.enterpriseSignIn,
                           onTap: () => cubit.submit(),
                           width: double.infinity,

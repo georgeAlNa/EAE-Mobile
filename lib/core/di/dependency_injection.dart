@@ -447,7 +447,11 @@ Future<void> setupGetit() async {
     ),
   );
   // cubit
-  getIt.registerFactoryParam<AssessmentSessionCubit, AssessmentSessionLaunchData?, void>(
+  getIt.registerFactoryParam<
+    AssessmentSessionCubit,
+    AssessmentSessionLaunchData?,
+    void
+  >(
     (launchData, _) => AssessmentSessionCubit(
       assessmentSessionRepo: getIt(),
       candidateProctoringManager: getIt(),

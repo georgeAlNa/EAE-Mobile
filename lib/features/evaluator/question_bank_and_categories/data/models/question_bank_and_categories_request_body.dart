@@ -35,7 +35,7 @@ class MoveCategoryRequestBody {
   Map<String, dynamic> toJson() => _$MoveCategoryRequestBodyToJson(this);
 }
 
-@JsonSerializable()
+@JsonSerializable(createToJson: false)
 class CreateQuestionRequestBody {
   @JsonKey(name: 'category_id')
   final String categoryId;
@@ -105,7 +105,7 @@ class CreateQuestionRequestBody {
   );
 }
 
-@JsonSerializable()
+@JsonSerializable(createToJson: false)
 class UpdateQuestionRequestBody {
   final String title;
 

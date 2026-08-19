@@ -59,24 +59,6 @@ CreateQuestionRequestBody _$CreateQuestionRequestBodyFromJson(
       json['evaluator_instructions'] as Map<String, dynamic>?,
 );
 
-Map<String, dynamic> _$CreateQuestionRequestBodyToJson(
-  CreateQuestionRequestBody instance,
-) => <String, dynamic>{
-  'category_id': instance.categoryId,
-  'title': instance.title,
-  'type': instance.type,
-  'question_text': instance.questionText,
-  'stem': instance.stem,
-  'bloom_level': instance.bloomLevel,
-  'difficulty_level': instance.difficultyLevel,
-  'correct_answer': instance.correctAnswer,
-  'accepted_answers': instance.acceptedAnswers,
-  'match_mode': instance.matchMode,
-  'psychometrics': instance.psychometrics,
-  'choices': instance.choices,
-  'evaluator_instructions': instance.evaluatorInstructions,
-};
-
 UpdateQuestionRequestBody _$UpdateQuestionRequestBodyFromJson(
   Map<String, dynamic> json,
 ) => UpdateQuestionRequestBody(
@@ -105,24 +87,6 @@ UpdateQuestionRequestBody _$UpdateQuestionRequestBodyFromJson(
   evaluatorInstructions:
       json['evaluator_instructions'] as Map<String, dynamic>?,
 );
-
-Map<String, dynamic> _$UpdateQuestionRequestBodyToJson(
-  UpdateQuestionRequestBody instance,
-) => <String, dynamic>{
-  'title': instance.title,
-  'category_id': instance.categoryId,
-  'bloom_level': instance.bloomLevel,
-  'difficulty_level': instance.difficultyLevel,
-  'question_text': instance.questionText,
-  'stem': instance.stem,
-  'correct_answer': instance.correctAnswer,
-  'accepted_answers': instance.acceptedAnswers,
-  'match_mode': instance.matchMode,
-  'psychometrics': instance.psychometrics,
-  'choices': instance.choices,
-  'type': instance.type,
-  'evaluator_instructions': instance.evaluatorInstructions,
-};
 
 PartialUpdateQuestionRequestBody _$PartialUpdateQuestionRequestBodyFromJson(
   Map<String, dynamic> json,

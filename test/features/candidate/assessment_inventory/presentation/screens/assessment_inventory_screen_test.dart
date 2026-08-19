@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:eae_mobile/core/routing/routes.dart';
+import 'package:eae_mobile/core/public_widgets/app_state_widgets.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/data/models/assessment_inventory/assessment_inventory_response.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/data/models/assessment_models.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/data/repos/assessment_inventory_repo.dart';
@@ -127,7 +128,7 @@ void main() {
   setUp(resetWidgetTestPreferences);
 
   group('Assessment inventory presentation', () {
-    testWidgets('shows loading indicator while inventory is loading', (
+    testWidgets('shows app skeleton while inventory is loading', (
       tester,
     ) async {
       final repo = MockAssessmentInventoryRepo();
@@ -136,6 +137,7 @@ void main() {
       await pumpInventoryScreen(tester, repo: repo);
 
       expect(find.text('Assessment Inventory'), findsNothing);
+      expect(find.byType(AppSkeletonBox), findsWidgets);
       expect(
         find.byType(
           BlocBuilder<AssessmentInventoryCubit, AssessmentInventoryState>,

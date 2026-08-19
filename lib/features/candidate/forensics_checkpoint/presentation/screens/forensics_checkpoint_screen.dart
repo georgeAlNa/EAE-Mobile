@@ -6,7 +6,7 @@ import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/extentions.dart';
 import '../../../../../core/helpers/spacing.dart';
-import '../../../../../core/public_widgets/loading_widget.dart';
+import '../../../../../core/public_widgets/app_state_widgets.dart';
 import '../../../../../core/routing/routes.dart';
 import '../../logic/forensics_checkpoint_cubit.dart';
 import '../widgets/forensics_audit_section.dart';
@@ -45,7 +45,7 @@ class _ForensicsCheckpointView extends StatelessWidget {
             );
 
             if (viewData == null) {
-              return const LoadingWidget();
+              return const AppSkeletonListView(itemCount: 4, itemHeight: 120);
             }
 
             return SingleChildScrollView(

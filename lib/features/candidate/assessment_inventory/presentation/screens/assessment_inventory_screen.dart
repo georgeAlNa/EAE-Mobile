@@ -7,7 +7,7 @@ import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/di/dependency_injection.dart';
 import '../../../../../core/helpers/spacing.dart';
-import '../../../../../core/public_widgets/loading_widget.dart';
+import '../../../../../core/public_widgets/app_state_widgets.dart';
 import '../../../../certificates/logic/certificates_cubit.dart';
 import '../../../../certificates/presentation/screens/certificates_screen.dart';
 import '../../logic/assessment_inventory/assessment_inventory_cubit.dart';
@@ -41,39 +41,17 @@ class _AssessmentInventoryView extends StatelessWidget {
           );
 
           if (errorMessage != null) {
-            return Center(
-              child: Padding(
-                padding: EdgeInsets.all(24.r),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      errorMessage,
-                      textAlign: TextAlign.center,
-                      style: AppTextStyles.font14DarkGreyRegular.copyWith(
-                        color: AppColors.tertiaryColor7,
-                      ),
-                    ),
-                    verticalSpace(16),
-                    TextButton(
-                      onPressed: context
-                          .read<AssessmentInventoryCubit>()
-                          .getAssessmentInventory,
-                      child: Text(
-                        AppStrings.tr('Retry'),
-                        style: AppTextStyles.font14DarkGreySemiBold.copyWith(
-                          color: AppColors.secondaryColor7,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            return AppRetryErrorView(
+              title: errorMessage,
+              message: AppStrings.tr('Check the connection and try again.'),
+              onRetry: context
+                  .read<AssessmentInventoryCubit>()
+                  .getAssessmentInventory,
             );
           }
 
           if (viewData == null) {
-            return const LoadingWidget();
+            return const AppSkeletonListView(itemCount: 2, itemHeight: 180);
           }
 
           return SingleChildScrollView(

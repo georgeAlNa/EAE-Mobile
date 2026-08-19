@@ -51,7 +51,7 @@ void main() {
         timeSpentSeconds: 15,
         timeElapsedFromStartSeconds: 30,
         isFlaggedForReview: false,
-        expectedItemVersionLock: 1,
+        expectedItemVersionLock: null,
       );
 
       expect(request.toJson(), {
@@ -61,8 +61,8 @@ void main() {
         'time_spent_seconds': 15,
         'time_elapsed_from_start_seconds': 30,
         'is_flagged_for_review': false,
-        'expected_item_version_lock': 1,
       });
+      expect(request.toJson(), isNot(contains('expected_item_version_lock')));
     });
   });
 

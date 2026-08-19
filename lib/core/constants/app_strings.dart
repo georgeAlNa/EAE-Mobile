@@ -186,8 +186,15 @@ class AppStrings {
   static String get preparingYourSpace =>
       _isArabic ? 'تحضير المساحة' : 'Preparing Your Space';
   static String get preparingYourSpaceDescription => _isArabic
-      ? 'تأكد من أنك في غرفة هادئة وجيدة الإضاءة. يجب أن يكون وجهك مرئيا بوضوح لمحرك المراقبة طوال الجلسة.'
-      : 'Ensure you are in a quiet, well-lit room. Your face must be clearly visible to the proctoring engine throughout the session.';
+      ? 'تأكد من وجودك في غرفة هادئة وجيدة الإضاءة، وأبقِ وجهك ظاهرًا بوضوح للكاميرا طوال الجلسة.'
+      : 'Ensure you are in a quiet, well-lit room and keep your face clearly visible to the camera throughout the session.';
+  static String preparingYourSpaceDescriptionForCamera(bool requiresCamera) {
+    if (requiresCamera) return preparingYourSpaceDescription;
+    return _isArabic
+        ? 'تأكد من وجودك في بيئة هادئة، وأبقِ تطبيق مقياس نشطًا طوال جلسة التقييم.'
+        : 'Ensure you are in a quiet environment and keep the Miqyas application active throughout the assessment session.';
+  }
+
   static String get securityProtocolLabel =>
       _isArabic ? 'بروتوكول الأمان' : 'Security Protocol';
   static String get strictProctoredSession =>
@@ -198,10 +205,17 @@ class AppStrings {
       _isArabic ? 'حالة الفحص المسبق' : 'Pre-check Status';
   static String get readyStatus => _isArabic ? 'جاهز' : 'Ready';
   static String get acknowledgeSetup => _isArabic
-      ? 'أقر بأنني قرأت بروتوكولات الأمان وأوافق على المراقبة خلال هذه الجلسة التي مدتها 120 دقيقة.'
-      : 'I acknowledge that I have read the security protocols and agree to be proctored during this 120-minute session.';
+      ? 'أقر بأنني قرأت بروتوكولات الأمان وأوافق على متطلبات مراقبة التقييم.'
+      : 'I acknowledge that I have read the security protocols and agree to the assessment monitoring requirements.';
+  static String acknowledgeSetupForDuration(int? minutes) {
+    if (minutes == null || minutes <= 0) return acknowledgeSetup;
+    return _isArabic
+        ? 'أقر بأنني قرأت بروتوكولات الأمان وأوافق على المراقبة خلال هذه الجلسة التي مدتها $minutes دقيقة.'
+        : 'I acknowledge that I have read the security protocols and agree to be proctored during this $minutes-minute session.';
+  }
+
   static String get acknowledgeBeginSetup =>
-      _isArabic ? 'الإقرار وبدء الإعداد' : 'Acknowledge & Begin Setup';
+      _isArabic ? 'الإقرار وبدء التقييم' : 'Acknowledge & Begin Assessment';
   static String get timerCannotBePaused => _isArabic
       ? 'بمجرد البدء، لا يمكن إيقاف المؤقت مؤقتا.'
       : 'Once you begin, the timer cannot be paused.';
@@ -389,7 +403,12 @@ class AppStrings {
     'active': 'نشط',
     'inactive': 'غير نشط',
     'pending': 'قيد الانتظار',
+    'approved': 'تمت الموافقة',
+    'rejected': 'مرفوض',
     'published': 'منشور',
+    'unpublished': 'غير منشور',
+    'final': 'نهائي',
+    'provisional': 'مبدئي',
     'draft': 'مسودة',
     'archived': 'مؤرشف',
     'system': 'نظامي',
@@ -579,6 +598,10 @@ class AppStrings {
     'Search users by name, email, or type':
         'البحث في المستخدمين حسب الاسم أو البريد أو النوع',
     'Selected role': 'الدور المحدد',
+    'Required': 'مطلوب',
+    'Please fill all required fields': 'يرجى تعبئة جميع الحقول المطلوبة',
+    'Selected role is not supported for invitation':
+        'الدور المحدد غير مدعوم للدعوة',
     'Session ID': 'معرف الجلسة',
     'Session absolute timeout hours': 'مهلة الجلسة المطلقة بالساعات',
     'Session timeout minutes': 'مهلة الجلسة بالدقائق',
@@ -866,6 +889,31 @@ class AppStrings {
         'تحقق من معرف الجلسة وحاول مرة أخرى.',
     'Published result': 'النتيجة المنشورة',
     'No session loaded': 'لم يتم تحميل جلسة',
+    'Load a result before publishing.': 'حمّل نتيجة قبل النشر.',
+    'Only final results can be published.': 'يمكن نشر النتائج النهائية فقط.',
+    'This result is already published.': 'هذه النتيجة منشورة بالفعل.',
+    'Result published successfully': 'تم نشر النتيجة بنجاح',
+    'Workflow updated': 'تم تحديث سير العمل',
+    'Workflow request completed.': 'اكتمل طلب سير العمل.',
+    'Create the result publication workflow first.':
+        'أنشئ سير عمل الموافقة على نشر النتيجة أولاً.',
+    'Result publication approval is still pending.':
+        'لا تزال الموافقة على نشر النتيجة قيد الانتظار.',
+    'Result publication request was rejected.': 'تم رفض طلب نشر النتيجة.',
+    'The result is approved for publication.': 'تمت الموافقة على نشر النتيجة.',
+    'Create the publication approval workflow first.':
+        'أنشئ سير عمل الموافقة على النشر أولاً.',
+    'Exam publication approval is still pending.':
+        'لا تزال الموافقة على نشر الاختبار قيد الانتظار.',
+    'Exam publication request was rejected.': 'تم رفض طلب نشر الاختبار.',
+    'The exam is approved for publication.': 'تمت الموافقة على نشر الاختبار.',
+    'This exam is already published.': 'هذا الاختبار منشور بالفعل.',
+    'Supported Mobile Device': 'جهاز محمول مدعوم',
+    'Keep the Miqyas application active during the assessment.':
+        'أبقِ تطبيق مقياس نشطًا أثناء التقييم.',
+    'Stable Internet Connection': 'اتصال إنترنت مستقر',
+    'A reliable Wi-Fi or mobile data connection is required.':
+        'يلزم اتصال موثوق بشبكة Wi-Fi أو بيانات الهاتف المحمول.',
     'Result publication': 'نشر النتيجة',
     'Enter a session id to check or publish a result.':
         'أدخل معرف جلسة للتحقق من نتيجة أو نشرها.',

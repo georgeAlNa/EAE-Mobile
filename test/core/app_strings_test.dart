@@ -65,6 +65,26 @@ void main() {
       expect(payload['status'], 'active');
     });
 
+    test('localizes stabilization workflow and assessment setup text', () {
+      AppStrings.currentLanguage = 'en';
+      expect(
+        AppStrings.tr('Result publication approval is still pending.'),
+        'Result publication approval is still pending.',
+      );
+      expect(
+        AppStrings.acknowledgeSetupForDuration(20),
+        contains('20-minute session'),
+      );
+
+      AppStrings.currentLanguage = 'ar';
+      expect(
+        AppStrings.tr('Result publication approval is still pending.'),
+        'لا تزال الموافقة على نشر النتيجة قيد الانتظار.',
+      );
+      expect(AppStrings.acknowledgeSetupForDuration(20), contains('20 دقيقة'));
+      expect(AppStrings.tr('Supported Mobile Device'), 'جهاز محمول مدعوم');
+    });
+
     test('does not contain obvious Arabic mojibake patterns', () {
       final source = File(
         'lib/core/constants/app_strings.dart',

@@ -11,6 +11,7 @@ enum WorkflowRole { tenantAdmin, evaluator }
 class WorkflowStatus {
   static const pending = 'pending';
   static const approved = 'approved';
+  static const rejected = 'rejected';
 }
 
 class WorkflowType {

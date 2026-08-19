@@ -6,6 +6,7 @@ import '../../../../../../core/constants/app_strings.dart';
 import '../../../../../../core/constants/colors.dart';
 import '../../../../../../core/constants/text_styles.dart';
 import '../../../../../../core/helpers/spacing.dart';
+import '../../../../../../core/public_widgets/app_state_widgets.dart';
 import '../../../data/models/assessment_session_models.dart';
 import '../../../logic/assessment_session_cubit.dart';
 import 'assessment_session_exam_footer.dart';
@@ -511,7 +512,7 @@ class _AssessmentSessionExamContentState
               );
             }
 
-            return const Center(child: CircularProgressIndicator());
+            return const AppSkeletonListView(itemCount: 3, itemHeight: 150);
           }
 
           return _buildExamView(context, viewData);

@@ -7,7 +7,7 @@ import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/extentions.dart';
 import '../../../../../core/helpers/spacing.dart';
-import '../../../../../core/public_widgets/loading_widget.dart';
+import '../../../../../core/public_widgets/app_state_widgets.dart';
 import '../../../../../core/routing/routes.dart';
 import '../../data/models/assessment_models.dart';
 import '../../logic/assessment_inventory/assessment_inventory_cubit.dart';
@@ -55,7 +55,7 @@ class _AssessmentSelectionView extends StatelessWidget {
                     ),
                   )
                 : assessments == null
-                ? const LoadingWidget()
+                ? const AppSkeletonListView(itemCount: 4, itemHeight: 190)
                 : SingleChildScrollView(
                     padding: EdgeInsets.symmetric(
                       horizontal: 24.w,

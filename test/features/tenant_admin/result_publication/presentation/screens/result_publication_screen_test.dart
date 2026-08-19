@@ -4,6 +4,8 @@ import 'package:eae_mobile/features/tenant_admin/result_publication/data/repos/r
 import 'package:eae_mobile/features/tenant_admin/result_publication/logic/result_publication_cubit.dart';
 import 'package:eae_mobile/features/tenant_admin/result_publication/presentation/screens/result_publication_screen.dart';
 import 'package:eae_mobile/features/workflows/data/repos/workflow_repo.dart';
+import 'package:eae_mobile/features/workflows/data/models/workflow_response.dart'
+    show ApprovalWorkflowsListResponse, ApprovalWorkflowsPaginationMeta;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,17 +19,39 @@ class MockWorkflowRepo extends Mock implements WorkflowRepo {}
 
 ResultPublicationStatusResponse statusResponse({
   String publicationStatus = 'unpublished',
+  String resultStatus = 'provisional',
 }) {
   return ResultPublicationStatusResponse(
     data: ResultPublicationStatus(
       sessionId: 'session_001',
       resultId: 'result_001',
-      resultStatus: 'provisional',
+      resultStatus: resultStatus,
       publicationStatus: publicationStatus,
       resultCalculatedAt: '2026-07-21T03:02:50+00:00',
     ),
   );
 }
+
+ApprovalWorkflowsListResponse workflowList({String? status}) =>
+    ApprovalWorkflowsListResponse(
+      data: status == null
+          ? const []
+          : [
+              ApprovalWorkflowData(
+                workflowId: 'workflow_001',
+                resourceType: 'assessment_result',
+                resourceId: 'result_001',
+                workflowType: 'result_publication',
+                currentWorkflowStatus: status,
+              ),
+            ],
+      meta: ApprovalWorkflowsPaginationMeta(
+        currentPage: 1,
+        perPage: 100,
+        total: status == null ? 0 : 1,
+        lastPage: 1,
+      ),
+    );
 
 ResultPublicationResponse publishedResponse() {
   return ResultPublicationResponse(
@@ -107,6 +131,12 @@ void main() {
     expect(find.text('Result publication'), findsOneWidget);
     expect(find.text('Status'), findsOneWidget);
     expect(find.text('Publish'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is OutlinedButton && widget.onPressed == null,
+      ),
+      findsOneWidget,
+    );
     expect(find.text('Approval workflow'), findsOneWidget);
     expect(find.text('Exam publication workflow'), findsNothing);
     expect(find.text('Create'), findsOneWidget);
@@ -137,6 +167,14 @@ void main() {
     when(
       () => repo.getResultPublicationStatus('session_001'),
     ).thenAnswer((_) async => statusResponse());
+    when(
+      () => workflowRepo.getWorkflows(
+        workflowType: 'result_publication',
+        resourceType: 'assessment_result',
+        resourceId: 'result_001',
+        perPage: 100,
+      ),
+    ).thenAnswer((_) async => workflowList());
     await pumpScreen(tester, cubit);
 
     cubit.sessionIdController.text = 'session_001';
@@ -157,11 +195,21 @@ void main() {
     ).thenAnswer((_) async => publishedResponse());
     when(
       () => repo.getResultPublicationStatus('session_001'),
-    ).thenAnswer((_) async => statusResponse(publicationStatus: 'published'));
+    ).thenAnswer((_) async => statusResponse(resultStatus: 'final'));
+    when(
+      () => workflowRepo.getWorkflows(
+        workflowType: 'result_publication',
+        resourceType: 'assessment_result',
+        resourceId: 'result_001',
+        perPage: 100,
+      ),
+    ).thenAnswer((_) async => workflowList(status: 'approved'));
     await pumpScreen(tester, cubit);
 
     cubit.sessionIdController.text = 'session_001';
     await tester.pump();
+    await tester.tap(find.text('Status'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Publish'));
     await tester.pumpAndSettle();
 
@@ -174,6 +222,60 @@ void main() {
     expect(find.text('Published result'), findsOneWidget);
     expect(find.textContaining('published'), findsWidgets);
     verify(() => repo.publishSessionResult('session_001')).called(1);
+  });
+
+  testWidgets('pending workflow keeps publish disabled', (tester) async {
+    when(
+      () => repo.getResultPublicationStatus('session_001'),
+    ).thenAnswer((_) async => statusResponse(resultStatus: 'final'));
+    when(
+      () => workflowRepo.getWorkflows(
+        workflowType: 'result_publication',
+        resourceType: 'assessment_result',
+        resourceId: 'result_001',
+        perPage: 100,
+      ),
+    ).thenAnswer((_) async => workflowList(status: 'pending'));
+    await pumpScreen(tester, cubit);
+
+    cubit.sessionIdController.text = 'session_001';
+    await tester.tap(find.text('Status'));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('Result publication approval is still pending.'),
+      findsOneWidget,
+    );
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is OutlinedButton && widget.onPressed == null,
+      ),
+      findsOneWidget,
+    );
+    verifyNever(() => repo.publishSessionResult(any()));
+  });
+
+  testWidgets('already published result hides publish action', (tester) async {
+    when(() => repo.getResultPublicationStatus('session_001')).thenAnswer(
+      (_) async =>
+          statusResponse(resultStatus: 'final', publicationStatus: 'published'),
+    );
+    when(
+      () => workflowRepo.getWorkflows(
+        workflowType: 'result_publication',
+        resourceType: 'assessment_result',
+        resourceId: 'result_001',
+        perPage: 100,
+      ),
+    ).thenAnswer((_) async => workflowList(status: 'approved'));
+    await pumpScreen(tester, cubit);
+
+    cubit.sessionIdController.text = 'session_001';
+    await tester.tap(find.text('Status'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Publish'), findsNothing);
+    expect(find.text('This result is already published.'), findsOneWidget);
   });
 
   testWidgets('creates approval workflow through cubit', (tester) async {

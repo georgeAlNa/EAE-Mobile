@@ -409,13 +409,18 @@ class _CompetencyMappingSection extends StatelessWidget {
 
             return DropdownButtonFormField<String>(
               key: const Key('competency_dropdown'),
+              isExpanded: true,
               initialValue: value,
               decoration: _fieldDecoration(AppStrings.tr('Competency')),
               items: competencies
                   .map(
                     (competency) => DropdownMenuItem(
                       value: competency.id,
-                      child: Text(competency.name),
+                      child: Text(
+                        competency.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   )
                   .toList(),

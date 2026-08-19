@@ -295,7 +295,10 @@ void main() {
       find.byKey(const Key('difficulty_index_input')),
       '1.2',
     );
-    await tester.tap(find.byKey(const Key('calibrate_version_button')));
+    final calibrateButton = find.byKey(const Key('calibrate_version_button'));
+    await tester.ensureVisible(calibrateButton);
+    await tester.pumpAndSettle();
+    await tester.tap(calibrateButton);
     await tester.pumpAndSettle();
 
     expect(
@@ -316,7 +319,9 @@ void main() {
     );
     await tester.enterText(find.byKey(const Key('sample_size_input')), '20');
     await tester.enterText(find.byKey(const Key('correct_count_input')), '14');
-    await tester.tap(find.byKey(const Key('calibrate_version_button')));
+    await tester.ensureVisible(calibrateButton);
+    await tester.pumpAndSettle();
+    await tester.tap(calibrateButton);
     await tester.pumpAndSettle();
 
     final captured =

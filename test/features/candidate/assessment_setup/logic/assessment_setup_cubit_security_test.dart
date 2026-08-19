@@ -162,6 +162,68 @@ void main() {
       expect(viewData.passMarkValue, isNot('85% Aggregate'));
     });
 
+    test(
+      'uses dynamic acknowledgement duration and mobile requirements',
+      () async {
+        when(
+          () => examSecurityService.checkRequirements(any()),
+        ).thenAnswer((_) async => securityResult());
+
+        final cubit = AssessmentSetupCubit(
+          examSecurityService: examSecurityService,
+          exam: exam(duration: 20),
+        );
+        addTearDown(cubit.close);
+        final ready = await cubit.stream.firstWhere(
+          (state) =>
+              state.maybeWhen(ready: (_, _) => true, orElse: () => false),
+        );
+        final viewData = ready.maybeWhen(
+          ready: (viewData, _) => viewData,
+          orElse: () => throw StateError('expected ready'),
+        );
+
+        expect(viewData.acknowledgeText, contains('20-minute session'));
+        expect(viewData.acknowledgeText, isNot(contains('120-minute')));
+        expect(viewData.actionLabel, 'Acknowledge & Begin Assessment');
+        expect(
+          viewData.systemRequirements.map((item) => item.title),
+          containsAll([
+            'Supported Mobile Device',
+            'Stable Internet Connection',
+          ]),
+        );
+        expect(
+          viewData.systemRequirements
+              .expand((item) => [item.title, item.subtitle])
+              .join(' '),
+          allOf(isNot(contains('Chrome')), isNot(contains('Ethernet'))),
+        );
+      },
+    );
+
+    test('uses generic acknowledgement when duration is invalid', () async {
+      when(
+        () => examSecurityService.checkRequirements(any()),
+      ).thenAnswer((_) async => securityResult());
+
+      final cubit = AssessmentSetupCubit(
+        examSecurityService: examSecurityService,
+        exam: exam(duration: 0),
+      );
+      addTearDown(cubit.close);
+      final ready = await cubit.stream.firstWhere(
+        (state) => state.maybeWhen(ready: (_, _) => true, orElse: () => false),
+      );
+      final viewData = ready.maybeWhen(
+        ready: (viewData, _) => viewData,
+        orElse: () => throw StateError('expected ready'),
+      );
+
+      expect(viewData.acknowledgeText, contains('monitoring requirements'));
+      expect(viewData.acknowledgeText, isNot(contains('minute session')));
+    });
+
     test('camera and microphone are not required by default', () async {
       late ExamProctoringConfig capturedConfig;
       when(() => examSecurityService.checkRequirements(any())).thenAnswer((
@@ -187,6 +249,18 @@ void main() {
       expect(capturedConfig.requiresCamera, isFalse);
       expect(capturedConfig.requiresMicrophone, isFalse);
       expect(viewData.hasBlockingSecurityFailure, isFalse);
+      expect(
+        viewData.preparingDescription.toLowerCase(),
+        isNot(contains('face')),
+      );
+      expect(
+        viewData.preparingDescription.toLowerCase(),
+        isNot(contains('camera')),
+      );
+      expect(
+        viewData.preparingDescription.toLowerCase(),
+        isNot(contains('video recording')),
+      );
     });
 
     test('required camera and microphone permissions are reflected', () async {
@@ -221,6 +295,7 @@ void main() {
       expect(capturedConfig.requiresCamera, isTrue);
       expect(capturedConfig.requiresMicrophone, isTrue);
       expect(viewData.hasBlockingSecurityFailure, isTrue);
+      expect(viewData.preparingDescription.toLowerCase(), contains('face'));
       expect(
         viewData.securityCheckItems.where((item) => item.isRequired),
         isNotEmpty,

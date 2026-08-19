@@ -63,16 +63,18 @@ class _InviteUserSheetState extends State<InviteUserSheet> {
             ),
             verticalSpace(12),
             TextFieldWidget(
+              key: const Key('invite_first_name_field'),
               controller: _firstNameController,
-              hintText: 'First name',
-              labelText: AppStrings.tr('First name'),
+              hintText: AppStrings.firstName,
+              labelText: AppStrings.firstName,
               obscureText: false,
             ),
             verticalSpace(12),
             TextFieldWidget(
+              key: const Key('invite_last_name_field'),
               controller: _lastNameController,
-              hintText: 'Last name',
-              labelText: AppStrings.tr('Last name'),
+              hintText: AppStrings.lastName,
+              labelText: AppStrings.lastName,
               obscureText: false,
             ),
             verticalSpace(12),
@@ -93,8 +95,9 @@ class _InviteUserSheetState extends State<InviteUserSheet> {
                   hintText: AppStrings.tr('Selected role'),
                   onChanged: (value) =>
                       setState(() => _selectedRoleName = value),
-                  validator: (value) =>
-                      value == null || value.isEmpty ? 'Required' : null,
+                  validator: (value) => value == null || value.isEmpty
+                      ? AppStrings.tr('Required')
+                      : null,
                 );
               },
             ),
@@ -135,7 +138,10 @@ class _InviteUserSheetState extends State<InviteUserSheet> {
     if (_firstNameController.text.trim().isEmpty ||
         _lastNameController.text.trim().isEmpty ||
         (_selectedRoleName ?? '').isEmpty) {
-      showAppSnackBar(context, 'Please fill all required fields');
+      showAppSnackBar(
+        context,
+        AppStrings.tr('Please fill all required fields'),
+      );
       return;
     }
 
@@ -145,7 +151,8 @@ class _InviteUserSheetState extends State<InviteUserSheet> {
     if (userType == null) {
       showAppSnackBar(
         context,
-        'Selected role "$selectedRoleName" is not supported for invitation',
+        '$selectedRoleName: '
+        '${AppStrings.tr('Selected role is not supported for invitation')}',
       );
       return;
     }

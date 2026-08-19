@@ -7,6 +7,9 @@ import 'package:eae_mobile/features/evaluator/exams_management/logic/exams_manag
 import 'package:eae_mobile/features/evaluator/exams_management/presentation/screens/exams_management_screen.dart';
 import 'package:eae_mobile/features/tenant_admin/assessment_governance/data/models/assessment_governance_response.dart';
 import 'package:eae_mobile/features/tenant_admin/assessment_governance/data/repos/assessment_governance_repo.dart';
+import 'package:eae_mobile/features/workflows/data/models/workflow_response.dart';
+import 'package:eae_mobile/features/workflows/data/models/workflow_request_body.dart';
+import 'package:eae_mobile/features/workflows/data/repos/workflow_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,6 +21,8 @@ class MockExamsManagementRepo extends Mock implements ExamsManagementRepo {}
 
 class MockAssessmentGovernanceRepo extends Mock
     implements AssessmentGovernanceRepo {}
+
+class MockWorkflowRepo extends Mock implements WorkflowRepo {}
 
 ExamItem exam({String id = 'exam_001', String status = 'draft'}) {
   return ExamItem(
@@ -53,9 +58,13 @@ ExamItem exam({String id = 'exam_001', String status = 'draft'}) {
 Future<ExamsManagementCubit> createCubit(
   MockExamsManagementRepo repo, {
   required Future<ExamsResponse> Function() load,
+  WorkflowRepo? workflowRepo,
 }) async {
   when(() => repo.getExams()).thenAnswer((_) => load());
-  final cubit = ExamsManagementCubit(examsManagementRepo: repo);
+  final cubit = ExamsManagementCubit(
+    examsManagementRepo: repo,
+    workflowRepo: workflowRepo,
+  );
   addTearDown(cubit.close);
   await cubit.stream.firstWhere(
     (state) => state.maybeWhen(
@@ -80,10 +89,22 @@ Future<void> pumpScreen(WidgetTester tester, ExamsManagementCubit cubit) {
 void main() {
   late MockExamsManagementRepo repo;
   late MockAssessmentGovernanceRepo governanceRepo;
+  late MockWorkflowRepo workflowRepo;
+
+  setUpAll(() {
+    registerFallbackValue(
+      CreateApprovalWorkflowRequestBody(
+        resourceType: '',
+        resourceId: '',
+        workflowType: '',
+      ),
+    );
+  });
 
   setUp(() async {
     repo = MockExamsManagementRepo();
     governanceRepo = MockAssessmentGovernanceRepo();
+    workflowRepo = MockWorkflowRepo();
     await getIt.reset();
     await resetWidgetTestPreferences();
   });
@@ -129,9 +150,36 @@ void main() {
     when(
       () => repo.publishExam('exam_001'),
     ).thenAnswer((_) async => ExamResponse(data: exam(status: 'published')));
+    when(
+      () => workflowRepo.getWorkflows(
+        workflowType: 'exam_publication',
+        resourceType: 'exam',
+        resourceId: 'exam_001',
+        perPage: 100,
+      ),
+    ).thenAnswer(
+      (_) async => ApprovalWorkflowsListResponse(
+        data: [
+          ApprovalWorkflowData(
+            workflowId: 'workflow_001',
+            resourceType: 'exam',
+            resourceId: 'exam_001',
+            workflowType: 'exam_publication',
+            currentWorkflowStatus: 'approved',
+          ),
+        ],
+        meta: ApprovalWorkflowsPaginationMeta(
+          currentPage: 1,
+          perPage: 100,
+          total: 1,
+          lastPage: 1,
+        ),
+      ),
+    );
     final cubit = await createCubit(
       repo,
       load: () async => ExamsResponse(data: [draft]),
+      workflowRepo: workflowRepo,
     );
 
     await pumpScreen(tester, cubit);
@@ -142,9 +190,57 @@ void main() {
 
     expect(find.text('Publish Exam'), findsOneWidget);
     await tester.tap(find.text('Confirm'));
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     verify(() => repo.publishExam('exam_001')).called(1);
+  });
+
+  testWidgets('published exam has no redundant publish action', (tester) async {
+    final cubit = await createCubit(
+      repo,
+      load: () async => ExamsResponse(data: [exam(status: 'published')]),
+    );
+
+    await pumpScreen(tester, cubit);
+    await tester.tap(find.byTooltip('Exam actions').first);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Publish Exam'), findsNothing);
+  });
+
+  testWidgets('workflow creation dialog is user friendly, not raw JSON', (
+    tester,
+  ) async {
+    when(() => workflowRepo.createWorkflow(any())).thenAnswer(
+      (_) async => ApprovalWorkflowActionResponse(
+        message: 'created',
+        data: ApprovalWorkflowData(
+          workflowId: 'workflow_001',
+          resourceType: 'exam',
+          resourceId: 'exam_001',
+          workflowType: 'exam_publication',
+          currentWorkflowStatus: 'pending',
+        ),
+      ),
+    );
+    final cubit = await createCubit(
+      repo,
+      load: () async => ExamsResponse(data: [exam()]),
+      workflowRepo: workflowRepo,
+    );
+
+    await pumpScreen(tester, cubit);
+    await tester.tap(find.byTooltip('Exam actions').first);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Create publication workflow'));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('Publication workflow created successfully.'),
+      findsOneWidget,
+    );
+    expect(find.textContaining('workflow_001'), findsOneWidget);
+    expect(find.textContaining('{"data"'), findsNothing);
   });
 
   testWidgets('opens eligibility rules with selected exam id only', (

@@ -583,13 +583,18 @@ class _BlueprintsConfigurationSection extends StatelessWidget {
         verticalSpace(10),
         DropdownButtonFormField<String>(
           key: const Key('blueprint_section_dropdown'),
+          isExpanded: true,
           initialValue: sectionValue,
           decoration: _fieldDecoration(AppStrings.tr('Section')),
           items: sections
               .map(
                 (section) => DropdownMenuItem(
                   value: section.sectionId,
-                  child: Text(section.sectionName),
+                  child: Text(
+                    section.sectionName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               )
               .toList(),
@@ -635,13 +640,18 @@ class _BlueprintsConfigurationSection extends StatelessWidget {
 
             return DropdownButtonFormField<String>(
               key: const Key('blueprint_competency_dropdown'),
+              isExpanded: true,
               initialValue: competencyValue,
               decoration: _fieldDecoration(AppStrings.tr('Competency')),
               items: competencies
                   .map(
                     (competency) => DropdownMenuItem(
                       value: competency.id,
-                      child: Text(competency.name),
+                      child: Text(
+                        competency.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
                   )
                   .toList(),
