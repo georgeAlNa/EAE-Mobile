@@ -62,12 +62,12 @@ class _ManualEvaluationHeader extends StatelessWidget {
 }
 
 class _SessionActionsCard extends StatelessWidget {
-  final TextEditingController sessionIdController;
+  final Widget sessionPicker;
   final VoidCallback onLoadPending;
   final VoidCallback onCheckStatus;
 
   const _SessionActionsCard({
-    required this.sessionIdController,
+    required this.sessionPicker,
     required this.onLoadPending,
     required this.onCheckStatus,
   });
@@ -83,12 +83,7 @@ class _SessionActionsCard extends StatelessWidget {
             style: AppTextStyles.font16DarkGreyBold,
           ),
           verticalSpace(12),
-          TextFieldWidget(
-            controller: sessionIdController,
-            hintText: AppStrings.tr('exam session id'),
-            labelText: AppStrings.tr('Session ID'),
-            obscureText: false,
-          ),
+          sessionPicker,
           verticalSpace(12),
           Wrap(
             spacing: 8.w,
@@ -140,11 +135,15 @@ class _ScoreFormCard extends StatelessWidget {
             style: AppTextStyles.font16DarkGreyBold,
           ),
           verticalSpace(12),
-          TextFieldWidget(
-            controller: evaluationIdController,
-            hintText: AppStrings.tr('answer evaluation id'),
-            labelText: AppStrings.tr('Evaluation ID'),
-            obscureText: false,
+          InputDecorator(
+            decoration: InputDecoration(
+              labelText: AppStrings.tr('Evaluation ID'),
+            ),
+            child: Text(
+              evaluationIdController.text.isEmpty
+                  ? AppStrings.tr('Select a pending evaluation')
+                  : AppStrings.tr('Pending evaluation selected'),
+            ),
           ),
           verticalSpace(10),
           Row(

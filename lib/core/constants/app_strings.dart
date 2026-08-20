@@ -503,6 +503,7 @@ class AppStrings {
     'No eligibility rules configured for this exam':
         'لا توجد قواعد أهلية مكونة لهذا الاختبار',
     'Select an exam': 'اختر اختباراً',
+    'Select an option': 'اختر خياراً',
     'Unable to load eligibility rules': 'تعذر تحميل قواعد الأهلية',
     'Eligibility rule saved successfully': 'تم حفظ قاعدة الأهلية بنجاح',
     'Eligibility rule deleted successfully': 'تم حذف قاعدة الأهلية بنجاح',

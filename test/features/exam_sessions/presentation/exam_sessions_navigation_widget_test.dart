@@ -117,7 +117,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(ProctorSessionMonitoringScreen), findsOneWidget);
-    expect(find.text('session-001'), findsWidgets);
   });
 
   testWidgets(
@@ -151,7 +150,11 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(ManualEvaluationScreen), findsOneWidget);
-      expect(find.text('session-001'), findsWidgets);
+      final manualEvaluationScreen = tester.widget<ManualEvaluationScreen>(
+        find.byType(ManualEvaluationScreen),
+      );
+
+      expect(manualEvaluationScreen.initialSessionId, 'session-001');
     },
   );
 

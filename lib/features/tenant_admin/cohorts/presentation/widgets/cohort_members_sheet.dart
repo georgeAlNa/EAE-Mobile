@@ -9,7 +9,9 @@ import '../../../../../core/public_widgets/app_state_widgets.dart';
 import '../../../../../core/public_widgets/button_widget.dart';
 import '../../../../../core/public_widgets/custom_dropdown.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
-import '../../../../../core/public_widgets/text_field_widget.dart';
+import '../../../../../core/public_widgets/searchable_entity_picker.dart';
+import '../../../../../core/di/dependency_injection.dart';
+import '../../../users_management/data/repos/users_management_repo.dart';
 import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
 import '../../../users_management/presentation/widgets/users_management_sheet_scaffold.dart';
 import '../../data/models/cohorts_request_body.dart';
@@ -288,13 +290,19 @@ class AddCohortMemberSheet extends StatefulWidget {
 
 class _AddCohortMemberSheetState extends State<AddCohortMemberSheet> {
   final _formKey = GlobalKey<FormState>();
-  final _userIdController = TextEditingController();
+  String? _userId;
+  late final Future<List<EntityPickerOption>> _users;
   String? _membershipRole = 'member';
 
   @override
   void dispose() {
-    _userIdController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _users = _loadUsers();
   }
 
   @override
@@ -306,11 +314,13 @@ class _AddCohortMemberSheetState extends State<AddCohortMemberSheet> {
         key: _formKey,
         child: Column(
           children: [
-            TextFieldWidget(
-              controller: _userIdController,
-              hintText: AppStrings.tr('user UUID'),
-              labelText: AppStrings.tr('User ID'),
-              obscureText: false,
+            FutureBuilder<List<EntityPickerOption>>(
+              future: _users,
+              builder: (context, snapshot) => SearchableEntityPicker(
+                label: AppStrings.tr('User ID'), value: _userId,
+                options: snapshot.data ?? const [],
+                onChanged: (id) => setState(() => _userId = id),
+              ),
             ),
             verticalSpace(12),
             CustomDropdown(
@@ -341,7 +351,7 @@ class _AddCohortMemberSheetState extends State<AddCohortMemberSheet> {
   void _submit() {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
-    if (_userIdController.text.trim().isEmpty ||
+    if (_userId == null ||
         (_membershipRole ?? '').isEmpty) {
       showAppSnackBar(context, 'Please fill all required fields');
       return;
@@ -350,10 +360,19 @@ class _AddCohortMemberSheetState extends State<AddCohortMemberSheet> {
     context.read<CohortsCubit>().addCohortMember(
       widget.cohortId,
       AddCohortMemberRequestBody(
-        userId: _userIdController.text.trim(),
+        userId: _userId!,
         membershipRole: _membershipRole!,
       ),
     );
     Navigator.pop(context);
+  }
+
+  Future<List<EntityPickerOption>> _loadUsers() async {
+    final response = await getIt<UsersManagementRepo>().usersManagement();
+    return response.data.map((user) => EntityPickerOption(
+      id: user.id,
+      label: ('${user.firstName} ${user.lastName}').trim(),
+      subtitle: user.email,
+    )).toList();
   }
 }

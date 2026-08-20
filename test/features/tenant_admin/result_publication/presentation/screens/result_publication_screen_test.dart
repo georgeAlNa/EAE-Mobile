@@ -279,20 +279,46 @@ void main() {
   });
 
   testWidgets('creates approval workflow through cubit', (tester) async {
+    when(() => repo.getResultPublicationStatus('session_001')).thenAnswer(
+      (_) async => statusResponse(
+        resultStatus: 'final',
+        publicationStatus: 'unpublished',
+      ),
+    );
+
+    when(
+      () => workflowRepo.getWorkflows(
+        workflowType: 'result_publication',
+        resourceType: 'assessment_result',
+        resourceId: 'result_001',
+        perPage: 100,
+      ),
+    ).thenAnswer((_) async => workflowList());
+
     when(() => workflowRepo.createWorkflow(any())).thenAnswer(
       (_) async => ApprovalWorkflowActionResponse(message: 'created'),
     );
+
     await pumpScreen(tester, cubit);
 
-    cubit.workflowResourceIdController.text = 'result_001';
-    await tester.pump();
+    // User selects/loads a session first.
+    cubit.sessionIdController.text = 'session_001';
+
+    await tester.tap(find.text('Status'));
+    await tester.pumpAndSettle();
+
+    // result_id must now come automatically from publication status.
+    expect(cubit.workflowResourceIdController.text, 'result_001');
+
     await tester.tap(find.text('Create').first);
     await tester.pumpAndSettle();
 
     expect(find.text('Workflow updated'), findsOneWidget);
+
     final captured =
         verify(() => workflowRepo.createWorkflow(captureAny())).captured.single
             as CreateApprovalWorkflowRequestBody;
+
     expect(captured.resourceType, 'assessment_result');
     expect(captured.resourceId, 'result_001');
     expect(captured.workflowType, 'result_publication');

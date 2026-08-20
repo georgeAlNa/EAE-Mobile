@@ -6,6 +6,9 @@ import '../../../../../core/constants/colors.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../../../core/public_widgets/app_state_widgets.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
+import '../../../../../core/public_widgets/searchable_entity_picker.dart';
+import '../../../../../core/di/dependency_injection.dart';
+import '../../../../evaluator/exams_management/data/repos/exams_management_repo.dart';
 import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
 import '../../data/models/live_sessions_and_enrollment_management_response.dart';
 import '../../logic/live_sessions_and_enrollment_management_cubit.dart';
@@ -24,8 +27,8 @@ class LiveSessionsAndEnrollmentManagementScreen extends StatefulWidget {
 
 class _LiveSessionsAndEnrollmentManagementScreenState
     extends State<LiveSessionsAndEnrollmentManagementScreen> {
-  final _examIdController = TextEditingController();
   final _searchController = TextEditingController();
+  late final Future<List<EntityPickerOption>> _exams;
   String? _currentExamId;
   String _query = '';
   EnrollmentsResponse? _enrollmentsResponse;
@@ -33,6 +36,7 @@ class _LiveSessionsAndEnrollmentManagementScreenState
   @override
   void initState() {
     super.initState();
+    _exams = _loadExams();
     _searchController.addListener(() {
       setState(() {
         _query = _searchController.text.trim().toLowerCase();
@@ -42,7 +46,6 @@ class _LiveSessionsAndEnrollmentManagementScreenState
 
   @override
   void dispose() {
-    _examIdController.dispose();
     _searchController.dispose();
     super.dispose();
   }
@@ -127,7 +130,14 @@ class _LiveSessionsAndEnrollmentManagementScreenState
                         ),
                         children: [
                           LiveSessionsEnrollmentHeader(
-                            examIdController: _examIdController,
+                            examPicker: FutureBuilder<List<EntityPickerOption>>(
+                              future: _exams,
+                              builder: (context, snapshot) => SearchableEntityPicker(
+                                label: AppStrings.tr('Exam ID'), value: _currentExamId,
+                                options: snapshot.data ?? const [],
+                                onChanged: (id) => setState(() => _currentExamId = id),
+                              ),
+                            ),
                             searchController: _searchController,
                             enrollmentsCount: enrollments?.length,
                             onLoadEnrollments: () =>
@@ -203,14 +213,13 @@ class _LiveSessionsAndEnrollmentManagementScreenState
   }
 
   void _loadEnrollments(BuildContext context) {
-    final examId = _examIdController.text.trim();
-    if (examId.isEmpty) {
-      showAppSnackBar(context, 'Please enter exam ID');
+    final examId = _currentExamId;
+    if (examId == null || examId.isEmpty) {
+      showAppSnackBar(context, 'Please select an exam');
       return;
     }
 
     setState(() {
-      _currentExamId = examId;
       _enrollmentsResponse = null;
       _query = '';
       _searchController.clear();
@@ -218,6 +227,13 @@ class _LiveSessionsAndEnrollmentManagementScreenState
     context.read<LiveSessionsAndEnrollmentManagementCubit>().getEnrollments(
       examId,
     );
+  }
+
+  Future<List<EntityPickerOption>> _loadExams() async {
+    final response = await getIt<ExamsManagementRepo>().getExams();
+    return response.data.map((exam) => EntityPickerOption(
+      id: exam.id, label: exam.examName, subtitle: exam.examCode,
+    )).toList();
   }
 
   List<EnrollmentItem> _filterEnrollments(List<EnrollmentItem> enrollments) {

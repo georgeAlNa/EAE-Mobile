@@ -3,6 +3,9 @@ import 'package:eae_mobile/features/evaluator/manual_evaluation/data/models/manu
 import 'package:eae_mobile/features/evaluator/manual_evaluation/data/repos/manual_evaluation_repo.dart';
 import 'package:eae_mobile/features/evaluator/manual_evaluation/logic/manual_evaluation_cubit.dart';
 import 'package:eae_mobile/features/evaluator/manual_evaluation/presentation/screens/manual_evaluation_screen.dart';
+import 'package:eae_mobile/core/di/dependency_injection.dart';
+import 'package:eae_mobile/features/exam_sessions/data/models/exam_sessions_list_response.dart';
+import 'package:eae_mobile/features/exam_sessions/data/repos/exam_sessions_repo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -11,6 +14,7 @@ import 'package:mocktail/mocktail.dart';
 import '../../../../../helpers/widget_test_helpers.dart';
 
 class MockManualEvaluationRepo extends Mock implements ManualEvaluationRepo {}
+class MockExamSessionsRepo extends Mock implements ExamSessionsRepo {}
 
 PendingEvaluationItem pendingEvaluation({String id = 'eval_001'}) {
   return PendingEvaluationItem(
@@ -52,6 +56,7 @@ Future<void> pumpScreen(WidgetTester tester, ManualEvaluationCubit cubit) {
 
 void main() {
   late MockManualEvaluationRepo repo;
+  late MockExamSessionsRepo examSessionsRepo;
   late ManualEvaluationCubit cubit;
 
   setUpAll(() {
@@ -66,6 +71,29 @@ void main() {
 
   setUp(() async {
     repo = MockManualEvaluationRepo();
+    examSessionsRepo = MockExamSessionsRepo();
+    when(
+      () => examSessionsRepo.getExamSessions(
+        status: 'completed',
+        perPage: 100,
+      ),
+    ).thenAnswer(
+      (_) async => ExamSessionsListResponse(
+        data: const [],
+        meta: ExamSessionsPaginationMeta(
+          currentPage: 1,
+          perPage: 100,
+          total: 0,
+          lastPage: 1,
+        ),
+      ),
+    );
+    getIt.registerSingleton<ExamSessionsRepo>(examSessionsRepo);
+    addTearDown(() async {
+      if (getIt.isRegistered<ExamSessionsRepo>()) {
+        await getIt.unregister<ExamSessionsRepo>();
+      }
+    });
     cubit = ManualEvaluationCubit(manualEvaluationRepo: repo);
     addTearDown(cubit.close);
     await resetWidgetTestPreferences();

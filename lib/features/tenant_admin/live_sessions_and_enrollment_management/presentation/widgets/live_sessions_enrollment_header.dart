@@ -4,12 +4,11 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
-import '../../../../../core/public_widgets/text_field_widget.dart';
 import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
 import 'package:eae_mobile/core/constants/app_strings.dart';
 
 class LiveSessionsEnrollmentHeader extends StatelessWidget {
-  final TextEditingController examIdController;
+  final Widget examPicker;
   final TextEditingController searchController;
   final int? enrollmentsCount;
   final VoidCallback onLoadEnrollments;
@@ -17,7 +16,7 @@ class LiveSessionsEnrollmentHeader extends StatelessWidget {
 
   const LiveSessionsEnrollmentHeader({
     super.key,
-    required this.examIdController,
+    required this.examPicker,
     required this.searchController,
     required this.enrollmentsCount,
     required this.onLoadEnrollments,
@@ -63,14 +62,7 @@ class LiveSessionsEnrollmentHeader extends StatelessWidget {
           ),
         ),
         verticalSpace(16),
-        TextFieldWidget(
-          controller: examIdController,
-          hintText: AppStrings.tr('exam UUID'),
-          labelText: AppStrings.tr('Exam ID'),
-          obscureText: false,
-          suffixIcon: Icons.search_outlined,
-          onPressedSuffixIcon: onLoadEnrollments,
-        ),
+        examPicker,
         verticalSpace(12),
         SizedBox(
           width: double.infinity,

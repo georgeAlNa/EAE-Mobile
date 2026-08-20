@@ -8,6 +8,12 @@ import '../../../../../core/helpers/spacing.dart';
 import '../../../../../core/public_widgets/button_widget.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
 import '../../../../../core/public_widgets/text_field_widget.dart';
+import '../../../../../core/public_widgets/searchable_entity_picker.dart';
+import '../../../../../core/di/dependency_injection.dart';
+import '../../../cohorts/data/models/cohorts_response.dart';
+import '../../../cohorts/data/repos/cohorts_repo.dart';
+import '../../../users_management/data/models/users_management_response.dart';
+import '../../../users_management/data/repos/users_management_repo.dart';
 import '../../../users_management/presentation/widgets/users_management_sheet_scaffold.dart';
 import '../../data/models/live_sessions_and_enrollment_management_request_body.dart';
 import '../../logic/live_sessions_and_enrollment_management_cubit.dart';
@@ -24,8 +30,10 @@ class CreateEnrollmentSheet extends StatefulWidget {
 
 class _CreateEnrollmentSheetState extends State<CreateEnrollmentSheet> {
   final _formKey = GlobalKey<FormState>();
-  final _candidateUserIdController = TextEditingController();
-  final _cohortIdController = TextEditingController();
+  String? _candidateUserId;
+  String? _cohortId;
+  late final Future<List<EntityPickerOption>> _users;
+  late final Future<List<EntityPickerOption>> _cohorts;
   final _startWindowDateController = TextEditingController(
     text: '2026-06-25T14:03:03',
   );
@@ -35,13 +43,18 @@ class _CreateEnrollmentSheetState extends State<CreateEnrollmentSheet> {
 
   @override
   void dispose() {
-    _candidateUserIdController.dispose();
-    _cohortIdController.dispose();
     _startWindowDateController.dispose();
     _endWindowDateController.dispose();
     _maxAttemptsAllowedController.dispose();
     _enrollmentNotesController.dispose();
     super.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _users = _loadUsers();
+    _cohorts = _loadCohorts();
   }
 
   @override
@@ -53,18 +66,22 @@ class _CreateEnrollmentSheetState extends State<CreateEnrollmentSheet> {
         key: _formKey,
         child: Column(
           children: [
-            TextFieldWidget(
-              controller: _candidateUserIdController,
-              hintText: AppStrings.tr('candidate user UUID'),
-              labelText: AppStrings.tr('Candidate user ID'),
-              obscureText: false,
+            FutureBuilder<List<EntityPickerOption>>(
+              future: _users,
+              builder: (context, snapshot) => SearchableEntityPicker(
+                label: AppStrings.tr('Candidate user ID'), value: _candidateUserId,
+                options: snapshot.data ?? const [],
+                onChanged: (id) => setState(() => _candidateUserId = id),
+              ),
             ),
             verticalSpace(12),
-            TextFieldWidget(
-              controller: _cohortIdController,
-              hintText: AppStrings.tr('cohort UUID'),
-              labelText: AppStrings.tr('Cohort ID'),
-              obscureText: false,
+            FutureBuilder<List<EntityPickerOption>>(
+              future: _cohorts,
+              builder: (context, snapshot) => SearchableEntityPicker(
+                label: AppStrings.tr('Cohort ID'), value: _cohortId,
+                options: snapshot.data ?? const [],
+                onChanged: (id) => setState(() => _cohortId = id),
+              ),
             ),
             verticalSpace(12),
             TextFieldWidget(
@@ -120,8 +137,8 @@ class _CreateEnrollmentSheetState extends State<CreateEnrollmentSheet> {
       _maxAttemptsAllowedController.text.trim(),
     );
 
-    if (_candidateUserIdController.text.trim().isEmpty ||
-        _cohortIdController.text.trim().isEmpty ||
+    if (_candidateUserId == null ||
+        _cohortId == null ||
         _startWindowDateController.text.trim().isEmpty ||
         _endWindowDateController.text.trim().isEmpty ||
         _enrollmentNotesController.text.trim().isEmpty ||
@@ -133,8 +150,8 @@ class _CreateEnrollmentSheetState extends State<CreateEnrollmentSheet> {
     context.read<LiveSessionsAndEnrollmentManagementCubit>().createEnrollment(
       widget.examId,
       CreateEnrollmentRequestBody(
-        candidateUserId: _candidateUserIdController.text.trim(),
-        cohortId: _cohortIdController.text.trim(),
+        candidateUserId: _candidateUserId!,
+        cohortId: _cohortId!,
         startWindowDate: _startWindowDateController.text.trim(),
         endWindowDate: _endWindowDateController.text.trim(),
         maxAttemptsAllowed: maxAttemptsAllowed,
@@ -143,4 +160,24 @@ class _CreateEnrollmentSheetState extends State<CreateEnrollmentSheet> {
     );
     Navigator.pop(context);
   }
+
+  Future<List<EntityPickerOption>> _loadUsers() async {
+    final response = await getIt<UsersManagementRepo>().usersManagement();
+    return response.data.map(_userOption).toList();
+  }
+
+  Future<List<EntityPickerOption>> _loadCohorts() async {
+    final response = await getIt<CohortsRepo>().cohorts();
+    return response.data.map(_cohortOption).toList();
+  }
 }
+
+EntityPickerOption _userOption(UserManagementUser user) => EntityPickerOption(
+  id: user.id,
+  label: ('${user.firstName} ${user.lastName}').trim(),
+  subtitle: user.email,
+);
+
+EntityPickerOption _cohortOption(CohortItem cohort) => EntityPickerOption(
+  id: cohort.id, label: cohort.cohortName, subtitle: cohort.cohortCode,
+);

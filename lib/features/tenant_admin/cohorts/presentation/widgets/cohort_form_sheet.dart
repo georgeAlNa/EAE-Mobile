@@ -9,6 +9,9 @@ import '../../../../../core/public_widgets/button_widget.dart';
 import '../../../../../core/public_widgets/custom_dropdown.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
 import '../../../../../core/public_widgets/text_field_widget.dart';
+import '../../../../../core/public_widgets/searchable_entity_picker.dart';
+import '../../../../../core/di/dependency_injection.dart';
+import '../../data/repos/cohorts_repo.dart';
 import '../../../users_management/presentation/widgets/users_management_sheet_scaffold.dart';
 import '../../data/models/cohorts_request_body.dart';
 import '../../logic/cohorts_cubit.dart';
@@ -43,7 +46,8 @@ class _CohortFormSheetState extends State<CohortFormSheet> {
   late final TextEditingController _nameController;
   late final TextEditingController _codeController;
   late final TextEditingController _descriptionController;
-  late final TextEditingController _parentCohortIdController;
+  String? _parentCohortId;
+  late final Future<List<EntityPickerOption>> _cohorts;
   String? _cohortType;
   late bool _isActive;
 
@@ -60,7 +64,7 @@ class _CohortFormSheetState extends State<CohortFormSheet> {
     _descriptionController = TextEditingController(
       text: widget.initialCohortDescription ?? '',
     );
-    _parentCohortIdController = TextEditingController();
+    _cohorts = _loadCohorts();
     _isActive = widget.initialIsActive ?? true;
   }
 
@@ -69,7 +73,6 @@ class _CohortFormSheetState extends State<CohortFormSheet> {
     _nameController.dispose();
     _codeController.dispose();
     _descriptionController.dispose();
-    _parentCohortIdController.dispose();
     super.dispose();
   }
 
@@ -116,12 +119,13 @@ class _CohortFormSheetState extends State<CohortFormSheet> {
             ),
             if (!widget.isEditing) ...[
               verticalSpace(12),
-              TextFieldWidget(
-                controller: _parentCohortIdController,
-                hintText: AppStrings.tr('optional parent cohort UUID'),
-                labelText: AppStrings.tr('Parent cohort ID'),
-                obscureText: false,
-                isRequired: false,
+              FutureBuilder<List<EntityPickerOption>>(
+                future: _cohorts,
+                builder: (context, snapshot) => SearchableEntityPicker(
+                  label: AppStrings.tr('Parent cohort ID'), value: _parentCohortId,
+                  options: snapshot.data ?? const [], isRequired: false,
+                  onChanged: (id) => setState(() => _parentCohortId = id),
+                ),
               ),
             ],
             if (widget.isEditing) ...[
@@ -183,19 +187,25 @@ class _CohortFormSheetState extends State<CohortFormSheet> {
         ),
       );
     } else {
-      final parentCohortId = _parentCohortIdController.text.trim();
       cubit.createCohort(
         CreateCohortRequestBody(
           cohortName: _nameController.text.trim(),
           cohortCode: _codeController.text.trim(),
           cohortType: _cohortType!,
           cohortDescription: _descriptionController.text.trim(),
-          parentCohortId: parentCohortId.isEmpty ? null : parentCohortId,
+          parentCohortId: _parentCohortId,
         ),
       );
     }
 
     Navigator.pop(context);
+  }
+
+  Future<List<EntityPickerOption>> _loadCohorts() async {
+    final response = await getIt<CohortsRepo>().cohorts();
+    return response.data.where((cohort) => cohort.id != widget.cohortId).map((cohort) => EntityPickerOption(
+      id: cohort.id, label: cohort.cohortName, subtitle: cohort.cohortCode,
+    )).toList();
   }
 }
 

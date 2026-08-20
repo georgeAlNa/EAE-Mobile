@@ -7,7 +7,8 @@ import '../../../../../core/constants/colors.dart';
 import '../../../../../core/di/dependency_injection.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
-import '../../../../../core/public_widgets/text_field_widget.dart';
+import '../../../../../core/public_widgets/searchable_entity_picker.dart';
+import '../../../exams_management/data/repos/exams_management_repo.dart';
 import '../../../../certificates/logic/certificates_cubit.dart';
 import '../../../../certificates/presentation/screens/certificates_screen.dart';
 import '../../../../exam_sessions/data/models/exam_sessions_list_response.dart';
@@ -26,11 +27,13 @@ class EvaluatorCompletedSessionsScreen extends StatefulWidget {
 
 class _EvaluatorCompletedSessionsScreenState
     extends State<EvaluatorCompletedSessionsScreen> {
-  final _examIdController = TextEditingController();
+  String? _examId;
+  late final Future<List<EntityPickerOption>> _exams;
 
   @override
   void initState() {
     super.initState();
+    _exams = _loadExams();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       context.read<ExamSessionsCubit>().loadExamSessions(
@@ -41,7 +44,6 @@ class _EvaluatorCompletedSessionsScreenState
 
   @override
   void dispose() {
-    _examIdController.dispose();
     super.dispose();
   }
 
@@ -69,7 +71,9 @@ class _EvaluatorCompletedSessionsScreenState
                 child: TabBarView(
                   children: [
                     _CompletedSessionsTab(
-                      examIdController: _examIdController,
+                      examId: _examId,
+                      exams: _exams,
+                      onExamChanged: (id) => setState(() => _examId = id),
                       onApplyFilter: _applyFilter,
                       onClearFilter: _clearFilter,
                       onOpenManualEvaluation: _openManualEvaluation,
@@ -97,13 +101,26 @@ class _EvaluatorCompletedSessionsScreenState
   void _applyFilter() {
     context.read<ExamSessionsCubit>().loadExamSessions(
       status: ExamSessionStatus.completed,
-      examId: _examIdController.text,
+      examId: _examId,
     );
   }
 
   void _clearFilter() {
-    _examIdController.clear();
+    setState(() => _examId = null);
     _applyFilter();
+  }
+
+  Future<List<EntityPickerOption>> _loadExams() async {
+    final response = await getIt<ExamsManagementRepo>().getExams();
+    return response.data
+        .map(
+          (exam) => EntityPickerOption(
+            id: exam.id,
+            label: exam.examName,
+            subtitle: exam.examCode,
+          ),
+        )
+        .toList();
   }
 
   void _openManualEvaluation(ExamSessionListItem session) {
@@ -123,13 +140,17 @@ class _EvaluatorCompletedSessionsScreenState
 }
 
 class _CompletedSessionsTab extends StatelessWidget {
-  final TextEditingController examIdController;
+  final String? examId;
+  final Future<List<EntityPickerOption>> exams;
+  final ValueChanged<String?> onExamChanged;
   final VoidCallback onApplyFilter;
   final VoidCallback onClearFilter;
   final ValueChanged<ExamSessionListItem> onOpenManualEvaluation;
 
   const _CompletedSessionsTab({
-    required this.examIdController,
+    required this.examId,
+    required this.exams,
+    required this.onExamChanged,
     required this.onApplyFilter,
     required this.onClearFilter,
     required this.onOpenManualEvaluation,
@@ -183,13 +204,15 @@ class _CompletedSessionsTab extends StatelessWidget {
                 count: sessions.isEmpty ? null : sessions.length,
               ),
               verticalSpace(16),
-              TextFieldWidget(
-                controller: examIdController,
-                hintText: AppStrings.tr('exam UUID'),
-                labelText: AppStrings.tr('Exam ID'),
-                obscureText: false,
-                suffixIcon: Icons.search_outlined,
-                onPressedSuffixIcon: onApplyFilter,
+              FutureBuilder<List<EntityPickerOption>>(
+                future: exams,
+                builder: (context, snapshot) => SearchableEntityPicker(
+                  label: AppStrings.tr('Exam ID'),
+                  value: examId,
+                  options: snapshot.data ?? const [],
+                  isRequired: false,
+                  onChanged: onExamChanged,
+                ),
               ),
               verticalSpace(10),
               Row(

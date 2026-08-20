@@ -8,19 +8,43 @@ import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
+import '../../../../../core/di/dependency_injection.dart';
 import '../../../../../core/public_widgets/app_state_widgets.dart';
+import '../../../../../core/public_widgets/searchable_entity_picker.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
 import '../../../../../core/public_widgets/text_field_widget.dart';
 import '../../data/models/manual_evaluation_request_body.dart';
 import '../../data/models/manual_evaluation_response.dart';
 import '../../logic/manual_evaluation_cubit.dart';
+import '../../../../exam_sessions/data/repos/exam_sessions_repo.dart';
 
 part '../widgets/manual_evaluation_widgets.dart';
 
-class ManualEvaluationScreen extends StatelessWidget {
+class ManualEvaluationScreen extends StatefulWidget {
   final String? initialSessionId;
 
   const ManualEvaluationScreen({super.key, this.initialSessionId});
+
+  @override
+  State<ManualEvaluationScreen> createState() => _ManualEvaluationScreenState();
+}
+
+class _ManualEvaluationScreenState extends State<ManualEvaluationScreen> {
+  late final Future<List<EntityPickerOption>> _completedSessions;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final initialSessionId = widget.initialSessionId?.trim();
+
+    if (initialSessionId != null && initialSessionId.isNotEmpty) {
+      context.read<ManualEvaluationCubit>().sessionIdController.text =
+          initialSessionId;
+    } else {
+      _completedSessions = _loadCompletedSessions();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,10 +55,10 @@ class ManualEvaluationScreen extends StatelessWidget {
           listener: _listenToState,
           builder: (context, state) {
             final cubit = context.read<ManualEvaluationCubit>();
-            if (initialSessionId != null &&
-                initialSessionId!.isNotEmpty &&
-                cubit.sessionIdController.text != initialSessionId) {
-              cubit.sessionIdController.text = initialSessionId!;
+            if (widget.initialSessionId != null &&
+                widget.initialSessionId!.isNotEmpty &&
+                cubit.sessionIdController.text != widget.initialSessionId) {
+              cubit.sessionIdController.text = widget.initialSessionId!;
             }
             final pending = cubit.pendingEvaluationsResponse;
             final status = cubit.resultPublicationStatusResponse;
@@ -66,7 +90,23 @@ class ManualEvaluationScreen extends StatelessWidget {
                       ),
                       verticalSpace(16),
                       _SessionActionsCard(
-                        sessionIdController: cubit.sessionIdController,
+                        sessionPicker: widget.initialSessionId != null
+                            ? Text(AppStrings.tr('Completed session selected'))
+                            : FutureBuilder<List<EntityPickerOption>>(
+                                future: _completedSessions,
+                                builder: (context, snapshot) =>
+                                    SearchableEntityPicker(
+                                      label: AppStrings.tr('Session ID'),
+                                      value:
+                                          cubit.sessionIdController.text.isEmpty
+                                          ? null
+                                          : cubit.sessionIdController.text,
+                                      options: snapshot.data ?? const [],
+                                      onChanged: (id) =>
+                                          cubit.sessionIdController.text =
+                                              id ?? '',
+                                    ),
+                              ),
                         onLoadPending: () => _loadPending(context),
                         onCheckStatus: () => _checkStatus(context),
                       ),
@@ -105,6 +145,22 @@ class ManualEvaluationScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<List<EntityPickerOption>> _loadCompletedSessions() async {
+    final response = await getIt<ExamSessionsRepo>().getExamSessions(
+      status: 'completed',
+      perPage: 100,
+    );
+    return response.data
+        .map(
+          (session) => EntityPickerOption(
+            id: session.sessionId,
+            label: AppStrings.tr('Completed session'),
+            subtitle: session.timestamps.endedAt ?? session.state,
+          ),
+        )
+        .toList();
   }
 
   void _listenToState(BuildContext context, ManualEvaluationState state) {

@@ -1,5 +1,55 @@
 part of '../screens/assessment_governance_screen.dart';
 
+class _ExamPicker extends StatefulWidget {
+  final String label;
+  final String? value;
+  final bool isRequired;
+  final ValueChanged<String?> onChanged;
+  const _ExamPicker({
+    required this.label,
+    required this.value,
+    required this.onChanged,
+    this.isRequired = true,
+  });
+
+  @override
+  State<_ExamPicker> createState() => _ExamPickerState();
+}
+
+class _ExamPickerState extends State<_ExamPicker> {
+  late final Future<List<EntityPickerOption>> _exams;
+  @override
+  void initState() {
+    super.initState();
+    _exams = _loadExams();
+  }
+
+  Future<List<EntityPickerOption>> _loadExams() async {
+    final response = await getIt<ExamsManagementRepo>().getExams();
+    return response.data
+        .map(
+          (exam) => EntityPickerOption(
+            id: exam.id,
+            label: exam.examName,
+            subtitle: exam.examCode,
+          ),
+        )
+        .toList();
+  }
+
+  @override
+  Widget build(BuildContext context) => FutureBuilder<List<EntityPickerOption>>(
+    future: _exams,
+    builder: (context, snapshot) => SearchableEntityPicker(
+      label: widget.label,
+      value: widget.value,
+      options: snapshot.data ?? const [],
+      isRequired: widget.isRequired,
+      onChanged: widget.onChanged,
+    ),
+  );
+}
+
 class _GovernanceHeader extends StatelessWidget {
   final int? penaltyCount;
   final int? eligibilityCount;
@@ -246,11 +296,13 @@ class _EligibilityChainsView extends StatelessWidget {
           child: Row(
             children: [
               Expanded(
-                child: TextFieldWidget(
-                  controller: examFilterController,
-                  hintText: AppStrings.tr('exam id'),
-                  labelText: AppStrings.tr('Filter exam ID'),
-                  obscureText: false,
+                child: _ExamPicker(
+                  label: AppStrings.tr('Filter exam ID'),
+                  value: examFilterController.text.isEmpty
+                      ? null
+                      : examFilterController.text,
+                  isRequired: false,
+                  onChanged: (id) => examFilterController.text = id ?? '',
                 ),
               ),
               horizontalSpace(10),
@@ -278,11 +330,12 @@ class _EligibilityChainsView extends StatelessWidget {
                 style: AppTextStyles.font16DarkGreyBold,
               ),
               verticalSpace(12),
-              TextFieldWidget(
-                controller: examIdController,
-                hintText: AppStrings.tr('exam id'),
-                labelText: AppStrings.tr('Exam ID'),
-                obscureText: false,
+              _ExamPicker(
+                label: AppStrings.tr('Exam ID'),
+                value: examIdController.text.isEmpty
+                    ? null
+                    : examIdController.text,
+                onChanged: (id) => examIdController.text = id ?? '',
               ),
               verticalSpace(10),
               Row(
@@ -309,11 +362,13 @@ class _EligibilityChainsView extends StatelessWidget {
                 ],
               ),
               verticalSpace(10),
-              TextFieldWidget(
-                controller: prerequisiteExamIdController,
-                hintText: AppStrings.tr('optional prerequisite exam id'),
-                labelText: AppStrings.tr('Prerequisite exam ID'),
-                obscureText: false,
+              _ExamPicker(
+                label: AppStrings.tr('Prerequisite exam ID'),
+                value: prerequisiteExamIdController.text.isEmpty
+                    ? null
+                    : prerequisiteExamIdController.text,
+                isRequired: false,
+                onChanged: (id) => prerequisiteExamIdController.text = id ?? '',
               ),
               verticalSpace(10),
               Row(

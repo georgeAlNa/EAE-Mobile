@@ -5,10 +5,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/helpers/spacing.dart';
+import '../../../../../core/di/dependency_injection.dart';
 import '../../../../../core/public_widgets/app_state_widgets.dart';
+import '../../../../../core/public_widgets/searchable_entity_picker.dart';
 import '../../../../../core/public_widgets/snack_bar_widget.dart';
-import '../../../../../core/public_widgets/text_field_widget.dart';
 import '../../../shared/presentation/widgets/tenant_admin_ux_widgets.dart';
+import '../../../../exam_sessions/data/repos/exam_sessions_repo.dart';
 import '../../data/models/result_publication_request_body.dart';
 import '../../data/models/result_publication_response.dart';
 import '../../logic/result_publication_cubit.dart';
@@ -71,11 +73,18 @@ class ResultPublicationScreen extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          TextFieldWidget(
-                            controller: cubit.sessionIdController,
-                            hintText: AppStrings.tr('exam session id'),
-                            labelText: AppStrings.tr('Session ID'),
-                            obscureText: false,
+                          FutureBuilder<List<EntityPickerOption>>(
+                            future: _completedSessions(),
+                            builder: (context, snapshot) =>
+                                SearchableEntityPicker(
+                                  label: AppStrings.tr('Session ID'),
+                                  value: cubit.sessionIdController.text.isEmpty
+                                      ? null
+                                      : cubit.sessionIdController.text,
+                                  options: snapshot.data ?? const [],
+                                  onChanged: (id) =>
+                                      cubit.sessionIdController.text = id ?? '',
+                                ),
                           ),
                           verticalSpace(12),
                           Wrap(
@@ -128,13 +137,17 @@ class ResultPublicationScreen extends StatelessWidget {
                                 .copyWith(color: AppColors.primaryColor9),
                           ),
                           verticalSpace(12),
-                          TextFieldWidget(
-                            controller: cubit.workflowResourceIdController,
-                            hintText: AppStrings.tr(
-                              'assessment result resource id',
+                          InputDecorator(
+                            decoration: InputDecoration(
+                              labelText: AppStrings.tr('Resource ID'),
                             ),
-                            labelText: AppStrings.tr('Resource ID'),
-                            obscureText: false,
+                            child: Text(
+                              cubit.workflowResourceIdController.text.isEmpty
+                                  ? AppStrings.tr(
+                                      'Load publication status first',
+                                    )
+                                  : AppStrings.tr('Result loaded for workflow'),
+                            ),
                           ),
                           verticalSpace(12),
                           Wrap(
@@ -142,7 +155,13 @@ class ResultPublicationScreen extends StatelessWidget {
                             runSpacing: 8.h,
                             children: [
                               FilledButton.icon(
-                                onPressed: () => _createWorkflow(context),
+                                onPressed:
+                                    cubit
+                                        .workflowResourceIdController
+                                        .text
+                                        .isEmpty
+                                    ? null
+                                    : () => _createWorkflow(context),
                                 icon: const Icon(Icons.account_tree_outlined),
                                 label: Text(AppStrings.tr('Create')),
                                 style: _filledActionButtonStyle(),
@@ -191,6 +210,22 @@ class ResultPublicationScreen extends StatelessWidget {
     );
   }
 
+  Future<List<EntityPickerOption>> _completedSessions() async {
+    final response = await getIt<ExamSessionsRepo>().getExamSessions(
+      status: 'completed',
+      perPage: 100,
+    );
+    return response.data
+        .map(
+          (session) => EntityPickerOption(
+            id: session.sessionId,
+            label: AppStrings.tr('Completed session'),
+            subtitle: session.timestamps.endedAt ?? session.state,
+          ),
+        )
+        .toList();
+  }
+
   void _listenToState(BuildContext context, ResultPublicationState state) {
     state.maybeWhen(
       published: (_) {
@@ -233,7 +268,7 @@ class ResultPublicationScreen extends StatelessWidget {
     final cubit = context.read<ResultPublicationCubit>();
     final resourceId = cubit.workflowResourceIdController.text.trim();
     if (resourceId.isEmpty) {
-      showAppSnackBar(context, 'Enter resource id first');
+      showAppSnackBar(context, 'Load publication status first');
       return;
     }
 
