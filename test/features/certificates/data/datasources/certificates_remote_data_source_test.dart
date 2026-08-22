@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:typed_data';
 
 import 'package:eae_mobile/core/constants/shared_pref_keys.dart';
 import 'package:eae_mobile/core/helpers/app_shared_preferences.dart';
@@ -7,6 +7,7 @@ import 'package:eae_mobile/core/networking/app_link_url.dart';
 import 'package:eae_mobile/core/networking/error/error_handler/network_exceptions.dart';
 import 'package:eae_mobile/features/certificates/data/datasources/certificates_remote_data_source.dart';
 import 'package:eae_mobile/features/certificates/data/models/certificates_request_body.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -143,24 +144,68 @@ void main() {
           ),
         ).thenAnswer((_) async => [37, 80, 68, 70]);
 
+        remoteDataSource = CertificatesRemoteDataSourceImpl(
+          apiServicesImpl: apiServicesImpl,
+          saveFileDialog: ({
+            String? dialogTitle,
+            String? fileName,
+            String? initialDirectory,
+            FileType type = FileType.any,
+            List<String>? allowedExtensions,
+            Uint8List? bytes,
+            bool lockParentWindow = false,
+          }) async {
+            expect(dialogTitle, 'Save Certificate');
+            expect(fileName, 'certificate_session_001.pdf');
+            expect(type, FileType.custom);
+            expect(allowedExtensions, ['pdf']);
+            expect(bytes, Uint8List.fromList([37, 80, 68, 70]));
+            return '/storage/emulated/0/Download/certificate_session_001.pdf';
+          },
+        );
+
         final file = await remoteDataSource.downloadSessionCertificate(
           'session_001',
         );
 
         expect(file.fileName, 'certificate_session_001.pdf');
         expect(file.bytesLength, 4);
-        expect(await File(file.filePath).readAsBytes(), [37, 80, 68, 70]);
+        expect(file.filePath, '/storage/emulated/0/Download/certificate_session_001.pdf');
         verify(
           () => apiServicesImpl.getBytes(
             AppLinkUrl.examSessionCertificate('session_001'),
             token: 'access-token',
           ),
         ).called(1);
-        verifyNever(
-          () => apiServicesImpl.get(
+      },
+    );
+
+    test(
+      'downloadSessionCertificate throws requestCancelled when user cancels save dialog',
+      () async {
+        when(
+          () => apiServicesImpl.getBytes(
             AppLinkUrl.examSessionCertificate('session_001'),
             token: any(named: 'token'),
           ),
+        ).thenAnswer((_) async => [37, 80, 68, 70]);
+
+        remoteDataSource = CertificatesRemoteDataSourceImpl(
+          apiServicesImpl: apiServicesImpl,
+          saveFileDialog: ({
+            String? dialogTitle,
+            String? fileName,
+            String? initialDirectory,
+            FileType type = FileType.any,
+            List<String>? allowedExtensions,
+            Uint8List? bytes,
+            bool lockParentWindow = false,
+          }) async => null,
+        );
+
+        expect(
+          () => remoteDataSource.downloadSessionCertificate('session_001'),
+          throwsA(isA<NetworkExceptions>()),
         );
       },
     );

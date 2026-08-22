@@ -118,6 +118,7 @@ class LoginCard extends StatelessWidget {
                   hintText: AppStrings.passwordHint,
                   labelText: AppStrings.password,
                   obscureText: true,
+                  enablePasswordVisibilityToggle: true,
                   prefixIcon: Icons.lock_outline,
                   prefixIconColor: AppColors.tertiaryColor6,
                   inputColor: AppColors.primaryColor9,

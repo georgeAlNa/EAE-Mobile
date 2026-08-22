@@ -53,6 +53,7 @@ class _ResetUserPasswordSheetState extends State<ResetUserPasswordSheet> {
               hintText: 'NewPassword@lana1',
               labelText: AppStrings.tr('New password'),
               obscureText: true,
+              enablePasswordVisibilityToggle: true,
             ),
             verticalSpace(12),
             TextFieldWidget(
@@ -60,6 +61,7 @@ class _ResetUserPasswordSheetState extends State<ResetUserPasswordSheet> {
               hintText: 'NewPassword@lana1',
               labelText: AppStrings.tr('Confirm new password'),
               obscureText: true,
+              enablePasswordVisibilityToggle: true,
             ),
             verticalSpace(20),
             ButtonWidget(

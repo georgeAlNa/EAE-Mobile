@@ -1,6 +1,7 @@
-import 'dart:io';
+﻿import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 
 import '../../../../core/constants/shared_pref_keys.dart';
 import '../../../../core/helpers/app_shared_preferences.dart';
@@ -9,6 +10,16 @@ import '../../../../core/networking/app_link_url.dart';
 import '../../../../core/networking/error/error_handler/network_exceptions.dart';
 import '../models/certificates_request_body.dart';
 import '../models/certificates_response.dart';
+
+typedef SaveFileDialog = Future<String?> Function({
+  String? dialogTitle,
+  String? fileName,
+  String? initialDirectory,
+  FileType type,
+  List<String>? allowedExtensions,
+  Uint8List? bytes,
+  bool lockParentWindow,
+});
 
 abstract class CertificatesRemoteDataSource {
   Future<CertificatesResponse> getCertificates({int? page, int? perPage});
@@ -31,8 +42,12 @@ abstract class CertificatesRemoteDataSource {
 
 class CertificatesRemoteDataSourceImpl implements CertificatesRemoteDataSource {
   final ApiServicesImpl apiServicesImpl;
+  final SaveFileDialog saveFileDialog;
 
-  CertificatesRemoteDataSourceImpl({required this.apiServicesImpl});
+  CertificatesRemoteDataSourceImpl({
+    required this.apiServicesImpl,
+    SaveFileDialog? saveFileDialog,
+  }) : saveFileDialog = saveFileDialog ?? FilePicker.saveFile;
 
   String? get _token {
     final sharedPref = AppSharedPreferences();
@@ -93,14 +108,20 @@ class CertificatesRemoteDataSourceImpl implements CertificatesRemoteDataSource {
       );
 
       final fileName = _safePdfFileName('certificate_$sessionId');
-      final directory = await Directory.systemTemp.createTemp(
-        'eae_certificates_',
+      final savedPath = await saveFileDialog(
+        dialogTitle: 'Save Certificate',
+        fileName: fileName,
+        type: FileType.custom,
+        allowedExtensions: ['pdf'],
+        bytes: Uint8List.fromList(bytes),
       );
-      final file = File('${directory.path}${Platform.pathSeparator}$fileName');
-      await file.writeAsBytes(bytes, flush: true);
+
+      if (savedPath == null || savedPath.isEmpty) {
+        throw const NetworkExceptions.requestCancelled();
+      }
 
       return CertificateDownloadFile(
-        filePath: file.path,
+        filePath: savedPath,
         fileName: fileName,
         bytesLength: bytes.length,
       );

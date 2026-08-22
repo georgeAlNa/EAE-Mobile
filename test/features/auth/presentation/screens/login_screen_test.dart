@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:eae_mobile/core/constants/app_strings.dart';
+import 'package:eae_mobile/core/public_widgets/text_field_widget.dart';
 import 'package:eae_mobile/core/routing/routes.dart';
 import 'package:eae_mobile/features/auth/data/models/login/login_request_body.dart';
 import 'package:eae_mobile/features/auth/data/models/login/login_response.dart';
@@ -167,6 +168,113 @@ void main() {
       );
       expect(find.text('Retry in 1m 05s'), findsOneWidget);
       expect(find.text(AppStrings.enterpriseSignIn), findsNothing);
+    });
+
+    testWidgets(
+      'password visibility toggle is hidden by default and toggles independently',
+      (tester) async {
+        await pumpTestApp(
+          tester,
+          child: Material(
+            child: SizedBox(
+              width: 320,
+              child: Column(
+                children: [
+                  TextFieldWidget(
+                    key: const Key('password_field_a'),
+                    controller: TextEditingController(text: 'secretA'),
+                    hintText: 'Password A',
+                    labelText: 'Password A',
+                    obscureText: true,
+                    enablePasswordVisibilityToggle: true,
+                  ),
+                  const SizedBox(height: 12),
+                  TextFieldWidget(
+                    key: const Key('password_field_b'),
+                    controller: TextEditingController(text: 'secretB'),
+                    hintText: 'Password B',
+                    labelText: 'Password B',
+                    obscureText: true,
+                    enablePasswordVisibilityToggle: true,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+
+        final fieldA = find.byKey(const Key('password_field_a'));
+        final fieldB = find.byKey(const Key('password_field_b'));
+
+        expect(find.byIcon(Icons.visibility_off_outlined), findsNWidgets(2));
+        expect(find.byIcon(Icons.visibility_outlined), findsNothing);
+
+        await tester.tap(
+          find.descendant(of: fieldA, matching: find.byType(IconButton)).first,
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.byIcon(Icons.visibility_off_outlined), findsNWidgets(1));
+        expect(find.byIcon(Icons.visibility_outlined), findsOneWidget);
+
+        await tester.tap(
+          find.descendant(of: fieldB, matching: find.byType(IconButton)).first,
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.byIcon(Icons.visibility_outlined), findsNWidgets(2));
+        expect(find.byIcon(Icons.visibility_off_outlined), findsNothing);
+
+        final editableFieldA = find.descendant(
+          of: fieldA,
+          matching: find.byType(EditableText),
+        );
+        final editableFieldB = find.descendant(
+          of: fieldB,
+          matching: find.byType(EditableText),
+        );
+
+        expect(
+          tester.widget<EditableText>(editableFieldA).obscureText,
+          isFalse,
+        );
+        expect(
+          tester.widget<EditableText>(editableFieldB).obscureText,
+          isFalse,
+        );
+
+        await tester.tap(
+          find.descendant(of: fieldA, matching: find.byType(IconButton)).first,
+        );
+        await tester.pumpAndSettle();
+
+        expect(tester.widget<EditableText>(editableFieldA).obscureText, isTrue);
+        expect(
+          tester.widget<EditableText>(editableFieldB).obscureText,
+          isFalse,
+        );
+        expect(find.byIcon(Icons.visibility_outlined), findsOneWidget);
+        expect(find.byIcon(Icons.visibility_off_outlined), findsOneWidget);
+      },
+    );
+
+    testWidgets('non-password fields do not show the eye toggle', (
+      tester,
+    ) async {
+      await pumpTestApp(
+        tester,
+        child: Material(
+          child: TextFieldWidget(
+            controller: TextEditingController(text: 'not-a-password'),
+            hintText: 'Email',
+            labelText: 'Email',
+            obscureText: false,
+          ),
+        ),
+      );
+
+      expect(find.byIcon(Icons.visibility_outlined), findsNothing);
+      expect(find.byIcon(Icons.visibility_off_outlined), findsNothing);
     });
 
     testWidgets('navigates to role verification when login succeeds', (

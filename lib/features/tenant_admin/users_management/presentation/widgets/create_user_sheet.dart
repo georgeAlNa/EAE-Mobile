@@ -124,6 +124,7 @@ class _CreateUserSheetState extends State<CreateUserSheet> {
               hintText: AppStrings.tr('Password'),
               labelText: AppStrings.tr('Password'),
               obscureText: true,
+              enablePasswordVisibilityToggle: true,
               validationType: InputValidationType.password,
               customPattern:
                   r'^(?=.*[a-z])(?=.*[A-Z])(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{12,}$',
@@ -134,6 +135,7 @@ class _CreateUserSheetState extends State<CreateUserSheet> {
               hintText: AppStrings.tr('Confirm password'),
               labelText: AppStrings.tr('Confirm password'),
               obscureText: true,
+              enablePasswordVisibilityToggle: true,
               validationType: InputValidationType.password,
               customPattern:
                   r'^(?=.*[a-z])(?=.*[A-Z])(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z\d]).{12,}$',
