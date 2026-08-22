@@ -63,7 +63,7 @@ UserManagementUser _$UserManagementUserFromJson(Map<String, dynamic> json) =>
       isActive: json['is_active'] as bool,
       activatedAt: json['activated_at'] as String?,
       deactivatedAt: json['deactivated_at'] as String?,
-      userAttributes: json['user_attributes'] as Map<String, dynamic>?,
+      userAttributes: _userAttributesFromJson(json['user_attributes']),
       emailVerifiedAt: json['email_verified_at'] as String?,
       createdAt: json['created_at'] as String,
       updatedAt: json['updated_at'] as String,

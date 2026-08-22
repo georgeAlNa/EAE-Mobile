@@ -217,9 +217,11 @@ void main() {
           ),
         ).thenAnswer(
           (_) async => {
-            'valid': true,
-            'certificate_code': 'CERT-ABC123',
-            'issued_at': '2026-07-26T18:07:43.000000Z',
+            'data': {
+              'valid': true,
+              'certificate_code': 'CERT-ABC123',
+              'issued_at': '2026-07-26T18:07:43.000000Z',
+            },
           },
         );
 
@@ -228,6 +230,8 @@ void main() {
         );
 
         expect(response.valid, isTrue);
+        expect(response.certificateCode, 'CERT-ABC123');
+        expect(response.issuedAt, '2026-07-26T18:07:43.000000Z');
         verify(
           () => apiServicesImpl.get(
             AppLinkUrl.verifyCertificate('CERT-ABC123'),

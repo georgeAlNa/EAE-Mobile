@@ -22,6 +22,7 @@ class SearchableEntityPicker extends StatelessWidget {
   final List<EntityPickerOption> options;
   final ValueChanged<String?> onChanged;
   final bool isRequired;
+  final bool isLoading;
 
   const SearchableEntityPicker({
     super.key,
@@ -30,6 +31,7 @@ class SearchableEntityPicker extends StatelessWidget {
     required this.options,
     required this.onChanged,
     this.isRequired = true,
+    this.isLoading = false,
   });
 
   @override
@@ -45,7 +47,7 @@ class SearchableEntityPicker extends StatelessWidget {
       initialValue: value,
       validator: isRequired ? (value) => value == null || value.isEmpty ? 'Required' : null : null,
       builder: (field) => InkWell(
-        onTap: () async {
+        onTap: isLoading ? null : () async {
           final result = await showModalBottomSheet<String>(
             context: context,
             isScrollControlled: true,
@@ -58,7 +60,19 @@ class SearchableEntityPicker extends StatelessWidget {
         },
         child: InputDecorator(
           decoration: InputDecoration(labelText: label, errorText: field.errorText),
-          child: selected == null
+          child: isLoading
+              ? Row(
+                  children: [
+                    const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(AppStrings.tr('Loading...')),
+                  ],
+                )
+              : selected == null
               ? Text(AppStrings.tr('Select an option'))
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

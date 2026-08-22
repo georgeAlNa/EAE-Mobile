@@ -28,7 +28,7 @@ SettingsProfileData _$SettingsProfileDataFromJson(Map<String, dynamic> json) =>
       departmentId: json['department_id'] as String?,
       status: json['status'] as String,
       isActive: json['is_active'] as bool,
-      userAttributes: json['user_attributes'] as Map<String, dynamic>?,
+      userAttributes: _userAttributesFromJson(json['user_attributes']),
       lastLoginAt: json['last_login_at'] as String?,
       createdAt: json['created_at'] as String,
       updatedAt: json['updated_at'] as String,

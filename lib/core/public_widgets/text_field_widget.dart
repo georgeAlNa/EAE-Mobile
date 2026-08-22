@@ -19,6 +19,7 @@ class TextFieldWidget extends StatelessWidget {
   final void Function()? onPressedSuffixIcon;
   final void Function()? onPressedPrefixIcon;
   final void Function(String value)? onChanged;
+  final VoidCallback? onTap;
   final int? maxLines;
   final int? minLines;
   final double? height;
@@ -46,6 +47,7 @@ class TextFieldWidget extends StatelessWidget {
     this.onPressedSuffixIcon,
     this.onPressedPrefixIcon,
     this.onChanged,
+    this.onTap,
     this.maxLines = 1,
     this.minLines,
     this.height,
@@ -70,6 +72,7 @@ class TextFieldWidget extends StatelessWidget {
         keyboardType: keyboardType ?? TextInputType.text,
         cursorColor: AppColors.primaryColor,
         onChanged: onChanged,
+        onTap: onTap,
         validator: (value) {
           final fieldValue = value ?? "";
           if (!isRequired && fieldValue.trim().isEmpty) return null;

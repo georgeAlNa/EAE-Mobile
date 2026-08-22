@@ -274,6 +274,8 @@ class _PendingEvaluationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final metadata = evaluation.evaluationMetadata;
+    final questionType = metadata?['question_type']?.toString();
+    final reason = metadata?['reason']?.toString();
 
     return _EvaluationCard(
       margin: EdgeInsets.only(bottom: 12.h),
@@ -315,10 +317,15 @@ class _PendingEvaluationCard extends StatelessWidget {
             value:
                 '${evaluation.scoreAwarded ?? '-'} / ${evaluation.maxScorePossible ?? '-'}',
           ),
-          if (metadata != null && metadata.isNotEmpty)
+          if (questionType != null && questionType.isNotEmpty)
             _InfoLine(
-              label: AppStrings.tr('Metadata'),
-              value: _prettyJson(metadata),
+              label: AppStrings.tr('Question type'),
+              value: AppStrings.displayValue(questionType),
+            ),
+          if (reason != null && reason.isNotEmpty)
+            _InfoLine(
+              label: AppStrings.tr('Reason'),
+              value: AppStrings.displayValue(reason),
             ),
           verticalSpace(10),
           SizedBox(
@@ -544,11 +551,6 @@ class _ManualEvaluationActionBanner extends StatelessWidget {
       ),
     );
   }
-}
-
-String _prettyJson(Map<String, dynamic> value) {
-  const encoder = JsonEncoder.withIndent('  ');
-  return encoder.convert(value);
 }
 
 ButtonStyle _filledActionButtonStyle() {

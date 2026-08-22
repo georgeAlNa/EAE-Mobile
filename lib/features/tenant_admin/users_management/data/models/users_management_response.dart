@@ -2,6 +2,22 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'users_management_response.g.dart';
 
+Map<String, dynamic>? _userAttributesFromJson(Object? value) {
+  if (value == null) {
+    return null;
+  }
+
+  if (value is Map) {
+    return Map<String, dynamic>.from(value);
+  }
+
+  if (value is List) {
+    return <String, dynamic>{};
+  }
+
+  return null;
+}
+
 @JsonSerializable()
 class UsersManagementResponse {
   final List<UserManagementUser> data;
@@ -98,7 +114,7 @@ class UserManagementUser {
   @JsonKey(name: 'deactivated_at')
   final String? deactivatedAt;
 
-  @JsonKey(name: 'user_attributes')
+  @JsonKey(name: 'user_attributes', fromJson: _userAttributesFromJson)
   final Map<String, dynamic>? userAttributes;
 
   @JsonKey(name: 'email_verified_at')

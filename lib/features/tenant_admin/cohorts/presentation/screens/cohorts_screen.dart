@@ -234,6 +234,7 @@ class _CohortsScreenState extends State<CohortsScreen> {
     required bool isActive,
   }) async {
     final cubit = context.read<CohortsCubit>();
+    cubit.getCohortDetails(cohortId);
 
     await showModalBottomSheet<void>(
       context: context,
@@ -264,7 +265,7 @@ class _CohortsScreenState extends State<CohortsScreen> {
       isScrollControlled: true,
       backgroundColor: AppColors.neutralColor,
       builder: (_) => BlocProvider.value(
-        value: cubit..getCohortDetails(cohortId),
+        value: cubit,
         child: CohortDetailsSheet(cohortId: cohortId),
       ),
     );
@@ -276,13 +277,14 @@ class _CohortsScreenState extends State<CohortsScreen> {
     required String cohortName,
   }) async {
     final cubit = context.read<CohortsCubit>();
+    cubit.getCohortMembers(cohortId);
 
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: AppColors.neutralColor,
       builder: (_) => BlocProvider.value(
-        value: cubit..getCohortMembers(cohortId),
+        value: cubit,
         child: CohortMembersSheet(cohortId: cohortId, cohortName: cohortName),
       ),
     );

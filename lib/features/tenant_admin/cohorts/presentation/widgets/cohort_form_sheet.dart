@@ -123,7 +123,9 @@ class _CohortFormSheetState extends State<CohortFormSheet> {
                 future: _cohorts,
                 builder: (context, snapshot) => SearchableEntityPicker(
                   label: AppStrings.tr('Parent cohort ID'), value: _parentCohortId,
-                  options: snapshot.data ?? const [], isRequired: false,
+                  options: snapshot.data ?? const [],
+                  isLoading: snapshot.connectionState == ConnectionState.waiting,
+                  isRequired: false,
                   onChanged: (id) => setState(() => _parentCohortId = id),
                 ),
               ),

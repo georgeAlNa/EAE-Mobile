@@ -44,6 +44,7 @@ class _ExamPickerState extends State<_ExamPicker> {
       label: widget.label,
       value: widget.value,
       options: snapshot.data ?? const [],
+      isLoading: snapshot.connectionState == ConnectionState.waiting,
       isRequired: widget.isRequired,
       onChanged: widget.onChanged,
     ),

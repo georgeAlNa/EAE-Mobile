@@ -63,6 +63,7 @@ class _RoleUserAssignmentSheetState extends State<RoleUserAssignmentSheet> {
               builder: (context, snapshot) => SearchableEntityPicker(
                 label: AppStrings.tr('User ID'), value: _userId,
                 options: snapshot.data ?? const [],
+                isLoading: snapshot.connectionState == ConnectionState.waiting,
                 onChanged: (id) => setState(() => _userId = id),
               ),
             ),

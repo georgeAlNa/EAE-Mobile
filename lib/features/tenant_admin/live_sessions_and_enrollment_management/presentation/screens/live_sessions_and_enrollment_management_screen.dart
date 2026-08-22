@@ -135,6 +135,7 @@ class _LiveSessionsAndEnrollmentManagementScreenState
                               builder: (context, snapshot) => SearchableEntityPicker(
                                 label: AppStrings.tr('Exam ID'), value: _currentExamId,
                                 options: snapshot.data ?? const [],
+                                isLoading: snapshot.connectionState == ConnectionState.waiting,
                                 onChanged: (id) => setState(() => _currentExamId = id),
                               ),
                             ),

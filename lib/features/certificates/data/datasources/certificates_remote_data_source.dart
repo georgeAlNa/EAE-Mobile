@@ -159,7 +159,18 @@ class CertificatesRemoteDataSourceImpl implements CertificatesRemoteDataSource {
         token: '',
       );
 
-      return CertificateVerificationResponse.fromJson(request);
+      if (request is! Map) {
+        throw const FormatException();
+      }
+
+      final data = request['data'];
+      if (data is! Map) {
+        throw const FormatException();
+      }
+
+      return CertificateVerificationResponse.fromJson(
+        Map<String, dynamic>.from(data),
+      );
     } on DioException catch (e) {
       throw NetworkExceptions.getException(e);
     } catch (e) {

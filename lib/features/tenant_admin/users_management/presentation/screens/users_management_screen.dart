@@ -275,13 +275,14 @@ class _UsersManagementScreenState extends State<UsersManagementScreen> {
     required String userId,
   }) async {
     final cubit = context.read<UsersManagementCubit>();
+    cubit.getUserDetails(userId);
 
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: AppColors.neutralColor,
       builder: (_) => BlocProvider.value(
-        value: cubit..getUserDetails(userId),
+        value: cubit,
         child: UserDetailsSheet(userId: userId),
       ),
     );

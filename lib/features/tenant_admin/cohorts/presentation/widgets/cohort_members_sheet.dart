@@ -319,6 +319,7 @@ class _AddCohortMemberSheetState extends State<AddCohortMemberSheet> {
               builder: (context, snapshot) => SearchableEntityPicker(
                 label: AppStrings.tr('User ID'), value: _userId,
                 options: snapshot.data ?? const [],
+                isLoading: snapshot.connectionState == ConnectionState.waiting,
                 onChanged: (id) => setState(() => _userId = id),
               ),
             ),

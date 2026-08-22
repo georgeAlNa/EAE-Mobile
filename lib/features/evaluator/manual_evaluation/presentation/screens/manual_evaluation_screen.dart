@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -102,6 +100,9 @@ class _ManualEvaluationScreenState extends State<ManualEvaluationScreen> {
                                           ? null
                                           : cubit.sessionIdController.text,
                                       options: snapshot.data ?? const [],
+                                      isLoading:
+                                          snapshot.connectionState ==
+                                          ConnectionState.waiting,
                                       onChanged: (id) =>
                                           cubit.sessionIdController.text =
                                               id ?? '',

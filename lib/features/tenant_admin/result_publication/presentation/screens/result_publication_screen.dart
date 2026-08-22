@@ -18,8 +18,22 @@ import 'package:eae_mobile/core/constants/app_strings.dart';
 
 part '../widgets/result_publication_widgets.dart';
 
-class ResultPublicationScreen extends StatelessWidget {
+class ResultPublicationScreen extends StatefulWidget {
   const ResultPublicationScreen({super.key});
+
+  @override
+  State<ResultPublicationScreen> createState() =>
+      _ResultPublicationScreenState();
+}
+
+class _ResultPublicationScreenState extends State<ResultPublicationScreen> {
+  late final Future<List<EntityPickerOption>> _completedSessionOptions;
+
+  @override
+  void initState() {
+    super.initState();
+    _completedSessionOptions = _completedSessions();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -74,7 +88,7 @@ class ResultPublicationScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           FutureBuilder<List<EntityPickerOption>>(
-                            future: _completedSessions(),
+                            future: _completedSessionOptions,
                             builder: (context, snapshot) =>
                                 SearchableEntityPicker(
                                   label: AppStrings.tr('Session ID'),
@@ -82,6 +96,8 @@ class ResultPublicationScreen extends StatelessWidget {
                                       ? null
                                       : cubit.sessionIdController.text,
                                   options: snapshot.data ?? const [],
+                                  isLoading: snapshot.connectionState ==
+                                      ConnectionState.waiting,
                                   onChanged: (id) =>
                                       cubit.sessionIdController.text = id ?? '',
                                 ),

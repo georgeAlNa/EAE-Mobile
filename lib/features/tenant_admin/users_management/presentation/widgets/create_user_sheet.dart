@@ -108,6 +108,7 @@ class _CreateUserSheetState extends State<CreateUserSheet> {
               hintText: 'EMP-123',
               labelText: AppStrings.tr('External employee ID'),
               obscureText: false,
+              isRequired: false,
             ),
             verticalSpace(12),
             TextFieldWidget(
@@ -115,6 +116,7 @@ class _CreateUserSheetState extends State<CreateUserSheet> {
               hintText: AppStrings.tr('optional department id'),
               labelText: AppStrings.tr('Department ID'),
               obscureText: false,
+              isRequired: false,
             ),
             verticalSpace(12),
             TextFieldWidget(

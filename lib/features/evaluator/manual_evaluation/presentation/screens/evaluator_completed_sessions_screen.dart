@@ -210,6 +210,7 @@ class _CompletedSessionsTab extends StatelessWidget {
                   label: AppStrings.tr('Exam ID'),
                   value: examId,
                   options: snapshot.data ?? const [],
+                  isLoading: snapshot.connectionState == ConnectionState.waiting,
                   isRequired: false,
                   onChanged: onExamChanged,
                 ),

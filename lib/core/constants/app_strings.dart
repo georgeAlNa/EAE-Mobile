@@ -480,6 +480,8 @@ class AppStrings {
     'Eligibility': 'الأهلية',
     'Email': 'البريد الإلكتروني',
     'End window date': 'تاريخ نهاية النافذة',
+    'End window date must not be before start window date':
+        'يجب ألا يسبق تاريخ نهاية النافذة تاريخ بدايتها',
     'Enrollment notes': 'ملاحظات التسجيل',
     'Evaluation': 'تقييم',
     'Evaluation ID': 'معرف التقييم',
@@ -1093,6 +1095,11 @@ class AppStrings {
     'Invalid certificate': 'شهادة غير صالحة',
     'Verify Certificate': 'التحقق من الشهادة',
     'Verify by Code': 'التحقق بالرمز',
+    'Copied to clipboard': 'تم النسخ إلى الحافظة',
+    'Copy': 'نسخ',
+    'Search certificates': 'البحث في الشهادات',
+    'Enter certificate code manually': 'إدخال رمز الشهادة يدويا',
+    'Select a certificate': 'اختيار شهادة',
     'Certificate code is required': 'رمز الشهادة مطلوب',
     'Certificate management is not available for your role':
         'إدارة الشهادات غير متاحة لدورك.',
