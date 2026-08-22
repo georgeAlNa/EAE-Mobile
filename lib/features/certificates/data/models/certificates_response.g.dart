@@ -80,6 +80,7 @@ Certificate _$CertificateFromJson(Map<String, dynamic> json) => Certificate(
   additionalCredentials:
       json['additional_credentials'] as Map<String, dynamic>?,
   createdAt: json['created_at'] as String?,
+  sessionId: json['session_id'] as String?,
 );
 
 Map<String, dynamic> _$CertificateToJson(Certificate instance) =>
@@ -98,4 +99,5 @@ Map<String, dynamic> _$CertificateToJson(Certificate instance) =>
       'verification_status': instance.verificationStatus,
       'additional_credentials': instance.additionalCredentials,
       'created_at': instance.createdAt,
+      'session_id': instance.sessionId,
     };

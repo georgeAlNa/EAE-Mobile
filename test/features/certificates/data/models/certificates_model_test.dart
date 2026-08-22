@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 Map<String, dynamic> certificateJson({
   String id = 'certificate_001',
   String status = 'valid',
+  String? sessionId,
   Map<String, dynamic>? metadata,
 }) => {
   'certificate_id': id,
@@ -21,6 +22,7 @@ Map<String, dynamic> certificateJson({
   'verification_status': status,
   'additional_credentials': null,
   'created_at': null,
+  if (sessionId != null) 'session_id': sessionId,
 };
 
 Map<String, dynamic> metaJson({
@@ -67,9 +69,18 @@ void main() {
       },
     );
 
+    test('Certificate parses session_id from backend payload', () {
+      final certificate = Certificate.fromJson(
+        certificateJson(sessionId: 'session-uuid'),
+      );
+
+      expect(certificate.sessionId, 'session-uuid');
+    });
+
     test('Certificate parses nullable backend fields', () {
       final certificate = Certificate.fromJson(certificateJson());
 
+      expect(certificate.sessionId, isNull);
       expect(certificate.qrCodeData, isNull);
       expect(certificate.digitalSignature, isNull);
       expect(certificate.certificateMetadata, isNull);

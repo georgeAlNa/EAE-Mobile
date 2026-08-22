@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter/services.dart';
 
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/colors.dart';
@@ -85,6 +86,7 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
                     _CertificatesHeader(
                       title: widget.title,
                       count: certificates.length,
+                      showVerify: widget.role != CertificateRole.candidate,
                       onVerify: _showVerifySheet,
                     ),
                     verticalSpace(14),
@@ -210,11 +212,13 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
 class _CertificatesHeader extends StatelessWidget {
   final String title;
   final int count;
+  final bool showVerify;
   final VoidCallback onVerify;
 
   const _CertificatesHeader({
     required this.title,
     required this.count,
+    required this.showVerify,
     required this.onVerify,
   });
 
@@ -234,15 +238,16 @@ class _CertificatesHeader extends StatelessWidget {
                 ),
               ),
             ),
-            IconButton.filled(
-              tooltip: AppStrings.tr('Verify Certificate'),
-              onPressed: onVerify,
-              icon: const Icon(Icons.verified_outlined),
-              style: IconButton.styleFrom(
-                backgroundColor: AppColors.secondaryColor7,
-                foregroundColor: AppColors.neutralColor,
+            if (showVerify)
+              IconButton.filled(
+                tooltip: AppStrings.tr('Verify Certificate'),
+                onPressed: onVerify,
+                icon: const Icon(Icons.verified_outlined),
+                style: IconButton.styleFrom(
+                  backgroundColor: AppColors.secondaryColor7,
+                  foregroundColor: AppColors.neutralColor,
+                ),
               ),
-            ),
           ],
         ),
         verticalSpace(8),
@@ -419,7 +424,9 @@ class _CertificateDetailsSheetState extends State<_CertificateDetailsSheet> {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<CertificatesCubit>();
-    final sessionId = widget.trustedSessionIdResolver?.call(_certificate);
+    final sessionId =
+        _certificate.sessionId ??
+        widget.trustedSessionIdResolver?.call(_certificate);
     final canRevoke = cubit.canManageCertificates && !_certificate.isRevoked;
 
     return BlocListener<CertificatesCubit, CertificatesState>(
@@ -593,13 +600,39 @@ class _CertificateDetailsSheetState extends State<_CertificateDetailsSheet> {
   }
 }
 
-class _CertificateVerifySheet extends StatelessWidget {
+class _CertificateVerifySheet extends StatefulWidget {
   final TextEditingController controller;
 
   const _CertificateVerifySheet({required this.controller});
 
   @override
+  State<_CertificateVerifySheet> createState() =>
+      _CertificateVerifySheetState();
+}
+
+class _CertificateVerifySheetState extends State<_CertificateVerifySheet> {
+  final _searchController = TextEditingController();
+  Certificate? _selectedCertificate;
+  bool _manualEntry = false;
+  bool _showVerificationResult = false;
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final certificates = context.read<CertificatesCubit>().currentCertificates;
+    final searchQuery = _searchController.text.trim().toLowerCase();
+    final filteredCertificates = certificates.where((certificate) {
+      return certificate.certificateCode.toLowerCase().contains(searchQuery);
+    }).toList();
+    final canVerify = _manualEntry
+        ? widget.controller.text.trim().isNotEmpty
+        : _selectedCertificate != null;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -611,43 +644,131 @@ class _CertificateVerifySheet extends StatelessWidget {
           ),
         ),
         verticalSpace(14),
-        TextField(
-          controller: controller,
-          textInputAction: TextInputAction.done,
-          decoration: InputDecoration(
-            labelText: AppStrings.tr('Certificate Code'),
-            hintText: 'CERT-XXXXXXXXXX',
+        if (!_manualEntry) ...[
+          TextField(
+            controller: _searchController,
+            onChanged: (_) => setState(() {}),
+            decoration: InputDecoration(
+              labelText: AppStrings.tr('Search certificates'),
+              prefixIcon: const Icon(Icons.search),
+            ),
           ),
-          onSubmitted: (_) => _verify(context),
-        ),
+          verticalSpace(8),
+          if (filteredCertificates.isEmpty)
+            Text(AppStrings.tr('No certificates available'))
+          else
+            ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: 220.h),
+              child: ListView.separated(
+                shrinkWrap: true,
+                itemCount: filteredCertificates.length,
+                separatorBuilder: (_, _) => const Divider(height: 1),
+                itemBuilder: (context, index) {
+                  final certificate = filteredCertificates[index];
+                  final isSelected = certificate == _selectedCertificate;
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    selected: isSelected,
+                    leading: Icon(
+                      isSelected
+                          ? Icons.radio_button_checked
+                          : Icons.radio_button_off,
+                      color: isSelected ? AppColors.primaryColor9 : null,
+                    ),
+                    title: Text(certificate.certificateCode),
+                    subtitle: Text(
+                      '${AppStrings.tr(certificate.verificationStatus)}'
+                      '${certificate.issuedAt == null ? '' : ' | ${AppStrings.tr('Issued At')}: ${_formatDate(certificate.issuedAt)}'}',
+                    ),
+                    onTap: () {
+                      setState(() {
+                        _selectedCertificate = certificate;
+                        widget.controller.text = certificate.certificateCode;
+                        _showVerificationResult = false;
+                      });
+                    },
+                  );
+                },
+              ),
+            ),
+          verticalSpace(8),
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: TextButton.icon(
+              onPressed: () => setState(() {
+                _manualEntry = true;
+                _selectedCertificate = null;
+                widget.controller.clear();
+                _showVerificationResult = false;
+              }),
+              icon: const Icon(Icons.keyboard_alt_outlined),
+              label: Text(AppStrings.tr('Enter certificate code manually')),
+            ),
+          ),
+        ] else ...[
+          TextField(
+            controller: widget.controller,
+            textInputAction: TextInputAction.done,
+            onChanged: (_) => setState(() {
+              _showVerificationResult = false;
+            }),
+            decoration: InputDecoration(
+              labelText: AppStrings.tr('Certificate Code'),
+              hintText: 'CERT-XXXXXXXXXX',
+            ),
+            onSubmitted: (_) => _verify(context),
+          ),
+          Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: TextButton.icon(
+              onPressed: () => setState(() {
+                _manualEntry = false;
+                widget.controller.clear();
+                _showVerificationResult = false;
+              }),
+              icon: const Icon(Icons.list_alt_outlined),
+              label: Text(AppStrings.tr('Select a certificate')),
+            ),
+          ),
+        ],
         verticalSpace(12),
         SizedBox(
           width: double.infinity,
           child: FilledButton.icon(
-            onPressed: () => _verify(context),
+            onPressed: canVerify ? () => _verify(context) : null,
             icon: const Icon(Icons.verified_outlined),
             label: Text(AppStrings.tr('Verify by Code')),
           ),
         ),
         verticalSpace(12),
-        BlocBuilder<CertificatesCubit, CertificatesState>(
-          builder: (context, state) {
-            return state.maybeWhen(
-              verifyLoading: () => const LinearProgressIndicator(),
-              verified: (response) => _VerificationResult(response: response),
-              verifyError: (_) => _VerificationResult(
-                response: CertificateVerificationResponse(valid: false),
-              ),
-              orElse: () => const SizedBox.shrink(),
-            );
-          },
-        ),
+        if (_showVerificationResult)
+          KeyedSubtree(
+            key: ValueKey(_showVerificationResult),
+            child: BlocBuilder<CertificatesCubit, CertificatesState>(
+              builder: (context, state) {
+                return state.maybeWhen(
+                  verifyLoading: () => const LinearProgressIndicator(),
+                  verified: (response) =>
+                      _VerificationResult(response: response),
+                  verifyError: (_) => _VerificationResult(
+                    response: CertificateVerificationResponse(valid: false),
+                  ),
+                  orElse: () => const SizedBox.shrink(),
+                );
+              },
+            ),
+          ),
       ],
     );
   }
 
   void _verify(BuildContext context) {
-    context.read<CertificatesCubit>().verifyCertificate(controller.text);
+    final code =
+        _selectedCertificate?.certificateCode ?? widget.controller.text;
+    setState(() {
+      _showVerificationResult = true;
+    });
+    context.read<CertificatesCubit>().verifyCertificate(code);
   }
 }
 
@@ -790,15 +911,40 @@ class _DetailsRow extends StatelessWidget {
             ),
           ),
           verticalSpace(4),
-          Text(
-            value,
-            style: AppTextStyles.font12DarkGreySemiBold.copyWith(
-              color: AppColors.primaryColor9,
-            ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: SelectableText(
+                  value,
+                  style: AppTextStyles.font12DarkGreySemiBold.copyWith(
+                    color: AppColors.primaryColor9,
+                  ),
+                ),
+              ),
+              if (_isCopyable)
+                IconButton(
+                  onPressed: () => _copyValue(context),
+                  icon: const Icon(Icons.copy_outlined),
+                  tooltip: AppStrings.tr('Copy'),
+                  visualDensity: VisualDensity.compact,
+                  padding: EdgeInsets.zero,
+                  constraints: BoxConstraints(minWidth: 32.w, minHeight: 32.h),
+                ),
+            ],
           ),
         ],
       ),
     );
+  }
+
+  bool get _isCopyable => value.trim().isNotEmpty && value.trim() != '-';
+
+  Future<void> _copyValue(BuildContext context) async {
+    await Clipboard.setData(ClipboardData(text: value));
+    if (context.mounted) {
+      showAppSnackBar(context, AppStrings.tr('Copied to clipboard'));
+    }
   }
 }
 

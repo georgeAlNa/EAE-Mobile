@@ -118,6 +118,9 @@ class Certificate {
   @JsonKey(name: 'created_at')
   final String? createdAt;
 
+  @JsonKey(name: 'session_id')
+  final String? sessionId;
+
   Certificate({
     required this.certificateId,
     required this.candidateUserId,
@@ -133,6 +136,7 @@ class Certificate {
     required this.verificationStatus,
     this.additionalCredentials,
     this.createdAt,
+    this.sessionId,
   });
 
   bool get isRevoked => verificationStatus.toLowerCase() == 'revoked';
@@ -147,7 +151,7 @@ class Certificate {
     return value is String && value.isNotEmpty ? value : null;
   }
 
-  Certificate copyWith({String? verificationStatus}) {
+  Certificate copyWith({String? verificationStatus, String? sessionId}) {
     return Certificate(
       certificateId: certificateId,
       candidateUserId: candidateUserId,
@@ -163,6 +167,7 @@ class Certificate {
       verificationStatus: verificationStatus ?? this.verificationStatus,
       additionalCredentials: additionalCredentials,
       createdAt: createdAt,
+      sessionId: sessionId ?? this.sessionId,
     );
   }
 
