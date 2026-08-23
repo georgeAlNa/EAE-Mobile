@@ -52,6 +52,9 @@ class AppSharedPreferences {
   Future<void> clearSessionData() async {
     final language = getString(AppSharedPrefKeys.language);
     final theme = getBool(AppSharedPrefKeys.theme);
+    final candidateResultHistory = getString(
+      AppSharedPrefKeys.candidateResultHistory,
+    );
 
     await clear();
 
@@ -60,6 +63,12 @@ class AppSharedPreferences {
     }
     if (theme != null) {
       await setBool(AppSharedPrefKeys.theme, theme);
+    }
+    if (candidateResultHistory != null) {
+      await setString(
+        AppSharedPrefKeys.candidateResultHistory,
+        candidateResultHistory,
+      );
     }
   }
 

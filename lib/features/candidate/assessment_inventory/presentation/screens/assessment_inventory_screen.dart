@@ -6,8 +6,10 @@ import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/constants/colors.dart';
 import '../../../../../core/constants/text_styles.dart';
 import '../../../../../core/di/dependency_injection.dart';
+import '../../../../../core/helpers/extentions.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../../../core/public_widgets/app_state_widgets.dart';
+import '../../../../../core/routing/routes.dart';
 import '../../../../certificates/logic/certificates_cubit.dart';
 import '../../../../certificates/presentation/screens/certificates_screen.dart';
 import '../../logic/assessment_inventory/assessment_inventory_cubit.dart';
@@ -61,6 +63,15 @@ class _AssessmentInventoryView extends StatelessWidget {
               children: [
                 const AssessmentHeader(),
                 verticalSpace(12),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () => context.pushNamed(Routes.myResultsScreen),
+                    icon: const Icon(Icons.assessment_outlined),
+                    label: Text(AppStrings.tr('My Results')),
+                  ),
+                ),
+                verticalSpace(8),
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton.icon(

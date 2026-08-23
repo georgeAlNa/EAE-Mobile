@@ -42,48 +42,59 @@ void main() {
   });
 
   group('AuthRemoteDataSourceImpl', () {
-    test('login posts credentials and stores token/session id', () async {
-      when(
-        () => apiServicesImpl.post(AppLinkUrl.login, body: any(named: 'body')),
-      ).thenAnswer(
-        (_) async => {
-          'data': {
-            'status': 'authenticated',
-            'user_id': 'usr_001',
-            'session_id': 'sess_001',
-            'mfa_required': false,
-            'authenticated_at': '2026-07-15T20:00:00.000Z',
-            'token': 'access-token',
+    test(
+      'login posts credentials and stores token/session id/user id',
+      () async {
+        when(
+          () =>
+              apiServicesImpl.post(AppLinkUrl.login, body: any(named: 'body')),
+        ).thenAnswer(
+          (_) async => {
+            'data': {
+              'status': 'authenticated',
+              'user_id': 'usr_001',
+              'session_id': 'sess_001',
+              'mfa_required': false,
+              'authenticated_at': '2026-07-15T20:00:00.000Z',
+              'token': 'access-token',
+            },
           },
-        },
-      );
+        );
 
-      final response = await remoteDataSource.login(
-        LoginRequestBody(email: 'candidate@tenant.com', password: 'P@ssw0rd!'),
-      );
+        final response = await remoteDataSource.login(
+          LoginRequestBody(
+            email: 'candidate@tenant.com',
+            password: 'P@ssw0rd!',
+          ),
+        );
 
-      expect(response.data.token, 'access-token');
-      final captured =
-          verify(
-                () => apiServicesImpl.post(
-                  AppLinkUrl.login,
-                  body: captureAny(named: 'body'),
-                ),
-              ).captured.single
-              as Map<String, dynamic>;
-      expect(captured, {
-        'email': 'candidate@tenant.com',
-        'password': 'P@ssw0rd!',
-      });
-      expect(
-        AppSharedPreferences().getString(AppSharedPrefKeys.token),
-        'access-token',
-      );
-      expect(
-        AppSharedPreferences().getString(AppSharedPrefKeys.sessionId),
-        'sess_001',
-      );
-    });
+        expect(response.data.token, 'access-token');
+        final captured =
+            verify(
+                  () => apiServicesImpl.post(
+                    AppLinkUrl.login,
+                    body: captureAny(named: 'body'),
+                  ),
+                ).captured.single
+                as Map<String, dynamic>;
+        expect(captured, {
+          'email': 'candidate@tenant.com',
+          'password': 'P@ssw0rd!',
+        });
+        expect(
+          AppSharedPreferences().getString(AppSharedPrefKeys.token),
+          'access-token',
+        );
+        expect(
+          AppSharedPreferences().getString(AppSharedPrefKeys.sessionId),
+          'sess_001',
+        );
+        expect(
+          AppSharedPreferences().getString(AppSharedPrefKeys.userId),
+          'usr_001',
+        );
+      },
+    );
 
     test('register posts body and does not store returned token', () async {
       when(

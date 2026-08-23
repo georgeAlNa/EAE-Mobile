@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:eae_mobile/core/constants/shared_pref_keys.dart';
+import 'package:eae_mobile/core/helpers/app_shared_preferences.dart';
+import 'package:eae_mobile/features/candidate/assessment_results/data/local/candidate_result_history_store.dart';
 import 'package:eae_mobile/features/candidate/assessment_results/data/models/assessment_results_response.dart';
 import 'package:eae_mobile/features/candidate/assessment_results/data/repos/assessment_results_repo.dart';
 import 'package:eae_mobile/features/candidate/assessment_results/logic/assessment_results_cubit.dart';
@@ -75,6 +78,7 @@ AssessmentResultsResponse resultResponse() => AssessmentResultsResponse(
 void main() {
   late MockAssessmentResultsRepo repo;
   late AssessmentResultsCubit cubit;
+  late CandidateResultHistoryStore historyStore;
 
   setUpAll(() {
     registerFallbackValue('');
@@ -82,8 +86,13 @@ void main() {
 
   setUp(() async {
     await resetWidgetTestPreferences();
+    await AppSharedPreferences().setString(
+      AppSharedPrefKeys.userId,
+      'candidate_001',
+    );
     repo = MockAssessmentResultsRepo();
     cubit = AssessmentResultsCubit(assessmentResultsRepo: repo);
+    historyStore = CandidateResultHistoryStore();
   });
 
   tearDown(() async {
@@ -103,6 +112,7 @@ void main() {
       child: AssessmentSessionSubmissionScreen(
         viewData: submittedViewData(),
         assessmentResultsCubit: cubit,
+        historyStore: historyStore,
       ),
     );
 
@@ -129,11 +139,35 @@ void main() {
       child: AssessmentSessionSubmissionScreen(
         viewData: submittedViewData(),
         assessmentResultsCubit: cubit,
+        historyStore: historyStore,
       ),
     );
     await tester.pump();
 
     expect(find.text('Result pending or unavailable'), findsOneWidget);
     expect(find.text('Back to dashboard'), findsOneWidget);
+  });
+
+  testWidgets('records the completed session for the current candidate', (
+    tester,
+  ) async {
+    when(
+      () => repo.getAssessmentResult(any()),
+    ).thenThrow(Exception('Result not available yet'));
+
+    await pumpTestApp(
+      tester,
+      child: AssessmentSessionSubmissionScreen(
+        viewData: submittedViewData(),
+        assessmentResultsCubit: cubit,
+        historyStore: historyStore,
+      ),
+    );
+    await tester.pump();
+
+    final history = historyStore.loadForCurrentUser();
+    expect(history, hasLength(1));
+    expect(history.single.sessionId, 'session_001');
+    expect(history.single.title, 'Completed');
   });
 }

@@ -116,6 +116,12 @@ class _AssessmentSetupView extends StatelessWidget {
                       Routes.assessmentSessionScreen,
                       arguments: AssessmentSessionLaunchData(
                         examId: examId ?? '',
+                        examTitle:
+                            context
+                                .read<AssessmentSetupCubit>()
+                                .exam
+                                ?.examName ??
+                            '',
                         totalDurationMinutes:
                             context
                                 .read<AssessmentSetupCubit>()

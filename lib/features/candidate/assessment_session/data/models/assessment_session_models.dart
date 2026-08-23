@@ -14,11 +14,13 @@ enum AssessmentSessionQuestionType {
 
 class AssessmentSessionLaunchData {
   final String examId;
+  final String examTitle;
   final int totalDurationMinutes;
   final bool timerVisibleToCandidate;
 
   const AssessmentSessionLaunchData({
     required this.examId,
+    this.examTitle = '',
     required this.totalDurationMinutes,
     required this.timerVisibleToCandidate,
   });
@@ -26,6 +28,7 @@ class AssessmentSessionLaunchData {
 
 class AssessmentSessionViewData {
   final String headerTitle;
+  final String examTitle;
   final String title;
   final String description;
   final String badgeLabel;
@@ -57,6 +60,7 @@ class AssessmentSessionViewData {
 
   const AssessmentSessionViewData({
     required this.headerTitle,
+    this.examTitle = '',
     required this.title,
     required this.description,
     required this.badgeLabel,
@@ -160,6 +164,7 @@ class AssessmentSessionViewData {
 
   AssessmentSessionViewData copyWith({
     String? headerTitle,
+    String? examTitle,
     String? title,
     String? description,
     String? badgeLabel,
@@ -192,6 +197,7 @@ class AssessmentSessionViewData {
   }) {
     return AssessmentSessionViewData(
       headerTitle: headerTitle ?? this.headerTitle,
+      examTitle: examTitle ?? this.examTitle,
       title: title ?? this.title,
       description: description ?? this.description,
       badgeLabel: badgeLabel ?? this.badgeLabel,

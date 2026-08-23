@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,6 +11,7 @@ import '../../../../../core/di/dependency_injection.dart';
 import '../../../../../core/helpers/extentions.dart';
 import '../../../../../core/helpers/spacing.dart';
 import '../../../../../core/routing/routes.dart';
+import '../../../assessment_results/data/local/candidate_result_history_store.dart';
 import '../../../assessment_results/data/models/assessment_results_response.dart';
 import '../../../assessment_results/logic/assessment_results_cubit.dart';
 import '../../data/models/assessment_session_models.dart';
@@ -17,11 +20,13 @@ import '../widgets/submission/assessment_session_submission_header.dart';
 class AssessmentSessionSubmissionScreen extends StatefulWidget {
   final AssessmentSessionViewData viewData;
   final AssessmentResultsCubit? assessmentResultsCubit;
+  final CandidateResultHistoryStore? historyStore;
 
   const AssessmentSessionSubmissionScreen({
     super.key,
     required this.viewData,
     this.assessmentResultsCubit,
+    this.historyStore,
   });
 
   @override
@@ -43,8 +48,22 @@ class _AssessmentSessionSubmissionScreenState
 
     final sessionId = widget.viewData.sessionId.trim();
     if (sessionId.isNotEmpty) {
+      unawaited(_recordCompletedSession(sessionId));
       _resultsCubit.getAssessmentResult(sessionId);
     }
+  }
+
+  Future<void> _recordCompletedSession(String sessionId) {
+    final viewData = widget.viewData;
+    final title = [viewData.examTitle, viewData.title, viewData.headerTitle]
+        .map((value) => value.trim())
+        .firstWhere((value) => value.isNotEmpty, orElse: () => '');
+
+    final historyStore = widget.historyStore ?? CandidateResultHistoryStore();
+    return historyStore.recordCompletedSession(
+      sessionId: sessionId,
+      title: title,
+    );
   }
 
   @override

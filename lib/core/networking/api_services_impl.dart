@@ -17,6 +17,14 @@ Future<void> setHeaders({String? token}) async {
     "Accept-Timezone": DateTime.now().timeZoneName,
   };
 
+  final baseUri = Uri.tryParse(AppLinkUrl.baseUrl);
+  final baseHost = baseUri?.host.toLowerCase();
+  final isLocalApi =
+      baseHost == 'localhost' || baseHost == '127.0.0.1' || baseHost == '::1';
+  if (isLocalApi && AppLinkUrl.apiHostHeader.isNotEmpty) {
+    _headers['Host'] = AppLinkUrl.apiHostHeader;
+  }
+
   if (token != null && token.isNotEmpty) {
     _headers["Authorization"] = "Bearer $token";
   }

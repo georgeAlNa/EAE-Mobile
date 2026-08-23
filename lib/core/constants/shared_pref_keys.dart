@@ -6,4 +6,6 @@ class AppSharedPrefKeys {
   static const language = 'language';
   static const theme = 'theme';
   static const selectedRole = 'selected_role';
+  static const userId = 'user_id';
+  static const candidateResultHistory = 'candidate_result_history';
 }

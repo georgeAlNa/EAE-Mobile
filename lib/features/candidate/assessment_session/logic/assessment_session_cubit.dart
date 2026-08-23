@@ -20,6 +20,7 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
   final AssessmentSessionRepo assessmentSessionRepo;
   final CandidateProctoringManager? candidateProctoringManager;
   final String? initialExamId;
+  final String? initialExamTitle;
   final int? allowedDurationSeconds;
   final bool? timerVisibleToCandidate;
   Timer? _timer;
@@ -36,6 +37,7 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
     required this.assessmentSessionRepo,
     this.candidateProctoringManager,
     this.initialExamId,
+    this.initialExamTitle,
     this.allowedDurationSeconds,
     this.timerVisibleToCandidate,
   }) : super(const AssessmentSessionState.loading()) {
@@ -205,6 +207,7 @@ class AssessmentSessionCubit extends Cubit<AssessmentSessionState> {
 
     return AssessmentSessionViewData(
       headerTitle: AppStrings.enterpriseAssessmentTitle,
+      examTitle: initialExamTitle?.trim() ?? '',
       title: question?.questionText ?? 'Exam review',
       description: question?.questionStem ?? '',
       badgeLabel: AppStrings.encryptedMediaSandboxActive,

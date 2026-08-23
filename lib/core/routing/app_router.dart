@@ -4,6 +4,8 @@ import 'package:eae_mobile/features/candidate/assessment_inventory/data/models/a
 import 'package:eae_mobile/features/candidate/assessment_inventory/logic/assessment_inventory/assessment_inventory_cubit.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/presentation/screens/assessment_inventory_details_screen.dart';
 import 'package:eae_mobile/features/candidate/assessment_inventory/presentation/screens/assessment_selection_screen.dart';
+import 'package:eae_mobile/features/candidate/assessment_results/logic/my_results_cubit.dart';
+import 'package:eae_mobile/features/candidate/assessment_results/presentation/screens/my_results_screen.dart';
 import 'package:eae_mobile/features/auth/logic/login/login_cubit.dart';
 import 'package:eae_mobile/features/auth/logic/register/register_cubit.dart';
 import 'package:eae_mobile/features/auth/logic/forgot_password/forgot_password_cubit.dart';
@@ -119,6 +121,14 @@ class AppRouter {
               BlocProvider(create: (context) => getIt<SettingsCubit>()),
             ],
             child: const MainNavigationShell(initialIndex: 0),
+          ),
+        );
+
+      case Routes.myResultsScreen:
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) => getIt<MyResultsCubit>()..loadResults(),
+            child: const MyResultsScreen(),
           ),
         );
 

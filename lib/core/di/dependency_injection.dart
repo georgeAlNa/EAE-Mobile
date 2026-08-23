@@ -6,8 +6,10 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import '../../features/candidate/assessment_inventory/data/datasources/assessment_inventory_remote_data_source.dart';
 import '../../features/candidate/assessment_inventory/data/repos/assessment_inventory_repo.dart';
 import '../../features/candidate/assessment_results/data/datasources/assessment_results_remote_data_source.dart';
+import '../../features/candidate/assessment_results/data/local/candidate_result_history_store.dart';
 import '../../features/candidate/assessment_results/data/repos/assessment_results_repo.dart';
 import '../../features/candidate/assessment_results/logic/assessment_results_cubit.dart';
+import '../../features/candidate/assessment_results/logic/my_results_cubit.dart';
 import '../../features/candidate/assessment_session/data/datasources/assessment_session_remote_data_source.dart';
 import '../../features/candidate/assessment_session/data/models/assessment_session_models.dart';
 import '../../features/candidate/assessment_session/data/repos/assessment_session_repo.dart';
@@ -148,6 +150,12 @@ Future<void> setupGetit() async {
   // cubit
   getIt.registerFactory<AssessmentResultsCubit>(
     () => AssessmentResultsCubit(assessmentResultsRepo: getIt()),
+  );
+  getIt.registerLazySingleton<CandidateResultHistoryStore>(
+    () => CandidateResultHistoryStore(sharedPreferences: getIt()),
+  );
+  getIt.registerFactory<MyResultsCubit>(
+    () => MyResultsCubit(assessmentResultsRepo: getIt(), historyStore: getIt()),
   );
 
   // //! feature - assessment session
@@ -456,6 +464,7 @@ Future<void> setupGetit() async {
       assessmentSessionRepo: getIt(),
       candidateProctoringManager: getIt(),
       initialExamId: launchData?.examId,
+      initialExamTitle: launchData?.examTitle,
       allowedDurationSeconds: launchData == null
           ? null
           : launchData.totalDurationMinutes * 60,

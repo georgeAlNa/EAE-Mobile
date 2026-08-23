@@ -3,6 +3,11 @@ class AppLinkUrl {
     'API_BASE_URL',
     defaultValue: 'http://alpha-engine.localhost:8081/api/v1/',
   );
+
+  static const String apiHostHeader = String.fromEnvironment(
+    'API_HOST_HEADER',
+    defaultValue: 'alpha-engine.localhost',
+  );
   //auth
   static const String login = "auth/login";
   static const String register = "auth/accept-invite";

@@ -7,6 +7,7 @@ class Routes {
   static const String forgotPasswordScreen = '/forgot-password';
   static const String resetPasswordScreen = '/reset-password';
   static const String assessmentInventoryScreen = '/assessment-inventory';
+  static const String myResultsScreen = '/my-results';
   static const String tenantAdminNavigationShell = '/tenant-admin';
   static const String tenantAdminHomeScreen = '/tenant-admin-home';
   static const String usersManagementScreen = '/users-management';

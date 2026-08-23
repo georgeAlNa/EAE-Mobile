@@ -163,6 +163,35 @@ void main() {
       expect(find.text('SHOW MORE'), findsOneWidget);
       expect(find.text('Average Score'), findsNothing);
       expect(find.text('ANALYTICS'), findsNothing);
+      expect(find.text('My Results'), findsOneWidget);
+      expect(find.text('My Certificates'), findsOneWidget);
+    });
+
+    testWidgets('tapping My Results opens the candidate results route', (
+      tester,
+    ) async {
+      final repo = MockAssessmentInventoryRepo();
+      stubLoading(repo);
+      final observer = RecordingNavigatorObserver();
+      final cubit = await pumpInventoryScreen(
+        tester,
+        repo: repo,
+        observer: observer,
+      );
+      cubit.emitForTest(
+        AssessmentInventoryState.ready(viewData: viewDataFixture()),
+      );
+      await pumpSmallFrame(tester);
+
+      await tester.tap(find.text('My Results'));
+      await tester.pump();
+
+      expect(
+        observer.pushedRoutes.any(
+          (route) => route.settings.name == Routes.myResultsScreen,
+        ),
+        isTrue,
+      );
     });
 
     testWidgets('renders empty state when no active assessment exists', (

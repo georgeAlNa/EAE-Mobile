@@ -65,6 +65,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         AppSharedPrefKeys.sessionId,
         response.data.sessionId,
       );
+      await sharedPref.setString(
+        AppSharedPrefKeys.userId,
+        response.data.userId,
+      );
 
       return response;
     } on DioException catch (e) {

@@ -349,10 +349,9 @@ class _AssessmentSessionExamContentState
               ),
               Row(
                 children: [
-                  if (viewData.isTimerVisible)
-                    AssessmentSessionExamTimerChip(
-                      label: viewData.remainingTimeLabel,
-                    ),
+                  AssessmentSessionExamTimerChip(
+                    label: viewData.remainingTimeLabel,
+                  ),
                   if (flaggedCount > 0) ...[
                     horizontalSpace(10),
                     Container(
