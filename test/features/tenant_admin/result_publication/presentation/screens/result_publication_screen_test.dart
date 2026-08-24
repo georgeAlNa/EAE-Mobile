@@ -255,7 +255,12 @@ void main() {
     verifyNever(() => repo.publishSessionResult(any()));
   });
 
-  testWidgets('already published result hides publish action', (tester) async {
+  testWidgets('already published approved result issues certificate', (
+    tester,
+  ) async {
+    when(
+      () => repo.publishSessionResult('session_001'),
+    ).thenAnswer((_) async => publishedResponse());
     when(() => repo.getResultPublicationStatus('session_001')).thenAnswer(
       (_) async =>
           statusResponse(resultStatus: 'final', publicationStatus: 'published'),
@@ -275,7 +280,12 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Publish'), findsNothing);
-    expect(find.text('This result is already published.'), findsOneWidget);
+    expect(find.text('Issue Certificate'), findsOneWidget);
+
+    await tester.tap(find.text('Issue Certificate'));
+    await tester.pumpAndSettle();
+
+    verify(() => repo.publishSessionResult('session_001')).called(1);
   });
 
   testWidgets('creates approval workflow through cubit', (tester) async {

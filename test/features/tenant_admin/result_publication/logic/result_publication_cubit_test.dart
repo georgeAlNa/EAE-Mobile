@@ -314,17 +314,32 @@ void main() {
       );
     }
 
-    test('publishSessionResult blocks an already published result', () async {
-      cubit.resultPublicationStatusResponse = statusResponse(
-        resultStatus: 'final',
-        publicationStatus: 'published',
-      );
+    test(
+      'publishSessionResult allows final published result with approved workflow',
+      () async {
+        final response = publishedResponse();
+        cubit.resultPublicationStatusResponse = statusResponse(
+          resultStatus: 'final',
+          publicationStatus: 'published',
+        );
+        when(
+          () => workflowRepo.getWorkflows(
+            workflowType: 'result_publication',
+            resourceType: 'assessment_result',
+            resourceId: 'result_001',
+            perPage: 100,
+          ),
+        ).thenAnswer((_) async => workflowList(status: 'approved'));
+        when(
+          () => repo.publishSessionResult(any()),
+        ).thenAnswer((_) async => response);
 
-      await cubit.publishSessionResult('session_001');
+        await cubit.publishSessionResult('session_001');
 
-      expect(stateError(cubit.state), 'This result is already published.');
-      verifyNever(() => repo.publishSessionResult(any()));
-    });
+        expect(cubit.resultPublicationResponse, same(response));
+        verify(() => repo.publishSessionResult('session_001')).called(1);
+      },
+    );
 
     test('createApprovalWorkflow emits loading then loaded', () async {
       final response = ApprovalWorkflowActionResponse(message: 'created');

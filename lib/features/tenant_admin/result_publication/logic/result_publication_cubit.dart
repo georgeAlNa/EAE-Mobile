@@ -77,15 +77,6 @@ class ResultPublicationCubit extends Cubit<ResultPublicationState> {
       return;
     }
 
-    if (status.publicationStatus.toLowerCase() == 'published') {
-      emit(
-        const ResultPublicationState.publishError(
-          error: 'This result is already published.',
-        ),
-      );
-      return;
-    }
-
     emit(const ResultPublicationState.publishLoading());
 
     try {

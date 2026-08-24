@@ -57,7 +57,6 @@ class _ResultPublicationScreenState extends State<ResultPublicationScreen> {
                 'published';
             final canPublish =
                 publicationStatus?.resultStatus.toLowerCase() == 'final' &&
-                !isAlreadyPublished &&
                 workflowStatus == 'approved';
             final isLoading = state.maybeWhen(
               statusLoading: () => true,
@@ -96,7 +95,8 @@ class _ResultPublicationScreenState extends State<ResultPublicationScreen> {
                                       ? null
                                       : cubit.sessionIdController.text,
                                   options: snapshot.data ?? const [],
-                                  isLoading: snapshot.connectionState ==
+                                  isLoading:
+                                      snapshot.connectionState ==
                                       ConnectionState.waiting,
                                   onChanged: (id) =>
                                       cubit.sessionIdController.text = id ?? '',
@@ -113,15 +113,20 @@ class _ResultPublicationScreenState extends State<ResultPublicationScreen> {
                                 label: Text(AppStrings.tr('Status')),
                                 style: _filledActionButtonStyle(),
                               ),
-                              if (!isAlreadyPublished)
-                                OutlinedButton.icon(
-                                  onPressed: canPublish
-                                      ? () => _publishResult(context)
-                                      : null,
-                                  icon: const Icon(Icons.publish_outlined),
-                                  label: Text(AppStrings.tr('Publish')),
-                                  style: _outlinedActionButtonStyle(),
+                              OutlinedButton.icon(
+                                onPressed: canPublish
+                                    ? () => _publishResult(context)
+                                    : null,
+                                icon: const Icon(Icons.publish_outlined),
+                                label: Text(
+                                  AppStrings.tr(
+                                    isAlreadyPublished
+                                        ? 'Issue Certificate'
+                                        : 'Publish',
+                                  ),
                                 ),
+                                style: _outlinedActionButtonStyle(),
+                              ),
                             ],
                           ),
                           if (publicationStatus != null) ...[
@@ -301,9 +306,6 @@ class _ResultPublicationScreenState extends State<ResultPublicationScreen> {
     ResultPublicationStatus status,
     String? workflowStatus,
   ) {
-    if (status.publicationStatus.toLowerCase() == 'published') {
-      return 'This result is already published.';
-    }
     if (status.resultStatus.toLowerCase() != 'final') {
       return 'Only final results can be published.';
     }
